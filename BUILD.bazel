@@ -15,12 +15,12 @@ gazelle(
 
 # This declares the release artifact users
 pkg_tar(
-    name = "rules_mylang-" + VERSION,
+    name = "bazel_lib-" + VERSION,
     srcs = [
         "LICENSE",
         "README.md",
         "version.bzl",
-        "//mylang:package_content",
+        "//lib:package_content",
     ],
     extension = "tar.gz",
     # It is all source code, so make it read-only.
