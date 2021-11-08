@@ -1,0 +1,3 @@
+load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
+
+expand_make_vars_test_suite(name = "expand_make_vars_test")

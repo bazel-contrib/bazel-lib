@@ -162,3 +162,47 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
     additional_substitutions["RULEDIR"] = "/".join([o for o in rule_dir if o])
 
     return ctx.expand_make_variables(attribute_name, s, additional_substitutions)
+
+def _expand_template_impl(ctx):
+    ctx.actions.expand_template(
+        template = ctx.file.template,
+        output = ctx.outputs.out,
+        substitutions = {
+            k: expand_locations(v, ctx.attr.data)
+            for k, v in ctx.attr.substitutions.items()
+        },
+        is_executable = ctx.attr.is_executable,
+    )
+
+expand_template = rule(
+    doc = """Template expansion
+    
+This performs a simple search over the template file for the keys in substitutions,
+and replaces them with the corresponding values.
+""",
+    implementation = _expand_template_impl,
+    attrs = {
+        "template": attr.label(
+            doc = "The template file to expand.",
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        "substitutions": attr.string_dict(
+            doc = "Mapping of strings to substitutions.",
+            mandatory = True,
+        ),
+        "out": attr.output(
+            doc = "Where to write the expanded file.",
+            mandatory = True,
+        ),
+        "is_executable": attr.bool(
+            doc = "Whether to mark the output file as executable.",
+            default = False,
+            mandatory = False,
+        ),
+        "data": attr.label_list(
+            doc = "List of targets for additional lookup information.",
+            allow_files = True,
+        ),
+    },
+)

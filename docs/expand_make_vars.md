@@ -2,6 +2,33 @@
 
 Public API for expanding variables
 
+<a id="#expand_template"></a>
+
+## expand_template
+
+<pre>
+expand_template(<a href="#expand_template-name">name</a>, <a href="#expand_template-data">data</a>, <a href="#expand_template-is_executable">is_executable</a>, <a href="#expand_template-out">out</a>, <a href="#expand_template-substitutions">substitutions</a>, <a href="#expand_template-template">template</a>)
+</pre>
+
+Template expansion
+    
+This performs a simple search over the template file for the keys in substitutions,
+and replaces them with the corresponding values.
+
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Type | Mandatory | Default |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="expand_template-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
+| <a id="expand_template-data"></a>data |  List of targets for additional lookup information.   | <a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a> | optional | [] |
+| <a id="expand_template-is_executable"></a>is_executable |  Whether to mark the output file as executable.   | Boolean | optional | False |
+| <a id="expand_template-out"></a>out |  Where to write the expanded file.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+| <a id="expand_template-substitutions"></a>substitutions |  Mapping of strings to substitutions.   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -> String</a> | required |  |
+| <a id="expand_template-template"></a>template |  The template file to expand.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+
+
 <a id="#expand_locations"></a>
 
 ## expand_locations

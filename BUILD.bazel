@@ -17,7 +17,6 @@ gazelle(
 pkg_tar(
     name = "bazel_lib-" + VERSION,
     srcs = [
-        "LICENSE",
         "README.md",
         "version.bzl",
         "//lib:package_content",

@@ -2,9 +2,6 @@
 
 load("//lib/private:expand_make_vars.bzl", "expand_locations")
 
-_DOC = """Generates a params file from a list of arguments."""
-
-# See params_file macro below for docstrings
 _ATTRS = {
     "args": attr.string_list(),
     "data": attr.label_list(allow_files = True),
@@ -53,5 +50,4 @@ params_file = rule(
     implementation = _impl,
     provides = [DefaultInfo],
     attrs = _ATTRS,
-    doc = _DOC,
 )
