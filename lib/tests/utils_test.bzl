@@ -21,12 +21,16 @@ def _to_label_test_impl(ctx):
     asserts.true(env, utils.to_label(Label("//hello/world")) == Label("//hello/world:world"))
     asserts.true(env, utils.to_label(Label("//hello/world:world")) == Label("//hello/world:world"))
 
+    # relative labels
+    for (actual, expected) in ctx.attr.relative_asserts.items():
+        asserts.true(env, actual.label == Label(expected))
+
     return unittest.end(env)
 
 def _is_external_label_test_impl(ctx):
     env = unittest.begin(ctx)
 
-    # assert that labels and strings that are constructed within this workspace (rh) return false
+    # assert that labels and strings that are constructed within this workspace return false
     asserts.false(env, utils.is_external_label("//some/label"))
     asserts.false(env, utils.is_external_label(Label("//some/label")))
     asserts.false(env, utils.is_external_label(Label("@aspect_bazel_lib//some/label")))
@@ -38,7 +42,16 @@ def _is_external_label_test_impl(ctx):
 
     return unittest.end(env)
 
-to_label_test = unittest.make(_to_label_test_impl)
+to_label_test = unittest.make(
+    _to_label_test_impl,
+    attrs = {
+        "relative_asserts": attr.label_keyed_string_dict(
+            allow_files = True,
+            mandatory = True,
+        ),
+    },
+)
+
 is_external_label_test = unittest.make(
     _is_external_label_test_impl,
     attrs = {
@@ -52,7 +65,9 @@ is_external_label_test = unittest.make(
 )
 
 def utils_test_suite():
-    unittest.suite("to_label_tests", to_label_test)
+    to_label_test(name = "to_label_tests", relative_asserts = {
+        utils.to_label(":utils_test.bzl"): "//lib/tests:utils_test.bzl",
+    })
 
     is_external_label_test(
         name = "is_external_label_tests",

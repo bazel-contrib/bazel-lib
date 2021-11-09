@@ -53,7 +53,6 @@ def _to_label(param):
             # resolve the relative label from the current package
             # if 'param' is in another workspace, then this would return the label relative to that workspace, eg:
             # Label("@my//foo:bar").relative("@other//baz:bill") == Label("@other//baz:bill")
-            # NB: this can't be unit tested since native.package_name() is not available during unit test execution
             if param.startswith(":"):
                 param = param[1:]
             if native.package_name():
