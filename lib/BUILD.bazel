@@ -1,10 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 # For stardoc to reference the files
-exports_files([
-    "expand_make_vars.bzl",
-    "params_file.bzl",
-])
+exports_files(glob(["*.bzl"]))
 
 filegroup(
     name = "package_content",
@@ -29,4 +26,18 @@ bzl_library(
     srcs = ["params_file.bzl"],
     visibility = ["//visibility:public"],
     deps = ["//lib/private:params_file"],
+)
+
+bzl_library(
+    name = "paths",
+    srcs = ["paths.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:paths"],
+)
+
+bzl_library(
+    name = "utils",
+    srcs = ["utils.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:utils"],
 )

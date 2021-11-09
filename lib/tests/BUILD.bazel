@@ -1,3 +1,9 @@
 load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
+load(":utils_test.bzl", "utils_test_suite")
+load(":paths_test.bzl", "paths_test_suite")
 
-expand_make_vars_test_suite(name = "expand_make_vars_test")
+expand_make_vars_test_suite()
+
+paths_test_suite()
+
+utils_test_suite()

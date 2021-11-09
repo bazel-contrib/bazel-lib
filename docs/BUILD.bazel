@@ -10,6 +10,8 @@ load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
 _DOCS = {
     "//lib:expand_make_vars.bzl": "expand_make_vars.md",
     "//lib:params_file.bzl": "params_file.md",
+    "//lib:utils.bzl": "utils.md",
+    "//lib:paths.bzl": "paths.md",
 }
 
 [
