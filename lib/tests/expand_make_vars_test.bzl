@@ -25,5 +25,5 @@ def _variables_test_impl(ctx):
 # but their names are arbitrary and don't appear anywhere.
 t0_test = unittest.make(_variables_test_impl)
 
-def expand_make_vars_test_suite(name):
-    unittest.suite(name, t0_test)
+def expand_make_vars_test_suite():
+    unittest.suite("make_vars_tests", t0_test)

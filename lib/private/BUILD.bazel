@@ -17,7 +17,20 @@ bzl_library(
 )
 
 bzl_library(
+    name = "paths",
+    srcs = ["paths.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = ["@bazel_skylib//lib:paths"],
+)
+
+bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
+    name = "utils",
+    srcs = ["utils.bzl"],
     visibility = ["//lib:__subpackages__"],
 )
