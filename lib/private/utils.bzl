@@ -3,6 +3,10 @@
 def _propagate_well_known_tags(tags = []):
     """Returns a list of tags filtered from the input set that only contains the ones that are considered "well known"
 
+    These are listed in Bazel's documentation:
+    https://docs.bazel.build/versions/main/test-encyclopedia.html#tag-conventions
+    https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes
+
     Args:
         tags: List of tags to filter
 
@@ -26,17 +30,6 @@ def _propagate_well_known_tags(tags = []):
     ]
 
     return [tag for tag in tags if tag in WELL_KNOWN_TAGS]
-
-def _is_darwin(rctx):
-    """Return true if host is Darwin.
-
-    Args:
-        rctx: repository_ctx
-
-    Returns:
-        True if host is Darwin, false otherwise
-    """
-    return rctx.os.name.lower().startswith("mac os")
 
 def _to_label(param):
     """Converts a string to a Label. If Label is supplied, the same label is returned.
@@ -76,12 +69,12 @@ def _is_external_label(param):
     """
     return len(_to_label(param).workspace_root) > 0
 
-# Path to the root of the monorepo
-def _path_to_root():
-    """ Retuns the path to the monorepo root under bazel
+# Path to the root of the workspace
+def _path_to_workspace_root():
+    """ Retuns the path to the workspace root under bazel
 
     Returns:
-        Path to the monorepo root
+        Path to the workspace root
     """
     return "/".join([".."] * len(native.package_name().split("/")))
 
@@ -95,8 +88,7 @@ def _glob_directories(include, **kwargs):
 utils = struct(
     is_external_label = _is_external_label,
     glob_directories = _glob_directories,
-    path_to_root = _path_to_root,
+    path_to_workspace_root = _path_to_workspace_root,
     propagate_well_known_tags = _propagate_well_known_tags,
-    is_darwin = _is_darwin,
     to_label = _to_label,
 )
