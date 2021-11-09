@@ -14,12 +14,13 @@ filegroup(
     visibility = ["//:__pkg__"],
 )
 
-bzl_library(
-    name = "docs",
-    srcs = ["docs.bzl"],
-    visibility = ["//visibility:public"],
-    deps = ["//lib/private:docs"],
-)
+# TODO: debug
+# bzl_library(
+#     name = "docs",
+#     srcs = ["docs.bzl"],
+#     visibility = ["//visibility:public"],
+#     deps = ["//lib/private:docs"],
+# )
 
 bzl_library(
     name = "expand_make_vars",
