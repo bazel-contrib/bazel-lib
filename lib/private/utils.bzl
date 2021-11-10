@@ -49,9 +49,9 @@ def _to_label(param):
             if param.startswith(":"):
                 param = param[1:]
             if native.package_name():
-                return Label("//" + native.package_name()).relative(param)
+                return Label("@//" + native.package_name()).relative(param)
             else:
-                return Label("//:" + param)
+                return Label("@//:" + param)
         return Label(param)
     elif param_type == "Label":
         return param
