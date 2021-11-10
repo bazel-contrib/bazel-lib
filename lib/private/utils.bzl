@@ -42,17 +42,21 @@ def _to_label(param):
     """
     param_type = type(param)
     if param_type == "string":
-        if not param.startswith("@") and not param.startswith("//"):
-            # resolve the relative label from the current package
-            # if 'param' is in another workspace, then this would return the label relative to that workspace, eg:
-            # `Label("@my//foo:bar").relative("@other//baz:bill") == Label("@other//baz:bill")`
-            if param.startswith(":"):
-                param = param[1:]
-            if native.package_name():
-                return Label("@//" + native.package_name()).relative(param)
-            else:
-                return Label("@//:" + param)
-        return Label(param)
+        if param.startswith("@"):
+            return Label(param)
+        if param.startswith("//"):
+            return Label("@" + param)
+
+        # resolve the relative label from the current package
+        # if 'param' is in another workspace, then this would return the label relative to that workspace, eg:
+        # `Label("@my//foo:bar").relative("@other//baz:bill") == Label("@other//baz:bill")`
+        if param.startswith(":"):
+            param = param[1:]
+        if native.package_name():
+            return Label("@//" + native.package_name()).relative(param)
+        else:
+            return Label("@//:" + param)
+
     elif param_type == "Label":
         return param
     else:
