@@ -42,6 +42,26 @@ def _relative_file(to_file, frm_file):
         )
     )
 
+def _to_manifest_path(ctx, file):
+    """The runfiles manifest entry for a file
+
+    We must avoid using non-normalized paths (workspace/../other_workspace/path)
+    in order to locate entries by their key.
+    
+    Args:
+        ctx: starlark rule execution context
+        file: a File object
+    
+    Returns:
+        a key that can lookup the path from the runfiles manifest
+    """
+
+    if file.short_path.startswith("../"):
+        return file.short_path[3:]
+    else:
+        return ctx.workspace_name + "/" + file.short_path
+
 paths = struct(
     relative_file = _relative_file,
+    to_manifest_path = _to_manifest_path,
 )
