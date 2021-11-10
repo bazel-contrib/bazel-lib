@@ -48,3 +48,9 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = ["//lib/private:utils"],
 )
+
+bzl_library(
+    name = "windows_utils",
+    srcs = ["windows_utils.bzl"],
+    visibility = ["//visibility:public"],
+)
