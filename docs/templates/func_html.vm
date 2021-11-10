@@ -1,0 +1,49 @@
+#**
+This func template is used for rendering HTML in parameter table cells
+*#
+#*
+Workaround for markdownCellFormat() not allowing HTML (specifically lists) to be rendered in attribute table cells.
+
+TODO: Once https://github.com/bazelbuild/bazel/pull/14230 is merged, remove this macro and replace with call to
+      util.markdownCellFormatWithHtml($attribute.docString, true)
+*#
+#macro( markdownCellFormatNoEscapeHtml $docString )#*
+  *##if ($docString.contains("<ul>") || $docString.contains("<ol>"))#*
+      *#${docString.trim().replaceAll("\n(\\s*\n)+", "<br><br>").replaceAll("\n", " ")}#*
+  *##else#*
+      *#${util.markdownCellFormat($docString)}#*
+  *##end#*
+*##end
+
+<a id="#${funcInfo.functionName}"></a>
+
+#[[##]]# ${funcInfo.functionName}
+
+<pre>
+${util.funcSummary($funcInfo)}
+</pre>
+
+${funcInfo.docString}
+
+#if (!$funcInfo.getParameterList().isEmpty())
+#[[###]]# **Parameters**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+#foreach ($param in $funcInfo.getParameterList())
+| <a id="${funcInfo.functionName}-${param.name}"></a>$param.name | #if(!$param.docString.isEmpty()) #markdownCellFormatNoEscapeHtml( $param.docString ) #else <p align="center"> - </p> #end  | #if(!$param.getDefaultValue().isEmpty()) <code>$param.getDefaultValue()</code> #else none #end|
+#end
+#end
+#if (!$funcInfo.getReturn().docString.isEmpty())
+
+#[[###]]# **Returns**
+
+${funcInfo.getReturn().docString}
+#end
+#if (!$funcInfo.getDeprecated().docString.isEmpty())
+
+#[[###]]# **Deprecated**
+
+${funcInfo.getDeprecated().docString}
+#end

@@ -15,6 +15,13 @@ filegroup(
 )
 
 bzl_library(
+    name = "docs",
+    srcs = ["docs.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:docs"],
+)
+
+bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
     visibility = ["//visibility:public"],

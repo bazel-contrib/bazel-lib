@@ -107,12 +107,12 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
     This function is the same as ctx.expand_make_variables with the additional
     genrule-like substitutions of:
 
-      - $@: The output file if it is a single file. Else triggers a build error.
-      - $(@D): The output directory. If there is only one file name in outs,
+      - `$@`: The output file if it is a single file. Else triggers a build error.
+      - `$(@D)`: The output directory. If there is only one file name in outs,
                this expands to the directory containing that file. If there are multiple files,
                this instead expands to the package's root directory in the bin tree,
                even if all generated files belong to the same subdirectory!
-      - $(RULEDIR): The output directory of the rule, that is, the directory
+      - `$(RULEDIR)`: The output directory of the rule, that is, the directory
         corresponding to the name of the package containing the rule under the bin tree.
 
     See https://docs.bazel.build/versions/main/be/general.html#genrule.cmd and
@@ -127,7 +127,7 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
         attribute_name: name of the attribute containing the expression
 
     Returns:
-        s with the variables expanded
+        `s` with the variables expanded
     """
     rule_dir = [f for f in [
         ctx.bin_dir.path,
