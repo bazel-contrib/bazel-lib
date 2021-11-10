@@ -2,11 +2,10 @@
 # so that the dependency on stardoc doesn't leak to them.
 load("//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 
-# TODO: debug
-# stardoc_with_diff_test(
-#     bzl_library_target = "//lib:docs",
-#     out_label = "//docs:docs.md",
-# )
+stardoc_with_diff_test(
+    bzl_library_target = "//lib:docs",
+    out_label = "//docs:docs.md",
+)
 
 stardoc_with_diff_test(
     bzl_library_target = "//lib:expand_make_vars",
@@ -15,6 +14,7 @@ stardoc_with_diff_test(
 
 stardoc_with_diff_test(
     bzl_library_target = "//lib:params_file",
+    func_template = "//docs/templates:func_html.vm",
     out_label = "//docs:params_file.md",
 )
 

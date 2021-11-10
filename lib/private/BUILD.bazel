@@ -23,17 +23,16 @@ bzl_library(
     deps = ["@bazel_skylib//lib:paths"],
 )
 
-# TODO: debug
-# bzl_library(
-#     name = "docs",
-#     srcs = ["docs.bzl"],
-#     visibility = ["//lib:__subpackages__"],
-#     deps = [
-#         "@bazel_skylib//rules:diff_test",
-#         "@bazel_skylib//rules:write_file",
-#         "@io_bazel_stardoc//stardoc",
-#     ],
-# )
+bzl_library(
+    name = "docs",
+    srcs = ["docs.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [
+        "@bazel_skylib//rules:diff_test",
+        "@bazel_skylib//rules:write_file",
+        "@io_bazel_stardoc//stardoc:stardoc_lib",
+    ],
+)
 
 bzl_library(
     name = "expand_make_vars",

@@ -1,5 +1,5 @@
 #**
-This template is used for including rule definitions as top-level sections in generated stardoc docstrings.
+This rule template is used for rendering HTML in attribute table cells
 *#
 #*
 Workaround for markdownCellFormat() not allowing HTML (specifically lists) to be rendered in attribute table cells.
@@ -8,7 +8,7 @@ TODO: Once https://github.com/bazelbuild/bazel/pull/14230 is merged, remove this
       util.markdownCellFormatWithHtml($attribute.docString, true)
 *#
 #macro( markdownCellFormatNoEscapeHtml $docString )#*
-  *##if ($docString.contains("<ul>"))#*
+  *##if ($docString.contains("<ul>") || $docString.contains("<ol>"))#*
       *#${docString.trim().replaceAll("\n(\\s*\n)+", "<br><br>").replaceAll("\n", " ")}#*
   *##else#*
       *#${util.markdownCellFormat($docString)}#*

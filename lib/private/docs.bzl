@@ -7,14 +7,22 @@ load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 def stardoc_with_diff_test(
         bzl_library_target,
         out_label,
+        aspect_template = "@io_bazel_stardoc//stardoc:templates/markdown_tables/aspect.vm",
+        func_template = "@io_bazel_stardoc//stardoc:templates/markdown_tables/func.vm",
+        header_template = "@io_bazel_stardoc//stardoc:templates/markdown_tables/header.vm",
+        provider_template = "@io_bazel_stardoc//stardoc:templates/markdown_tables/provider.vm",
         rule_template = "@io_bazel_stardoc//stardoc:templates/markdown_tables/rule.vm"):
-    """Creates a stardoc target coupled with a diff_test for a given bzl_library.
+    """Creates a stardoc target coupled with a `diff_test` for a given `bzl_library`.
 
     This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
 
     Args:
-        bzl_library_target: the label of the bzl_library target to generate documentation for
+        bzl_library_target: the label of the `bzl_library` target to generate documentation for
         out_label: the label of the output MD file
+        aspect_template: the label or path to the Velocity aspect template to use with stardoc
+        func_template: the label or path to the Velocity function/macro template to use with stardoc
+        header_template: the label or path to the Velocity header template to use with stardoc
+        provider_template: the label or path to the Velocity provider template to use with stardoc
         rule_template: the label or path to the Velocity rule template to use with stardoc
     """
 
@@ -25,8 +33,12 @@ def stardoc_with_diff_test(
         name = out_file.replace("/", "_").replace(".md", "-docgen"),
         out = out_file.replace(".md", "-docgen.md"),
         input = bzl_library_target + ".bzl",
-        rule_template = rule_template,
         deps = [bzl_library_target],
+        aspect_template = aspect_template,
+        func_template = func_template,
+        header_template = header_template,
+        provider_template = provider_template,
+        rule_template = rule_template,
     )
 
     # Ensure that the generated MD has been updated in the local source tree
@@ -42,7 +54,7 @@ def stardoc_with_diff_test(
 def update_docs(
         name = "update",
         docs_folder = "docs"):
-    """Creates a sh_binary target which copies over generated doc files to the local source tree.
+    """Creates a `sh_binary` target which copies over generated doc files to the local source tree.
 
     This is to be used in tandem with `stardoc_with_diff_test()` to produce a convenient workflow
     for generating, testing, and updating all doc files as follows:
@@ -58,7 +70,7 @@ def update_docs(
     ```
 
     Args:
-        name: the name of the sh_binary target
+        name: the name of the `sh_binary` target
         docs_folder: the name of the folder containing the doc files in the local source tree
     """
     content = ["#!/usr/bin/env bash", "cd ${BUILD_WORKSPACE_DIRECTORY}"]
