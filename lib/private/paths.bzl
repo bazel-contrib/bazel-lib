@@ -42,8 +42,6 @@ def _relative_file(to_file, frm_file):
         )
     )
 
-# 
-# 
 def _to_manifest_path(ctx, file):
     """The runfiles manifest entry for a file
 

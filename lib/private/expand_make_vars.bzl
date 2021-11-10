@@ -174,7 +174,7 @@ def _expand_template_impl(ctx):
         is_executable = ctx.attr.is_executable,
     )
 
-expand_template = rule(
+expand_template = struct(
     doc = """Template expansion
     
 This performs a simple search over the template file for the keys in substitutions,
