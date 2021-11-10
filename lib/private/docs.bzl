@@ -7,7 +7,7 @@ load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 def stardoc_with_diff_test(
         bzl_library_target,
         out_label,
-        rule_template = "//stardoc:templates/markdown_tables/rule.vm"):
+        rule_template = "@io_bazel_stardoc//stardoc:templates/markdown_tables/rule.vm"):
     """Creates a stardoc target coupled with a diff_test for a given bzl_library.
 
     This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
@@ -46,6 +46,12 @@ def update_docs(
 
     This is to be used in tandem with `stardoc_with_diff_test()` to produce a convenient workflow
     for generating, testing, and updating all doc files as follows:
+
+    ``` bash
+    bazel build //{docs_folder}/... && bazel test //{docs_folder}/... && bazel run //{docs_folder}:update
+    ```
+
+    eg.
 
     ``` bash
     bazel build //docs/... && bazel test //docs/... && bazel run //docs:update

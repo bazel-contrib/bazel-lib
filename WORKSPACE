@@ -16,11 +16,6 @@ load("@bazel_skylib//lib:unittest.bzl", "register_unittest_toolchains")
 register_unittest_toolchains()
 
 ############################################
-load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
-
-stardoc_repositories()
-
-############################################
 # Gazelle, for generating bzl_library targets
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
