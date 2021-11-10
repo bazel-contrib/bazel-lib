@@ -1,3 +1,3 @@
 "Constants to track versioning info"
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
