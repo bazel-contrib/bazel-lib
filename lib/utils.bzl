@@ -1,6 +1,6 @@
 "Public API"
 
-load("//lib/private:utils.bzl", "utils")
+load("//lib/private:utils.bzl" , "utils")
 
 is_external_label = utils.is_external_label
 glob_directories = utils.glob_directories

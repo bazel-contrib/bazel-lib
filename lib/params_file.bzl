@@ -1,5 +1,3 @@
-"params_file public API"
-
 load("//lib/private:params_file.bzl", _params_file = "params_file")
 
 def params_file(
