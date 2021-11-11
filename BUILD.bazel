@@ -17,7 +17,6 @@ pkg_tar(
     name = "bazel_lib",
     srcs = [
         "README.md",
-        "version.bzl",
         "//lib:package_content",
     ],
     extension = "tar.gz",
