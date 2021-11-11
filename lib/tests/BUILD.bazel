@@ -1,3 +1,7 @@
+"tests for libs"
+
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:expand_make_vars.bzl", "expand_template")
 load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
 load(":utils_test.bzl", "utils_test_suite")
 load(":paths_test.bzl", "paths_test_suite")
@@ -7,3 +11,32 @@ expand_make_vars_test_suite()
 paths_test_suite()
 
 utils_test_suite()
+
+write_file(
+    name = "gen_template",
+    out = "template.txt",
+    content = [
+        "#!/bin/bash",
+        "set -o errexit",
+        """[ "{thing}" == "stuff" ]""",
+        """[ "%path%" == "BINDIR/lib/tests/template.txt" ]""",
+    ],
+)
+
+expand_template(
+    name = "expand_template",
+    out = "expand_template_test.sh",
+    data = [":gen_template"],
+    is_executable = True,
+    substitutions = {
+        "{thing}": "stuff",
+        "%path%": "$(execpath :gen_template)",
+        "BINDIR": "$(BINDIR)",
+    },
+    template = "template.txt",
+)
+
+sh_test(
+    name = "expand_template_test",
+    srcs = ["expand_template"],
+)
