@@ -1,6 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load(":version.bzl", "VERSION")
 load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
 
 gazelle_binary(
@@ -15,7 +14,7 @@ gazelle(
 
 # This declares the release artifact users
 pkg_tar(
-    name = "bazel_lib-" + VERSION,
+    name = "bazel_lib",
     srcs = [
         "README.md",
         "version.bzl",
@@ -37,10 +36,4 @@ bzl_library(
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
-)
-
-bzl_library(
-    name = "version",
-    srcs = ["version.bzl"],
-    visibility = ["//visibility:public"],
 )

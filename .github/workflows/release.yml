@@ -20,9 +20,17 @@ jobs:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
         run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+      - name: Rename release artifact with version
+        run: cp $(ls bazel-out/*/bin/*.tar.gz | tail -1) "bazel_lib-$(git describe --tags | sed 's/^v//').tar.gz"
+      # TODO: move this into bazel to produce the file with expand_template rule when it has stamping
+      - name: Prepare workspace snippet
+        run: |
+          echo -e "WORKSPACE snippet:\n\n\`\`\`starlark\nhttp_archive(\n    name = \"aspect_bazel_lib\"," > release_notes.txt
+          echo "    sha256 = \"$(shasum -a 256 *.tar.gz | awk '{print $1}')\"," >> release_notes.txt
+          echo -e "    url = \"https://github.com/aspect-build/bazel-lib/releases/download/$(git describe --tags)/$(ls *.tar.gz)\",\n)\n\`\`\`" >> release_notes.txt
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           prerelease: true
-          files: |
-            bazel-out/*/bin/*.tar.gz
+          body_path: release_notes.txt
+          files: "*.tar.gz"
