@@ -15,6 +15,11 @@ Template expansion
 This performs a simple search over the template file for the keys in substitutions,
 and replaces them with the corresponding values.
 
+Values may also use location templates as documented in [expand_locations](#expand_locations)
+as well as [configuration variables] such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)`.
+
+[configuration variables]: https://docs.bazel.build/versions/main/skylark/lib/ctx.html#var
+
 
 **ATTRIBUTES**
 

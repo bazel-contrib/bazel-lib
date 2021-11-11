@@ -164,13 +164,18 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
     return ctx.expand_make_variables(attribute_name, s, additional_substitutions)
 
 def _expand_template_impl(ctx):
+    template = ctx.file.template
+    substitutions = ctx.attr.substitutions
+
+    subs = dict({
+        k: expand_locations(ctx, v, ctx.attr.data)
+        for k, v in substitutions.items()
+    }, **ctx.var)
+
     ctx.actions.expand_template(
-        template = ctx.file.template,
+        template = template,
         output = ctx.outputs.out,
-        substitutions = {
-            k: expand_locations(v, ctx.attr.data)
-            for k, v in ctx.attr.substitutions.items()
-        },
+        substitutions = subs,
         is_executable = ctx.attr.is_executable,
     )
 
@@ -179,6 +184,11 @@ expand_template = struct(
     
 This performs a simple search over the template file for the keys in substitutions,
 and replaces them with the corresponding values.
+
+Values may also use location templates as documented in [expand_locations](#expand_locations)
+as well as [configuration variables] such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)`.
+
+[configuration variables]: https://docs.bazel.build/versions/main/skylark/lib/ctx.html#var
 """,
     implementation = _expand_template_impl,
     attrs = {
