@@ -33,7 +33,11 @@ The relative path from frm_file to to_file, including the file name
 to_manifest_path(<a href="#to_manifest_path-ctx">ctx</a>, <a href="#to_manifest_path-file">file</a>)
 </pre>
 
-The runfiles manifest entry for a file
+The runfiles manifest entry path for a file
+
+This is the full runfiles path of a file including its workspace name as
+the first segment. We refert to it as the manifest path as it is the path
+flavor that is used for in the runfiles MANIFEST file.
 
 We must avoid using non-normalized paths (workspace/../other_workspace/path)
 in order to locate entries by their key.
@@ -49,6 +53,34 @@ in order to locate entries by their key.
 
 **RETURNS**
 
-a key that can lookup the path from the runfiles manifest
+The runfiles manifest entry path for a file
+
+
+<a id="#to_workspace_path"></a>
+
+## to_workspace_path
+
+<pre>
+to_workspace_path(<a href="#to_workspace_path-ctx">ctx</a>, <a href="#to_workspace_path-file">file</a>)
+</pre>
+
+The workspace relative path for a file
+
+This is the full runfiles path of a file excluding its workspace name.
+This differs from root path and manifest path as it does not include the
+repository name if the file is from an external repository.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="to_workspace_path-ctx"></a>ctx |  starlark rule execution context   |  none |
+| <a id="to_workspace_path-file"></a>file |  a File object   |  none |
+
+**RETURNS**
+
+The workspace relative path for a file
 
 

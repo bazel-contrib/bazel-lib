@@ -116,21 +116,31 @@ def _relative_file_test_impl(ctx):
 
     return unittest.end(env)
 
-def _runfiles_manifest_test_impl(ctx):
+def _manifest_path_test_impl(ctx):
     env = unittest.begin(ctx)
     asserts.equals(env, "bazel_skylib/LICENSE", paths.to_manifest_path(ctx, ctx.file.f1))
     asserts.equals(env, "aspect_bazel_lib/lib/paths.bzl", paths.to_manifest_path(ctx, ctx.file.f2))
     return unittest.end(env)
 
-relative_file_test = unittest.make(_relative_file_test_impl)
-runfiles_manifest_test = unittest.make(_runfiles_manifest_test_impl,
-attrs = {
+def _workspace_path_test_impl(ctx):
+    env = unittest.begin(ctx)
+    asserts.equals(env, "LICENSE", paths.to_workspace_path(ctx, ctx.file.f1))
+    asserts.equals(env, "lib/paths.bzl", paths.to_workspace_path(ctx, ctx.file.f2))
+    return unittest.end(env)
+
+_ATTRS = {
     "f1": attr.label(allow_single_file = True, default = "@bazel_skylib//:LICENSE"),
     "f2": attr.label(allow_single_file = True, default = "//lib:paths.bzl"),
-})
+}
+
+relative_file_test = unittest.make(_relative_file_test_impl)
+manifest_path_test = unittest.make(_manifest_path_test_impl, attrs = _ATTRS)
+workspace_path_test = unittest.make(_workspace_path_test_impl, attrs = _ATTRS)
 
 def paths_test_suite():
     unittest.suite(
         "paths_tests",
         relative_file_test,
-        runfiles_manifest_test)
+        manifest_path_test,
+        workspace_path_test,
+    )

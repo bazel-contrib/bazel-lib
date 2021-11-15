@@ -4,10 +4,11 @@ load("//lib/private:paths.bzl", "paths")
 
 relative_file = paths.relative_file
 to_manifest_path = paths.to_manifest_path
+to_workspace_path = paths.to_workspace_path
 
 # Bash helper function for looking up runfiles.
 # See windows_utils.bzl for the cmd.exe equivalent.
-# Vendored from 
+# Vendored from
 # https://github.com/bazelbuild/bazel/blob/master/tools/bash/runfiles/runfiles.bash
 BASH_RLOCATION_FUNCTION = r"""
 # --- begin runfiles.bash initialization v2 ---

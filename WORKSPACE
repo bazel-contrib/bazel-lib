@@ -15,6 +15,12 @@ load("@bazel_skylib//lib:unittest.bzl", "register_unittest_toolchains")
 
 register_unittest_toolchains()
 
+# An external repository for test to use
+local_repository(
+    name = "external_test_repo",
+    path = "./lib/tests/external_test_repo",
+)
+
 ############################################
 # Gazelle, for generating bzl_library targets
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")

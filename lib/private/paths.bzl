@@ -43,17 +43,21 @@ def _relative_file(to_file, frm_file):
     )
 
 def _to_manifest_path(ctx, file):
-    """The runfiles manifest entry for a file
+    """The runfiles manifest entry path for a file
+
+    This is the full runfiles path of a file including its workspace name as
+    the first segment. We refert to it as the manifest path as it is the path
+    flavor that is used for in the runfiles MANIFEST file.
 
     We must avoid using non-normalized paths (workspace/../other_workspace/path)
     in order to locate entries by their key.
-    
+
     Args:
         ctx: starlark rule execution context
         file: a File object
-    
+
     Returns:
-        a key that can lookup the path from the runfiles manifest
+        The runfiles manifest entry path for a file
     """
 
     if file.short_path.startswith("../"):
@@ -61,7 +65,28 @@ def _to_manifest_path(ctx, file):
     else:
         return ctx.workspace_name + "/" + file.short_path
 
+def _to_workspace_path(ctx, file):
+    """The workspace relative path for a file
+
+    This is the full runfiles path of a file excluding its workspace name.
+    This differs from root path and manifest path as it does not include the
+    repository name if the file is from an external repository.
+
+    Args:
+        ctx: starlark rule execution context
+        file: a File object
+
+    Returns:
+        The workspace relative path for a file
+    """
+
+    if file.short_path.startswith("../"):
+        return "/".join(file.short_path.split("/")[2:])
+    else:
+        return file.short_path
+
 paths = struct(
     relative_file = _relative_file,
     to_manifest_path = _to_manifest_path,
+    to_workspace_path = _to_workspace_path,
 )
