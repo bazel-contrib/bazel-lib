@@ -1,0 +1,1 @@
+workspace(name = "external_test_repo")

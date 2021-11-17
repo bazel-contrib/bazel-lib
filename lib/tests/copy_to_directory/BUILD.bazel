@@ -1,0 +1,131 @@
+"tests for copy_to_directory"
+
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("//lib:copy_file.bzl", "copy_file")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+
+[
+    copy_file(
+        name = "%s" % d,
+        src = "dir_%s" % d,
+        out = "%s" % d,
+        is_directory = True,
+    )
+    for d in [
+        "a",
+        "b",
+        "expected_1",
+        "expected_2",
+        "expected_3",
+        "expected_4",
+        "expected_5",
+    ]
+]
+
+case_srcs = [
+    ":a",
+    ":b",
+    ":c",
+    ":d",
+    ":e/e",
+    ":e/e2",
+    "//lib/tests/copy_to_directory/f/f2:f",
+    "//lib/tests/copy_to_directory/f/f2:f2",
+    "@external_test_repo//:test_a",
+    "@external_test_repo//:test_b",
+    "@external_test_repo//:test_c",
+    "@external_test_repo//:test_d",
+]
+
+# Case 1: default settings
+copy_to_directory(
+    name = "case_1",
+    srcs = case_srcs,
+)
+
+diff_test(
+    name = "case_1_test",
+    file1 = "case_1",
+    file2 = ":expected_1",
+)
+
+# Case 2: replace_prefixes
+copy_to_directory(
+    name = "case_2",
+    srcs = case_srcs,
+    replace_prefixes = {
+        # merge a, b, c, d into a new/abcd dest folder
+        "a": "new/abcd",
+        "b": "//new///abcd////",
+        "c": "new/abcd/c",
+        "d": "////new/////abcd////d",
+        # put e into new/e except for e/e2 which goes into new/e2
+        "e": "new/e",
+        "e/e2": "new/e2/e2",
+        # f/f2/f => new/ff and f/f2/f2 => new/f2/f2
+        "f/f2/": "////new/////f",
+        "f/f2/f2": "////new/////f2///f2",
+        # flatten test_a & test_b to the root
+        "test_a": "",
+        "test_b": "",
+        # some paths that won't match
+        "a/": "wont_match_a_is_terminal_path",
+        "a/a2": "wont_match_since_a2_is_in_a_tree_artifact",
+    },
+)
+
+diff_test(
+    name = "case_2_test",
+    file1 = "case_2",
+    file2 = ":expected_2",
+)
+
+# Case 3: no root_paths
+copy_to_directory(
+    name = "case_3",
+    srcs = case_srcs,
+    root_paths = [],
+)
+
+diff_test(
+    name = "case_3_test",
+    file1 = "case_3",
+    file2 = ":expected_3",
+)
+
+# Case 4: no root_paths + replace_prefixes
+copy_to_directory(
+    name = "case_4",
+    srcs = case_srcs,
+    replace_prefixes = {
+        # strip lib/tests from paths
+        "lib/tests/": "",
+        # except for a few which should match due to longest match wins
+        "lib/tests/copy_to_directory/a": "lib/other/copy_to_directory",
+        "lib/tests/copy_to_directory/c": "lib/other/copy_to_directory/c",
+    },
+    root_paths = [],
+)
+
+diff_test(
+    name = "case_4_test",
+    file1 = "case_4",
+    file2 = ":expected_4",
+)
+
+# Case 5: custom root packages
+copy_to_directory(
+    name = "case_5",
+    srcs = case_srcs,
+    root_paths = [
+        package_name(),
+        "%s/e" % package_name(),
+        "%s/f" % package_name(),
+    ],
+)
+
+diff_test(
+    name = "case_5_test",
+    file1 = "case_5",
+    file2 = ":expected_5",
+)

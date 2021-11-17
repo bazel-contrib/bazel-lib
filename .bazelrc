@@ -2,6 +2,10 @@
 # Take care to document any settings that you expect users to apply.
 # Settings that apply only to CI are in .github/workflows/ci.bazelrc
 
+# Allow the Bazel server to check directory sources for changes
+# Avoids warning spam with rules_nodejs feature that models node_modules as directories
+# See https://github.com/bazelbuild/rules_nodejs/releases/tag/3.6.0
+startup --host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=1
 
 # Load any settings specific to the current user.
 # .bazelrc.user should appear in .gitignore so that settings are not shared with team members
