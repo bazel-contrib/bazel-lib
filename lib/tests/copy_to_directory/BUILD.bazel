@@ -129,3 +129,16 @@ diff_test(
     file1 = "case_5",
     file2 = ":expected_5",
 )
+
+# Case 6: directory used in a test's runfiles
+
+copy_to_directory(
+    name = "case_6",
+    srcs = case_srcs,
+)
+
+sh_test(
+    name = "case_6_test",
+    srcs = ["case6.sh"],
+    data = ["case_6"],
+)
