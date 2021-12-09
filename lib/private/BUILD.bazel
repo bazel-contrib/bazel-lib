@@ -51,3 +51,9 @@ bzl_library(
     srcs = ["utils.bzl"],
     visibility = ["//lib:__subpackages__"],
 )
+
+bzl_library(
+    name = "jq",
+    srcs = ["jq.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)

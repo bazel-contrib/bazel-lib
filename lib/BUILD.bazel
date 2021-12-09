@@ -48,3 +48,15 @@ bzl_library(
     srcs = ["windows_utils.bzl"],
     visibility = ["//visibility:public"],
 )
+
+bzl_library(
+    name = "jq",
+    srcs = ["jq.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:jq"],
+)
+
+toolchain_type(
+    name = "jq_toolchain_type",
+    visibility = ["//visibility:public"],
+)
