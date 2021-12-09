@@ -33,6 +33,11 @@ stardoc_with_diff_test(
     out_label = "//docs:utils.md",
 )
 
+stardoc_with_diff_test(
+    bzl_library_target = "//lib:jq",
+    out_label = "//docs:jq.md",
+)
+
 update_docs(
     name = "update",
     docs_folder = "docs",

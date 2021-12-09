@@ -6,7 +6,9 @@ statement from these, that's a bug in our distribution.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load("//lib:repositories.bzl", "register_jq_toolchains")
 
+# buildifier: disable=unnamed-macro
 def bazel_lib_internal_deps():
     "Fetch deps needed for local development"
     maybe(
@@ -62,3 +64,6 @@ def bazel_lib_internal_deps():
             "https://github.com/bazelbuild/stardoc/releases/download/0.5.0/stardoc-0.5.0.tar.gz",
         ],
     )
+
+    # Register toolchains for tests
+    register_jq_toolchains(version = "1.6")

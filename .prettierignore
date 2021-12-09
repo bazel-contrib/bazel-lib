@@ -1,1 +1,2 @@
 docs/*.md
+lib/tests/jq/*.json
