@@ -14,7 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: bazelbuild/setup-bazelisk@v1
       - name: bazel test //...
         env:
           # Bazelisk will download bazel to here

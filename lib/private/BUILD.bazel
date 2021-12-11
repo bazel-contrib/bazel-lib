@@ -5,15 +5,6 @@ exports_files(
     visibility = ["//docs:__pkg__"],
 )
 
-filegroup(
-    name = "package_content",
-    srcs = glob([
-        "*.bzl",
-        "*.bazel",
-    ]),
-    visibility = ["//lib:__pkg__"],
-)
-
 bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
