@@ -7,17 +7,6 @@ to review PRs there.
 
 ## Installation
 
-Include this in your WORKSPACE file:
-
-```starlark
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
-    name = "aspect_bazel_lib",
-    url = "https://github.com/myorg/bazel_lib/releases/download/0.0.0/bazel_lib-0.0.0.tar.gz",
-    sha256 = "",
-)
-```
-
-> note, in the above, replace the version and sha256 with the one indicated
-> in the release notes for bazel_lib
-> In the future, our release automation should take care of this.
+From the release you wish to use:
+<https://github.com/aspect-build/bazel-lib/releases>
+copy the WORKSPACE snippet into your `WORKSPACE` file.
