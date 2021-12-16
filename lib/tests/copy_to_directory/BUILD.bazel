@@ -19,6 +19,8 @@ load("//lib:copy_to_directory.bzl", "copy_to_directory")
         "expected_3",
         "expected_4",
         "expected_5",
+        "expected_7",
+        "expected_8",
     ]
 ]
 
@@ -37,10 +39,11 @@ case_srcs = [
     "@external_test_repo//:test_d",
 ]
 
-# Case 1: default settings
+# Case 1: default settings (with external repo)
 copy_to_directory(
     name = "case_1",
     srcs = case_srcs,
+    include_external_repositories = ["external_test_repo"],
 )
 
 diff_test(
@@ -49,10 +52,11 @@ diff_test(
     file2 = ":expected_1",
 )
 
-# Case 2: replace_prefixes
+# Case 2: replace_prefixes (with external repo)
 copy_to_directory(
     name = "case_2",
     srcs = case_srcs,
+    include_external_repositories = ["external_test_repo"],
     replace_prefixes = {
         # merge a, b, c, d into a new/abcd dest folder
         "a": "new/abcd",
@@ -80,10 +84,11 @@ diff_test(
     file2 = ":expected_2",
 )
 
-# Case 3: no root_paths
+# Case 3: no root_paths (with external repo)
 copy_to_directory(
     name = "case_3",
     srcs = case_srcs,
+    include_external_repositories = ["external_test_repo"],
     root_paths = [],
 )
 
@@ -93,10 +98,11 @@ diff_test(
     file2 = ":expected_3",
 )
 
-# Case 4: no root_paths + replace_prefixes
+# Case 4: no root_paths + replace_prefixes (with external repo)
 copy_to_directory(
     name = "case_4",
     srcs = case_srcs,
+    include_external_repositories = ["external_test_repo"],
     replace_prefixes = {
         # strip lib/tests from paths
         "lib/tests/": "",
@@ -113,10 +119,11 @@ diff_test(
     file2 = ":expected_4",
 )
 
-# Case 5: custom root packages
+# Case 5: custom root packages (with external repo)
 copy_to_directory(
     name = "case_5",
     srcs = case_srcs,
+    include_external_repositories = ["external_test_repo"],
     root_paths = [
         package_name(),
         "%s/e" % package_name(),
@@ -131,14 +138,45 @@ diff_test(
 )
 
 # Case 6: directory used in a test's runfiles
-
 copy_to_directory(
     name = "case_6",
     srcs = case_srcs,
+    include_external_repositories = ["external_test_repo"],
 )
 
 sh_test(
     name = "case_6_test",
     srcs = ["case6.sh"],
     data = ["case_6"],
+)
+
+# Case 7: default settings
+copy_to_directory(
+    name = "case_7",
+    srcs = case_srcs,
+)
+
+diff_test(
+    name = "case_7_test",
+    file1 = "case_7",
+    file2 = ":expected_7",
+)
+
+# Case 8: exclude prefixes
+copy_to_directory(
+    name = "case_8",
+    srcs = case_srcs,
+    exclude_prefixes = [
+        # exclude a & b
+        "a",
+        "b",
+        # this partial match should exclude all of e
+        "e/e",
+    ],
+)
+
+diff_test(
+    name = "case_8_test",
+    file1 = "case_8",
+    file2 = ":expected_8",
 )
