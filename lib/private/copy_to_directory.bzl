@@ -6,7 +6,7 @@ load(":paths.bzl", "paths")
 _DOC = """Copies files and directories to an output directory.
 
 Files and directories can be arranged as needed in the output directory using
-the `root_paths` and `replace_prefixes` attributes.
+the `root_paths`, `exclude_prefixes` and `replace_prefixes` attributes.
 
 NB: This rule is not yet implemented for Windows
 """
@@ -33,6 +33,44 @@ If there are multiple root paths that match, the longest match wins.
 Defaults to [package_name()] so that the output directory path of files in the
 target's package and and sub-packages are relative to the target's package and
 files outside of that retain their full workspace relative paths.
+""",
+    ),
+    "include_external_repositories": attr.string_list(
+        default = [],
+        doc = """
+List of external repository names to include in the output directory.
+
+Files from external repositories are not copied into the output directory unless
+the external repository they come from is listed here.
+
+When copied from an external repository, the file path in the output directory
+defaults to the file's path within the external repository. The external repository
+name is _not_ included in that path.
+
+For example, the following copies `@external_repo//path/to:file` to
+`path/to/file` within the output directory.
+
+```
+copy_to_directory(
+    name = "dir",
+    include_external_repositories = ["external_repo"],
+    srcs = ["@external_repo//path/to:file"],
+)
+```
+
+Files from external repositories are subject to `root_paths`, `exclude_prefixes`
+and `replace_prefixes` in the same way as files form the main repository.
+""",
+    ),
+    "exclude_prefixes": attr.string_list(
+        default = [],
+        doc = """
+List of path prefixes to exclude from output directory.
+
+If the output directory path for a file or directory starts with or is equal to
+a path in the list then that file is not copied to the output directory.
+
+Exclude prefixes are matched *before* replace_prefixes are applied.
 """,
     ),
     "replace_prefixes": attr.string_dict(
@@ -77,6 +115,11 @@ def _longest_match(subject, tests, allow_partial = False):
     return match
 
 def _output_path(ctx, src):
+    # if the file is from an external repository check if that repository should
+    # be included in the output directory
+    if src.owner and src.owner.workspace_name and not src.owner.workspace_name in ctx.attr.include_external_repositories:
+        return False
+
     result = paths.to_workspace_path(ctx, src)
 
     # strip root paths
@@ -84,6 +127,12 @@ def _output_path(ctx, src):
     if root_path:
         strip_depth = len(root_path.split("/"))
         result = "/".join(result.split("/")[strip_depth:])
+
+    # check if this file matches an exclude_prefix
+    match = _longest_match(result, ctx.attr.exclude_prefixes, True)
+    if match:
+        # file is excluded due to match in exclude_prefix
+        return False
 
     # apply a replacement if one is found
     match = _longest_match(result, ctx.attr.replace_prefixes.keys(), True)
@@ -98,6 +147,9 @@ def _copy_to_dir_bash(ctx, srcs, dst_dir):
     ]
     for src in srcs:
         output_path = _output_path(ctx, src)
+        if output_path == False:
+            # exclude this file/directory from the output directory
+            continue
         dst_path = skylib_paths.normalize("/".join([dst_dir.path, output_path]))
         cmds.append("""
 if [[ ! -e "{src}" ]]; then echo "file '{src}' does not exist"; exit 1; fi
