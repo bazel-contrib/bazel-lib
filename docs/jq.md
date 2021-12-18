@@ -7,7 +7,7 @@ Public API for jq
 ## jq
 
 <pre>
-jq(<a href="#jq-name">name</a>, <a href="#jq-srcs">srcs</a>, <a href="#jq-filter">filter</a>, <a href="#jq-args">args</a>, <a href="#jq-out">out</a>)
+jq(<a href="#jq-name">name</a>, <a href="#jq-srcs">srcs</a>, <a href="#jq-filter">filter</a>, <a href="#jq-args">args</a>, <a href="#jq-out">out</a>, <a href="#jq-kwargs">kwargs</a>)
 </pre>
 
 Invoke jq with a filter on a set of json input files.
@@ -63,5 +63,6 @@ jq(
 | <a id="jq-filter"></a>filter |  mandatory jq filter specification (https://stedolan.github.io/jq/manual/#Basicfilters)   |  none |
 | <a id="jq-args"></a>args |  additional args to pass to jq   |  <code>[]</code> |
 | <a id="jq-out"></a>out |  Name of the output json file; defaults to the rule name plus ".json"   |  <code>None</code> |
+| <a id="jq-kwargs"></a>kwargs |  other common named parameters such as <code>tags</code> or <code>visibility</code>   |  none |
 
 
