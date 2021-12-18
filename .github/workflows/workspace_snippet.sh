@@ -22,13 +22,13 @@ http_archive(
     url = "https://github.com/aspect-build/bazel-lib/archive/${TAG}.tar.gz",
 )
 
-load("@aspect_bazel_lib", "aspect_bazel_lib_dependencies")
+load("@aspect_bazel_lib//lib:repositories", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
 
 # Optional: register the following toolchain to use jq
 
-load("@aspect_bazel_lib", "register_jq_toolchains")
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
 
 register_jq_toolchains(version = "1.6")
 
