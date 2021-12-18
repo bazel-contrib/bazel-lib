@@ -8,7 +8,7 @@ _jq_rule = rule(
     toolchains = ["@aspect_bazel_lib//lib:jq_toolchain_type"],
 )
 
-def jq(name, srcs, filter, args = [], out = None):
+def jq(name, srcs, filter, args = [], out = None, **kwargs):
     """Invoke jq with a filter on a set of json input files.
 
     For jq documentation, see https://stedolan.github.io/jq/.
@@ -57,6 +57,7 @@ def jq(name, srcs, filter, args = [], out = None):
         filter: mandatory jq filter specification (https://stedolan.github.io/jq/manual/#Basicfilters)
         args: additional args to pass to jq
         out: Name of the output json file; defaults to the rule name plus ".json"
+        **kwargs: other common named parameters such as `tags` or `visibility`
     """
     if not out:
         out = name + ".json"
@@ -67,4 +68,5 @@ def jq(name, srcs, filter, args = [], out = None):
         filter = filter,
         args = args,
         out = out,
+        **kwargs
     )
