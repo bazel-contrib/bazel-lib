@@ -7,7 +7,7 @@ Public API for jq
 ## jq
 
 <pre>
-jq(<a href="#jq-name">name</a>, <a href="#jq-srcs">srcs</a>, <a href="#jq-filter">filter</a>, <a href="#jq-args">args</a>, <a href="#jq-out">out</a>, <a href="#jq-kwargs">kwargs</a>)
+jq(<a href="#jq-name">name</a>, <a href="#jq-srcs">srcs</a>, <a href="#jq-filter">filter</a>, <a href="#jq-filter_file">filter_file</a>, <a href="#jq-args">args</a>, <a href="#jq-out">out</a>, <a href="#jq-kwargs">kwargs</a>)
 </pre>
 
 Invoke jq with a filter on a set of json input files.
@@ -50,6 +50,15 @@ jq(
     """,
     args = ["--slurp"],
 )
+
+# Load filter from a file
+jq(
+    name = "merged",
+    srcs = ["foo.json", "bar.json"],
+    filter_file = "filter.txt",
+    args = ["--slurp"],
+    out = "foobar.json",
+)
 ```
 
 
@@ -60,9 +69,10 @@ jq(
 | :------------- | :------------- | :------------- |
 | <a id="jq-name"></a>name |  Name of the rule   |  none |
 | <a id="jq-srcs"></a>srcs |  List of input json files   |  none |
-| <a id="jq-filter"></a>filter |  mandatory jq filter specification (https://stedolan.github.io/jq/manual/#Basicfilters)   |  none |
-| <a id="jq-args"></a>args |  additional args to pass to jq   |  <code>[]</code> |
+| <a id="jq-filter"></a>filter |  Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters)   |  <code>None</code> |
+| <a id="jq-filter_file"></a>filter_file |  File containing filter expression (alternative to <code>filter</code>)   |  <code>None</code> |
+| <a id="jq-args"></a>args |  Additional args to pass to jq   |  <code>[]</code> |
 | <a id="jq-out"></a>out |  Name of the output json file; defaults to the rule name plus ".json"   |  <code>None</code> |
-| <a id="jq-kwargs"></a>kwargs |  other common named parameters such as <code>tags</code> or <code>visibility</code>   |  none |
+| <a id="jq-kwargs"></a>kwargs |  Other common named parameters such as <code>tags</code> or <code>visibility</code>   |  none |
 
 

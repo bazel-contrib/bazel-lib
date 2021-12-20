@@ -8,7 +8,7 @@ _jq_rule = rule(
     toolchains = ["@aspect_bazel_lib//lib:jq_toolchain_type"],
 )
 
-def jq(name, srcs, filter, args = [], out = None, **kwargs):
+def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **kwargs):
     """Invoke jq with a filter on a set of json input files.
 
     For jq documentation, see https://stedolan.github.io/jq/.
@@ -49,15 +49,25 @@ def jq(name, srcs, filter, args = [], out = None, **kwargs):
         \"\"\",
         args = ["--slurp"],
     )
+
+    # Load filter from a file
+    jq(
+        name = "merged",
+        srcs = ["foo.json", "bar.json"],
+        filter_file = "filter.txt",
+        args = ["--slurp"],
+        out = "foobar.json",
+    )
     ```
 
     Args:
         name: Name of the rule
         srcs: List of input json files
-        filter: mandatory jq filter specification (https://stedolan.github.io/jq/manual/#Basicfilters)
-        args: additional args to pass to jq
+        filter: Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters)
+        filter_file: File containing filter expression (alternative to `filter`)
+        args: Additional args to pass to jq
         out: Name of the output json file; defaults to the rule name plus ".json"
-        **kwargs: other common named parameters such as `tags` or `visibility`
+        **kwargs: Other common named parameters such as `tags` or `visibility`
     """
     if not out:
         out = name + ".json"
@@ -66,6 +76,7 @@ def jq(name, srcs, filter, args = [], out = None, **kwargs):
         name = name,
         srcs = srcs,
         filter = filter,
+        filter_file = filter_file,
         args = args,
         out = out,
         **kwargs
