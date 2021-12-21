@@ -16,8 +16,6 @@ Copies files and directories to an output directory.
 Files and directories can be arranged as needed in the output directory using
 the `root_paths`, `exclude_prefixes` and `replace_prefixes` attributes.
 
-NB: This rule is not yet implemented for Windows
-
 
 **ATTRIBUTES**
 
