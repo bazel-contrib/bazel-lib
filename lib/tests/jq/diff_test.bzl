@@ -2,7 +2,7 @@
 test jq output on Windows. See https://github.com/stedolan/jq/issues/92.
 """
 
-load("@bazel_skylib//rules:diff_test.bzl", _diff_test = "diff_test")
+load("//lib:diff_test.bzl", _diff_test = "diff_test")
 
 def diff_test(name, file1, file2):
     """Perform a diff_test ignoring carriage returns
