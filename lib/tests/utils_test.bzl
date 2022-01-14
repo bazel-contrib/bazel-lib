@@ -42,6 +42,13 @@ def _is_external_label_test_impl(ctx):
 
     return unittest.end(env)
 
+def _propagate_well_known_tags_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, ["manual", "cpu:12"], utils.propagate_well_known_tags(["foo", "manual", "bar", "cpu:12"]))
+
+    return unittest.end(env)
+
 to_label_test = unittest.make(
     _to_label_test_impl,
     attrs = {
@@ -64,6 +71,10 @@ is_external_label_test = unittest.make(
     },
 )
 
+propagate_well_known_tags_test = unittest.make(
+    _propagate_well_known_tags_test_impl
+)
+
 def utils_test_suite():
     to_label_test(name = "to_label_tests", relative_asserts = {
         utils.to_label(":utils_test.bzl"): "//lib/tests:utils_test.bzl",
@@ -73,4 +84,8 @@ def utils_test_suite():
         name = "is_external_label_tests",
         external_as_string = utils.is_external_label("@foo//some/label"),
         internal_with_workspace_as_string = utils.is_external_label("@aspect_bazel_lib//some/label"),
+    )
+
+    propagate_well_known_tags_test(
+        name = "propagate_well_known_tags_tests",
     )
