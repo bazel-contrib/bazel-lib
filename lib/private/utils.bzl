@@ -29,6 +29,8 @@ def _propagate_well_known_tags(tags = []):
         "external",
     ]
 
+    # cpu:n tags allow setting the requested number of CPUs for a test target.
+    # More info at https://docs.bazel.build/versions/main/test-encyclopedia.html#other-resources
     CPU_PREFIX = "cpu:"
 
     return [
