@@ -29,7 +29,14 @@ def _propagate_well_known_tags(tags = []):
         "external",
     ]
 
-    return [tag for tag in tags if tag in WELL_KNOWN_TAGS]
+    # cpu:n tags allow setting the requested number of CPUs for a test target.
+    # More info at https://docs.bazel.build/versions/main/test-encyclopedia.html#other-resources
+    CPU_PREFIX = "cpu:"
+
+    return [
+        tag for tag in tags
+        if tag in WELL_KNOWN_TAGS or tag.startswith(CPU_PREFIX)
+    ]
 
 def _to_label(param):
     """Converts a string to a Label. If Label is supplied, the same label is returned.
