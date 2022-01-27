@@ -197,7 +197,7 @@ mkdir "%s" >NUL 2>NUL
 
         # copy & xcopy flags are documented at
         # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
-        # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/xcopy
+        # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
         cmds.append("""
 if not exist "{src}" (
     echo file "{src}" does not exist
@@ -205,7 +205,7 @@ if not exist "{src}" (
 )
 if exist "{src}\\*" (
     mkdir "{dst}" >NUL 2>NUL
-    xcopy "{src}\\*" "{dst}" /V /E /H /Y /Q >NUL
+    robocopy "{src}" "{dst}" /E >NUL
 ) else (
     mkdir "{dst_dir}" >NUL 2>NUL
     copy /Y "{src}" "{dst}" >NUL
@@ -215,6 +215,9 @@ if exist "{src}\\*" (
             dst_dir = skylib_paths.dirname(dst_path).replace("/", "\\"),
             dst = dst_path.replace("/", "\\"),
         ))
+
+    # robocopy return non-zero exit codes on success so we must exit 0 when we are done
+    cmds.append("exit 0")
 
     ctx.actions.write(
         output = bat,
