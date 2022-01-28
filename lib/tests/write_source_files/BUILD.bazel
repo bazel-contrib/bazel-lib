@@ -1,0 +1,34 @@
+load("//lib/tests/write_source_files:write_source_files_test.bzl", "write_source_files_test")
+load("//lib:write_source_files.bzl", "write_source_files")
+
+genrule(
+    name = "a-desired",
+    outs = ["a-desired.js"],
+    cmd = "echo 'console.log(\"a*\")' > $@",
+)
+
+genrule(
+    name = "b-desired",
+    outs = ["b-desired.js"],
+    cmd = "echo 'console.log(\"b*\")' > $@",
+)
+
+write_source_files_test(
+    name = "write_to_source_files_test",
+    in_files = [
+        ":a-desired",
+        ":b-desired",
+    ],
+    out_files = [
+        "a.js",
+        "b.js",
+    ],
+)
+
+write_source_files(
+    name = "macro_smoke_test",
+    files = {
+        "a2.js": ":a-desired",
+        "b2.js": ":b-desired",
+    },
+)
