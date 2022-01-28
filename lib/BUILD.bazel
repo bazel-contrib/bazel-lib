@@ -60,3 +60,15 @@ toolchain_type(
     name = "jq_toolchain_type",
     visibility = ["//visibility:public"],
 )
+
+bzl_library(
+    name = "write_source_files",
+    srcs = ["write_source_files.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":utils",
+        "//lib/private:fail_with_message_test",
+        "//lib/private:write_source_files",
+        "@bazel_skylib//rules:diff_test",
+    ],
+)

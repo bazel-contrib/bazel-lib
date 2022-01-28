@@ -38,6 +38,11 @@ stardoc_with_diff_test(
     out_label = "//docs:jq.md",
 )
 
+stardoc_with_diff_test(
+    bzl_library_target = "//lib:write_source_files",
+    out_label = "//docs:write_source_files.md",
+)
+
 update_docs(
     name = "update",
     docs_folder = "docs",
