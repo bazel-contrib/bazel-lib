@@ -22,7 +22,7 @@ http_archive(
     url = "https://github.com/aspect-build/bazel-lib/archive/${TAG}.tar.gz",
 )
 
-load("@aspect_bazel_lib//lib:repositories", "aspect_bazel_lib_dependencies")
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
 
