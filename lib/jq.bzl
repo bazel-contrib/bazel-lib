@@ -13,9 +13,18 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
 
     For jq documentation, see https://stedolan.github.io/jq/.
 
+    To use this rule you must register the jq toolchain in your WORKSPACE:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
+    register_jq_toolchains(version = "1.6")
+    ```
+
     Usage examples:
 
     ```starlark
+    load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+
     # Remove fields from package.json
     jq(
         name = "no_dev_deps",
