@@ -19,7 +19,7 @@ http_archive(
     name = "aspect_bazel_lib",
     sha256 = "${SHA}",
     strip_prefix = "${PREFIX}",
-    url = "https://github.com/aspect-build/bazel-lib/archive/${TAG}.tar.gz",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/${TAG}.tar.gz",
 )
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
