@@ -65,7 +65,7 @@ def _to_manifest_path(ctx, file):
     else:
         return ctx.workspace_name + "/" + file.short_path
 
-def _to_workspace_path(ctx, file):
+def _to_workspace_path(file):
     """The workspace relative path for a file
 
     This is the full runfiles path of a file excluding its workspace name.
@@ -73,7 +73,6 @@ def _to_workspace_path(ctx, file):
     repository name if the file is from an external repository.
 
     Args:
-        ctx: starlark rule execution context
         file: a File object
 
     Returns:

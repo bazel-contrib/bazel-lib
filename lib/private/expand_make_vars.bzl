@@ -7,7 +7,7 @@
 # - ../external_repo/path/to/file
 # This is converted to the runfiles manifest path of:
 # - repo/path/to/file
-def _rootpath_to_runfiles_manifest_path(ctx, path, targets):
+def _rootpath_to_runfiles_manifest_path(ctx, path):
     if path.startswith("../"):
         return path[len("../"):]
     if path.startswith("./"):
@@ -19,7 +19,7 @@ def _rootpath_to_runfiles_manifest_path(ctx, path, targets):
 # - repo/path/to/file
 def _expand_rootpath_to_manifest_path(ctx, input, targets):
     paths = ctx.expand_location(input, targets)
-    return " ".join([_rootpath_to_runfiles_manifest_path(ctx, p, targets) for p in paths.split(" ")])
+    return " ".join([_rootpath_to_runfiles_manifest_path(ctx, p) for p in paths.split(" ")])
 
 def expand_locations(ctx, input, targets = []):
     """Expand location templates.

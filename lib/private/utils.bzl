@@ -34,7 +34,8 @@ def _propagate_well_known_tags(tags = []):
     CPU_PREFIX = "cpu:"
 
     return [
-        tag for tag in tags
+        tag
+        for tag in tags
         if tag in WELL_KNOWN_TAGS or tag.startswith(CPU_PREFIX)
     ]
 

@@ -61,7 +61,7 @@ The runfiles manifest entry path for a file
 ## to_workspace_path
 
 <pre>
-to_workspace_path(<a href="#to_workspace_path-ctx">ctx</a>, <a href="#to_workspace_path-file">file</a>)
+to_workspace_path(<a href="#to_workspace_path-file">file</a>)
 </pre>
 
 The workspace relative path for a file
@@ -76,7 +76,6 @@ repository name if the file is from an external repository.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="to_workspace_path-ctx"></a>ctx |  starlark rule execution context   |  none |
 | <a id="to_workspace_path-file"></a>file |  a File object   |  none |
 
 **RETURNS**
