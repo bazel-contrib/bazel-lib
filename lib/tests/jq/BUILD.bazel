@@ -75,7 +75,10 @@ diff_test(
 # Load filter from file
 jq(
     name = "case_filter_file",
-    srcs = ["a.json", "b.json"],
+    srcs = [
+        "a.json",
+        "b.json",
+    ],
     args = ["--slurp"],
     filter_file = "merge_filter.txt",
 )

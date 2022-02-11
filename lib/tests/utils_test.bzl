@@ -72,7 +72,7 @@ is_external_label_test = unittest.make(
 )
 
 propagate_well_known_tags_test = unittest.make(
-    _propagate_well_known_tags_test_impl
+    _propagate_well_known_tags_test_impl,
 )
 
 def utils_test_suite():

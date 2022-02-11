@@ -118,7 +118,7 @@ def _output_path(ctx, src):
     if src.owner and src.owner.workspace_name and not src.owner.workspace_name in ctx.attr.include_external_repositories:
         return False
 
-    result = paths.to_workspace_path(ctx, src)
+    result = paths.to_workspace_path(src)
 
     # strip root paths
     root_path = _longest_match(result, ctx.attr.root_paths)

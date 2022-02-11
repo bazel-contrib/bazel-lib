@@ -124,8 +124,8 @@ def _manifest_path_test_impl(ctx):
 
 def _workspace_path_test_impl(ctx):
     env = unittest.begin(ctx)
-    asserts.equals(env, "LICENSE", paths.to_workspace_path(ctx, ctx.file.f1))
-    asserts.equals(env, "lib/paths.bzl", paths.to_workspace_path(ctx, ctx.file.f2))
+    asserts.equals(env, "LICENSE", paths.to_workspace_path(ctx.file.f1))
+    asserts.equals(env, "lib/paths.bzl", paths.to_workspace_path(ctx.file.f2))
     return unittest.end(env)
 
 _ATTRS = {
