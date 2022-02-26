@@ -31,4 +31,7 @@ write_source_files(
         "a2.js": ":a-desired",
         "b2.js": ":b-desired",
     },
+    additional_update_targets = [
+        "//lib/tests/write_source_files/subdir:macro_smoke_test",
+    ],
 )

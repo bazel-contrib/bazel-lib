@@ -1,0 +1,19 @@
+load("//lib:write_source_files.bzl", "write_source_files")
+
+genrule(
+    name = "c-desired",
+    outs = ["c-desired.js"],
+    cmd = "echo 'console.log(\"c*\");' > $@",
+)
+
+write_source_files(
+    name = "macro_smoke_test",
+    files = {
+        "c.js": ":c-desired",
+    },
+    suggested_update_target = "//lib/tests/write_source_files:macro_smoke_test",
+    visibility = ["//visibility:public"],
+    additional_update_targets = [
+        "//lib/tests/write_source_files/subdir/subsubdir:macro_smoke_test",
+    ],
+)

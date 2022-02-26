@@ -2,9 +2,17 @@
 
 load("//lib:utils.bzl", "is_external_label")
 
+_WriteSourceFilesInfo = provider(
+    "Provider to enforce deps are other write_source_files targets",
+    fields = {
+        "executable": "Generated update script",
+    },
+)
+
 _write_source_files_attrs = {
-    "in_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = True),
-    "out_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = True),
+    "in_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = False),
+    "out_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = False),
+    "additional_update_targets": attr.label_list(allow_files = False, providers = [_WriteSourceFilesInfo], mandatory = False),
     "is_windows": attr.bool(mandatory = True),
 }
 
@@ -12,6 +20,8 @@ def _write_source_files_sh(ctx):
     updater = ctx.actions.declare_file(
         ctx.label.name + "_update.sh",
     )
+
+    additional_update_scripts = [target[_WriteSourceFilesInfo].executable for target in ctx.attr.additional_update_targets]
 
     ctx.actions.write(
         output = updater,
@@ -35,7 +45,13 @@ cp -f "$in" "$out"
 chmod 644 "$out"
 """.format(in_file = ctx.files.in_files[i].short_path, out_file = ctx.files.out_files[i].short_path)
             for i in range(len(ctx.attr.in_files))
-        ]),
+        ]) + """
+cd "$runfiles_dir"
+
+# Run the update scripts for all write_source_file deps
+""" + "\n".join(["""
+{update_script}
+""".format(update_script = update_script.short_path) for update_script in additional_update_scripts]),
     )
 
     return updater
@@ -52,7 +68,8 @@ set runfiles_dir=%cd%
 if defined BUILD_WORKSPACE_DIRECTORY (
     cd %BUILD_WORKSPACE_DIRECTORY%
 )
-""" + "\n".join(["""
+""" + "\n".join([
+        """
 set in=%runfiles_dir%\\{in_file}
 set out={out_file}
 
@@ -67,9 +84,9 @@ if not defined BUILD_WORKSPACE_DIRECTORY (
 echo Copying %in% to %out% in %cd%
 copy %in% %out% >NUL
 """.format(in_file = ctx.files.in_files[i].short_path.replace("/", "\\"), out_file = ctx.files.out_files[i].short_path).replace("/", "\\")
-            for i in range(len(ctx.attr.in_files))
-        ])
-        
+        for i in range(len(ctx.attr.in_files))
+    ])
+
     content = content.replace("\n", "\r\n")
 
     ctx.actions.write(
@@ -99,10 +116,23 @@ def _write_source_files_impl(ctx):
     else:
         updater = _write_source_files_sh(ctx)
 
-    return DefaultInfo(
-        executable = updater,
-        runfiles = ctx.runfiles(files = ctx.files.in_files),
-    )
+    runfiles = ctx.runfiles(files = ctx.files.in_files)
+    deps_runfiles = [dep[DefaultInfo].default_runfiles for dep in ctx.attr.additional_update_targets]
+    if "merge_all" in dir(runfiles):
+        runfiles = runfiles.merge_all(deps_runfiles)
+    else:
+        for dep in deps_runfiles:
+            runfiles = runfiles.merge(dep)
+
+    return [
+        DefaultInfo(
+            executable = updater,
+            runfiles = runfiles,
+        ),
+        _WriteSourceFilesInfo(
+            executable = updater,
+        ),
+    ]
 
 write_source_files_lib = struct(
     attrs = _write_source_files_attrs,
