@@ -41,8 +41,15 @@ out={out_file}
 
 mkdir -p "$(dirname "$out")"
 echo "Copying $in to $out in $PWD"
-cp -f "$in" "$out"
-chmod 644 "$out"
+
+if [[ -f "$in" ]]; then
+    cp -f "$in" "$out"
+    chmod 664 "$out"
+else
+    mkdir -p "$out"
+    cp -rf "$in"/* "$out"
+    chmod 664 "$out"/*
+fi
 """.format(in_file = ctx.files.in_files[i].short_path, out_file = ctx.files.out_files[i].short_path)
             for i in range(len(ctx.attr.in_files))
         ]) + """
@@ -84,8 +91,14 @@ if not defined BUILD_WORKSPACE_DIRECTORY (
 )
 
 echo Copying %in% to %out% in %cd%
-copy %in% %out% >NUL
-""".format(in_file = ctx.files.in_files[i].short_path.replace("/", "\\"), out_file = ctx.files.out_files[i].short_path).replace("/", "\\")
+
+if exist "%in%\\*" (
+    mkdir "%out%" >NUL 2>NUL
+    robocopy "%in%" "%out%" /E >NUL
+) else (
+    copy %in% %out% >NUL
+)
+""".format(in_file = ctx.files.in_files[i].short_path.replace("/", "\\"), out_file = ctx.files.out_files[i].short_path.replace("/", "\\"))
         for i in range(len(ctx.attr.in_files))
     ])  + """
 cd %runfiles_dir%

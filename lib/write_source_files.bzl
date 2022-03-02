@@ -12,7 +12,7 @@ _write_source_files = rule(
 )
 
 def write_source_files(name, files, additional_update_targets = [], suggested_update_target = None, **kwargs):
-    """Write to one or more files in the source tree. Stamp out tests that ensure the files exists and are up to date.
+    """Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
     Usage:
 
@@ -83,8 +83,8 @@ def write_source_files(name, files, additional_update_targets = [], suggested_up
 
     Args:
         name: Name of the executable target that creates or updates the source file
-        files: A dict where the keys are source files to write to and the values are labels pointing to the desired content.
-            Source files must be within the same bazel package as the target.
+        files: A dict where the keys are source files or folders to write to and the values are labels pointing to the desired content.
+            Sources must be within the same bazel package as the target.
         additional_update_targets: (Optional) List of other write_source_files targets to update in the same run
         suggested_update_target: (Optional) Label of the write_source_files target to suggest running when files are out of date
         **kwargs: Other common named parameters such as `tags` or `visibility`
@@ -191,5 +191,5 @@ def _is_file_missing(label):
     """
     file_abs = "%s/%s" % (label.package, label.name)
     file_rel = file_abs[len(native.package_name()) + 1:]
-    file_glob = native.glob([file_rel])
+    file_glob = native.glob([file_rel], exclude_directories = 0)
     return len(file_glob) == 0

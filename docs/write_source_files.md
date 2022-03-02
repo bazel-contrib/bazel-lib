@@ -10,7 +10,7 @@ Public API for write_source_files
 write_source_files(<a href="#write_source_files-name">name</a>, <a href="#write_source_files-files">files</a>, <a href="#write_source_files-additional_update_targets">additional_update_targets</a>, <a href="#write_source_files-suggested_update_target">suggested_update_target</a>, <a href="#write_source_files-kwargs">kwargs</a>)
 </pre>
 
-Write to one or more files in the source tree. Stamp out tests that ensure the files exists and are up to date.
+Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
 Usage:
 
@@ -86,7 +86,7 @@ If you have many sources that you want to update as a group, we recommend wrappi
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="write_source_files-name"></a>name |  Name of the executable target that creates or updates the source file   |  none |
-| <a id="write_source_files-files"></a>files |  A dict where the keys are source files to write to and the values are labels pointing to the desired content. Source files must be within the same bazel package as the target.   |  none |
+| <a id="write_source_files-files"></a>files |  A dict where the keys are source files or folders to write to and the values are labels pointing to the desired content. Sources must be within the same bazel package as the target.   |  none |
 | <a id="write_source_files-additional_update_targets"></a>additional_update_targets |  (Optional) List of other write_source_files targets to update in the same run   |  <code>[]</code> |
 | <a id="write_source_files-suggested_update_target"></a>suggested_update_target |  (Optional) Label of the write_source_files target to suggest running when files are out of date   |  <code>None</code> |
 | <a id="write_source_files-kwargs"></a>kwargs |  Other common named parameters such as <code>tags</code> or <code>visibility</code>   |  none |
