@@ -12,6 +12,7 @@ _WriteSourceFilesInfo = provider(
 _write_source_files_attrs = {
     "in_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = False),
     "out_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = False),
+    "include_files": attr.label_list(allow_files = False, allow_empty = True, mandatory = False),
     "additional_update_targets": attr.label_list(allow_files = False, providers = [_WriteSourceFilesInfo], mandatory = False),
     "is_windows": attr.bool(mandatory = True),
 }
@@ -20,8 +21,16 @@ def _write_source_files_sh(ctx):
     updater = ctx.actions.declare_file(
         ctx.label.name + "_update.sh",
     )
-
     additional_update_scripts = [target[_WriteSourceFilesInfo].executable for target in ctx.attr.additional_update_targets]
+
+    in_files = [f.short_path for f in ctx.files.in_files]
+    out_files = [f.short_path for f in ctx.files.out_files]
+
+    for include_target in ctx.attr.include_files:
+        for file in include_target.files.to_list():
+            out_file_path = ctx.label.package + "/" + file.short_path[len(file.owner.package) + 1:]
+            out_files.append(out_file_path)
+            in_files.append(file.short_path)
 
     ctx.actions.write(
         output = updater,
@@ -50,8 +59,8 @@ else
     cp -rf "$in"/* "$out"
     chmod 664 "$out"/*
 fi
-""".format(in_file = ctx.files.in_files[i].short_path, out_file = ctx.files.out_files[i].short_path)
-            for i in range(len(ctx.attr.in_files))
+""".format(in_file = in_files[i], out_file = out_files[i])
+            for i in range(len(in_files))
         ]) + """
 cd "$runfiles_dir"
 
@@ -100,7 +109,7 @@ if exist "%in%\\*" (
 )
 """.format(in_file = ctx.files.in_files[i].short_path.replace("/", "\\"), out_file = ctx.files.out_files[i].short_path.replace("/", "\\"))
         for i in range(len(ctx.attr.in_files))
-    ])  + """
+    ]) + """
 cd %runfiles_dir%
 
 @rem Run the update scripts for all write_source_file deps
@@ -137,7 +146,7 @@ def _write_source_files_impl(ctx):
     else:
         updater = _write_source_files_sh(ctx)
 
-    runfiles = ctx.runfiles(files = ctx.files.in_files)
+    runfiles = ctx.runfiles(files = ctx.files.in_files + ctx.files.include_files)
     deps_runfiles = [dep[DefaultInfo].default_runfiles for dep in ctx.attr.additional_update_targets]
     if "merge_all" in dir(runfiles):
         runfiles = runfiles.merge_all(deps_runfiles)

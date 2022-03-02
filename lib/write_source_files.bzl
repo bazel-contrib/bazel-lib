@@ -11,7 +11,7 @@ _write_source_files = rule(
     executable = True,
 )
 
-def write_source_files(name, files, additional_update_targets = [], suggested_update_target = None, **kwargs):
+def write_source_files(name, files, include_files = [], additional_update_targets = [], suggested_update_target = None, **kwargs):
     """Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
     Usage:
@@ -85,6 +85,7 @@ def write_source_files(name, files, additional_update_targets = [], suggested_up
         name: Name of the executable target that creates or updates the source file
         files: A dict where the keys are source files or folders to write to and the values are labels pointing to the desired content.
             Sources must be within the same bazel package as the target.
+        include_files: TODO
         additional_update_targets: (Optional) List of other write_source_files targets to update in the same run
         suggested_update_target: (Optional) Label of the write_source_files target to suggest running when files are out of date
         **kwargs: Other common named parameters such as `tags` or `visibility`
@@ -98,6 +99,7 @@ def write_source_files(name, files, additional_update_targets = [], suggested_up
         name = name,
         in_files = in_files,
         out_files = out_files,
+        include_files = include_files,
         additional_update_targets = additional_update_targets,
         is_windows = select({
             "@bazel_tools//src/conditions:host_windows": True,
