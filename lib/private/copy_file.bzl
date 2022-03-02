@@ -25,6 +25,8 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 `_copy_file` does not.
 """
 
+load(":directory_path.bzl", "DirectoryPathInfo")
+
 # Hints for Bazel spawn strategy
 _execution_requirements = {
     # Copying files is entirely IO-bound and there is no point doing this work remotely.
@@ -34,11 +36,8 @@ _execution_requirements = {
     "no-remote-exec": "1",
 }
 
-def _hash_file(file):
-    return str(hash(file.path))
-
 # buildifier: disable=function-docstring
-def copy_cmd(ctx, src, dst):
+def copy_cmd(ctx, src_file, src_path, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -46,7 +45,7 @@ def copy_cmd(ctx, src, dst):
     # quoting or escaping is required.
     # Put a hash of the file name into the name of the generated batch file to
     # make it unique within the package, so that users can define multiple copy_file's.
-    bat = ctx.actions.declare_file("%s-%s-cmd.bat" % (ctx.label.name, _hash_file(src)))
+    bat = ctx.actions.declare_file("%s-%s-cmd.bat" % (ctx.label.name, hash(src_path)))
 
     # Flags are documented at
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
@@ -55,24 +54,24 @@ def copy_cmd(ctx, src, dst):
     if dst.is_directory:
         cmd_tmpl = "@robocopy \"{src}\" \"{dst}\" /E >NUL & @exit 0"
         mnemonic = "CopyDirectory"
-        progress_message = "Copying directory %s" % src.path
+        progress_message = "Copying directory %s" % src_path
     else:
         cmd_tmpl = "@copy /Y \"{src}\" \"{dst}\" >NUL"
         mnemonic = "CopyFile"
-        progress_message = "Copying file %s" % src.path
+        progress_message = "Copying file %s" % src_path
 
     ctx.actions.write(
         output = bat,
         # Do not use lib/shell.bzl's shell.quote() method, because that uses
         # Bash quoting syntax, which is different from cmd.exe's syntax.
         content = cmd_tmpl.format(
-            src = src.path.replace("/", "\\"),
+            src = src_path.replace("/", "\\"),
             dst = dst.path.replace("/", "\\"),
         ),
         is_executable = True,
     )
     ctx.actions.run(
-        inputs = [src],
+        inputs = [src_file],
         tools = [bat],
         outputs = [dst],
         executable = "cmd.exe",
@@ -84,21 +83,21 @@ def copy_cmd(ctx, src, dst):
     )
 
 # buildifier: disable=function-docstring
-def copy_bash(ctx, src, dst):
+def copy_bash(ctx, src_file, src_path, dst):
     if dst.is_directory:
         cmd_tmpl = "rm -rf \"$2\" && cp -rf \"$1/\" \"$2\""
         mnemonic = "CopyDirectory"
-        progress_message = "Copying directory"
+        progress_message = "Copying directory %s" % src_path
     else:
         cmd_tmpl = "cp -f \"$1\" \"$2\""
         mnemonic = "CopyFile"
-        progress_message = "Copying file"
+        progress_message = "Copying file %s" % src_path
 
     ctx.actions.run_shell(
-        tools = [src],
+        tools = [src_file],
         outputs = [dst],
         command = cmd_tmpl,
-        arguments = [src.path, dst.path],
+        arguments = [src_path, dst.path],
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
@@ -113,17 +112,28 @@ def _copy_file_impl(ctx):
     else:
         output = ctx.outputs.out
     if ctx.attr.allow_symlink:
+        if len(ctx.files.src) != 1:
+            fail("src must be a single file when allow_symlink is True")
         if output.is_directory:
             fail("Cannot use both is_directory and allow_symlink")
         ctx.actions.symlink(
             output = output,
-            target_file = ctx.file.src,
+            target_file = ctx.files.src[0],
             is_executable = ctx.attr.is_executable,
         )
-    elif ctx.attr.is_windows:
-        copy_cmd(ctx, ctx.file.src, output)
     else:
-        copy_bash(ctx, ctx.file.src, output)
+        if DirectoryPathInfo in ctx.attr.src:
+            src_file = ctx.attr.src[DirectoryPathInfo].directory
+            src_path = "/".join([src_file.path, ctx.attr.src[DirectoryPathInfo].path])
+        else:
+            if len(ctx.files.src) != 1:
+                fail("src must be a single file or a target with a DirectoryPathInfo provider")
+            src_file = ctx.files.src[0]
+            src_path = src_file.path
+        if ctx.attr.is_windows:
+            copy_cmd(ctx, src_file, src_path, output)
+        else:
+            copy_bash(ctx, src_file, src_path, output)
 
     files = depset(direct = [output])
     runfiles = ctx.runfiles(files = [output])
@@ -133,7 +143,7 @@ def _copy_file_impl(ctx):
         return [DefaultInfo(files = files, runfiles = runfiles)]
 
 _ATTRS = {
-    "src": attr.label(mandatory = True, allow_single_file = True),
+    "src": attr.label(mandatory = True, allow_files = True),
     "is_windows": attr.bool(mandatory = True),
     "is_executable": attr.bool(mandatory = True),
     "allow_symlink": attr.bool(mandatory = True),
