@@ -1,5 +1,6 @@
 load("//lib/tests/write_source_files:write_source_files_test.bzl", "write_source_files_test")
 load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
 
 genrule(
     name = "a-desired",
@@ -11,6 +12,17 @@ genrule(
     name = "b-desired",
     outs = ["b-desired.js"],
     cmd = "echo 'console.log(\"b*\")' > $@",
+)
+
+genrule(
+    name = "e",
+    outs = ["e.js"],
+    cmd = "echo 'console.log(\"e*\")' > $@",
+)
+
+copy_to_directory(
+    name = "e_dir-desired",
+    srcs = [":e"],
 )
 
 write_source_files_test(
@@ -27,11 +39,12 @@ write_source_files_test(
 
 write_source_files(
     name = "macro_smoke_test",
-    files = {
-        "a2.js": ":a-desired",
-        "b2.js": ":b-desired",
-    },
     additional_update_targets = [
         "//lib/tests/write_source_files/subdir:macro_smoke_test",
     ],
+    files = {
+        "a2.js": ":a-desired",
+        "b2.js": ":b-desired",
+        "e_dir": ":e_dir-desired",
+    },
 )

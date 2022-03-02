@@ -2,3 +2,4 @@ docs/*.md
 lib/tests/jq/*.json
 lib/tests/write_source_files/a2.js
 lib/tests/write_source_files/b2.js
+lib/tests/write_source_files/e_dir/e.js
