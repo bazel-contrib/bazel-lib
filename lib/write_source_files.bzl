@@ -11,7 +11,7 @@ _write_source_files = rule(
     executable = True,
 )
 
-def write_source_files(name, files, additional_update_targets = [], suggested_update_target = None, **kwargs):
+def write_source_files(name, files = {}, additional_update_targets = [], suggested_update_target = None, **kwargs):
     """Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
     Usage:

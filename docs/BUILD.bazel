@@ -3,52 +3,51 @@
 load("//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 
 stardoc_with_diff_test(
+    name = "copy_to_directory",
     bzl_library_target = "//lib:copy_to_directory",
-    out_label = "//docs:copy_to_directory.md",
 )
 
 stardoc_with_diff_test(
+    name = "docs",
     bzl_library_target = "//lib:docs",
-    out_label = "//docs:docs.md",
 )
 
 stardoc_with_diff_test(
+    name = "expand_make_vars",
     bzl_library_target = "//lib:expand_make_vars",
-    out_label = "//docs:expand_make_vars.md",
 )
 
 stardoc_with_diff_test(
+    name = "params_file",
     bzl_library_target = "//lib:params_file",
     func_template = "//docs/templates:func_html.vm",
-    out_label = "//docs:params_file.md",
 )
 
 stardoc_with_diff_test(
+    name = "paths",
     bzl_library_target = "//lib:paths",
-    out_label = "//docs:paths.md",
 )
 
 stardoc_with_diff_test(
+    name = "utils",
     bzl_library_target = "//lib:utils",
-    out_label = "//docs:utils.md",
 )
 
 stardoc_with_diff_test(
+    name = "jq",
     bzl_library_target = "//lib:jq",
-    out_label = "//docs:jq.md",
 )
 
 stardoc_with_diff_test(
+    name = "write_source_files",
     bzl_library_target = "//lib:write_source_files",
-    out_label = "//docs:write_source_files.md",
 )
 
 stardoc_with_diff_test(
+    name = "directory_path",
     bzl_library_target = "//lib:directory_path",
-    out_label = "//docs:directory_path.md",
 )
 
 update_docs(
     name = "update",
-    docs_folder = "docs",
 )

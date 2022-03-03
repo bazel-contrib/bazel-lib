@@ -10,8 +10,8 @@ _WriteSourceFilesInfo = provider(
 )
 
 _write_source_files_attrs = {
-    "in_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = False),
-    "out_files": attr.label_list(allow_files = True, allow_empty = False, mandatory = False),
+    "in_files": attr.label_list(allow_files = True, allow_empty = True, mandatory = False),
+    "out_files": attr.label_list(allow_files = True, allow_empty = True, mandatory = False),
     "additional_update_targets": attr.label_list(allow_files = False, providers = [_WriteSourceFilesInfo], mandatory = False),
     "is_windows": attr.bool(mandatory = True),
 }
@@ -100,7 +100,7 @@ if exist "%in%\\*" (
 )
 """.format(in_file = ctx.files.in_files[i].short_path.replace("/", "\\"), out_file = ctx.files.out_files[i].short_path.replace("/", "\\"))
         for i in range(len(ctx.attr.in_files))
-    ])  + """
+    ]) + """
 cd %runfiles_dir%
 
 @rem Run the update scripts for all write_source_file deps
