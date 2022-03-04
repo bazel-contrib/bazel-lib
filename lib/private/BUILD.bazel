@@ -8,8 +8,9 @@ exports_files(
 bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
-    visibility = ["//docs:__pkg__"],
+    visibility = ["//lib:__subpackages__"],
     deps = [
+        ":directory_path",
         ":paths",
         "@bazel_skylib//lib:paths",
     ],
@@ -62,13 +63,18 @@ bzl_library(
     name = "write_source_files",
     srcs = ["write_source_files.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = [
-        "//lib:utils",
-    ],
+    deps = ["//lib:utils"],
 )
 
 bzl_library(
     name = "fail_with_message_test",
     srcs = ["fail_with_message_test.bzl"],
     visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
+    name = "directory_path",
+    srcs = ["directory_path.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = ["//lib:utils"],
 )

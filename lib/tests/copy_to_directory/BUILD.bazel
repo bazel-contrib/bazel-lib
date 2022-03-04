@@ -3,6 +3,7 @@
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:copy_file.bzl", "copy_file")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:directory_path.bzl", "make_directory_paths")
 
 [
     copy_file(
@@ -21,6 +22,7 @@ load("//lib:copy_to_directory.bzl", "copy_to_directory")
         "expected_5",
         "expected_7",
         "expected_8",
+        "expected_9",
     ]
 ]
 
@@ -173,6 +175,57 @@ copy_to_directory(
         # this partial match should exclude all of e
         "e/e",
     ],
+)
+
+# Case 9: directory_path srcs & replace_prefixes (with external repo)
+copy_to_directory(
+    name = "case_9",
+    srcs = [
+        ":c",
+        ":d",
+        ":e/e",
+        ":e/e2",
+        "//lib/tests/copy_to_directory/f/f2",
+        "//lib/tests/copy_to_directory/f/f2:f",
+        "@external_test_repo//:test_c",
+        "@external_test_repo//:test_d",
+    ] + make_directory_paths(
+        "case_9_srcs",
+        {
+            ":a": "a",
+            ":b": [
+                "b",
+                "b2",
+            ],
+            "@external_test_repo//:test_a": "test_a",
+            "@external_test_repo//:test_b": "test_b",
+        },
+    ),
+    include_external_repositories = ["external_test_repo"],
+    replace_prefixes = {
+        # merge a, b, c, d into a new/abcd dest folder
+        "a/a": "new/abcd/a",
+        "b": "//new///abcd////",
+        "c": "new/abcd/c",
+        "d": "////new/////abcd////d",
+        # put e into new/e except for e/e2 which goes into new/e2
+        "e": "new/e",
+        "e/e2": "new/e2/e2",
+        # f/f2/f => new/ff and f/f2/f2 => new/f2/f2
+        "f/f2/": "////new/////f",
+        "f/f2/f2": "////new/////f2///f2",
+        # flatten test_a & test_b to the root
+        "test_a": "",
+        "test_b": "",
+        # some paths that won't match
+        "a/a2": "wont_match_since_a2_is_not_included_in_the_directory_path_in_srcs",
+    },
+)
+
+diff_test(
+    name = "case_9_test",
+    file1 = "case_9",
+    file2 = ":expected_9",
 )
 
 diff_test(

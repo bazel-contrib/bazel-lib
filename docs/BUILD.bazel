@@ -3,7 +3,7 @@
 load("//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 
 stardoc_with_diff_test(
-    bzl_library_target = "//lib/private:copy_to_directory",
+    bzl_library_target = "//lib:copy_to_directory",
     out_label = "//docs:copy_to_directory.md",
 )
 
@@ -41,6 +41,11 @@ stardoc_with_diff_test(
 stardoc_with_diff_test(
     bzl_library_target = "//lib:write_source_files",
     out_label = "//docs:write_source_files.md",
+)
+
+stardoc_with_diff_test(
+    bzl_library_target = "//lib:directory_path",
+    out_label = "//docs:directory_path.md",
 )
 
 update_docs(
