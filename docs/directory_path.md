@@ -53,7 +53,7 @@ Joins a label pointing to a TreeArtifact with a path nested within that director
 make_directory_path(<a href="#make_directory_path-name">name</a>, <a href="#make_directory_path-directory">directory</a>, <a href="#make_directory_path-path">path</a>)
 </pre>
 
-Helper function to convert generate a directory_path target and return its label.
+Helper function to generate a directory_path target and return its label.
 
 **PARAMETERS**
 

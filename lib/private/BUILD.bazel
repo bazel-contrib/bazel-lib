@@ -10,6 +10,7 @@ bzl_library(
     srcs = ["copy_to_directory.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
+        ":default_info_files",
         ":directory_path",
         ":paths",
         "@bazel_skylib//lib:paths",
@@ -61,10 +62,14 @@ bzl_library(
 )
 
 bzl_library(
-    name = "write_source_files",
-    srcs = ["write_source_files.bzl"],
+    name = "write_source_file",
+    srcs = ["write_source_file.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = ["//lib:utils"],
+    deps = [
+        ":default_info_files",
+        ":directory_path",
+        "//lib:utils",
+    ],
 )
 
 bzl_library(
@@ -78,4 +83,17 @@ bzl_library(
     srcs = ["directory_path.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = ["//lib:utils"],
+)
+
+bzl_library(
+    name = "default_info_files",
+    srcs = ["default_info_files.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = ["//lib:utils"],
+)
+
+bzl_library(
+    name = "diff_test",
+    srcs = ["diff_test.bzl"],
+    visibility = ["//lib:__subpackages__"],
 )

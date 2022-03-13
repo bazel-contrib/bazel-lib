@@ -64,6 +64,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "default_info_files",
+    srcs = ["default_info_files.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:default_info_files"],
+)
+
+bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
     visibility = ["//visibility:public"],
@@ -80,9 +87,16 @@ bzl_library(
     srcs = ["write_source_files.bzl"],
     visibility = ["//visibility:public"],
     deps = [
+        ":diff_test",
         ":utils",
         "//lib/private:fail_with_message_test",
-        "//lib/private:write_source_files",
-        "@bazel_skylib//rules:diff_test",
+        "//lib/private:write_source_file",
     ],
+)
+
+bzl_library(
+    name = "diff_test",
+    srcs = ["diff_test.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:diff_test"],
 )

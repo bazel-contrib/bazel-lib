@@ -1,40 +1,82 @@
-load("//lib/tests/write_source_files:write_source_files_test.bzl", "write_source_files_test")
+load("//lib/tests/write_source_files:write_source_file_test.bzl", "write_source_file_test")
+load("//lib/tests:default_output_gen.bzl", "default_output_gen")
 load("//lib:write_source_files.bzl", "write_source_files")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:directory_path.bzl", "directory_path")
+load("//lib:default_info_files.bzl", "default_info_files")
 
 genrule(
     name = "a-desired",
     outs = ["a-desired.js"],
-    cmd = "echo 'console.log(\"a*\")' > $@",
+    cmd = "echo 'console.log(\"a*\");' > $@",
 )
 
-genrule(
+default_output_gen(
+    name = "b_c-desired",
+    out_contents = [
+        """console.log(\"b*\");
+""",
+        "not used!",
+    ],
+    out_files = [
+        "b-desired.js",
+        "c-desired.js",
+    ],
+)
+
+default_info_files(
     name = "b-desired",
-    outs = ["b-desired.js"],
-    cmd = "echo 'console.log(\"b*\")' > $@",
+    paths = ["%s/b-desired.js" % package_name()],
+    target = ":b_c-desired",
 )
 
 genrule(
-    name = "e",
-    outs = ["e.js"],
-    cmd = "echo 'console.log(\"e*\")' > $@",
+    name = "e-contained",
+    outs = ["e-contained.js"],
+    cmd = "echo 'console.log(\"e*\");' > $@",
 )
 
 copy_to_directory(
     name = "e_dir-desired",
-    srcs = [":e"],
+    srcs = [":e-contained"],
 )
 
-write_source_files_test(
-    name = "write_to_source_files_test",
-    in_files = [
-        ":a-desired",
-        ":b-desired",
+genrule(
+    name = "f-contained",
+    outs = ["f-contained.js"],
+    cmd = "echo 'console.log(\"f*\");' > $@",
+)
+
+copy_to_directory(
+    name = "e_f_dir-desired",
+    srcs = [
+        ":e-contained",
+        ":f-contained",
     ],
-    out_files = [
-        "a.js",
-        "b.js",
-    ],
+)
+
+directory_path(
+    name = "f-desired",
+    directory = ":e_f_dir-desired",
+    path = "f-contained.js",
+)
+
+write_source_file_test(
+    name = "write_to_source_files_a_test",
+    in_file = ":a-desired",
+    out_file = "a.js",
+)
+
+write_source_file_test(
+    name = "write_to_source_files_b_test",
+    in_file = ":b-desired",
+    out_file = "b.js",
+)
+
+write_source_file_test(
+    name = "write_to_source_files_f_test",
+    in_file = ":f-desired",
+    out_file = "f.js",
 )
 
 write_source_files(
@@ -45,6 +87,7 @@ write_source_files(
     files = {
         "a2.js": ":a-desired",
         "b2.js": ":b-desired",
-        "e_dir": ":e_dir-desired",
+        "e2_dir": ":e_dir-desired",
+        "f2.js": ":f-desired",
     },
 )

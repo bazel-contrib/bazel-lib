@@ -33,10 +33,11 @@ Otherwise there is no way to give a Bazel label for it.""",
             mandatory = True,
         ),
     },
+    provides = [DirectoryPathInfo],
 )
 
 def make_directory_path(name, directory, path):
-    """Helper function to convert generate a directory_path target and return its label.
+    """Helper function to generate a directory_path target and return its label.
 
     Args:
         name: Unique name for the generated `directory_path` target.
