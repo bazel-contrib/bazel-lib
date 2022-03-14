@@ -27,12 +27,11 @@ def stardoc_with_diff_test(
         suggested_update_target: the target suggested to be run when a doc is out of date (should be the label for [update_docs](#update_docs))
     """
 
-    stardoc_label = name + "-docgen"
     out_file = name + ".md"
 
     # Generate MD from .bzl
     stardoc(
-        name = stardoc_label,
+        name = name,
         out = name + "-docgen.md",
         input = bzl_library_target + ".bzl",
         deps = [bzl_library_target],
@@ -45,10 +44,10 @@ def stardoc_with_diff_test(
     )
 
     write_source_files(
-        name = name,
+        name = "update_" + name,
         suggested_update_target = suggested_update_target,
         files = {
-            out_file: ":" + stardoc_label,
+            out_file: ":" + name,
         },
     )
 
@@ -78,7 +77,7 @@ def update_docs(name = "update"):
             for tag in r["tags"]:
                 if tag.startswith("package:"):
                     stardoc_name = r["name"]
-                    write_source_files_name = stardoc_name[:-len("-docgen")]
+                    write_source_files_name = "update_" + stardoc_name
                     update_labels.append("//%s:%s" % (tag[len("package:"):], write_source_files_name))
 
     write_source_files(
