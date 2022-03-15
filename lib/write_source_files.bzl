@@ -1,11 +1,14 @@
 "Public API for write_source_files"
 
-load("//lib/private:write_source_files.bzl", _lib = "write_source_files_lib")
+load(
+    "//lib/private:write_source_file.bzl",
+    _lib = "write_source_file_lib",
+)
 load("//lib:utils.bzl", _to_label = "to_label")
-load("@bazel_skylib//rules:diff_test.bzl", _diff_test = "diff_test")
+load("//lib/private:diff_test.bzl", _diff_test = "diff_test")
 load("//lib/private:fail_with_message_test.bzl", "fail_with_message_test")
 
-_write_source_files = rule(
+_write_source_file = rule(
     attrs = _lib.attrs,
     implementation = _lib.implementation,
     executable = True,
@@ -85,41 +88,45 @@ def write_source_files(name, files = {}, additional_update_targets = [], suggest
         name: Name of the executable target that creates or updates the source file
         files: A dict where the keys are source files or folders to write to and the values are labels pointing to the desired content.
             Sources must be within the same bazel package as the target.
-        additional_update_targets: (Optional) List of other write_source_files targets to update in the same run
-        suggested_update_target: (Optional) Label of the write_source_files target to suggest running when files are out of date
+        additional_update_targets: (Optional) List of other write_source_file or other executable updater targets to call in the same run
+        suggested_update_target: (Optional) Label of the write_source_file target to suggest running when files are out of date
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
 
-    out_files = files.keys()
-    in_files = [files[f] for f in out_files]
+    single_update_target = len(files.keys()) == 1
+    update_targets = []
+    for i, pair in enumerate(files.items()):
+        out_file, in_file = pair
 
-    # Stamp an executable rule that writes to the out file
-    _write_source_files(
-        name = name,
-        in_files = in_files,
-        out_files = out_files,
-        additional_update_targets = additional_update_targets,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
-        visibility = kwargs.get("visibility"),
-        tags = kwargs.get("tags"),
-    )
+        in_file = _to_label(in_file)
+        out_file = _to_label(out_file)
 
-    # Fail if user passes args that would conflict with stamped out targets below
-    if kwargs.pop("file1", None) != None:
-        fail("file1 not a valid parameter in write_source_file")
-    if kwargs.pop("file2", None) != None:
-        fail("file2 not a valid parameter in write_source_file")
-    if kwargs.pop("failure_message", None) != None:
-        fail("failure_message not a valid parameter in write_source_file")
+        if single_update_target:
+            update_target_name = name
+        else:
+            update_target_name = "%s_%d" % (name, i)
+            update_targets.append(update_target_name)
 
-    for i in range(len(out_files)):
-        out_file = _to_label(out_files[i])
+        # Runnable target that writes to the out file to the source tree
+        _write_source_file(
+            name = update_target_name,
+            in_file = in_file,
+            out_file = out_file,
+            additional_update_targets = additional_update_targets if single_update_target else [],
+            is_windows = select({
+                "@bazel_tools//src/conditions:host_windows": True,
+                "//conditions:default": False,
+            }),
+            visibility = kwargs.get("visibility"),
+            tags = kwargs.get("tags"),
+        )
+
         out_file_missing = _is_file_missing(out_file)
 
-        name_test = "%s_%d_test" % (name, i)
+        if single_update_target:
+            test_target_name = "%s_test" % name
+        else:
+            test_target_name = "%s_%d_test" % (name, i)
 
         if out_file_missing:
             if suggested_update_target == None:
@@ -147,7 +154,7 @@ To create an update *only* this file, run:
             # Note that we cannot simply call fail() here since it will fail during the analysis
             # phase and prevent the user from calling bazel run //update/the:file.
             fail_with_message_test(
-                name = name_test,
+                name = test_target_name,
                 message = message,
                 visibility = kwargs.get("visibility"),
                 tags = kwargs.get("tags"),
@@ -176,12 +183,24 @@ To update *only* this file, run:
 
             # Stamp out a diff test the check that the source file is up to date
             _diff_test(
-                name = name_test,
-                file1 = in_files[i],
+                name = test_target_name,
+                file1 = in_file,
                 file2 = out_file,
                 failure_message = message,
                 **kwargs
             )
+
+    if not single_update_target:
+        _write_source_file(
+            name = name,
+            additional_update_targets = update_targets + additional_update_targets,
+            is_windows = select({
+                "@bazel_tools//src/conditions:host_windows": True,
+                "//conditions:default": False,
+            }),
+            visibility = kwargs.get("visibility"),
+            tags = kwargs.get("tags"),
+        )
 
 def _is_file_missing(label):
     """Check if a file is missing by passing its relative path through a glob()

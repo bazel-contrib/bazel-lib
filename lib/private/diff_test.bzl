@@ -18,6 +18,8 @@ The rule uses a Bash command (diff) on Linux/macOS/non-Windows, and a cmd.exe
 command (fc.exe) on Windows (no Bash is required).
 """
 
+load(":directory_path.bzl", "DirectoryPathInfo")
+
 def _runfiles_path(f):
     if f.root.path:
         return f.path[len(f.root.path) + 1:]  # generated file
@@ -25,6 +27,24 @@ def _runfiles_path(f):
         return f.path  # source file
 
 def _diff_test_impl(ctx):
+    if DirectoryPathInfo in ctx.attr.file1:
+        file1 = ctx.attr.file1[DirectoryPathInfo].directory
+        file1_path = "/".join([_runfiles_path(file1), ctx.attr.file1[DirectoryPathInfo].path])
+    else:
+        if len(ctx.files.file1) != 1:
+            fail("file1 must be a single file or a target that provides a DirectoryPathInfo")
+        file1 = ctx.files.file1[0]
+        file1_path = _runfiles_path(file1)
+
+    if DirectoryPathInfo in ctx.attr.file2:
+        file2 = ctx.attr.file2[DirectoryPathInfo].directory
+        file2_path = "/".join([_runfiles_path(file2), ctx.attr.file2[DirectoryPathInfo].path])
+    else:
+        if len(ctx.files.file2) != 1:
+            fail("file2 must be a single file or a target that provides a DirectoryPathInfo")
+        file2 = ctx.files.file2[0]
+        file2_path = _runfiles_path(file2)
+
     if ctx.attr.is_windows:
         test_bin = ctx.actions.declare_file(ctx.label.name + "-test.bat")
         ctx.actions.write(
@@ -138,8 +158,8 @@ exit /b 0
 exit /b 1
 """.format(
                 fail_msg = ctx.attr.failure_message,
-                file1 = _runfiles_path(ctx.file.file1),
-                file2 = _runfiles_path(ctx.file.file2),
+                file1 = file1_path,
+                file2 = file2_path,
             ),
             is_executable = True,
         )
@@ -191,26 +211,26 @@ else
 fi
 """.format(
                 fail_msg = ctx.attr.failure_message,
-                file1 = _runfiles_path(ctx.file.file1),
-                file2 = _runfiles_path(ctx.file.file2),
+                file1 = file1_path,
+                file2 = file2_path,
             ),
             is_executable = True,
         )
     return DefaultInfo(
         executable = test_bin,
         files = depset(direct = [test_bin]),
-        runfiles = ctx.runfiles(files = [test_bin, ctx.file.file1, ctx.file.file2]),
+        runfiles = ctx.runfiles(files = [test_bin, file1, file2]),
     )
 
 _diff_test = rule(
     attrs = {
         "failure_message": attr.string(),
         "file1": attr.label(
-            allow_single_file = True,
+            allow_files = True,
             mandatory = True,
         ),
         "file2": attr.label(
-            allow_single_file = True,
+            allow_files = True,
             mandatory = True,
         ),
         "is_windows": attr.bool(mandatory = True),

@@ -8,12 +8,12 @@ genrule(
 
 write_source_files(
     name = "macro_smoke_test",
+    additional_update_targets = [
+        "//lib/tests/write_source_files/subdir/subsubdir:macro_smoke_test",
+    ],
     files = {
         "c.js": ":c-desired",
     },
     suggested_update_target = "//lib/tests/write_source_files:macro_smoke_test",
-    visibility = ["//visibility:public"],
-    additional_update_targets = [
-        "//lib/tests/write_source_files/subdir/subsubdir:macro_smoke_test",
-    ],
+    visibility = ["//lib/tests/write_source_files:__pkg__"],
 )

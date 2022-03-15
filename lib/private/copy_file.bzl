@@ -127,7 +127,7 @@ def _copy_file_impl(ctx):
             src_path = "/".join([src_file.path, ctx.attr.src[DirectoryPathInfo].path])
         else:
             if len(ctx.files.src) != 1:
-                fail("src must be a single file or a target with a DirectoryPathInfo provider")
+                fail("src must be a single file or a target that provides a DirectoryPathInfo")
             src_file = ctx.files.src[0]
             src_path = src_file.path
         if ctx.attr.is_windows:

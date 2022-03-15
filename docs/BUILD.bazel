@@ -48,6 +48,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:directory_path",
 )
 
-update_docs(
-    name = "update",
+stardoc_with_diff_test(
+    name = "default_info_files",
+    bzl_library_target = "//lib:default_info_files",
 )
+
+update_docs()
