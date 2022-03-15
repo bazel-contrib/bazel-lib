@@ -36,13 +36,14 @@ Otherwise there is no way to give a Bazel label for it.""",
     provides = [DirectoryPathInfo],
 )
 
-def make_directory_path(name, directory, path):
+def make_directory_path(name, directory, path, **kwargs):
     """Helper function to generate a directory_path target and return its label.
 
     Args:
-        name: Unique name for the generated `directory_path` target.
-        directory: a TreeArtifact (ctx.actions.declare_directory)
-        path: path relative to the directory
+        name: unique name for the generated `directory_path` target
+        directory: `directory` attribute passed to generated `directory_path` target
+        path: `path` attribute passed to generated `directory_path` target
+        **kwargs: parameters to pass to generated `output_files` target
 
     Returns:
         The label `name`
@@ -51,10 +52,11 @@ def make_directory_path(name, directory, path):
         name = name,
         directory = directory,
         path = path,
+        **kwargs
     )
     return _to_label(name)
 
-def make_directory_paths(name, dict):
+def make_directory_paths(name, dict, **kwargs):
     """Helper function to convert a dict of directory to path mappings to directory_path targets and labels.
 
     For example,
@@ -104,6 +106,7 @@ def make_directory_paths(name, dict):
             The names are generated as zero-indexed `name + "_" + i`
 
         dict: The dictionary of directory keys to path or path list values.
+        **kwargs: additional parameters to pass to each generated target
 
     Returns:
         The label of the generated `directory_path` targets named `name + "_" + i`
@@ -124,5 +127,6 @@ def make_directory_paths(name, dict):
             "%s_%d" % (name, i),
             directory,
             path,
+            **kwargs
         ))
     return labels

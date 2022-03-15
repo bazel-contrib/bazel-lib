@@ -1,9 +1,9 @@
 load("//lib/tests/write_source_files:write_source_file_test.bzl", "write_source_file_test")
-load("//lib/tests:default_output_gen.bzl", "default_output_gen")
+load("//lib/tests:generate_outputs.bzl", "generate_outputs")
 load("//lib:write_source_files.bzl", "write_source_files")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:directory_path.bzl", "directory_path")
-load("//lib:default_info_files.bzl", "default_info_files")
+load("//lib:output_files.bzl", "output_files")
 
 genrule(
     name = "a-desired",
@@ -11,20 +11,20 @@ genrule(
     cmd = "echo 'console.log(\"a*\");' > $@",
 )
 
-default_output_gen(
+generate_outputs(
     name = "b_c-desired",
-    out_contents = [
+    output_contents = [
         """console.log(\"b*\");
 """,
         "not used!",
     ],
-    out_files = [
+    output_files = [
         "b-desired.js",
         "c-desired.js",
     ],
 )
 
-default_info_files(
+output_files(
     name = "b-desired",
     paths = ["%s/b-desired.js" % package_name()],
     target = ":b_c-desired",
@@ -61,6 +61,27 @@ directory_path(
     path = "f-contained.js",
 )
 
+generate_outputs(
+    name = "g_h-desired",
+    output_contents = [
+        """console.log(\"g*\");
+""",
+        "not used!",
+    ],
+    output_files = [
+        "g-desired.js",
+        "h-desired.js",
+    ],
+    output_group = "gh_output_group",
+)
+
+output_files(
+    name = "g-desired",
+    output_group = "gh_output_group",
+    paths = ["%s/g-desired.js" % package_name()],
+    target = ":g_h-desired",
+)
+
 write_source_file_test(
     name = "write_to_source_files_a_test",
     in_file = ":a-desired",
@@ -79,6 +100,12 @@ write_source_file_test(
     out_file = "f.js",
 )
 
+write_source_file_test(
+    name = "write_to_source_files_g_test",
+    in_file = ":g-desired",
+    out_file = "g.js",
+)
+
 write_source_files(
     name = "macro_smoke_test",
     additional_update_targets = [
@@ -89,5 +116,6 @@ write_source_files(
         "b2.js": ":b-desired",
         "e2_dir": ":e_dir-desired",
         "f2.js": ":f-desired",
+        "g2.js": ":g-desired",
     },
 )
