@@ -49,8 +49,8 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
-    name = "default_info_files",
-    bzl_library_target = "//lib:default_info_files",
+    name = "output_files",
+    bzl_library_target = "//lib:output_files",
 )
 
 update_docs()

@@ -64,10 +64,10 @@ bzl_library(
 )
 
 bzl_library(
-    name = "default_info_files",
-    srcs = ["default_info_files.bzl"],
+    name = "output_files",
+    srcs = ["output_files.bzl"],
     visibility = ["//visibility:public"],
-    deps = ["//lib/private:default_info_files"],
+    deps = ["//lib/private:output_files"],
 )
 
 bzl_library(

@@ -50,7 +50,7 @@ Joins a label pointing to a TreeArtifact with a path nested within that director
 ## make_directory_path
 
 <pre>
-make_directory_path(<a href="#make_directory_path-name">name</a>, <a href="#make_directory_path-directory">directory</a>, <a href="#make_directory_path-path">path</a>)
+make_directory_path(<a href="#make_directory_path-name">name</a>, <a href="#make_directory_path-directory">directory</a>, <a href="#make_directory_path-path">path</a>, <a href="#make_directory_path-kwargs">kwargs</a>)
 </pre>
 
 Helper function to generate a directory_path target and return its label.
@@ -60,9 +60,10 @@ Helper function to generate a directory_path target and return its label.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="make_directory_path-name"></a>name |  Unique name for the generated <code>directory_path</code> target.   |  none |
-| <a id="make_directory_path-directory"></a>directory |  a TreeArtifact (ctx.actions.declare_directory)   |  none |
-| <a id="make_directory_path-path"></a>path |  path relative to the directory   |  none |
+| <a id="make_directory_path-name"></a>name |  unique name for the generated <code>directory_path</code> target   |  none |
+| <a id="make_directory_path-directory"></a>directory |  <code>directory</code> attribute passed to generated <code>directory_path</code> target   |  none |
+| <a id="make_directory_path-path"></a>path |  <code>path</code> attribute passed to generated <code>directory_path</code> target   |  none |
+| <a id="make_directory_path-kwargs"></a>kwargs |  parameters to pass to generated <code>output_files</code> target   |  none |
 
 **RETURNS**
 
@@ -74,7 +75,7 @@ The label `name`
 ## make_directory_paths
 
 <pre>
-make_directory_paths(<a href="#make_directory_paths-name">name</a>, <a href="#make_directory_paths-dict">dict</a>)
+make_directory_paths(<a href="#make_directory_paths-name">name</a>, <a href="#make_directory_paths-dict">dict</a>, <a href="#make_directory_paths-kwargs">kwargs</a>)
 </pre>
 
 Helper function to convert a dict of directory to path mappings to directory_path targets and labels.
@@ -128,6 +129,7 @@ and the list of targets is returned,
 | :------------- | :------------- | :------------- |
 | <a id="make_directory_paths-name"></a>name |  The target name to use for the generated targets & labels.<br><br>The names are generated as zero-indexed <code>name + "_" + i</code>   |  none |
 | <a id="make_directory_paths-dict"></a>dict |  The dictionary of directory keys to path or path list values.   |  none |
+| <a id="make_directory_paths-kwargs"></a>kwargs |  additional parameters to pass to each generated target   |  none |
 
 **RETURNS**
 
