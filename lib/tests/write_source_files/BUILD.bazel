@@ -119,3 +119,16 @@ write_source_files(
         "g2.js": ":g-desired",
     },
 )
+
+genrule(
+    name = "dist",
+    outs = ["dist.js"],
+    cmd = "echo 'dist' > $@",
+)
+
+# ibazel run //lib/tests/write_source_files:write_dist
+write_source_files(
+    name = "write_dist",
+    diff_test = False,
+    files = {"dist.js": ":dist"},
+)

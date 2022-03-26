@@ -1,11 +1,135 @@
 "write_source_file implementation"
 
-load("//lib:utils.bzl", "is_external_label")
 load(":directory_path.bzl", "DirectoryPathInfo")
+load(":diff_test.bzl", _diff_test = "diff_test")
+load(":fail_with_message_test.bzl", "fail_with_message_test")
+load(":utils.bzl", "utils")
+
+def write_source_file(
+        name,
+        in_file = None,
+        out_file = None,
+        additional_update_targets = [],
+        suggested_update_target = None,
+        diff_test = True,
+        **kwargs):
+    """Write a file or folder to the output tree. Stamp out tests that ensure the sources exist and are up to date.
+
+    Args:
+        name: Name of the executable target that creates or updates the source file
+        in_file: File to use as the desired content to write to out_file. If in_file is a TreeArtifact then entire directory contents are copied.
+        out_file: The file to write to in the source tree. Must be within the same bazel package as the target.
+        additional_update_targets: List of other write_source_file or other executable updater targets to call in the same run
+        suggested_update_target: Label of the write_source_file target to suggest running when files are out of date
+        diff_test: Generate a test target to check that the source file(s) exist and are up to date with the generated files(s).
+        **kwargs: Other common named parameters such as `tags` or `visibility`
+    """
+    if out_file:
+        if not in_file:
+            fail("in_file must be specified if out_file is set")
+
+    if in_file:
+        if not out_file:
+            fail("out_file must be specified if in_file is set")
+
+    if in_file and out_file:
+        in_file = utils.to_label(in_file)
+        out_file = utils.to_label(out_file)
+
+        if utils.is_external_label(out_file):
+            fail("out file %s must be in the user workspace" % out_file)
+        if out_file.package != native.package_name():
+            fail("out file %s (in package '%s') must be a source file within the target's package: '%s'" % (out_file, out_file.package, native.package_name()))
+
+    _write_source_file(
+        name = name,
+        in_file = in_file,
+        out_file = out_file.name if out_file else None,
+        additional_update_targets = additional_update_targets,
+        is_windows = select({
+            "@bazel_tools//src/conditions:host_windows": True,
+            "//conditions:default": False,
+        }),
+        **kwargs
+    )
+
+    if not in_file or not out_file or not diff_test:
+        return
+
+    out_file_missing = _is_file_missing(out_file)
+    test_target_name = "%s_test" % name
+
+    if out_file_missing:
+        if suggested_update_target == None:
+            message = """
+
+%s does not exist. To create & update this file, run:
+
+    bazel run //%s:%s
+
+""" % (out_file, native.package_name(), name)
+        else:
+            message = """
+
+%s does not exist. To create & update this and other generated files, run:
+
+    bazel run %s
+
+To create an update *only* this file, run:
+
+    bazel run //%s:%s
+
+""" % (out_file, utils.to_label(suggested_update_target), native.package_name(), name)
+
+        # Stamp out a test that fails with a helpful message when the source file doesn't exist.
+        # Note that we cannot simply call fail() here since it will fail during the analysis
+        # phase and prevent the user from calling bazel run //update/the:file.
+        fail_with_message_test(
+            name = test_target_name,
+            message = message,
+            visibility = kwargs.get("visibility"),
+            tags = kwargs.get("tags"),
+        )
+    else:
+        if suggested_update_target == None:
+            message = """
+
+%s is out of date. To update this file, run:
+
+    bazel run //%s:%s
+
+""" % (out_file, native.package_name(), name)
+        else:
+            message = """
+
+%s is out of date. To update this and other generated files, run:
+
+    bazel run %s
+
+To update *only* this file, run:
+
+    bazel run //%s:%s
+
+""" % (out_file, utils.to_label(suggested_update_target), native.package_name(), name)
+
+        # Stamp out a diff test the check that the source file is up to date
+        _diff_test(
+            name = test_target_name,
+            file1 = in_file,
+            file2 = out_file,
+            failure_message = message,
+            **kwargs
+        )
 
 _write_source_file_attrs = {
     "in_file": attr.label(allow_files = True, mandatory = False),
-    "out_file": attr.label(allow_files = True, mandatory = False),
+    # out_file is intentionally an attr.string() and not a attr.label(). This is so that
+    # bazel query 'kind("source file", deps(//path/to:target))' does not return
+    # out_file in the list of source file deps. ibazel uses this query to determine
+    # which source files to watch so if the out_file is returned then ibazel watches
+    # and it goes into an infinite update, notify loop when running this target.
+    # See https://github.com/aspect-build/bazel-lib/pull/52 for more context.
+    "out_file": attr.string(mandatory = False),
     "additional_update_targets": attr.label_list(cfg = "host", mandatory = False),
     "is_windows": attr.bool(mandatory = True),
 }
@@ -120,17 +244,10 @@ if exist "%in%\\*" (
     return updater
 
 def _write_source_file_impl(ctx):
-    if ctx.attr.out_file:
-        if not ctx.attr.in_file:
-            fail("in_file must be specified if out_file is set")
-        if is_external_label(ctx.attr.out_file.label):
-            fail("out file %s must be in the user workspace" % ctx.attr.out_file.label)
-        if ctx.attr.out_file.label.package != ctx.label.package:
-            fail("out file %s (in package '%s') must be a source file within the target's package: '%s'" % (ctx.attr.out_file.label, ctx.attr.out_file.label.package, ctx.label.package))
-
+    if ctx.attr.out_file and not ctx.attr.in_file:
+        fail("in_file must be specified if out_file is set")
     if ctx.attr.in_file and not ctx.attr.out_file:
-        if not ctx.attr.in_file:
-            fail("out_file must be specified if in_file is set")
+        fail("out_file must be specified if in_file is set")
 
     paths = []
     runfiles = []
@@ -149,12 +266,7 @@ def _write_source_file_impl(ctx):
         else:
             fail("in file %s must be a single file or a target that provides DefaultOutputPathInfo or DirectoryPathInfo" % ctx.attr.in_file.label)
 
-        if len(ctx.files.out_file) != 1:
-            fail("out file %s must be a single file or directory" % ctx.attr.out_file.label)
-        elif not ctx.files.out_file[0].is_source:
-            fail("out file %s must be a source file or directory, not a generated file" % ctx.attr.out_file.label)
-
-        out_path = ctx.files.out_file[0].short_path
+        out_path = "/".join([ctx.label.package, ctx.attr.out_file])
         paths.append((in_path, out_path))
 
     if ctx.attr.is_windows:
@@ -180,7 +292,19 @@ def _write_source_file_impl(ctx):
         ),
     ]
 
-write_source_file_lib = struct(
+_write_source_file = rule(
     attrs = _write_source_file_attrs,
     implementation = _write_source_file_impl,
+    executable = True,
 )
+
+def _is_file_missing(label):
+    """Check if a file is missing by passing its relative path through a glob()
+
+    Args
+        label: the file's label
+    """
+    file_abs = "%s/%s" % (label.package, label.name)
+    file_rel = file_abs[len(native.package_name()) + 1:]
+    file_glob = native.glob([file_rel], exclude_directories = 0)
+    return len(file_glob) == 0

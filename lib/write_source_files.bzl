@@ -2,19 +2,16 @@
 
 load(
     "//lib/private:write_source_file.bzl",
-    _lib = "write_source_file_lib",
-)
-load("//lib:utils.bzl", _to_label = "to_label")
-load("//lib/private:diff_test.bzl", _diff_test = "diff_test")
-load("//lib/private:fail_with_message_test.bzl", "fail_with_message_test")
-
-_write_source_file = rule(
-    attrs = _lib.attrs,
-    implementation = _lib.implementation,
-    executable = True,
+    _write_source_file = "write_source_file",
 )
 
-def write_source_files(name, files = {}, additional_update_targets = [], suggested_update_target = None, **kwargs):
+def write_source_files(
+        name,
+        files = {},
+        additional_update_targets = [],
+        suggested_update_target = None,
+        diff_test = True,
+        **kwargs):
     """Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
     Usage:
@@ -90,6 +87,7 @@ def write_source_files(name, files = {}, additional_update_targets = [], suggest
             Sources must be within the same bazel package as the target.
         additional_update_targets: (Optional) List of other write_source_file or other executable updater targets to call in the same run
         suggested_update_target: (Optional) Label of the write_source_file target to suggest running when files are out of date
+        diff_test: (Optional) Generate a test target to check that the source file(s) exist and are up to date with the generated files(s).
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
 
@@ -97,9 +95,6 @@ def write_source_files(name, files = {}, additional_update_targets = [], suggest
     update_targets = []
     for i, pair in enumerate(files.items()):
         out_file, in_file = pair
-
-        in_file = _to_label(in_file)
-        out_file = _to_label(out_file)
 
         if single_update_target:
             update_target_name = name
@@ -113,102 +108,16 @@ def write_source_files(name, files = {}, additional_update_targets = [], suggest
             in_file = in_file,
             out_file = out_file,
             additional_update_targets = additional_update_targets if single_update_target else [],
-            is_windows = select({
-                "@bazel_tools//src/conditions:host_windows": True,
-                "//conditions:default": False,
-            }),
-            visibility = kwargs.get("visibility"),
-            tags = kwargs.get("tags"),
+            suggested_update_target = suggested_update_target,
+            diff_test = diff_test,
+            **kwargs
         )
-
-        out_file_missing = _is_file_missing(out_file)
-
-        if single_update_target:
-            test_target_name = "%s_test" % name
-        else:
-            test_target_name = "%s_%d_test" % (name, i)
-
-        if out_file_missing:
-            if suggested_update_target == None:
-                message = """
-
-%s does not exist. To create & update this file, run:
-
-    bazel run //%s:%s
-
-""" % (out_file, native.package_name(), name)
-            else:
-                message = """
-
-%s does not exist. To create & update this and other generated files, run:
-
-    bazel run %s
-
-To create an update *only* this file, run:
-
-    bazel run //%s:%s
-
-""" % (out_file, _to_label(suggested_update_target), native.package_name(), name)
-
-            # Stamp out a test that fails with a helpful message when the source file doesn't exist.
-            # Note that we cannot simply call fail() here since it will fail during the analysis
-            # phase and prevent the user from calling bazel run //update/the:file.
-            fail_with_message_test(
-                name = test_target_name,
-                message = message,
-                visibility = kwargs.get("visibility"),
-                tags = kwargs.get("tags"),
-            )
-        else:
-            if suggested_update_target == None:
-                message = """
-
-%s is out of date. To update this file, run:
-
-    bazel run //%s:%s
-
-""" % (out_file, native.package_name(), name)
-            else:
-                message = """
-
-%s is out of date. To update this and other generated files, run:
-
-    bazel run %s
-
-To update *only* this file, run:
-
-    bazel run //%s:%s
-
-""" % (out_file, _to_label(suggested_update_target), native.package_name(), name)
-
-            # Stamp out a diff test the check that the source file is up to date
-            _diff_test(
-                name = test_target_name,
-                file1 = in_file,
-                file2 = out_file,
-                failure_message = message,
-                **kwargs
-            )
 
     if not single_update_target:
         _write_source_file(
             name = name,
             additional_update_targets = update_targets + additional_update_targets,
-            is_windows = select({
-                "@bazel_tools//src/conditions:host_windows": True,
-                "//conditions:default": False,
-            }),
-            visibility = kwargs.get("visibility"),
-            tags = kwargs.get("tags"),
+            suggested_update_target = suggested_update_target,
+            diff_test = False,
+            **kwargs
         )
-
-def _is_file_missing(label):
-    """Check if a file is missing by passing its relative path through a glob()
-
-    Args
-        label: the file's label
-    """
-    file_abs = "%s/%s" % (label.package, label.name)
-    file_rel = file_abs[len(native.package_name()) + 1:]
-    file_glob = native.glob([file_rel], exclude_directories = 0)
-    return len(file_glob) == 0
