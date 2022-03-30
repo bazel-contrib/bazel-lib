@@ -1,0 +1,59 @@
+load("//lib:transitions.bzl", "platform_transition_filegroup")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+
+platform(
+    name = "armv7_linux",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:armv7",
+    ],
+)
+
+platform(
+    name = "x86_64_linux",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+config_setting(
+    name = "is_x86",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+# Simple test fixture that produces something different depending on the
+# target platform.
+filegroup(
+    name = "platform_description",
+    srcs = select({
+        ":is_x86": ["linux_x86.txt"],
+        "//conditions:default": ["linux_arm.txt"],
+    }),
+)
+
+platform_transition_filegroup(
+    name = "for_x86",
+    srcs = ["platform_description"],
+    target_platform = ":x86_64_linux",
+)
+
+platform_transition_filegroup(
+    name = "for_arm",
+    srcs = ["platform_description"],
+    target_platform = ":armv7_linux",
+)
+
+diff_test(
+    name = "test_x86",
+    file1 = "for_x86",
+    file2 = "linux_x86.txt",
+)
+
+diff_test(
+    name = "test_arm",
+    file1 = "for_arm",
+    file2 = "linux_arm.txt",
+)
