@@ -266,7 +266,7 @@ def _write_source_file_impl(ctx):
         else:
             fail("in file %s must be a single file or a target that provides DefaultOutputPathInfo or DirectoryPathInfo" % ctx.attr.in_file.label)
 
-        out_path = "/".join([ctx.label.package, ctx.attr.out_file])
+        out_path = "/".join([ctx.label.package, ctx.attr.out_file]) if ctx.label.package else ctx.attr.out_file
         paths.append((in_path, out_path))
 
     if ctx.attr.is_windows:
