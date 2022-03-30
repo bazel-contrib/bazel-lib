@@ -34,3 +34,6 @@ jobs:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
         run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+      - name: integration tests
+        # Find all shell scripts within e2e, echo the filename, execute, fail on error
+        run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && "$0" || kill $PPID' \{\} \;
