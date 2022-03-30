@@ -53,4 +53,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:output_files",
 )
 
+stardoc_with_diff_test(
+    name = "transitions",
+    bzl_library_target = "//lib:transitions",
+)
+
 update_docs()
