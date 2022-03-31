@@ -1,5 +1,6 @@
 "tests for libs"
 
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:expand_make_vars.bzl", "expand_template")
 load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
@@ -39,4 +40,10 @@ expand_template(
 sh_test(
     name = "expand_template_test",
     srcs = ["expand_template"],
+)
+
+bzl_library(
+    name = "generate_outputs",
+    srcs = ["generate_outputs.bzl"],
+    visibility = ["//visibility:public"],
 )
