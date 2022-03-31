@@ -20,3 +20,17 @@ bzl_library(
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
 )
+
+# write_source_files() to a git ignored subdirectory of the root
+load("//lib:write_source_files.bzl", "write_source_files")
+genrule(
+    name = "write_source_file_root",
+    outs = ["write_source_file-root_directory"],
+    cmd = "mkdir -p $@ && echo 'test' > $@/test.txt",
+    visibility = ["//visibility:private"],
+)
+write_source_files(
+    name = "write_source_file_root-test",
+    diff_test = False,
+    files = {"test-out/dist/write_source_file_root-test": ":write_source_file_root"},
+)
