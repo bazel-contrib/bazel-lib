@@ -90,7 +90,7 @@ if [[ -f "{src}" ]]; then
     cp -f "{src}" "{dst}"
 else
     mkdir -p "{dst}"
-    cp -rf "{src}"/* "{dst}"
+    cp -fR "{src}"/* "{dst}"
 fi
 """.format(src = src_path, dst_dir = skylib_paths.dirname(dst_path), dst = dst_path))
 
