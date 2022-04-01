@@ -234,7 +234,7 @@ if exist "%in%\\*" (
         "@rem Run the update scripts for all write_source_file deps",
     ])
     for update_script in additional_update_scripts:
-        contents.append("call {update_script".format(update_script = update_script.short_path))
+        contents.append("call {update_script}".format(update_script = update_script.short_path))
 
     ctx.actions.write(
         output = updater,
