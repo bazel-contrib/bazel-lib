@@ -3,6 +3,11 @@
 load("//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 
 stardoc_with_diff_test(
+    name = "copy_file",
+    bzl_library_target = "//lib:copy_file",
+)
+
+stardoc_with_diff_test(
     name = "copy_to_directory",
     bzl_library_target = "//lib:copy_to_directory",
 )
@@ -51,6 +56,11 @@ stardoc_with_diff_test(
 stardoc_with_diff_test(
     name = "output_files",
     bzl_library_target = "//lib:output_files",
+)
+
+stardoc_with_diff_test(
+    name = "run_binary",
+    bzl_library_target = "//lib:run_binary",
 )
 
 stardoc_with_diff_test(

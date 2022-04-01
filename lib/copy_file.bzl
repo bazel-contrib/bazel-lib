@@ -25,6 +25,8 @@ The 'copy_file' rule does this with a simpler interface than genrule.
 
 The rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command
 on Windows (no Bash is required).
+
+This fork of bazel-skylib's copy_file adds directory support.
 """
 
 load(
