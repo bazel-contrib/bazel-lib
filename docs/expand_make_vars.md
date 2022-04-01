@@ -44,7 +44,7 @@ expand_locations(<a href="#expand_locations-ctx">ctx</a>, <a href="#expand_locat
 
 Expand location templates.
 
-Expands all `$(execpath ...)`, `$(rootpath ...)` and legacy `$(location ...)` templates in the
+Expands all `$(execpath ...)`, `$(rootpath ...)` and deprecated `$(location ...)` templates in the
 given string by replacing with the expanded path. Expansion only works for labels that point to direct dependencies
 of this rule or that are explicitly listed in the optional argument targets.
 
@@ -64,20 +64,7 @@ This is of the format:
 - `<bin_dir>/path/to/file`
 - `<bin_dir>/external/external_repo/path/to/file`
 
-The legacy `$(location)` and `$(locations)` expansions are deprecated as they return the runfiles manifest path of the
-format `repo/path/to/file` which behave differently than the built-in `$(location)` expansion in args of *_binary
-and *_test rules which returns the rootpath.
-See https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-binaries.
-
-The legacy `$(location)` and `$(locations)` expansion also differs from how the builtin `ctx.expand_location()` expansions
-of `$(location)` and `$(locations)` behave as that function returns either the execpath or rootpath depending on the context.
-See https://docs.bazel.build/versions/main/be/make-variables.html#predefined_label_variables.
-
-The behavior of `$(location)` and `$(locations)` expansion will be fixed in a future major release to match the
-to default Bazel behavior and return the same path as `ctx.expand_location()` returns for these.
-
-The recommended approach is to now use `$(rootpath)` where you previously used $(location). See the docstrings
-of `nodejs_binary` or `params_file` for examples of how to use `$(rootpath)` in `templated_args` and `args` respectively.
+The deprecated `$(location)` and `$(locations)` expansions returns either the execpath or rootpath depending on the context.
 
 
 **PARAMETERS**

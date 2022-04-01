@@ -6,6 +6,13 @@ exports_files(
 )
 
 bzl_library(
+    name = "copy_file",
+    srcs = ["copy_file.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [":directory_path"],
+)
+
+bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
     visibility = ["//lib:__subpackages__"],
@@ -96,4 +103,14 @@ bzl_library(
     name = "diff_test",
     srcs = ["diff_test.bzl"],
     visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
+    name = "run_binary",
+    srcs = ["run_binary.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [
+        ":expand_make_vars",
+        "@bazel_skylib//lib:dicts",
+    ],
 )

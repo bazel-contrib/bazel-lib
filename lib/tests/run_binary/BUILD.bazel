@@ -1,0 +1,58 @@
+"tests for run_binary"
+
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:run_binary.bzl", "run_binary")
+load("//lib:diff_test.bzl", "diff_test")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+
+write_file(
+    name = "make_dir_a_sh",
+    out = "make_dir_a.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        "outdir=$1",
+        "echo 'foo' > \"$outdir/foo\"",
+        "echo 'bar' > \"$outdir/bar\"",
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "make_dir_a",
+    srcs = [":make_dir_a.sh"],
+)
+
+# target-under-test
+run_binary(
+    name = "dir_a",
+    args = ["$(@D)"],
+    output_dir = True,
+    tool = ":make_dir_a",
+)
+
+genrule(
+    name = "make_foo",
+    outs = ["foo"],
+    cmd = "echo 'foo' > $@",
+)
+
+genrule(
+    name = "make_bar",
+    outs = ["bar"],
+    cmd = "echo 'bar' > $@",
+)
+
+copy_to_directory(
+    name = "dir_b",
+    srcs = [
+        ":make_bar",
+        ":make_foo",
+    ],
+)
+
+diff_test(
+    name = "dir_test",
+    file1 = ":dir_a",
+    file2 = ":dir_b",
+)

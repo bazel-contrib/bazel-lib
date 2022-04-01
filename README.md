@@ -1,9 +1,9 @@
 # Aspect's Bazel helpers library
 
-This is code we would contribute to bazel-skylib,
-but the declared scope of that project is narrow
-and it's very difficult to get anyone's attention
-to review PRs there.
+This is code we would contribute to
+[bazel-skylib](https://github.com/bazelbuild/bazel-skylib), but the declared
+scope of that project is narrow and it's very difficult to get anyone's
+attention to review PRs there.
 
 ## Installation
 
