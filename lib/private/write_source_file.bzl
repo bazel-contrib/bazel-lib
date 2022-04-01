@@ -239,7 +239,7 @@ if exist "%in%\\*" (
     ctx.actions.write(
         output = updater,
         is_executable = True,
-        context = "\n".join(contents).replace("\n", "\r\n"),
+        content = "\n".join(contents).replace("\n", "\r\n"),
     )
     return updater
 
