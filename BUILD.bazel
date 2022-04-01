@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+load("//lib:write_source_files.bzl", "write_source_files")
 
 gazelle_binary(
     name = "gazelle_bin",
@@ -22,13 +23,13 @@ bzl_library(
 )
 
 # write_source_files() to a git ignored subdirectory of the root
-load("//lib:write_source_files.bzl", "write_source_files")
 genrule(
     name = "write_source_file_root",
     outs = ["write_source_file-root_directory"],
     cmd = "mkdir -p $@ && echo 'test' > $@/test.txt",
     visibility = ["//visibility:private"],
 )
+
 write_source_files(
     name = "write_source_file_root-test",
     diff_test = False,
