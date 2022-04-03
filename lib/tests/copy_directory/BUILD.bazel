@@ -1,0 +1,37 @@
+"Tests for copy_directory"
+
+load("//lib:diff_test.bzl", "diff_test")
+load("//lib:copy_directory.bzl", "copy_directory")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+
+genrule(
+    name = "a_file",
+    outs = ["a"],
+    cmd = "echo 'foo' > $@",
+)
+
+genrule(
+    name = "b_file",
+    outs = ["a2"],
+    cmd = "echo 'bar' > $@",
+)
+
+copy_to_directory(
+    name = "dir",
+    srcs = [
+        ":a_file",
+        ":b_file",
+    ],
+)
+
+copy_directory(
+    name = "dir_copy",
+    src = "dir",
+    out = "copy_of_dir",
+)
+
+diff_test(
+    name = "copy_directory_test",
+    file1 = ":dir",
+    file2 = ":dir_copy",
+)

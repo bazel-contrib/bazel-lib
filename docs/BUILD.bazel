@@ -8,6 +8,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "copy_directory",
+    bzl_library_target = "//lib:copy_directory",
+)
+
+stardoc_with_diff_test(
     name = "copy_to_directory",
     bzl_library_target = "//lib:copy_to_directory",
 )

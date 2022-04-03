@@ -77,6 +77,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "copy_directory",
+    srcs = ["copy_directory.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:copy_directory"],
+)
+
+bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
     visibility = ["//visibility:public"],
