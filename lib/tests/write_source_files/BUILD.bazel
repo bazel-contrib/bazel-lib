@@ -132,3 +132,15 @@ write_source_files(
     diff_test = False,
     files = {"dist.js": ":dist"},
 )
+
+genrule(
+    name = "subdir",
+    outs = ["subdir_test"],
+    cmd = "mkdir -p $@/a/b/c; echo 'test' > $@/a/b/c/test.txt",
+)
+
+write_source_files(
+    name = "write_subdir",
+    diff_test = False,
+    files = {"subdir_test": ":subdir_test"},
+)

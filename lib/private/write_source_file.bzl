@@ -164,11 +164,9 @@ echo "Copying $in to $out in $PWD"
 
 if [[ -f "$in" ]]; then
     cp -f "$in" "$out"
-    chmod 664 "$out"
 else
     mkdir -p "$out"
     cp -fR "$in"/* "$out"
-    chmod 664 "$out"/*
 fi
 """.format(in_path = in_path, out_path = out_path))
 
