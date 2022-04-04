@@ -1,11 +1,10 @@
-load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
+load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
 
 [
-    copy_file(
+    copy_directory(
         name = "%s" % d,
         src = "dir_%s" % d,
         out = "%s" % d,
-        is_directory = True,
         visibility = ["//visibility:public"],
     )
     for d in [
