@@ -1,16 +1,15 @@
 "tests for copy_to_directory"
 
 load("//lib:diff_test.bzl", "diff_test")
-load("//lib:copy_file.bzl", "copy_file")
+load("//lib:copy_directory.bzl", "copy_directory")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:directory_path.bzl", "make_directory_paths")
 
 [
-    copy_file(
+    copy_directory(
         name = "%s" % d,
         src = "dir_%s" % d,
         out = "%s" % d,
-        is_directory = True,
     )
     for d in [
         "a",
