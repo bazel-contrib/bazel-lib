@@ -166,6 +166,7 @@ if [[ -f "$in" ]]; then
     cp -f "$in" "$out"
     chmod +w "$out"
 else
+    rm -Rf "$out"
     mkdir -p "$out"
     cp -fR "$in"/* "$out"
     chmod -R +w "$out"/*
