@@ -136,7 +136,11 @@ write_source_files(
 genrule(
     name = "subdir",
     outs = ["subdir_test"],
-    cmd = "mkdir -p $@/a/b/c; echo 'test' > $@/a/b/c/test.txt",
+    cmd = ";".join([
+        "mkdir -p $@/a/b/c",
+        "echo 'test' > $@/a/b/c/test.txt",
+        "chmod -w $@/a/b/c/test.txt"
+    ]),
 )
 
 write_source_files(
