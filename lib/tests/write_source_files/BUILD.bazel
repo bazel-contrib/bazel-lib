@@ -127,8 +127,49 @@ genrule(
 )
 
 # ibazel run //lib/tests/write_source_files:write_dist
+# See e2e/write_source_files_gitignored
 write_source_files(
     name = "write_dist",
     diff_test = False,
     files = {"dist.js": ":dist"},
+)
+
+# Generate a readonly file in nested readonly directories
+genrule(
+    name = "subdir",
+    outs = ["subdir_test"],
+    cmd = ";".join([
+        "mkdir -p $@/a/b/c",
+        "echo 'test' > $@/a/b/c/test.txt",
+        "chmod -R -w $@/*"
+    ]),
+)
+
+# Write nested subdirectories to source
+# See e2e/write_source_files_subdir_multiple_runs
+write_source_files(
+    name = "write_subdir",
+    diff_test = False,
+    files = {"subdir_test": ":subdir"},
+)
+
+
+# Generate some directories including symlinks
+genrule(
+    name = "symlinks",
+    outs = ["symlink_test"],
+    cmd = ";".join([
+        "mkdir -p $@/a $@/b",
+        "echo 'test' > $@/a/test.txt",
+        "pushd $@/b",
+        "ln -s ../a/test.txt",
+    ]),
+)
+
+# Write symlinks to source
+# See e2e/write_source_files_symlinks
+write_source_files(
+    name = "write_symlinks",
+    diff_test = False,
+    files = {"symlink_test": ":symlinks"},
 )
