@@ -134,14 +134,14 @@ write_source_files(
     files = {"dist.js": ":dist"},
 )
 
-# Generate a readonly file in a nested dir
+# Generate a readonly file in nested readonly directories
 genrule(
     name = "subdir",
     outs = ["subdir_test"],
     cmd = ";".join([
         "mkdir -p $@/a/b/c",
         "echo 'test' > $@/a/b/c/test.txt",
-        "chmod -w $@/a/b/c/test.txt"
+        "chmod -R -w $@/*"
     ]),
 )
 
