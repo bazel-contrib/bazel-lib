@@ -168,7 +168,7 @@ if [[ -f "$in" ]]; then
 else
     rm -Rf "$out"
     mkdir -p "$out"
-    cp -fRl "$in"/* "$out"
+    cp -fRL "$in"/* "$out"
     chmod -R +w "$out"/*
 fi
 """.format(in_path = in_path, out_path = out_path))
