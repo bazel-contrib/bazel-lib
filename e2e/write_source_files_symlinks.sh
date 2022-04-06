@@ -9,5 +9,10 @@ bazel run //lib/tests/write_source_files:write_symlinks
 [ -e lib/tests/write_source_files/symlink_test/b/test.txt ]
 
 # Exit if any symlinks
-[ -L lib/tests/write_source_files/symlink_test/a/test.txt ] && exit 1
-[ -L lib/tests/write_source_files/symlink_test/b/test.txt ] && exit 1
+if [ -L lib/tests/write_source_files/symlink_test/a/test.txt ]; then
+    exit 1
+fi
+
+if [ -L lib/tests/write_source_files/symlink_test/b/test.txt ]; then
+    exit 1
+fi
