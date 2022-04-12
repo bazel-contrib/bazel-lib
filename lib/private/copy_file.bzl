@@ -35,8 +35,7 @@ _execution_requirements = {
     "no-remote-exec": "1",
 }
 
-# buildifier: disable=function-docstring
-def copy_cmd(ctx, src_file, src_path, dst):
+def _copy_cmd(ctx, src, src_path, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -63,7 +62,7 @@ def copy_cmd(ctx, src_file, src_path, dst):
         is_executable = True,
     )
     ctx.actions.run(
-        inputs = [src_file],
+        inputs = [src],
         tools = [bat],
         outputs = [dst],
         executable = "cmd.exe",
@@ -74,14 +73,13 @@ def copy_cmd(ctx, src_file, src_path, dst):
         execution_requirements = _execution_requirements,
     )
 
-# buildifier: disable=function-docstring
-def copy_bash(ctx, src_file, src_path, dst):
+def _copy_bash(ctx, src, src_path, dst):
     cmd_tmpl = "cp -f \"$1\" \"$2\""
     mnemonic = "CopyFile"
     progress_message = "Copying file %s" % src_path
 
     ctx.actions.run_shell(
-        tools = [src_file],
+        tools = [src],
         outputs = [dst],
         command = cmd_tmpl,
         arguments = [src_path, dst.path],
@@ -90,6 +88,35 @@ def copy_bash(ctx, src_file, src_path, dst):
         use_default_shell_env = True,
         execution_requirements = _execution_requirements,
     )
+
+def copy_file_action(ctx, src, dst, dir_path = None, is_windows = False):
+    """Helper function that creates an action to copy a file from src to dst.
+
+    If src is a TreeArtifact, dir_path must be specified as the path within
+    the TreeArtifact to the file to copy.
+
+    This helper is used by copy_file. It is exposed as a public API so it can be used within
+    other rule implementations.
+
+    Args:
+        ctx: The rule context.
+        src: The source file to copy or TreeArtifact to copy a single file out of.
+        dst: The destination file.
+        dir_path: If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.
+        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+    """
+    if dst.is_directory:
+        fail("dst must not be a TreeArtifact")
+    if src.is_directory:
+        if not dir_path:
+            fail("dir_path must be set if src is a TreeArtifact")
+        src_path = "/".join([src.path, dir_path])
+    else:
+        src_path = src.path
+    if is_windows:
+        _copy_cmd(ctx, src, src_path, dst)
+    else:
+        _copy_bash(ctx, src, src_path, dst)
 
 def _copy_file_impl(ctx):
     if ctx.attr.allow_symlink:
@@ -102,21 +129,20 @@ def _copy_file_impl(ctx):
             target_file = ctx.files.src[0],
             is_executable = ctx.attr.is_executable,
         )
+    elif DirectoryPathInfo in ctx.attr.src:
+        copy_file_action(
+            ctx,
+            ctx.attr.src[DirectoryPathInfo].directory,
+            ctx.outputs.out,
+            dir_path = ctx.attr.src[DirectoryPathInfo].path,
+            is_windows = ctx.attr.is_windows,
+        )
     else:
-        if DirectoryPathInfo in ctx.attr.src:
-            src_file = ctx.attr.src[DirectoryPathInfo].directory
-            src_path = "/".join([src_file.path, ctx.attr.src[DirectoryPathInfo].path])
-        else:
-            if len(ctx.files.src) != 1:
-                fail("src must be a single file or a target that provides a DirectoryPathInfo")
-            if ctx.files.src[0].is_directory:
-                fail("cannot use copy_file on a directory; try copy_directory instead")
-            src_file = ctx.files.src[0]
-            src_path = src_file.path
-        if ctx.attr.is_windows:
-            copy_cmd(ctx, src_file, src_path, ctx.outputs.out)
-        else:
-            copy_bash(ctx, src_file, src_path, ctx.outputs.out)
+        if len(ctx.files.src) != 1:
+            fail("src must be a single file or a target that provides a DirectoryPathInfo")
+        if ctx.files.src[0].is_directory:
+            fail("cannot use copy_file on a directory; try copy_directory instead")
+        copy_file_action(ctx, ctx.files.src[0], ctx.outputs.out, is_windows = ctx.attr.is_windows)
 
     files = depset(direct = [ctx.outputs.out])
     runfiles = ctx.runfiles(files = [ctx.outputs.out])

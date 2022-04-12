@@ -32,6 +32,8 @@ copy_file in the same package.
 load(
     "//lib/private:copy_file.bzl",
     _copy_file = "copy_file",
+    _copy_file_action = "copy_file_action",
 )
 
 copy_file = _copy_file
+copy_file_action = _copy_file_action
