@@ -31,8 +31,33 @@ for more context.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="copy_directory-name"></a>name |  Name of the rule.   |  none |
-| <a id="copy_directory-src"></a>src |  A Label. The directory to make a copy of. (Can also be the label of a rule that generates a directory.)   |  none |
+| <a id="copy_directory-src"></a>src |  The directory to make a copy of. Can be a source directory or TreeArtifact.   |  none |
 | <a id="copy_directory-out"></a>out |  Path of the output directory, relative to this package.   |  none |
 | <a id="copy_directory-kwargs"></a>kwargs |  further keyword arguments, e.g. <code>visibility</code>   |  none |
+
+
+<a id="#copy_directory_action"></a>
+
+## copy_directory_action
+
+<pre>
+copy_directory_action(<a href="#copy_directory_action-ctx">ctx</a>, <a href="#copy_directory_action-src">src</a>, <a href="#copy_directory_action-dst">dst</a>, <a href="#copy_directory_action-is_windows">is_windows</a>)
+</pre>
+
+Helper function that creates an action to copy a directory from src to dst.
+
+This helper is used by copy_directory. It is exposed as a public API so it can be used within
+other rule implementations.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="copy_directory_action-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="copy_directory_action-src"></a>src |  The directory to make a copy of. Can be a source directory or TreeArtifact.   |  none |
+| <a id="copy_directory_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
+| <a id="copy_directory_action-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
 
 
