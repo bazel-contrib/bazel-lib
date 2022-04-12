@@ -14,9 +14,6 @@
 
 """Fork of @bazel_tools//tools/build_defs/repo:utils.bzl patch function with
 working_directory argument added.
-
-Upstream code is at
-https://github.com/bazelbuild/bazel/blob/f4214746fcd15f0ef8c4e747ef8e3edca9f112a5/tools/build_defs/repo/utils.bzl#L87
 """
 
 load(":repo_utils.bzl", "repo_utils")
@@ -43,7 +40,7 @@ def _download_patch(ctx, patch_url, integrity, auth):
     )
     return patch_path
 
-def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_tool = None, patch_args = None, auth = None, patch_directory = None):
+def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_tool = None, patch_args = None, auth = None, working_directory = None):
     """Implementation of patching an already extracted repository.
 
     This rule is intended to be used in the implementation function of
@@ -65,7 +62,7 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
         patches. String.
       patch_args: Arguments to pass to the patch tool. List of strings.
       auth: An optional dict specifying authentication information for some of the URLs.
-      patch_directory: Directory to apply the patches in
+      working_directory: Working directory to apply the patches in
 
     """
     bash_exe = ctx.os.environ["BAZEL_SH"] if "BAZEL_SH" in ctx.os.environ else "bash"
@@ -118,7 +115,7 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
     ctx.delete(ctx.path(_REMOTE_PATCH_DIR))
 
     # Apply local patches
-    if native_patch and _use_native_patch(patch_args) and not patch_directory:
+    if native_patch and _use_native_patch(patch_args) and not working_directory:
         if patch_args:
             strip = int(patch_args[-1][2:])
         else:
@@ -135,20 +132,20 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
                     for arg in patch_args
                 ]),
             )
-            st = ctx.execute([bash_exe, "-c", command], working_directory = patch_directory)
+            st = ctx.execute([bash_exe, "-c", command], working_directory = working_directory)
             if st.return_code:
                 fail("Error applying patch %s:\n%s%s" %
                      (str(patchfile), st.stderr, st.stdout))
 
     if repo_utils.is_windows_os(ctx) and patch_cmds_win:
         for cmd in patch_cmds_win:
-            st = ctx.execute([powershell_exe, "/c", cmd], working_directory = patch_directory)
+            st = ctx.execute([powershell_exe, "/c", cmd], working_directory = working_directory)
             if st.return_code:
                 fail("Error applying patch command %s:\n%s%s" %
                      (cmd, st.stdout, st.stderr))
     else:
         for cmd in patch_cmds:
-            st = ctx.execute([bash_exe, "-c", cmd], working_directory = patch_directory)
+            st = ctx.execute([bash_exe, "-c", cmd], working_directory = working_directory)
             if st.return_code:
                 fail("Error applying patch command %s:\n%s%s" %
                      (cmd, st.stdout, st.stderr))

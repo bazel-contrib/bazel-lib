@@ -120,3 +120,16 @@ bzl_library(
         "@bazel_skylib//lib:dicts",
     ],
 )
+
+bzl_library(
+    name = "repo_utils",
+    srcs = ["repo_utils.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
+    name = "patch",
+    srcs = ["patch.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [":repo_utils"],
+)

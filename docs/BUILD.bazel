@@ -73,4 +73,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:transitions",
 )
 
+stardoc_with_diff_test(
+    name = "repo_utils",
+    bzl_library_target = "//lib:repo_utils",
+)
+
 update_docs()
