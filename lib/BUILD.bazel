@@ -127,3 +127,13 @@ bzl_library(
     srcs = ["windows_utils.bzl"],
     visibility = ["//visibility:public"],
 )
+
+bzl_library(
+    name = "repo_utils",
+    srcs = ["repo_utils.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/private:patch",
+        "//lib/private:repo_utils",
+    ],
+)
