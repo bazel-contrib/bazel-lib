@@ -45,6 +45,10 @@ def _diff_test_impl(ctx):
         file2 = ctx.files.file2[0]
         file2_path = _runfiles_path(file2)
 
+    if file1 == file2:
+        msg = "diff_test comparing the same file %s" % file1
+        fail(msg)
+
     if ctx.attr.is_windows:
         test_bin = ctx.actions.declare_file(ctx.label.name + "-test.bat")
         ctx.actions.write(

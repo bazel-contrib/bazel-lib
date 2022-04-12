@@ -1,0 +1,52 @@
+"tests for copy_to_bin"
+
+load("//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//lib:output_files.bzl", "output_files")
+
+copy_to_bin(
+    name = "copy",
+    srcs = [
+        "file1",
+        "file2",
+    ],
+)
+
+output_files(
+    name = "pull_out_file1",
+    paths = ["%s/file1" % package_name()],
+    target = ":copy",
+)
+
+output_files(
+    name = "pull_out_file2",
+    paths = ["%s/file2" % package_name()],
+    target = ":copy",
+)
+
+sh_test(
+    name = "file1_test",
+    srcs = ["test.sh"],
+    args = [
+        "lib/tests/copy_to_bin/file1",
+        "$(execpath file1)",
+        "$(execpath :pull_out_file1)",
+    ],
+    data = [
+        "file1",
+        ":pull_out_file1",
+    ],
+)
+
+sh_test(
+    name = "file2_test",
+    srcs = ["test.sh"],
+    args = [
+        "lib/tests/copy_to_bin/file2",
+        "$(execpath file2)",
+        "$(execpath :pull_out_file2)",
+    ],
+    data = [
+        "file2",
+        ":pull_out_file2",
+    ],
+)
