@@ -13,7 +13,6 @@ _execution_requirements = {
     "no-remote-exec": "1",
 }
 
-# buildifier: disable=function-docstring
 def _copy_cmd(ctx, src, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
@@ -53,7 +52,6 @@ def _copy_cmd(ctx, src, dst):
         execution_requirements = _execution_requirements,
     )
 
-# buildifier: disable=function-docstring
 def _copy_bash(ctx, src, dst):
     cmd = "rm -rf \"$2\" && cp -fR \"$1/\" \"$2\""
     mnemonic = "CopyDirectory"

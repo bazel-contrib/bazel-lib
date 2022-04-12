@@ -46,3 +46,32 @@ for more context.
 | <a id="copy_file-kwargs"></a>kwargs |  further keyword arguments, e.g. <code>visibility</code>   |  none |
 
 
+<a id="#copy_file_action"></a>
+
+## copy_file_action
+
+<pre>
+copy_file_action(<a href="#copy_file_action-ctx">ctx</a>, <a href="#copy_file_action-src">src</a>, <a href="#copy_file_action-dst">dst</a>, <a href="#copy_file_action-dir_path">dir_path</a>, <a href="#copy_file_action-is_windows">is_windows</a>)
+</pre>
+
+Helper function that creates an action to copy a file from src to dst.
+
+If src is a TreeArtifact, dir_path must be specified as the path within
+the TreeArtifact to the file to copy.
+
+This helper is used by copy_file. It is exposed as a public API so it can be used within
+other rule implementations.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="copy_file_action-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="copy_file_action-src"></a>src |  The source file to copy or TreeArtifact to copy a single file out of.   |  none |
+| <a id="copy_file_action-dst"></a>dst |  The destination file.   |  none |
+| <a id="copy_file_action-dir_path"></a>dir_path |  If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.   |  <code>None</code> |
+| <a id="copy_file_action-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
+
+
