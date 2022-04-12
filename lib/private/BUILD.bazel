@@ -31,6 +31,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "copy_to_bin",
+    srcs = ["copy_to_bin.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [":copy_file"],
+)
+
+bzl_library(
     name = "params_file",
     srcs = ["params_file.bzl"],
     visibility = ["//lib:__subpackages__"],
