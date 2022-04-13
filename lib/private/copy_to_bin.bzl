@@ -16,17 +16,38 @@
 
 load(":copy_file.bzl", "copy_file_action")
 
-def _impl(ctx):
-    all_dst = []
-    for src in ctx.files.srcs:
+def copy_to_bin_action(ctx, files, is_windows = False):
+    """Helper function that creates actions to copy files to the output tree.
+
+    Files are copied to the same workspace-relative path. The resulting list of
+    files is returned.
+
+    If a file passed in is already in the output tree is then it is added
+    directly to the result without a copy action.
+
+    Args:
+        ctx: The rule context.
+        files: List of File objects.
+        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+
+    Returns:
+        List of File objects in the output tree.
+    """
+    result = []
+    for src in files:
         if not src.is_source:
-            fail("A source file must be specified in copy_to_bin rule, %s is not a source file." % src.path)
+            result.append(src)
+            continue
         dst = ctx.actions.declare_file(src.basename, sibling = src)
-        copy_file_action(ctx, src, dst, is_windows = ctx.attr.is_windows)
-        all_dst.append(dst)
+        copy_file_action(ctx, src, dst, is_windows = is_windows)
+        result.append(dst)
+    return result
+
+def _impl(ctx):
+    files = copy_to_bin_action(ctx, ctx.files.srcs, is_windows = ctx.attr.is_windows)
     return DefaultInfo(
-        files = depset(all_dst),
-        runfiles = ctx.runfiles(files = all_dst),
+        files = depset(files),
+        runfiles = ctx.runfiles(files = files),
     )
 
 _copy_to_bin = rule(
@@ -42,6 +63,9 @@ def copy_to_bin(name, srcs, **kwargs):
     """Copies a source file to output tree at the same workspace-relative path.
 
     e.g. `<execroot>/path/to/file -> <execroot>/bazel-out/<platform>/bin/path/to/file`
+
+    If a file passed in is already in the output tree is then it is added directly to the
+    DefaultInfo provided by the rule without a copy.
 
     This is useful to populate the output folder with all files needed at runtime, even
     those which aren't outputs of a Bazel rule.
