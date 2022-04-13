@@ -9,6 +9,68 @@ Originally authored in rules_nodejs
 https://github.com/bazelbuild/rules_nodejs/blob/8b5d27400db51e7027fe95ae413eeabea4856f8e/internal/common/copy_to_bin.bzl
 
 
+<a id="#copy_file_to_bin_action"></a>
+
+## copy_file_to_bin_action
+
+<pre>
+copy_file_to_bin_action(<a href="#copy_file_to_bin_action-ctx">ctx</a>, <a href="#copy_file_to_bin_action-file">file</a>, <a href="#copy_file_to_bin_action-is_windows">is_windows</a>)
+</pre>
+
+Helper function that creates an action to copy a file to the output tree.
+
+File are copied to the same workspace-relative path. The resulting files is
+returned.
+
+If the file passed in is already in the output tree is then it is returned
+without a copy action.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="copy_file_to_bin_action-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="copy_file_to_bin_action-file"></a>file |  The file to copy.   |  none |
+| <a id="copy_file_to_bin_action-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
+
+**RETURNS**
+
+A File in the output tree.
+
+
+<a id="#copy_files_to_bin_actions"></a>
+
+## copy_files_to_bin_actions
+
+<pre>
+copy_files_to_bin_actions(<a href="#copy_files_to_bin_actions-ctx">ctx</a>, <a href="#copy_files_to_bin_actions-files">files</a>, <a href="#copy_files_to_bin_actions-is_windows">is_windows</a>)
+</pre>
+
+Helper function that creates actions to copy files to the output tree.
+
+Files are copied to the same workspace-relative path. The resulting list of
+files is returned.
+
+If a file passed in is already in the output tree is then it is added
+directly to the result without a copy action.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="copy_files_to_bin_actions-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="copy_files_to_bin_actions-files"></a>files |  List of File objects.   |  none |
+| <a id="copy_files_to_bin_actions-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
+
+**RETURNS**
+
+List of File objects in the output tree.
+
+
 <a id="#copy_to_bin"></a>
 
 ## copy_to_bin
