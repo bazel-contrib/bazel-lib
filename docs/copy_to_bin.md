@@ -21,6 +21,9 @@ Copies a source file to output tree at the same workspace-relative path.
 
 e.g. `<execroot>/path/to/file -> <execroot>/bazel-out/<platform>/bin/path/to/file`
 
+If a file passed in is already in the output tree is then it is added directly to the
+DefaultInfo provided by the rule without a copy.
+
 This is useful to populate the output folder with all files needed at runtime, even
 those which aren't outputs of a Bazel rule.
 
