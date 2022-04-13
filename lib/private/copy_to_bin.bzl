@@ -16,7 +16,30 @@
 
 load(":copy_file.bzl", "copy_file_action")
 
-def copy_to_bin_action(ctx, files, is_windows = False):
+def copy_file_to_bin_action(ctx, file, is_windows = False):
+    """Helper function that creates an action to copy a file to the output tree.
+
+    File are copied to the same workspace-relative path. The resulting files is
+    returned.
+
+    If the file passed in is already in the output tree is then it is returned
+    without a copy action.
+
+    Args:
+        ctx: The rule context.
+        file: The file to copy.
+        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+
+    Returns:
+        A File in the output tree.
+    """
+    if not file.is_source:
+        return file
+    dst = ctx.actions.declare_file(file.basename, sibling = file)
+    copy_file_action(ctx, file, dst, is_windows = is_windows)
+    return dst
+
+def copy_files_to_bin_actions(ctx, files, is_windows = False):
     """Helper function that creates actions to copy files to the output tree.
 
     Files are copied to the same workspace-relative path. The resulting list of
@@ -33,18 +56,10 @@ def copy_to_bin_action(ctx, files, is_windows = False):
     Returns:
         List of File objects in the output tree.
     """
-    result = []
-    for src in files:
-        if not src.is_source:
-            result.append(src)
-            continue
-        dst = ctx.actions.declare_file(src.basename, sibling = src)
-        copy_file_action(ctx, src, dst, is_windows = is_windows)
-        result.append(dst)
-    return result
+    return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
 
 def _impl(ctx):
-    files = copy_to_bin_action(ctx, ctx.files.srcs, is_windows = ctx.attr.is_windows)
+    files = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = ctx.attr.is_windows)
     return DefaultInfo(
         files = depset(files),
         runfiles = ctx.runfiles(files = files),
