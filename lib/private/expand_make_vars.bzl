@@ -92,9 +92,15 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
         else:
             output_dir = rule_dir[:]
 
-    # The list comprehension removes empty segments like if we are in the root package
     additional_substitutions["@D"] = "/".join([o for o in output_dir if o])
     additional_substitutions["RULEDIR"] = "/".join([o for o in rule_dir if o])
+
+    # Add some additional make variable substitutions for common useful values in the context
+    additional_substitutions["BUILD_FILE_PATH"] = ctx.build_file_path
+    additional_substitutions["VERSION_FILE"] = ctx.version_file.path
+    additional_substitutions["INFO_FILE"] = ctx.info_file.path
+    additional_substitutions["TARGET"] = "@%s//%s:%s" % (ctx.label.workspace_name, ctx.label.package, ctx.label.name)
+    additional_substitutions["WORKSPACE"] = ctx.workspace_name
 
     return ctx.expand_make_variables(attribute_name, s, additional_substitutions)
 
