@@ -1,3 +1,17 @@
+# Copyright 2017 The Bazel Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 "Helpers for rules running on windows"
 
 # cmd.exe function for looking up runfiles.
@@ -50,3 +64,51 @@ exit /b 0
 :rlocation_end
 :: End of rlocation
 """
+
+def _to_manifest_path(ctx, file):
+    if file.short_path.startswith("../"):
+        return file.short_path[3:]
+    else:
+        return ctx.workspace_name + "/" + file.short_path
+
+def create_windows_native_launcher_script(ctx, shell_script):
+    """Create a Windows Batch file to launch the given shell script.
+
+    The rule should specify @bazel_tools//tools/sh:toolchain_type as a required toolchain.
+
+    Args:
+        ctx: Rule context
+        shell_script: The bash launcher script
+
+    Returns:
+        A windows launcher script
+    """
+    name = shell_script.basename
+    if name.endswith(".sh"):
+        name = name[:-3]
+    win_launcher = ctx.actions.declare_file(name + ".bat", sibling = shell_script)
+    ctx.actions.write(
+        output = win_launcher,
+        content = r"""@echo off
+SETLOCAL ENABLEEXTENSIONS
+SETLOCAL ENABLEDELAYEDEXPANSION
+set RUNFILES_MANIFEST_ONLY=1
+{rlocation_function}
+call :rlocation "{sh_script}" run_script
+for %%a in ("{bash_bin}") do set "bash_bin_dir=%%~dpa"
+set PATH=%bash_bin_dir%;%PATH%
+set args=%*
+rem Escape \ and * in args before passsing it with double quote
+if defined args (
+  set args=!args:\=\\\\!
+  set args=!args:"=\"!
+)
+"{bash_bin}" -c "!run_script! !args!"
+""".format(
+            bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
+            sh_script = _to_manifest_path(ctx, shell_script),
+            rlocation_function = BATCH_RLOCATION_FUNCTION,
+        ),
+        is_executable = True,
+    )
+    return win_launcher
