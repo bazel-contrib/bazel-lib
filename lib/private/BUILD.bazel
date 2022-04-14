@@ -6,16 +6,26 @@ exports_files(
 )
 
 bzl_library(
+    name = "copy_common",
+    srcs = ["copy_common.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
     name = "copy_file",
     srcs = ["copy_file.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = [":directory_path"],
+    deps = [
+        ":copy_common",
+        ":directory_path",
+    ],
 )
 
 bzl_library(
     name = "copy_directory",
     srcs = ["copy_directory.bzl"],
     visibility = ["//lib:__subpackages__"],
+    deps = [":copy_common"],
 )
 
 bzl_library(
@@ -23,6 +33,7 @@ bzl_library(
     srcs = ["copy_to_directory.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
+        ":copy_common",
         ":directory_path",
         ":output_files",
         ":paths",

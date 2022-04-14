@@ -24,16 +24,8 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 `_copy_file` does not.
 """
 
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
-
-# Hints for Bazel spawn strategy
-_execution_requirements = {
-    # Copying files is entirely IO-bound and there is no point doing this work remotely.
-    # Also, remote-execution does not allow source directory inputs, see
-    # https://github.com/bazelbuild/bazel/commit/c64421bc35214f0414e4f4226cc953e8c55fa0d2
-    # So we must not attempt to execute remotely in that case.
-    "no-remote-exec": "1",
-}
 
 def _copy_cmd(ctx, src, src_path, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
@@ -70,7 +62,7 @@ def _copy_cmd(ctx, src, src_path, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _execution_requirements,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
 def _copy_bash(ctx, src, src_path, dst):
@@ -86,7 +78,7 @@ def _copy_bash(ctx, src, src_path, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _execution_requirements,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
 def copy_file_action(ctx, src, dst, dir_path = None, is_windows = False):
