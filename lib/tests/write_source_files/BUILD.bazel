@@ -141,7 +141,7 @@ genrule(
     cmd = ";".join([
         "mkdir -p $@/a/b/c",
         "echo 'test' > $@/a/b/c/test.txt",
-        "chmod -R -w $@/*"
+        "chmod -R -w $@/*",
     ]),
 )
 
@@ -152,7 +152,6 @@ write_source_files(
     diff_test = False,
     files = {"subdir_test": ":subdir"},
 )
-
 
 # Generate some directories including symlinks
 genrule(
