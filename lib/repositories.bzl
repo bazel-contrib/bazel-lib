@@ -3,6 +3,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_platform_repo", "jq_toolchains_repo")
+load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_platform_repo", "yq_toolchains_repo")
 
 def aspect_bazel_lib_dependencies():
     "Load dependencies required by aspect rules"
@@ -32,5 +33,24 @@ def register_jq_toolchains(version, name = "jq"):
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
     jq_toolchains_repo(
+        name = "%s_toolchains" % name,
+    )
+
+def register_yq_toolchains(version, name = "yq"):
+    """Registers yq toolchain and repositories
+
+    Args:
+        version: the version of yq to execute (see https://github.com/mikefarah/yq/releases)
+        name: override the prefix for the generated toolchain repositories
+    """
+    for platform in YQ_PLATFORMS.keys():
+        yq_platform_repo(
+            name = "%s_toolchains_%s" % (name, platform),
+            platform = platform,
+            yq_version = "v%s" % version,
+        )
+        native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
+    yq_toolchains_repo(
         name = "%s_toolchains" % name,
     )

@@ -1,6 +1,12 @@
 load("//lib/tests/jq:diff_test.bzl", "diff_test")
 load("//lib:jq.bzl", "jq")
 
+exports_files([
+    "a_pretty.json",
+    "a.json",
+    "b.json",
+])
+
 # Identity filter produces identical json
 jq(
     name = "case_dot_filter",

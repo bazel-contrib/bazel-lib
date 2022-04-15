@@ -151,3 +151,9 @@ bzl_library(
     visibility = ["//lib:__subpackages__"],
     deps = [":repo_utils"],
 )
+
+bzl_library(
+    name = "yq",
+    srcs = ["yq.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
