@@ -13,6 +13,11 @@ toolchain_type(
     visibility = ["//visibility:public"],
 )
 
+toolchain_type(
+    name = "yq_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
 bzl_library(
     name = "docs",
     srcs = ["docs.bzl"],
@@ -143,4 +148,11 @@ bzl_library(
         "//lib/private:patch",
         "//lib/private:repo_utils",
     ],
+)
+
+bzl_library(
+    name = "yq",
+    srcs = ["yq.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:yq"],
 )

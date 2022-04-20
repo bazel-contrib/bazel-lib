@@ -6,7 +6,7 @@ statement from these, that's a bug in our distribution.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
-load("//lib:repositories.bzl", "register_jq_toolchains")
+load("//lib:repositories.bzl", "register_jq_toolchains", "register_yq_toolchains")
 
 # buildifier: disable=unnamed-macro
 def bazel_lib_internal_deps():
@@ -67,3 +67,4 @@ def bazel_lib_internal_deps():
 
     # Register toolchains for tests
     register_jq_toolchains(version = "1.6")
+    register_yq_toolchains(version = "4.24.5")

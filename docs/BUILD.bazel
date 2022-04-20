@@ -83,4 +83,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:repo_utils",
 )
 
+stardoc_with_diff_test(
+    name = "yq",
+    bzl_library_target = "//lib:yq",
+)
+
 update_docs()
