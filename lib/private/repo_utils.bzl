@@ -2,7 +2,7 @@
 
 def _is_darwin_os(rctx):
     """Returns true if the host operating system is Darwin"""
-    return rctx.os.name.lower().os_name.startswith("mac os")
+    return rctx.os.name.lower().startswith("mac os")
 
 def _is_linux_os(rctx):
     """Returns true if the host operating system is Linux"""
@@ -91,7 +91,7 @@ def _os_arch_name(rctx):
     }
     if arch in arch_map.keys():
         arch = arch_map[arch]
-    return "%s_%s" % arch
+    return "%s_%s" % (os_name, arch)
 
 repo_utils = struct(
     is_darwin_os = _is_darwin_os,
