@@ -130,6 +130,7 @@ _write_source_file_attrs = {
     # and it goes into an infinite update, notify loop when running this target.
     # See https://github.com/aspect-build/bazel-lib/pull/52 for more context.
     "out_file": attr.string(mandatory = False),
+    # buildifier: disable=attr-cfg
     "additional_update_targets": attr.label_list(cfg = "host", mandatory = False),
     "is_windows": attr.bool(mandatory = True),
 }

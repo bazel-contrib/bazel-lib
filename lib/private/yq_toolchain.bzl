@@ -1,5 +1,6 @@
 "Setup yq toolchain repositories and rules"
 
+# Platform names follow the os_arch_name() convention in lib/private/repo_utils.bzl
 YQ_PLATFORMS = {
     "darwin_amd64": struct(
         compatible_with = [
@@ -13,22 +14,28 @@ YQ_PLATFORMS = {
             "@platforms//cpu:aarch64",
         ],
     ),
-    "linux_386": struct(
-        compatible_with = [
-            "@platforms//os:linux",
-            "@platforms//cpu:x86_32",
-        ],
-    ),
     "linux_amd64": struct(
         compatible_with = [
             "@platforms//os:linux",
             "@platforms//cpu:x86_64",
         ],
     ),
-    "windows_386": struct(
+    "linux_arm64": struct(
         compatible_with = [
-            "@platforms//os:windows",
-            "@platforms//cpu:x86_32",
+            "@platforms//os:linux",
+            "@platforms//cpu:aarch64",
+        ],
+    ),
+    "linux_s390x": struct(
+        compatible_with = [
+            "@platforms//os:linux",
+            "@platforms//cpu:s390x",
+        ],
+    ),
+    "linux_ppc64le": struct(
+        compatible_with = [
+            "@platforms//os:linux",
+            "@platforms//cpu:ppc",
         ],
     ),
     "windows_amd64": struct(
@@ -42,23 +49,28 @@ YQ_PLATFORMS = {
 # https://github.com/mikefarah/yq/releases
 #
 # The integrity hashes can be automatically fetched for the latest yq release by running
-# tools/yq_mirror_release.sh. Alternatively, you can compute them manually by running
-# shasum -b -a 384 [downloaded file] | awk '{ print $1 }' | xxd -r -p | base64
+# `tools/yq_mirror_release.sh`. To calculate for a specific release run
+# `tools/yq_mirror_release.sh <release_version>`
+#
+# Alternatively, you can compute them manually by running
+# `shasum -b -a 384 [downloaded file] | awk '{ print $1 }' | xxd -r -p | base64`
 YQ_VERSIONS = {
-    "v4.24.5": {
+    "4.24.5": {
         "darwin_amd64": "sha384-Y6Utm9NAX7q69apRHLAU6oNYk5Kn5b6LUccBolbTm2CXXYye8pabeFPsaREFIHbw",
         "darwin_arm64": "sha384-d6+hFiZrsUeqnXJufnvadTi0BL/sfbd6K7LnJyLVDy31C0isjyHipVqlibKYbFSu",
-        "linux_386": "sha384-skSDYmjm3uvi6xFKpzlIARzoiWaX0ml5CPAeLNxIybtRD3IBS1MSBoKkeWnS9n6h",
         "linux_amd64": "sha384-FEWzb66XTTiMfz5wA/hCs/n0N+PVj4lXzKX8ZIUXnM3JTlFlBvA9X59elqqEJUPq",
-        "windows_386": "sha384-+BbsyeEO5BUN47u20qcwr0CGgVfo3Inj32BQsH6myca3C3hGqAE1nYVuy4JLBj+K",
+        "linux_arm64": "sha384-u8H3RxTssXKr1lEylydi1tzXKKsoax7aDXi4R/JF8irZ7RTwCqU/ogMj30B0Xo01",
+        "linux_s390x": "sha384-ccipOj8IBVDb6ZxBYDyRDVvfOTHRSD4nGuMbikrDrigGdYyI/iVb+R8lb6kdLarb",
+        "linux_ppc64le": "sha384-HWzKwuNx+uZI/8KXSNFVg+drCZiZU/17hIl8gG+b+UyLMAFZ/sOB/nu7yzEOdzvH",
         "windows_amd64": "sha384-6T42wIkqXZ8OCetIeMjTlTIVQDwlRpTXj8pi+SrGzU4r5waq3SwIYSrDqUxMD43j",
     },
-    "v4.24.4": {
+    "4.24.4": {
         "darwin_amd64": "sha384-H5JnUD7c0jpbOvvN1pGz12XFi3XrX+ism4iGnH9wv37i+qdkD2AdTbTe4MIFtMR+",
         "darwin_arm64": "sha384-9B85+dFTGRmMWWP2M+PVOkl8CtAb/HV4+XNGC0OBfdBvdJU85FyiTb12XGEgNjFp",
-        "linux_386": "sha384-TiesqbEG9ITqnOyFNMilVnciVM65dCAlRNYp/pK19jrqs2x5MhbpJ0a7Q9XwZmz8",
         "linux_amd64": "sha384-y8vr5fWIqSvJhMoHwldoVPOJpAfLi4iHcnhfTcm/nuJAxGAJmI2MiBbk3t7lQNHC",
-        "windows_386": "sha384-YJTz4Y+5rcy6Ii/J44Qb6J2JZuzfh40WHGTc6jFTHFhJ47Ht+y9s4bS6h8WX6S0m",
+        "linux_arm64": "sha384-nxvFzxOVNtbt1lQZshkUnM6SHQnXKkzWKEw4TzU9HOms6mUJnYbYXc0x0LwPkpQK",
+        "linux_s390x": "sha384-525bIc8L80mIMVH+PmNDi4vBP4AfvBw/736ISW0F7+7zowSYOUK+EN/REo31kNdN",
+        "linux_ppc64le": "sha384-Sm3PniOqhRIlYaVBZOwncKRpPDLhiuHNCvVWUW9ihnAQM3woXvhb5iNfbws0Rz+G",
         "windows_amd64": "sha384-f8jkaz3oRaDcn8jiXupeDO665t6d2tTnFuU0bKwLWszXSz8r29My/USG+UoO9hOr",
     },
 }
@@ -173,12 +185,14 @@ yq_toolchains_repo = repository_rule(
 )
 
 def _yq_platform_repo_impl(repository_ctx):
-    is_windows = repository_ctx.attr.platform == "windows_386" or repository_ctx.attr.platform == "windows_amd64"
+    is_windows = repository_ctx.attr.platform.startswith("windows_")
+    meta = YQ_PLATFORMS[repository_ctx.attr.platform]
+    release_platform = meta.release_platform if hasattr(meta, "release_platform") else repository_ctx.attr.platform
 
     #https://github.com/mikefarah/yq/releases/download/v4.24.4/yq_linux_386
-    url = "https://github.com/mikefarah/yq/releases/download/{0}/yq_{1}{2}".format(
-        repository_ctx.attr.yq_version,
-        repository_ctx.attr.platform,
+    url = "https://github.com/mikefarah/yq/releases/download/v{0}/yq_{1}{2}".format(
+        repository_ctx.attr.version,
+        release_platform,
         ".exe" if is_windows else "",
     )
 
@@ -186,7 +200,7 @@ def _yq_platform_repo_impl(repository_ctx):
         url = url,
         output = "yq.exe" if is_windows else "yq",
         executable = True,
-        integrity = YQ_VERSIONS[repository_ctx.attr.yq_version][repository_ctx.attr.platform],
+        integrity = YQ_VERSIONS[repository_ctx.attr.version][release_platform],
     )
     build_content = """#Generated by @aspect_bazel_lib//lib/private/yq_toolchain.bzl
 load("@aspect_bazel_lib//lib/private:yq_toolchain.bzl", "yq_toolchain")
@@ -201,7 +215,7 @@ yq_platform_repo = repository_rule(
     implementation = _yq_platform_repo_impl,
     doc = "Fetch external tools needed for yq toolchain",
     attrs = {
-        "yq_version": attr.string(mandatory = True, values = YQ_VERSIONS.keys()),
+        "version": attr.string(mandatory = True, values = YQ_VERSIONS.keys()),
         "platform": attr.string(mandatory = True, values = YQ_PLATFORMS.keys()),
     },
 )
