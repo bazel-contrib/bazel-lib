@@ -26,11 +26,21 @@ load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
 
-# Optional: register the following toolchain to use jq
+\`\`\`
+
+Optional toolchains:
+
+\`\`\`starlark
+# Register the following toolchain to use jq
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
 
 register_jq_toolchains(version = "1.6")
 
+# Register the following toolchain to use yq
+
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
+
+register_yq_toolchains(version = "4.24.5")
 \`\`\`
 EOF

@@ -18,7 +18,7 @@ def yq(name, srcs, expression = ".", args = [], outs = None, **kwargs):
     ```starlark
     load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
 
-    register_yq_toolchains(version = "4.24.4")
+    register_yq_toolchains(version = "4.24.5")
     ```
 
     Usage examples:
@@ -32,14 +32,14 @@ def yq(name, srcs, expression = ".", args = [], outs = None, **kwargs):
     yq(
         name = "safe-config",
         srcs = ["config.yaml"],
-        filter = "del(.credentials)",
+        expression = "del(.credentials)",
     )
     ```
 
     ```starlark
     # Merge two yaml documents
     yq(
-        name = "merged",
+        name = "ab",
         srcs = [
             "a.yaml",
             "b.yaml",
@@ -77,7 +77,7 @@ def yq(name, srcs, expression = ".", args = [], outs = None, **kwargs):
     ```starlark
     # Convert a json file to yaml
     yq(
-        name = "convert",
+        name = "convert-to-yaml",
         srcs = ["bar.json"],
         args = ["-P"],
         outs = ["bar.yaml"],
