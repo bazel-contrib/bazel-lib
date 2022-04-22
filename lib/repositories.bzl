@@ -2,8 +2,8 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
-load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_platform_repo", "jq_toolchains_repo")
-load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_platform_repo", "yq_toolchains_repo")
+load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo")
+load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo")
 
 def aspect_bazel_lib_dependencies():
     "Load dependencies required by aspect rules"
@@ -26,14 +26,20 @@ def register_jq_toolchains(version, name = "jq"):
     """
     for [platform, meta] in JQ_PLATFORMS.items():
         jq_platform_repo(
-            name = "%s_toolchains_%s" % (name, platform),
+            name = "%s_%s" % (name, platform),
             platform = platform,
             version = version,
         )
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
+    jq_host_alias_repo(
+        name = "%s_host" % name,
+        user_repository_name = name,
+    )
+
     jq_toolchains_repo(
         name = "%s_toolchains" % name,
+        user_repository_name = name,
     )
 
 def register_yq_toolchains(version, name = "yq"):
@@ -45,12 +51,18 @@ def register_yq_toolchains(version, name = "yq"):
     """
     for [platform, meta] in YQ_PLATFORMS.items():
         yq_platform_repo(
-            name = "%s_toolchains_%s" % (name, platform),
+            name = "%s_%s" % (name, platform),
             platform = platform,
             version = version,
         )
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
+    yq_host_alias_repo(
+        name = "%s_host" % name,
+        user_repository_name = name,
+    )
+
     yq_toolchains_repo(
         name = "%s_toolchains" % name,
+        user_repository_name = name,
     )
