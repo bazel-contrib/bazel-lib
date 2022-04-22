@@ -19,7 +19,7 @@ To use this rule you must register the yq toolchain in your WORKSPACE:
 ```starlark
 load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
 
-register_yq_toolchains(version = "4.24.4")
+register_yq_toolchains(version = "4.24.5")
 ```
 
 Usage examples:
@@ -33,14 +33,14 @@ load("@aspect_bazel_lib//lib:yq.bzl", "yq")
 yq(
     name = "safe-config",
     srcs = ["config.yaml"],
-    filter = "del(.credentials)",
+    expression = "del(.credentials)",
 )
 ```
 
 ```starlark
 # Merge two yaml documents
 yq(
-    name = "merged",
+    name = "ab",
     srcs = [
         "a.yaml",
         "b.yaml",
@@ -78,7 +78,7 @@ yq(
 ```starlark
 # Convert a json file to yaml
 yq(
-    name = "convert",
+    name = "convert-to-yaml",
     srcs = ["bar.json"],
     args = ["-P"],
     outs = ["bar.yaml"],
