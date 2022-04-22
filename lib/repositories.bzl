@@ -24,11 +24,11 @@ def register_jq_toolchains(version, name = "jq"):
         version: the version of jq to execute (see https://github.com/stedolan/jq/releases)
         name: override the prefix for the generated toolchain repositories
     """
-    for platform in JQ_PLATFORMS.keys():
+    for [platform, meta] in JQ_PLATFORMS.items():
         jq_platform_repo(
             name = "%s_toolchains_%s" % (name, platform),
             platform = platform,
-            jq_version = version,
+            version = version,
         )
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
@@ -43,11 +43,11 @@ def register_yq_toolchains(version, name = "yq"):
         version: the version of yq to execute (see https://github.com/mikefarah/yq/releases)
         name: override the prefix for the generated toolchain repositories
     """
-    for platform in YQ_PLATFORMS.keys():
+    for [platform, meta] in YQ_PLATFORMS.items():
         yq_platform_repo(
             name = "%s_toolchains_%s" % (name, platform),
             platform = platform,
-            yq_version = "v%s" % version,
+            version = version,
         )
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
