@@ -2,8 +2,8 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
-load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo")
-load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo")
+load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
+load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 
 def aspect_bazel_lib_dependencies():
     "Load dependencies required by aspect rules"
@@ -17,12 +17,16 @@ def aspect_bazel_lib_dependencies():
         ],
     )
 
-def register_jq_toolchains(version, name = "jq"):
+# Re-export the default versions
+DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
+DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
+
+def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION):
     """Registers jq toolchain and repositories
 
     Args:
-        version: the version of jq to execute (see https://github.com/stedolan/jq/releases)
         name: override the prefix for the generated toolchain repositories
+        version: the version of jq to execute (see https://github.com/stedolan/jq/releases)
     """
     for [platform, meta] in JQ_PLATFORMS.items():
         jq_platform_repo(
@@ -42,12 +46,12 @@ def register_jq_toolchains(version, name = "jq"):
         user_repository_name = name,
     )
 
-def register_yq_toolchains(version, name = "yq"):
+def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION):
     """Registers yq toolchain and repositories
 
     Args:
-        version: the version of yq to execute (see https://github.com/mikefarah/yq/releases)
         name: override the prefix for the generated toolchain repositories
+        version: the version of yq to execute (see https://github.com/mikefarah/yq/releases)
     """
     for [platform, meta] in YQ_PLATFORMS.items():
         yq_platform_repo(

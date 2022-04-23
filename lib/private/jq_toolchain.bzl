@@ -27,6 +27,8 @@ JQ_PLATFORMS = {
     ),
 }
 
+DEFAULT_JQ_VERSION = "1.6"
+
 # https://github.com/stedolan/jq/releases
 #
 # The integrity hashes can be computed with

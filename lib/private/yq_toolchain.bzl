@@ -48,6 +48,8 @@ YQ_PLATFORMS = {
     ),
 }
 
+DEFAULT_YQ_VERSION = "4.24.5"
+
 # https://github.com/mikefarah/yq/releases
 #
 # The integrity hashes can be automatically fetched for the latest yq release by running
