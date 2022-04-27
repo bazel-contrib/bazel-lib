@@ -1,0 +1,15 @@
+load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+
+# No sources produces null (equivalent to --null-input)
+jq(
+    name = "case_no_sources",
+    srcs = [],
+    filter = ".",
+)
+
+diff_test(
+    name = "test",
+    file1 = "case_no_sources",
+    file2 = "expected",
+)

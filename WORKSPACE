@@ -25,6 +25,12 @@ local_repository(
     path = "./lib/tests/external_test_repo",
 )
 
+# Avoid descending into the e2e workspaces
+local_repository(
+    name = "e2e_bzlmod",
+    path = "./e2e/bzlmod",
+)
+
 ############################################
 # Gazelle, for generating bzl_library targets
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
