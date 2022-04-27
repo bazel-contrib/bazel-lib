@@ -21,12 +21,14 @@ def aspect_bazel_lib_dependencies():
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
 DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
 
-def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION):
+def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION, register = True):
     """Registers jq toolchain and repositories
 
     Args:
         name: override the prefix for the generated toolchain repositories
         version: the version of jq to execute (see https://github.com/stedolan/jq/releases)
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
     for [platform, meta] in JQ_PLATFORMS.items():
         jq_platform_repo(
@@ -34,7 +36,8 @@ def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION):
             platform = platform,
             version = version,
         )
-        native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
     jq_host_alias_repo(name = name)
 
@@ -43,12 +46,14 @@ def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION):
         user_repository_name = name,
     )
 
-def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION):
+def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register = True):
     """Registers yq toolchain and repositories
 
     Args:
         name: override the prefix for the generated toolchain repositories
         version: the version of yq to execute (see https://github.com/mikefarah/yq/releases)
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
     for [platform, meta] in YQ_PLATFORMS.items():
         yq_platform_repo(
@@ -56,7 +61,8 @@ def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION):
             platform = platform,
             version = version,
         )
-        native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
     yq_host_alias_repo(name = name)
 
