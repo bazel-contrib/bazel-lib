@@ -36,10 +36,7 @@ def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION):
         )
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
-    jq_host_alias_repo(
-        name = "%s_host" % name,
-        user_repository_name = name,
-    )
+    jq_host_alias_repo(name = name)
 
     jq_toolchains_repo(
         name = "%s_toolchains" % name,
@@ -61,10 +58,7 @@ def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION):
         )
         native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
-    yq_host_alias_repo(
-        name = "%s_host" % name,
-        user_repository_name = name,
-    )
+    yq_host_alias_repo(name = name)
 
     yq_toolchains_repo(
         name = "%s_toolchains" % name,
