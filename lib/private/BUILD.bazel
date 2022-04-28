@@ -157,3 +157,10 @@ bzl_library(
     srcs = ["yq.bzl"],
     visibility = ["//lib:__subpackages__"],
 )
+
+bzl_library(
+    name = "host_repo",
+    srcs = ["host_repo.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [":repo_utils"],
+)

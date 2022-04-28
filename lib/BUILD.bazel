@@ -156,3 +156,12 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = ["//lib/private:yq"],
 )
+
+bzl_library(
+    name = "host_repo",
+    srcs = ["host_repo.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//lib/private:host_repo",
+    ],
+)
