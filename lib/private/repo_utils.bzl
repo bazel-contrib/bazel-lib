@@ -77,8 +77,8 @@ def _platform(rctx):
     # Once we drop support for anything older than Bazel 5.1.1 than we can simplify
     # this function.
     if os == "windows":
-        proc_arch = (_get_env_var(rctx, "PROCESSOR_ARCHITECTURE", "", False) or
-                     _get_env_var(rctx, "PROCESSOR_ARCHITEW6432", "", False))
+        proc_arch = (_get_env_var(rctx, "PROCESSOR_ARCHITECTURE", "") or
+                     _get_env_var(rctx, "PROCESSOR_ARCHITEW6432", ""))
         if proc_arch == "ARM64":
             arch = "arm64"
         else:
