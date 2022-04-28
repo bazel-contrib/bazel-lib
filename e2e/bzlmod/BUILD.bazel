@@ -1,7 +1,32 @@
+"""Integration testing that aspect_bazel_lib works when used via bzlmod.
+
+NB: We don't use yq, so we can confirm that Bazel never fetches it.
+You can manually verify this after testing this repo with
+`ls $(bazel info output_base)/external | grep yq`
+You'll see a aspect_bazel_lib.ext.yq_toolchains repo, but no downloaded yq binary.
+"""
+
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 
-# No sources produces null (equivalent to --null-input)
+bzl_library(
+    name = "defs",
+    srcs = ["defs.bzl"],
+)
+
+# Validate that stardoc dependency works.
+# Note, stardoc is generally broken under bzlmod, see
+# https://github.com/bazelbuild/stardoc/issues/117
+# This happens to work because we don't reference any external repos
+# from defs.bzl.
+stardoc_with_diff_test(
+    name = "docs",
+    bzl_library_target = "//:defs",
+)
+
+# Validate that JQ works and resolves its toolchain
 jq(
     name = "case_no_sources",
     srcs = [],
