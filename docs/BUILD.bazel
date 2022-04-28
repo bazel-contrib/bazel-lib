@@ -44,6 +44,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "starlark_codegen_utils",
+    bzl_library_target = "//lib:starlark_codegen_utils",
+)
+
+stardoc_with_diff_test(
     name = "utils",
     bzl_library_target = "//lib:utils",
 )

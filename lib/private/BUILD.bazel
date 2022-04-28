@@ -81,6 +81,12 @@ bzl_library(
 )
 
 bzl_library(
+    name = "starlark_codegen_utils",
+    srcs = ["starlark_codegen_utils.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
     name = "utils",
     srcs = ["utils.bzl"],
     visibility = ["//lib:__subpackages__"],
