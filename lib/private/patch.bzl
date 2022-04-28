@@ -140,7 +140,7 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
                 fail("Error applying patch %s:\n%s%s" %
                      (str(patchfile), st.stderr, st.stdout))
 
-    if repo_utils.is_windows_os(ctx) and patch_cmds_win:
+    if repo_utils.is_windows(ctx) and patch_cmds_win:
         for cmd in patch_cmds_win:
             st = ctx.execute([powershell_exe, "/c", cmd], working_directory = patch_directory)
             if st.return_code:
