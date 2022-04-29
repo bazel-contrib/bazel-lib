@@ -6,11 +6,76 @@ load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
 _copy_to_directory_attr = {
-    "srcs": attr.label_list(allow_files = True),
-    "root_paths": attr.string_list(default = []),
-    "include_external_repositories": attr.string_list(default = []),
-    "exclude_prefixes": attr.string_list(default = []),
-    "replace_prefixes": attr.string_dict(default = {}),
+    "srcs": attr.label_list(
+        allow_files = True,
+        doc = """Files and/or directories or targets that provide DirectoryPathInfo to copy
+        into the output directory.""",
+    ),
+    "root_paths": attr.string_list(
+        default = ["."],
+        doc = """List of paths that are roots in the output directory.
+
+        "." values indicate the targets package path.
+
+        If a file or directory being copied is in one of the listed paths or one of its subpaths,
+        the output directory path is the path relative to the root path instead of the path
+        relative to the file's workspace.
+
+        Forward slashes (`/`) should be used as path separators. Partial matches
+        on the final path segment of a root path against the corresponding segment
+        in the full workspace relative path of a file are not matched.
+
+        If there are multiple root paths that match, the longest match wins.
+
+        Defaults to [package_name()] so that the output directory path of files in the
+        target's package and and sub-packages are relative to the target's package and
+        files outside of that retain their full workspace relative paths.""",
+    ),
+    "include_external_repositories": attr.string_list(
+        doc = """List of external repository names to include in the output directory.
+
+        Files from external repositories are not copied into the output directory unless
+        the external repository they come from is listed here.
+
+        When copied from an external repository, the file path in the output directory
+        defaults to the file's path within the external repository. The external repository
+        name is _not_ included in that path.
+
+        For example, the following copies `@external_repo//path/to:file` to
+        `path/to/file` within the output directory.
+
+        ```
+        copy_to_directory(
+            name = "dir",
+            include_external_repositories = ["external_repo"],
+            srcs = ["@external_repo//path/to:file"],
+        )
+        ```
+
+        Files from external repositories are subject to `root_paths`, `exclude_prefixes`
+        and `replace_prefixes` in the same way as files form the main repository.""",
+    ),
+    "exclude_prefixes": attr.string_list(
+        doc = """List of path prefixes to exclude from output directory.
+
+        If the output directory path for a file or directory starts with or is equal to
+        a path in the list then that file is not copied to the output directory.
+
+        Exclude prefixes are matched *before* replace_prefixes are applied.""",
+    ),
+    "replace_prefixes": attr.string_dict(
+        doc = """Map of paths prefixes to replace in the output directory path when copying files.
+
+        If the output directory path for a file or directory starts with or is equal to
+        a key in the dict then the matching portion of the output directory path is
+        replaced with the dict value for that key.
+
+        Forward slashes (`/`) should be used as path separators. The final path segment
+        of the key can be a partial match in the corresponding segment of the output
+        directory path.
+
+        If there are multiple keys that match, the longest match wins.""",
+    ),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
@@ -27,7 +92,7 @@ def _longest_match(subject, tests, allow_partial = False):
     return match
 
 # src can either be a File or a target with a DirectoryPathInfo
-def _copy_paths(ctx, src):
+def _copy_paths(ctx, root_paths, src):
     if type(src) == "File":
         src_file = src
         src_path = src_file.path
@@ -45,7 +110,7 @@ def _copy_paths(ctx, src):
         return None, None, None
 
     # strip root paths
-    root_path = _longest_match(output_path, ctx.attr.root_paths)
+    root_path = _longest_match(output_path, root_paths)
     if root_path:
         strip_depth = len(root_path.split("/"))
         output_path = "/".join(output_path.split("/")[strip_depth:])
@@ -169,18 +234,21 @@ def _copy_to_directory_impl(ctx):
         msg = "srcs must not be empty in copy_to_directory %s" % ctx.label
         fail(msg)
 
+    # Replace "." root paths with the package name of the target
+    root_paths = [p if p != "." else ctx.label.package for p in ctx.attr.root_paths]
+
     output = ctx.actions.declare_directory(ctx.attr.name)
 
     # Gather a list of src_path, dst_path pairs
     copy_paths = []
     for src in ctx.attr.srcs:
         if DirectoryPathInfo in src:
-            src_path, output_path, src_file = _copy_paths(ctx, src)
+            src_path, output_path, src_file = _copy_paths(ctx, root_paths, src)
             if src_path != None:
                 dst_path = skylib_paths.normalize("/".join([output.path, output_path]))
                 copy_paths.append((src_path, dst_path, src_file))
     for src_file in ctx.files.srcs:
-        src_path, output_path, src_file = _copy_paths(ctx, src_file)
+        src_path, output_path, src_file = _copy_paths(ctx, root_paths, src_file)
         if src_path != None:
             dst_path = skylib_paths.normalize("/".join([output.path, output_path]))
             copy_paths.append((src_path, dst_path, src_file))
