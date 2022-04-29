@@ -100,9 +100,5 @@ def copy_to_directory(
         include_external_repositories = include_external_repositories,
         exclude_prefixes = exclude_prefixes,
         replace_prefixes = replace_prefixes,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         **kwargs
     )

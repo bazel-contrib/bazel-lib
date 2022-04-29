@@ -11,7 +11,7 @@ _copy_to_directory_attr = {
     "include_external_repositories": attr.string_list(default = []),
     "exclude_prefixes": attr.string_list(default = []),
     "replace_prefixes": attr.string_dict(default = {}),
-    "is_windows": attr.bool(mandatory = True),
+    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _longest_match(subject, tests, allow_partial = False):
@@ -163,6 +163,8 @@ if exist "{src}\\*" (
     )
 
 def _copy_to_directory_impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     if not ctx.attr.srcs:
         msg = "srcs must not be empty in copy_to_directory %s" % ctx.label
         fail(msg)
@@ -183,7 +185,7 @@ def _copy_to_directory_impl(ctx):
             dst_path = skylib_paths.normalize("/".join([output.path, output_path]))
             copy_paths.append((src_path, dst_path, src_file))
 
-    if ctx.attr.is_windows:
+    if is_windows:
         _copy_to_dir_cmd(ctx, copy_paths, output)
     else:
         _copy_to_dir_bash(ctx, copy_paths, output)

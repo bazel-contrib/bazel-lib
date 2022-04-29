@@ -111,6 +111,8 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = False):
         _copy_bash(ctx, src, src_path, dst)
 
 def _copy_file_impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     if ctx.attr.allow_symlink:
         if len(ctx.files.src) != 1:
             fail("src must be a single file when allow_symlink is True")
@@ -127,14 +129,14 @@ def _copy_file_impl(ctx):
             ctx.attr.src[DirectoryPathInfo].directory,
             ctx.outputs.out,
             dir_path = ctx.attr.src[DirectoryPathInfo].path,
-            is_windows = ctx.attr.is_windows,
+            is_windows = is_windows,
         )
     else:
         if len(ctx.files.src) != 1:
             fail("src must be a single file or a target that provides a DirectoryPathInfo")
         if ctx.files.src[0].is_directory:
             fail("cannot use copy_file on a directory; try copy_directory instead")
-        copy_file_action(ctx, ctx.files.src[0], ctx.outputs.out, is_windows = ctx.attr.is_windows)
+        copy_file_action(ctx, ctx.files.src[0], ctx.outputs.out, is_windows = is_windows)
 
     files = depset(direct = [ctx.outputs.out])
     runfiles = ctx.runfiles(files = [ctx.outputs.out])
@@ -145,10 +147,10 @@ def _copy_file_impl(ctx):
 
 _ATTRS = {
     "src": attr.label(mandatory = True, allow_files = True),
-    "is_windows": attr.bool(mandatory = True),
     "is_executable": attr.bool(mandatory = True),
     "allow_symlink": attr.bool(mandatory = True),
     "out": attr.output(mandatory = True),
+    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 _copy_file = rule(
@@ -203,10 +205,6 @@ def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kw
         name = name,
         src = src,
         out = out,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         is_executable = is_executable,
         allow_symlink = allow_symlink,
         **kwargs

@@ -83,8 +83,10 @@ def copy_directory_action(ctx, src, dst, is_windows = False):
         _copy_bash(ctx, src, dst)
 
 def _copy_directory_impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     dst = ctx.actions.declare_directory(ctx.attr.out)
-    copy_directory_action(ctx, ctx.file.src, dst, ctx.attr.is_windows)
+    copy_directory_action(ctx, ctx.file.src, dst, is_windows)
 
     files = depset(direct = [dst])
     runfiles = ctx.runfiles(files = [dst])
@@ -96,10 +98,10 @@ _copy_directory = rule(
     provides = [DefaultInfo],
     attrs = {
         "src": attr.label(mandatory = True, allow_single_file = True),
-        "is_windows": attr.bool(mandatory = True),
         # Cannot declare out as an output here, because there's no API for declaring
         # TreeArtifact outputs.
         "out": attr.string(mandatory = True),
+        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
 )
 
@@ -123,10 +125,6 @@ def copy_directory(name, src, out, **kwargs):
     _copy_directory(
         name = name,
         src = src,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         out = out,
         **kwargs
     )

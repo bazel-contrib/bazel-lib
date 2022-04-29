@@ -5,12 +5,12 @@ load("//lib/private:expand_make_vars.bzl", "expand_locations")
 _ATTRS = {
     "args": attr.string_list(),
     "data": attr.label_list(allow_files = True),
-    "is_windows": attr.bool(mandatory = True),
     "newline": attr.string(
         values = ["unix", "windows", "auto"],
         default = "auto",
     ),
     "out": attr.output(mandatory = True),
+    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _expand_locations(ctx, s):
@@ -20,8 +20,10 @@ def _expand_locations(ctx, s):
     return expand_locations(ctx, s, targets = ctx.attr.data).split(" ")
 
 def _impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     if ctx.attr.newline == "auto":
-        newline = "\r\n" if ctx.attr.is_windows else "\n"
+        newline = "\r\n" if is_windows else "\n"
     elif ctx.attr.newline == "windows":
         newline = "\r\n"
     else:

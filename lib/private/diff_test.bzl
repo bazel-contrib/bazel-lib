@@ -27,6 +27,8 @@ def _runfiles_path(f):
         return f.path  # source file
 
 def _diff_test_impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     if DirectoryPathInfo in ctx.attr.file1:
         file1 = ctx.attr.file1[DirectoryPathInfo].directory
         file1_path = "/".join([_runfiles_path(file1), ctx.attr.file1[DirectoryPathInfo].path])
@@ -49,7 +51,7 @@ def _diff_test_impl(ctx):
         msg = "diff_test comparing the same file %s" % file1
         fail(msg)
 
-    if ctx.attr.is_windows:
+    if is_windows:
         test_bin = ctx.actions.declare_file(ctx.label.name + "-test.bat")
         ctx.actions.write(
             output = test_bin,
@@ -237,7 +239,7 @@ _diff_test = rule(
             allow_files = True,
             mandatory = True,
         ),
-        "is_windows": attr.bool(mandatory = True),
+        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
     test = True,
     implementation = _diff_test_impl,
@@ -258,9 +260,5 @@ def diff_test(name, file1, file2, **kwargs):
         name = name,
         file1 = file1,
         file2 = file2,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         **kwargs
     )

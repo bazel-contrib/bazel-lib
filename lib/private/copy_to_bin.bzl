@@ -59,7 +59,9 @@ def copy_files_to_bin_actions(ctx, files, is_windows = False):
     return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
 
 def _impl(ctx):
-    files = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = ctx.attr.is_windows)
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
+    files = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = is_windows)
     return DefaultInfo(
         files = depset(files),
         runfiles = ctx.runfiles(files = files),
@@ -69,8 +71,8 @@ _copy_to_bin = rule(
     implementation = _impl,
     provides = [DefaultInfo],
     attrs = {
-        "is_windows": attr.bool(mandatory = True),
         "srcs": attr.label_list(mandatory = True, allow_files = True),
+        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
 )
 
@@ -97,9 +99,5 @@ def copy_to_bin(name, srcs, **kwargs):
     _copy_to_bin(
         name = name,
         srcs = srcs,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         **kwargs
     )
