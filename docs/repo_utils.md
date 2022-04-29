@@ -102,7 +102,7 @@ Find an environment variable in system. Doesn't %-escape the value!
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="repo_utils.get_env_var-rctx"></a>rctx |  repository_ctx   |  none |
+| <a id="repo_utils.get_env_var-rctx"></a>rctx |  rctx   |  none |
 | <a id="repo_utils.get_env_var-name"></a>name |  environment variable name   |  none |
 | <a id="repo_utils.get_env_var-default"></a>default |  default value to return if env var is not set in system   |  none |
 
@@ -126,7 +126,7 @@ Returns the name of the host operating system
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="repo_utils.os-rctx"></a>rctx |  repository_ctx   |  none |
+| <a id="repo_utils.os-rctx"></a>rctx |  rctx   |  none |
 
 **RETURNS**
 
@@ -167,7 +167,7 @@ Common os & architecture pairs that are returned are,
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="repo_utils.platform-rctx"></a>rctx |  repository_ctx   |  none |
+| <a id="repo_utils.platform-rctx"></a>rctx |  rctx   |  none |
 
 **RETURNS**
 

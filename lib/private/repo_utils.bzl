@@ -16,7 +16,7 @@ def _os(rctx):
     """Returns the name of the host operating system
 
     Args:
-        rctx: repository_ctx
+        rctx: rctx
 
     Returns:
         The string "windows", "linux" or "darwin" that describes the host os
@@ -33,7 +33,7 @@ def _get_env_var(rctx, name, default):
     """Find an environment variable in system. Doesn't %-escape the value!
 
     Args:
-        rctx: repository_ctx
+        rctx: rctx
         name: environment variable name
         default: default value to return if env var is not set in system
 
@@ -66,7 +66,7 @@ def _platform(rctx):
     - windows_amd64
 
     Args:
-        rctx: repository_ctx
+        rctx: rctx
 
     Returns:
         The normalized "<os>_<arch>" string of the host os and CPU architecture.
