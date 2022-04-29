@@ -1,5 +1,6 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:transitions.bzl", "platform_transition_filegroup")
-load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("//lib:diff_test.bzl", "diff_test")
 
 platform(
     name = "armv7_linux",
@@ -46,14 +47,46 @@ platform_transition_filegroup(
     target_platform = ":armv7_linux",
 )
 
+genrule(
+    name = "for_x86_path",
+    srcs = [":for_x86"],
+    outs = ["for_x86_path.txt"],
+    cmd = "echo $(rootpath :for_x86) > $@",
+)
+
+genrule(
+    name = "for_arm_path",
+    srcs = [":for_arm"],
+    outs = ["for_arm_path.txt"],
+    cmd = "echo $(rootpath :for_arm) > $@",
+)
+
+write_file(
+    name = "expected_x86_path",
+    out = "expected_x86_path.txt",
+    content = [
+        "lib/tests/transitions/linux_x86.txt",
+        "",
+    ],
+)
+
+write_file(
+    name = "expected_arm_path",
+    out = "expected_arm_path.txt",
+    content = [
+        "lib/tests/transitions/linux_arm.txt",
+        "",
+    ],
+)
+
 diff_test(
     name = "test_x86",
-    file1 = "for_x86",
-    file2 = "linux_x86.txt",
+    file1 = ":for_x86_path",
+    file2 = ":expected_x86_path",
 )
 
 diff_test(
     name = "test_arm",
-    file1 = "for_arm",
-    file2 = "linux_arm.txt",
+    file1 = ":for_arm_path",
+    file2 = ":expected_arm_path",
 )
