@@ -68,8 +68,6 @@ bzl_library(
     visibility = ["//lib:__subpackages__"],
     deps = [
         "//lib:write_source_files",
-        "@bazel_skylib//rules:diff_test",
-        "@bazel_skylib//rules:write_file",
         "@io_bazel_stardoc//stardoc:stardoc_lib",
     ],
 )
