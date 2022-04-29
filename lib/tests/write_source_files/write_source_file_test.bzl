@@ -123,6 +123,8 @@ exit /b 1
     return test
 
 def _impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     if DirectoryPathInfo in ctx.attr.in_file:
         in_file = ctx.attr.in_file[DirectoryPathInfo].directory
         in_file_path = "/".join([in_file.short_path, ctx.attr.in_file[DirectoryPathInfo].path])
@@ -132,7 +134,7 @@ def _impl(ctx):
         in_file = ctx.files.in_file[0]
         in_file_path = in_file.short_path
 
-    if ctx.attr.is_windows:
+    if is_windows:
         test = _impl_bat(ctx, in_file_path, ctx.file.out_file.short_path)
     else:
         test = _impl_sh(ctx, in_file_path, ctx.file.out_file.short_path)
@@ -162,7 +164,7 @@ _write_source_file_test = rule(
             allow_files = True,
             mandatory = True,
         ),
-        "is_windows": attr.bool(mandatory = True),
+        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
     test = True,
 )
@@ -184,8 +186,4 @@ def write_source_file_test(name, in_file, out_file):
         write_source_file_target = name + "_updater",
         in_file = in_file,
         out_file = out_file,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
     )

@@ -46,10 +46,6 @@ def write_source_file(
         in_file = in_file,
         out_file = out_file.name if out_file else None,
         additional_update_targets = additional_update_targets,
-        is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
         **kwargs
     )
 
@@ -132,7 +128,7 @@ _write_source_file_attrs = {
     "out_file": attr.string(mandatory = False),
     # buildifier: disable=attr-cfg
     "additional_update_targets": attr.label_list(cfg = "host", mandatory = False),
-    "is_windows": attr.bool(mandatory = True),
+    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _write_source_file_sh(ctx, paths):
@@ -246,6 +242,8 @@ if exist "%in%\\*" (
     return updater
 
 def _write_source_file_impl(ctx):
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
     if ctx.attr.out_file and not ctx.attr.in_file:
         fail("in_file must be specified if out_file is set")
     if ctx.attr.in_file and not ctx.attr.out_file:
@@ -271,7 +269,7 @@ def _write_source_file_impl(ctx):
         out_path = "/".join([ctx.label.package, ctx.attr.out_file]) if ctx.label.package else ctx.attr.out_file
         paths.append((in_path, out_path))
 
-    if ctx.attr.is_windows:
+    if is_windows:
         updater = _write_source_file_bat(ctx, paths)
     else:
         updater = _write_source_file_sh(ctx, paths)
