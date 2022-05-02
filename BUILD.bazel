@@ -1,6 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib:yq.bzl", "yq")
 
 gazelle_binary(
     name = "gazelle_bin",
@@ -34,4 +35,11 @@ write_source_files(
     name = "write_source_file_root-test",
     diff_test = False,
     files = {"test-out/dist/write_source_file_root-test": ":write_source_file_root"},
+)
+
+# Test that yq works in the root package
+yq(
+    name = "yq_root-test",
+    srcs = ["//lib/tests/yq:a.yaml"],
+    expression = ".",
 )

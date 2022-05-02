@@ -1,6 +1,13 @@
 load("//lib/private:diff_test.bzl", "diff_test")
 load("//lib:yq.bzl", "yq")
 
+exports_files(
+    [
+        "a.yaml",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 # Identity (dot) expression produces identical yaml
 yq(
     name = "case_dot_expression",

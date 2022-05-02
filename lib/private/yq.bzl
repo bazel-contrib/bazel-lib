@@ -40,7 +40,7 @@ def _yq_impl(ctx):
 
     # For split operations, yq outputs files in the same directory so we
     # must cd to the correct output dir before executing it
-    bin_dir = ctx.bin_dir.path + "/" + ctx.label.package
+    bin_dir = "/".join([ctx.bin_dir.path, ctx.label.package]) if ctx.label.package else ctx.bin_dir.path
     escape_bin_dir = _escape_path(bin_dir)
     cmd = "cd {bin_dir} && {yq} {args} {eval_cmd} {expression} {sources} {maybe_out}".format(
         bin_dir = ctx.bin_dir.path + "/" + ctx.label.package,
