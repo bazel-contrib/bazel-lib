@@ -14,6 +14,7 @@
 
 """Implementation of copy_to_bin macro and underlying rules."""
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":copy_file.bzl", "copy_file_action")
 
 def copy_file_to_bin_action(ctx, file, is_windows = False):
@@ -35,6 +36,25 @@ def copy_file_to_bin_action(ctx, file, is_windows = False):
     """
     if not file.is_source:
         return file
+    if ctx.label.package != file.owner.package:
+        fail(
+            """
+Expected to find file {file_basename} in {package}, but instead it is in {file_package}.
+
+To use copy_to_bin, either move {file_basename} to {package}, or move the copy_to_bin
+target to {file_basename}'s package using:
+    
+    buildozer 'new copy_to_bin {target_name}' {file_package}:__pkg__
+    buildozer 'add srcs {file_basename}' {file_package}:{target_name}
+    buildozer 'new_load @aspect_bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
+
+""".format(
+                file_basename = file.basename,
+                file_package = "%s//%s" % (file.owner.workspace_name, file.owner.package),
+                target_name = paths.replace_extension(file.basename, ""),
+                package = "%s//%s" % (ctx.label.workspace_name, ctx.label.package),
+            ),
+        )
     dst = ctx.actions.declare_file(file.basename, sibling = file)
     copy_file_action(ctx, file, dst, is_windows = is_windows)
     return dst
