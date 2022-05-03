@@ -106,7 +106,6 @@ function updateMetadataFile(sourcePath, destPath, version) {
     `Cannot find metadata template ${sourcePath}; did you forget to create it?`
   );
   metadata.versions = [...publishedVersions, version];
-  metadata.versions.sort();
 
   writeFileSync(destPath, JSON.stringify(metadata, null, 4) + "\n");
 }
