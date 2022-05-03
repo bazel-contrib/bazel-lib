@@ -6,6 +6,7 @@ import {
   copyFileSync,
   writeFileSync,
   appendFileSync,
+  readdirSync,
 } from "fs";
 import https from "https";
 import { resolve } from "path";
@@ -156,7 +157,10 @@ async function stampSourceFile(
     sourceJson.url.lastIndexOf("/") + 1
   );
 
+  console.log(`Downloading archive ${sourceJson.url}`);
   await download(sourceJson.url, filename);
+  console.log("Finished downloading");
+  console.log(readdirSync("."));
 
   const hash = crypto.createHash("sha256");
   hash.update(readFileSync(filename));
