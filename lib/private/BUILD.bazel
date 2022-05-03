@@ -45,7 +45,10 @@ bzl_library(
     name = "copy_to_bin",
     srcs = ["copy_to_bin.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = [":copy_file"],
+    deps = [
+        ":copy_file",
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 bzl_library(
