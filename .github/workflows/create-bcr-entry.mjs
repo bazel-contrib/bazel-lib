@@ -32,10 +32,7 @@ async function main(argv) {
     process.exit(1);
   }
 
-  const projectPath = argv[0];
-  const bcrPath = argv[1];
-  const ownerSlashRepo = argv[2];
-  const tag = argv[3];
+  const [projectPath, bcrPath, ownerSlashRepo, tag] = argv;
   const version = getVersionFromTag(tag);
 
   const moduleName = getModuleName(resolve(projectPath, "MODULE.bazel"));
