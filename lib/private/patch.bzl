@@ -71,10 +71,10 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
     bash_exe = ctx.os.environ["BAZEL_SH"] if "BAZEL_SH" in ctx.os.environ else "bash"
     powershell_exe = ctx.os.environ["BAZEL_POWERSHELL"] if "BAZEL_POWERSHELL" in ctx.os.environ else "powershell.exe"
 
+    if patches == None and hasattr(ctx.attr, "patches"):
+        patches = ctx.attr.patches
     if patches == None:
         patches = []
-    if hasattr(ctx.attr, "patches") and ctx.attr.patches:
-        patches += ctx.attr.patches
 
     remote_patches = {}
     remote_patch_strip = 0
