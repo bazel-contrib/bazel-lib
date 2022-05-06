@@ -58,7 +58,7 @@ def _yq_impl(ctx):
         inputs = inputs,
         outputs = outs,
         command = cmd,
-        mnemonic = "yq",
+        mnemonic = "Yq",
     )
 
     return DefaultInfo(files = depset(outs), runfiles = ctx.runfiles(outs))
