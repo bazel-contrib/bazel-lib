@@ -22,12 +22,13 @@ on:
 
 env:
   # Bazel central registry to post a pull request to.
-  BCR: aspect-build/bazel-central-registry
+  BCR: bazelbuild/bazel-central-registry
 
   # Fork of the bazel central registery to push the pull request branch to
-  # BCR_FORK: aspect-build/bazel-central-registry
-  # TODO: disable this for bazel-lib as we always want to push to our own fork,
-  #  but re-enable for later plugin
+  BCR_FORK: aspect-build/bazel-central-registry
+
+  # String containing submitters to tag
+  SUBMITTERS: "@alexeagle, @kormide"
 
 jobs:
   bcr-pull-request:
@@ -64,15 +65,14 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
           path: bcr
-          # push-to-fork: ${{ env.BCR_FORK }}
+          push-to-fork: ${{ env.BCR_FORK }}
           commit-message: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           branch: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           title: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           body: |
-            [Automated] Publish ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }} to bcr by [bazel-contrib](https://github.com/bazel-contrib).
+            [Automated] Publish ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}.
 
-            Manual checks:
-            - [ ] I have checked that the version is correct.
-            - [ ] I have checked that the compatibility_level in MODULE.bazel is correct.
+            Submitters:
+            ${{ env.SUBMITTERS }}
       - name: Echo PR url
         run: echo ${{ steps.post_pr.outputs.pull-request-url }}
