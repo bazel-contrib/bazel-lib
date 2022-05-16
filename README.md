@@ -5,6 +5,8 @@ This is code we would contribute to
 scope of that project is narrow and it's very difficult to get anyone's
 attention to review PRs there.
 
+See the full documentation for our rules [here](https://docs.aspect.build/bazel-lib).
+
 _Need help?_ This ruleset has support provided by https://aspect.dev.
 
 ## Installation
