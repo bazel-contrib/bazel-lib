@@ -63,7 +63,6 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           path: bcr
           push-to-fork: ${{ env.BCR_FORK }}
-          committer: ${{ github.actor }}
           commit-message: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           branch: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           title: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
