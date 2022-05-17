@@ -27,9 +27,6 @@ env:
   # Fork of the bazel central registery to push the pull request branch to
   BCR_FORK: aspect-build/bazel-central-registry
 
-  # String containing submitters to tag
-  SUBMITTERS: "@alexeagle, @kormide"
-
 jobs:
   bcr-pull-request:
     runs-on: ubuntu-latest
@@ -66,13 +63,12 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           path: bcr
           push-to-fork: ${{ env.BCR_FORK }}
+          committer: ${{ github.actor }}
           commit-message: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           branch: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           title: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
+          assignees: ${{ github.actor }}
           body: |
             [Automated] Publish ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}.
-
-            Submitters:
-            ${{ env.SUBMITTERS }}
       - name: Echo PR url
         run: echo ${{ steps.post_pr.outputs.pull-request-url }}
