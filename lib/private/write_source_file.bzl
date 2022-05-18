@@ -5,6 +5,13 @@ load(":diff_test.bzl", _diff_test = "diff_test")
 load(":fail_with_message_test.bzl", "fail_with_message_test")
 load(":utils.bzl", "utils")
 
+WriteSourceFileInfo = provider(
+    "Provider for write_source_file targets",
+    fields = {
+        "executable": "Executable that updates the source files",
+    },
+)
+
 def write_source_file(
         name,
         in_file = None,
@@ -127,7 +134,7 @@ _write_source_file_attrs = {
     # See https://github.com/aspect-build/bazel-lib/pull/52 for more context.
     "out_file": attr.string(mandatory = False),
     # buildifier: disable=attr-cfg
-    "additional_update_targets": attr.label_list(cfg = "host", mandatory = False),
+    "additional_update_targets": attr.label_list(cfg = "host", mandatory = False, providers = [WriteSourceFileInfo]),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
@@ -138,10 +145,7 @@ def _write_source_file_sh(ctx, paths):
 
     additional_update_scripts = []
     for target in ctx.attr.additional_update_targets:
-        if target[DefaultInfo].files_to_run and target[DefaultInfo].files_to_run.executable:
-            additional_update_scripts.append(target[DefaultInfo].files_to_run.executable)
-        else:
-            fail("additional_update_targets target %s does not provide an executable")
+        additional_update_scripts.append(target[WriteSourceFileInfo].executable)
 
     contents = ["""#!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
@@ -289,6 +293,9 @@ def _write_source_file_impl(ctx):
         DefaultInfo(
             executable = updater,
             runfiles = runfiles,
+        ),
+        WriteSourceFileInfo(
+            executable = updater,
         ),
     ]
 
