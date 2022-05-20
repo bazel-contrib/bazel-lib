@@ -22,6 +22,7 @@ load("//lib:directory_path.bzl", "make_directory_paths")
         "expected_7",
         "expected_8",
         "expected_9",
+        "expected_10",
     ]
 ]
 
@@ -231,4 +232,21 @@ diff_test(
     name = "case_8_test",
     file1 = "case_8",
     file2 = ":expected_8",
+)
+
+# Case 10: copy folder containing hidden file
+copy_to_directory(
+    name = "case_10",
+    srcs = [
+        ":dir_g",
+    ],
+    replace_prefixes = {
+        "dir_g": "",
+    },
+)
+
+diff_test(
+    name = "case_10_test",
+    file1 = "case_10",
+    file2 = ":expected_10",
 )
