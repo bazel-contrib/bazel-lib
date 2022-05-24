@@ -3,8 +3,8 @@
 Base Starlark libraries and basic Bazel rules which are useful for constructing rulesets and BUILD files.
 
 This module depends on [bazel-skylib](https://github.com/bazelbuild/bazel-skylib).
-In theory all these utilities could be upstreamed to bazel-skylib, but the declaredscope of that project is narrow and it's very difficult to get anyone's
-attention to review PRs there.
+In theory all these utilities could be upstreamed to bazel-skylib, but the declared scope of that project
+is narrow and it's very difficult to get anyone's attention to review PRs there.
 
 See a full listing of our rules on our [docsite](https://docs.aspect.build/bazel-lib).
 
