@@ -7,10 +7,10 @@ Public API for docs helpers
 ## stardoc_with_diff_test
 
 <pre>
-stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href="#stardoc_with_diff_test-bzl_library_target">bzl_library_target</a>, <a href="#stardoc_with_diff_test-suggested_update_target">suggested_update_target</a>, <a href="#stardoc_with_diff_test-kwargs">kwargs</a>)
+stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href="#stardoc_with_diff_test-bzl_library_target">bzl_library_target</a>, <a href="#stardoc_with_diff_test-kwargs">kwargs</a>)
 </pre>
 
-Creates a stardoc target, diff test, and an executable to rule to write the generated doc to the source tree and test that it's up to date.
+Creates a stardoc target that can be auto-detected by update_docs to write the generated doc to the source tree and test that it's up to date.
 
 This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
 
@@ -22,7 +22,6 @@ This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
 | :------------- | :------------- | :------------- |
 | <a id="stardoc_with_diff_test-name"></a>name |  the name of the stardoc file to be written to the current source directory (.md will be appended to the name). Call bazel run on this target to update the file.   |  none |
 | <a id="stardoc_with_diff_test-bzl_library_target"></a>bzl_library_target |  the label of the <code>bzl_library</code> target to generate documentation for   |  none |
-| <a id="stardoc_with_diff_test-suggested_update_target"></a>suggested_update_target |  the target suggested to be run when a doc is out of date (should be the label for [update_docs](#update_docs))   |  <code>"//docs:update"</code> |
 | <a id="stardoc_with_diff_test-kwargs"></a>kwargs |  additional attributes passed to the stardoc() rule, such as for overriding the templates   |  none |
 
 

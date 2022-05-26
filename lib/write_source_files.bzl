@@ -96,11 +96,14 @@ def write_source_files(
     for i, pair in enumerate(files.items()):
         out_file, in_file = pair
 
+        this_suggested_update_target = suggested_update_target
         if single_update_target:
             update_target_name = name
         else:
             update_target_name = "%s_%d" % (name, i)
             update_targets.append(update_target_name)
+            if not this_suggested_update_target:
+                this_suggested_update_target = name
 
         # Runnable target that writes to the out file to the source tree
         _write_source_file(
@@ -108,7 +111,7 @@ def write_source_files(
             in_file = in_file,
             out_file = out_file,
             additional_update_targets = additional_update_targets if single_update_target else [],
-            suggested_update_target = suggested_update_target,
+            suggested_update_target = this_suggested_update_target,
             diff_test = diff_test,
             **kwargs
         )
