@@ -48,7 +48,7 @@ YQ_PLATFORMS = {
     ),
 }
 
-DEFAULT_YQ_VERSION = "4.24.5"
+DEFAULT_YQ_VERSION = "4.25.2"
 
 # https://github.com/mikefarah/yq/releases
 #
@@ -59,6 +59,15 @@ DEFAULT_YQ_VERSION = "4.24.5"
 # Alternatively, you can compute them manually by running
 # `shasum -b -a 384 [downloaded file] | awk '{ print $1 }' | xxd -r -p | base64`
 YQ_VERSIONS = {
+    "4.25.2": {
+        "darwin_amd64": "sha384-JOSKdcN5JoSfryJBDFzTSk21uFVNw+bWdLHTErwIyaUOAZZV9LISzlmsYiQoPfo3",
+        "darwin_arm64": "sha384-COVD0Ko3vQUmSS/SS17VrpA4gTaxuyszgPfE9P8vNKLlB+65I7HznstHg/iElxrk",
+        "linux_amd64": "sha384-uK7+qPUYBO1bnKUNYKqKuGpfTKsRktfptGATlV14AFb5hiVp6vcWvDyTRSfiZn5f",
+        "linux_arm64": "sha384-2SwY2OtotYhupSEeUSHRKTMbUoIhUyIt7QgujH3UyaQ/9AoXWNZ3h05OAdWL5WbL",
+        "linux_s390x": "sha384-AXZe1USYMi0mg5ylHnU8OGqQQZcMDETD/bLWG0BKytSBhZ0Xkkhn9r90fJYM4xVS",
+        "linux_ppc64le": "sha384-N6UXrIzrpPy6zojzI8J7AFP5z3UAe9KU8WLuUKe8WrttuD1Fl3YTwvo/OM2+5NTt",
+        "windows_amd64": "sha384-wD0GpKHTLQIWWNJv43ts+l2rIdAiyYYtb3upncdIOLLydFcWxB39+thcQ8aSdaW+",
+    },
     "4.24.5": {
         "darwin_amd64": "sha384-Y6Utm9NAX7q69apRHLAU6oNYk5Kn5b6LUccBolbTm2CXXYye8pabeFPsaREFIHbw",
         "darwin_arm64": "sha384-d6+hFiZrsUeqnXJufnvadTi0BL/sfbd6K7LnJyLVDy31C0isjyHipVqlibKYbFSu",

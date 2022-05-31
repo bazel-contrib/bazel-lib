@@ -81,16 +81,12 @@ yq(
     name = "case_generate_from_expression",
     srcs = [],
     expression = ".a.b.c = \"cat\"",
-    # yq hangs without input srcs (https://github.com/mikefarah/yq/issues/1177)
-    tags = ["no-windows-ci"],
 )
 
 diff_test(
     name = "case_generate_from_expression_test",
     file1 = "generated-from-expression.yaml",
     file2 = ":case_generate_from_expression",
-    # yq hangs without input srcs (https://github.com/mikefarah/yq/issues/1177)
-    tags = ["no-windows-ci"],
 )
 
 # No sources produces empty file (equivalent to --null-input)
@@ -98,16 +94,12 @@ yq(
     name = "case_no_sources",
     srcs = [],
     expression = ".",
-    # yq hangs without input srcs (https://github.com/mikefarah/yq/issues/1177)
-    tags = ["no-windows-ci"],
 )
 
 diff_test(
     name = "case_no_sources_test",
     file1 = ":case_no_sources",
     file2 = "empty.yaml",
-    # yq hangs without input srcs (https://github.com/mikefarah/yq/issues/1177)
-    tags = ["no-windows-ci"],
 )
 
 # Merge two documents together
@@ -134,16 +126,12 @@ yq(
         "b.yaml",
     ],
     expression = ". as $item ireduce ({}; . * $item )",
-    # TODO: figure out why this doesn't work on windows (may be related to https://github.com/mikefarah/yq/issues/747)
-    tags = ["no-windows-ci"],
 )
 
 diff_test(
     name = "case_merge_expression_alt_test",
     file1 = "a_b_merged.yaml",
     file2 = ":case_merge_expression_alt",
-    # TODO: figure out why this doesn't work on windows (may be related to https://github.com/mikefarah/yq/issues/747)
-    tags = ["no-windows-ci"],
 )
 
 # Split into multiple documents
@@ -312,16 +300,12 @@ yq(
     ],
     args = ["-P"],
     expression = ". as $item ireduce ({}; . * $item )",
-    # TODO: figure out why this doesn't work on windows (may be related to https://github.com/mikefarah/yq/issues/747)
-    tags = ["no-windows-ci"],
 )
 
 diff_test(
     name = "case_merge_expression_json_test",
     file1 = "a_b_merged.yaml",
     file2 = ":case_merge_expression_json",
-    # TODO: figure out why this doesn't work on windows (may be related to https://github.com/mikefarah/yq/issues/747)
-    tags = ["no-windows-ci"],
 )
 
 # Call yq within a genrule
