@@ -12,11 +12,7 @@ tasks:
     test_targets:
       - "//..."
   windows:
-    build_flags:
-      - "--build_tag_filters=-no-windows-ci"
     build_targets:
       - "//..."
-    test_flags:
-      - "--test_tag_filters=-no-windows-ci"
     test_targets:
       - "//..."

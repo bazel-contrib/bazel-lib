@@ -66,5 +66,5 @@ def bazel_lib_internal_deps():
     )
 
     # Register toolchains for tests
-    register_jq_toolchains(version = "1.6")
-    register_yq_toolchains(version = "4.24.5")
+    register_jq_toolchains()
+    register_yq_toolchains()
