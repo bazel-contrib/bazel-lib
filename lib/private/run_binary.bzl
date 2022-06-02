@@ -21,7 +21,7 @@ def _impl(ctx):
     if ctx.attr.output_dir and ctx.outputs.outs:
         fail("Only one of output_dir and outs may be specified")
     if not ctx.attr.output_dir and not ctx.outputs.outs:
-        fail("One of output_dir and outs must be specified")
+        fail("Either output_dir or outs must be specified")
 
     tool_as_list = [ctx.attr.tool]
     tool_inputs, tool_input_mfs = ctx.resolve_tools(tools = tool_as_list)
