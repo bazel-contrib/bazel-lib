@@ -45,7 +45,7 @@ def _jq_impl(ctx):
         inputs = inputs,
         outputs = [out],
         command = cmd,
-        mnemonic = "Jq"
+        mnemonic = "Jq",
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
