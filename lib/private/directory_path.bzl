@@ -14,7 +14,7 @@ DirectoryPathInfo = provider(
 
 def _directory_path(ctx):
     if not ctx.file.directory.is_directory:
-        fail("directory attribute must be created with Bazel declare_directory (TreeArtifact)")
+        fail("expected directory to be a TreeArtifact (ctx.actions.declare_directory) but got {}".format(ctx.file.directory))
     return [DirectoryPathInfo(path = ctx.attr.path, directory = ctx.file.directory)]
 
 directory_path = rule(
