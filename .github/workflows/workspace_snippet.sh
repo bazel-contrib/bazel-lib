@@ -10,7 +10,20 @@ SHA=$(git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip | shasum -a 256
 
 cat << EOF
 
-WORKSPACE snippet:
+## Using Bzlmod:
+
+1. Enable with `--experimental_enable_bzlmod` in `.bazelrc`.
+2. Add to your `MODULE.bazel` file:
+
+```starlark
+bazel_dep(name = "aspect_bazel_lib", version = "${TAG:1}")
+```
+
+> Read more about bzlmod: <https://blog.aspect.dev/bzlmod>
+
+## Using WORKSPACE
+
+Paste this snippet into your `WORKSPACE` file:
 
 \`\`\`starlark
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
