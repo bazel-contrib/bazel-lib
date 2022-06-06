@@ -6,9 +6,17 @@ This module depends on [bazel-skylib](https://github.com/bazelbuild/bazel-skylib
 In theory all these utilities could be upstreamed to bazel-skylib, but the declared scope of that project
 is narrow and it's very difficult to get anyone's attention to review PRs there.
 
-See a full listing of our rules on our [docsite](https://docs.aspect.build/bazel-lib).
+bazel-lib is just a part of what Aspect provides:
 
-_Need help?_ This ruleset has support provided by https://aspect.dev.
+- _Need help?_ This ruleset has support provided by https://aspect.dev.
+- See our other Bazel rules: https://github.com/aspect-build
+
+## Installation
+
+Installation instructions are included on each release:
+<https://github.com/aspect-build/bazel-lib/releases>
+
+# Public API
 
 ## Copying files
 
@@ -41,9 +49,3 @@ _Need help?_ This ruleset has support provided by https://aspect.dev.
 ## Generating documentation
 
 - [docs](docs/docs.md) Rules for generating docs and stamping tests to ensure they are up to date.
-
-## Installation
-
-From the release you wish to use:
-<https://github.com/aspect-build/bazel-lib/releases>
-copy the WORKSPACE snippet into your `WORKSPACE` file.
