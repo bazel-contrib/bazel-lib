@@ -48,12 +48,12 @@ Optional toolchains:
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
 
-register_jq_toolchains(version = "1.6")
+register_jq_toolchains()
 
 # Register the following toolchain to use yq
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
 
-register_yq_toolchains(version = "4.24.5")
+register_yq_toolchains()
 \`\`\`
 EOF
