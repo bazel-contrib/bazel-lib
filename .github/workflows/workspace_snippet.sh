@@ -12,12 +12,12 @@ cat << EOF
 
 ## Using Bzlmod:
 
-1. Enable with `--experimental_enable_bzlmod` in `.bazelrc`.
+1. Enable with \`--experimental_enable_bzlmod\` in \`.bazelrc\`.
 2. Add to your `MODULE.bazel` file:
 
-```starlark
+\`\`\`starlark
 bazel_dep(name = "aspect_bazel_lib", version = "${TAG:1}")
-```
+\`\`\`
 
 > Read more about bzlmod: <https://blog.aspect.dev/bzlmod>
 
