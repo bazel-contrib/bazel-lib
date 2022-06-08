@@ -250,3 +250,29 @@ diff_test(
     file1 = "case_10",
     file2 = ":expected_10",
 )
+
+copy_directory(
+    name = "g1_out",
+    src = "g1",
+    out = "g1_out",
+)
+
+copy_directory(
+    name = "g2_out",
+    src = "g2",
+    out = "g2_out",
+)
+
+# Case 11: two inputs with same subfolders
+# regression test for https://github.com/aspect-build/bazel-lib/issues/133
+copy_to_directory(
+    name = "case_11",
+    srcs = [
+        "g1_out",
+        "g2_out",
+    ],
+    root_paths = [
+        "{}/g1_out".format(package_name()),
+        "{}/g2_out".format(package_name()),
+    ],
+)
