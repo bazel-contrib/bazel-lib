@@ -145,6 +145,12 @@ if [[ -f "{src}" ]]; then
     mkdir -p "{dst_dir}"
     cp -f "{src}" "{dst}"
 else
+    if [[ -d "{dst}" ]]; then
+        # When running outside the sandbox, then an earlier copy will create the dst folder
+        # with nested read-only folders, so our copy operation will fail to write there.
+        # Make sure the output folders are writeable.
+        find "{dst}" -type d -print0 | xargs -0 chmod a+w
+    fi
     mkdir -p "{dst}"
     cp -fR "{src}/." "{dst}"
 fi
