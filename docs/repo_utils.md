@@ -2,7 +2,7 @@
 
 Public API
 
-<a id="#patch"></a>
+<a id="patch"></a>
 
 ## patch
 
@@ -33,7 +33,7 @@ then they are taken from `ctx.attr`.
 | <a id="patch-patch_directory"></a>patch_directory |  Directory to apply the patches in   |  <code>None</code> |
 
 
-<a id="#repo_utils.is_darwin"></a>
+<a id="repo_utils.is_darwin"></a>
 
 ## repo_utils.is_darwin
 
@@ -51,7 +51,7 @@ Returns true if the host operating system is Darwin
 | <a id="repo_utils.is_darwin-rctx"></a>rctx |  <p align="center"> - </p>   |  none |
 
 
-<a id="#repo_utils.is_linux"></a>
+<a id="repo_utils.is_linux"></a>
 
 ## repo_utils.is_linux
 
@@ -69,7 +69,7 @@ Returns true if the host operating system is Linux
 | <a id="repo_utils.is_linux-rctx"></a>rctx |  <p align="center"> - </p>   |  none |
 
 
-<a id="#repo_utils.is_windows"></a>
+<a id="repo_utils.is_windows"></a>
 
 ## repo_utils.is_windows
 
@@ -87,7 +87,7 @@ Returns true if the host operating system is Windows
 | <a id="repo_utils.is_windows-rctx"></a>rctx |  <p align="center"> - </p>   |  none |
 
 
-<a id="#repo_utils.get_env_var"></a>
+<a id="repo_utils.get_env_var"></a>
 
 ## repo_utils.get_env_var
 
@@ -111,7 +111,7 @@ Find an environment variable in system. Doesn't %-escape the value!
 The environment variable value or the default if it is not set
 
 
-<a id="#repo_utils.os"></a>
+<a id="repo_utils.os"></a>
 
 ## repo_utils.os
 
@@ -133,7 +133,7 @@ Returns the name of the host operating system
 The string "windows", "linux" or "darwin" that describes the host os
 
 
-<a id="#repo_utils.platform"></a>
+<a id="repo_utils.platform"></a>
 
 ## repo_utils.platform
 

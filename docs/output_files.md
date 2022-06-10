@@ -3,7 +3,7 @@
 A rule that provides file(s) specific via DefaultInfo from a given target's DefaultInfo or OutputGroupInfo
 
 
-<a id="#output_files"></a>
+<a id="output_files"></a>
 
 ## output_files
 
@@ -24,7 +24,7 @@ A rule that provides file(s) specific via DefaultInfo from a given target's Defa
 | <a id="output_files-target"></a>target |  the target to look in for requested paths in its' DefaultInfo or OutputGroupInfo   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
 
 
-<a id="#make_output_files"></a>
+<a id="make_output_files"></a>
 
 ## make_output_files
 

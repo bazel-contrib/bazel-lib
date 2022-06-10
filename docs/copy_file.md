@@ -12,7 +12,7 @@ This fork of bazel-skylib's copy_file adds DirectoryPathInfo support and allows 
 copy_file in the same package.
 
 
-<a id="#copy_file"></a>
+<a id="copy_file"></a>
 
 ## copy_file
 
@@ -46,7 +46,7 @@ for more context.
 | <a id="copy_file-kwargs"></a>kwargs |  further keyword arguments, e.g. <code>visibility</code>   |  none |
 
 
-<a id="#copy_file_action"></a>
+<a id="copy_file_action"></a>
 
 ## copy_file_action
 

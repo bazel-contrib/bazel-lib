@@ -2,7 +2,7 @@
 
 Public API
 
-<a id="#glob_directories"></a>
+<a id="glob_directories"></a>
 
 ## glob_directories
 
@@ -21,7 +21,7 @@ glob_directories(<a href="#glob_directories-include">include</a>, <a href="#glob
 | <a id="glob_directories-kwargs"></a>kwargs |  <p align="center"> - </p>   |  none |
 
 
-<a id="#is_external_label"></a>
+<a id="is_external_label"></a>
 
 ## is_external_label
 
@@ -43,7 +43,7 @@ Returns True if the given Label (or stringy version of a label) represents a tar
 a bool
 
 
-<a id="#path_to_workspace_root"></a>
+<a id="path_to_workspace_root"></a>
 
 ## path_to_workspace_root
 
@@ -59,7 +59,7 @@ path_to_workspace_root()
 Path to the workspace root
 
 
-<a id="#propagate_well_known_tags"></a>
+<a id="propagate_well_known_tags"></a>
 
 ## propagate_well_known_tags
 
@@ -86,7 +86,7 @@ https://docs.bazel.build/versions/main/be/common-definitions.html#common-attribu
 List of tags that only contains the well known set
 
 
-<a id="#to_label"></a>
+<a id="to_label"></a>
 
 ## to_label
 

@@ -9,7 +9,7 @@ Originally authored in rules_nodejs
 https://github.com/bazelbuild/rules_nodejs/blob/8b5d27400db51e7027fe95ae413eeabea4856f8e/internal/common/copy_to_bin.bzl
 
 
-<a id="#copy_file_to_bin_action"></a>
+<a id="copy_file_to_bin_action"></a>
 
 ## copy_file_to_bin_action
 
@@ -40,7 +40,7 @@ without a copy action.
 A File in the output tree.
 
 
-<a id="#copy_files_to_bin_actions"></a>
+<a id="copy_files_to_bin_actions"></a>
 
 ## copy_files_to_bin_actions
 
@@ -71,7 +71,7 @@ directly to the result without a copy action.
 List of File objects in the output tree.
 
 
-<a id="#copy_to_bin"></a>
+<a id="copy_to_bin"></a>
 
 ## copy_to_bin
 

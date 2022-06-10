@@ -2,7 +2,7 @@
 
 Public API
 
-<a id="#host_repo"></a>
+<a id="host_repo"></a>
 
 ## host_repo
 
