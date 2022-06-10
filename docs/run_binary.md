@@ -5,7 +5,7 @@ Runs a binary as a build action. This rule does not require Bash (unlike native.
 This fork of bazel-skylib's run_binary adds directory output support and better makevar expansions.
 
 
-<a id="#run_binary"></a>
+<a id="run_binary"></a>
 
 ## run_binary
 

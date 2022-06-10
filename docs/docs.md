@@ -2,7 +2,7 @@
 
 Public API for docs helpers
 
-<a id="#stardoc_with_diff_test"></a>
+<a id="stardoc_with_diff_test"></a>
 
 ## stardoc_with_diff_test
 
@@ -25,7 +25,7 @@ This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
 | <a id="stardoc_with_diff_test-kwargs"></a>kwargs |  additional attributes passed to the stardoc() rule, such as for overriding the templates   |  none |
 
 
-<a id="#update_docs"></a>
+<a id="update_docs"></a>
 
 ## update_docs
 

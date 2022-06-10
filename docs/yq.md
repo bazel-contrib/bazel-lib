@@ -2,7 +2,7 @@
 
 Public API for yq
 
-<a id="#yq"></a>
+<a id="yq"></a>
 
 ## yq
 

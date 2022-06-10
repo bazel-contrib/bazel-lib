@@ -2,7 +2,7 @@
 
 Rules for working with transitions.
 
-<a id="#platform_transition_filegroup"></a>
+<a id="platform_transition_filegroup"></a>
 
 ## platform_transition_filegroup
 

@@ -2,7 +2,7 @@
 
 Public API for write_source_files
 
-<a id="#write_source_files"></a>
+<a id="write_source_files"></a>
 
 ## write_source_files
 

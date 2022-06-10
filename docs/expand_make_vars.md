@@ -2,7 +2,7 @@
 
 Public API for expanding variables
 
-<a id="#expand_template"></a>
+<a id="expand_template"></a>
 
 ## expand_template
 
@@ -34,7 +34,7 @@ as well as [configuration variables] such as `$(BINDIR)`, `$(TARGET_CPU)`, and `
 | <a id="expand_template-template"></a>template |  The template file to expand.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
 
 
-<a id="#expand_locations"></a>
+<a id="expand_locations"></a>
 
 ## expand_locations
 
@@ -81,7 +81,7 @@ The deprecated `$(location)` and `$(locations)` expansions returns either the ex
 The expanded path or the original path
 
 
-<a id="#expand_variables"></a>
+<a id="expand_variables"></a>
 
 ## expand_variables
 

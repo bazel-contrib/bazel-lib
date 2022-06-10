@@ -2,7 +2,7 @@
 
 Public API for jq
 
-<a id="#jq"></a>
+<a id="jq"></a>
 
 ## jq
 

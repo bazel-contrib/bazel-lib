@@ -6,7 +6,7 @@ Files and directories can be arranged as needed in the output directory using
 the `root_paths`, `exclude_prefixes` and `replace_prefixes` attributes.
 
 
-<a id="#copy_to_directory"></a>
+<a id="copy_to_directory"></a>
 
 ## copy_to_directory
 
@@ -30,7 +30,7 @@ copy_to_directory(<a href="#copy_to_directory-name">name</a>, <a href="#copy_to_
 | <a id="copy_to_directory-srcs"></a>srcs |  Files and/or directories or targets that provide DirectoryPathInfo to copy         into the output directory.   | <a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a> | optional | [] |
 
 
-<a id="#copy_to_directory_lib.impl"></a>
+<a id="copy_to_directory_lib.impl"></a>
 
 ## copy_to_directory_lib.impl
 

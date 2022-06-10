@@ -2,7 +2,7 @@
 
 Public API
 
-<a id="#relative_file"></a>
+<a id="relative_file"></a>
 
 ## relative_file
 
@@ -25,7 +25,7 @@ Resolves a relative path between two files, "to_file" and "frm_file", they must 
 The relative path from frm_file to to_file, including the file name
 
 
-<a id="#to_manifest_path"></a>
+<a id="to_manifest_path"></a>
 
 ## to_manifest_path
 
@@ -56,7 +56,7 @@ in order to locate entries by their key.
 The runfiles manifest entry path for a file
 
 
-<a id="#to_workspace_path"></a>
+<a id="to_workspace_path"></a>
 
 ## to_workspace_path
 

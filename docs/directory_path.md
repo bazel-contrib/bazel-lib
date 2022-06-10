@@ -4,7 +4,7 @@ Rule and corresponding provider that joins a label pointing to a TreeArtifact
 with a path nested within that directory
 
 
-<a id="#directory_path"></a>
+<a id="directory_path"></a>
 
 ## directory_path
 
@@ -26,7 +26,7 @@ Otherwise there is no way to give a Bazel label for it.
 | <a id="directory_path-path"></a>path |  path relative to the directory   | String | required |  |
 
 
-<a id="#DirectoryPathInfo"></a>
+<a id="DirectoryPathInfo"></a>
 
 ## DirectoryPathInfo
 
@@ -45,7 +45,7 @@ Joins a label pointing to a TreeArtifact with a path nested within that director
 | <a id="DirectoryPathInfo-path"></a>path |  path relative to the directory    |
 
 
-<a id="#make_directory_path"></a>
+<a id="make_directory_path"></a>
 
 ## make_directory_path
 
@@ -70,7 +70,7 @@ Helper function to generate a directory_path target and return its label.
 The label `name`
 
 
-<a id="#make_directory_paths"></a>
+<a id="make_directory_paths"></a>
 
 ## make_directory_paths
 
