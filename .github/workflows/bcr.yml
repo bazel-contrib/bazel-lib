@@ -31,7 +31,7 @@ jobs:
   bcr-pull-request:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "14"
       - name: Get the tag
