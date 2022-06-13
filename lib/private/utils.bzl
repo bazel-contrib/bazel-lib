@@ -68,7 +68,8 @@ def _to_label(param):
     elif param_type == "Label":
         return param
     else:
-        fail("Expected 'string' or 'Label' but got '%s'" % param_type)
+        msg = "Expected 'string' or 'Label' but got '{}'".format(param_type)
+        fail(msg)
 
 def _is_external_label(param):
     """Returns True if the given Label (or stringy version of a label) represents a target outside of the workspace
