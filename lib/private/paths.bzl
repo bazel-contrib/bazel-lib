@@ -42,6 +42,18 @@ def _relative_file(to_file, frm_file):
         )
     )
 
+def _to_output_relative_path(f):
+    "The relative path from bazel-out/[arch]/bin to the given File object"
+    if f.is_source:
+        execroot = "../../../"
+    else:
+        execroot = ""
+    if f.short_path.startswith("../"):
+        path = "external/" + f.short_path[3:]
+    else:
+        path = f.short_path
+    return execroot + path
+
 def _to_manifest_path(ctx, file):
     """The runfiles manifest entry path for a file
 
@@ -87,5 +99,6 @@ def _to_workspace_path(file):
 paths = struct(
     relative_file = _relative_file,
     to_manifest_path = _to_manifest_path,
+    to_output_relative_path = _to_output_relative_path,
     to_workspace_path = _to_workspace_path,
 )
