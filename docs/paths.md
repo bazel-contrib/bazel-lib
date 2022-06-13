@@ -56,6 +56,24 @@ in order to locate entries by their key.
 The runfiles manifest entry path for a file
 
 
+<a id="to_output_relative_path"></a>
+
+## to_output_relative_path
+
+<pre>
+to_output_relative_path(<a href="#to_output_relative_path-f">f</a>)
+</pre>
+
+The relative path from bazel-out/[arch]/bin to the given File object
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="to_output_relative_path-f"></a>f |  <p align="center"> - </p>   |  none |
+
+
 <a id="to_workspace_path"></a>
 
 ## to_workspace_path
