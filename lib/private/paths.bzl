@@ -20,7 +20,8 @@ def _relative_file(to_file, frm_file):
         return to_file
 
     if to_segments[0] != frm_segments[0]:
-        fail("paths must share a common root, got '%s' and '%s'" % (to_file, frm_file))
+        msg = "paths must share a common root, got '{}' and '{}'".format(to_file, frm_file)
+        fail(msg)
 
     longest_common = []
     for to_seg, frm_seg in zip(to_segments, frm_segments):
@@ -32,7 +33,8 @@ def _relative_file(to_file, frm_file):
     split_point = len(longest_common)
 
     if split_point == 0:
-        fail("paths share no common ancestor, '%s' -> '%s'" % (frm_file, to_file))
+        msg = "paths share no common ancestor, '{}' -> '{}'".format(frm_file, to_file)
+        fail(msg)
 
     return _spaths.join(
         *(

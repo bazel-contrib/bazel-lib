@@ -44,9 +44,11 @@ def write_source_file(
         out_file = utils.to_label(out_file)
 
         if utils.is_external_label(out_file):
-            fail("out file %s must be in the user workspace" % out_file)
+            msg = "out file {} must be in the user workspace".format(out_file)
+            fail(msg)
         if out_file.package != native.package_name():
-            fail("out file %s (in package '%s') must be a source file within the target's package: '%s'" % (out_file, out_file.package, native.package_name()))
+            msg = "out file {} (in package '{}') must be a source file within the target's package: '{}'".format(out_file, out_file.package, native.package_name())
+            fail(msg)
 
     _write_source_file(
         name = name,
@@ -264,11 +266,13 @@ def _write_source_file_impl(ctx):
             ])
             runfiles.append(ctx.attr.in_file[DirectoryPathInfo].directory)
         elif len(ctx.files.in_file) == 0:
-            fail("in file %s must provide files" % ctx.attr.in_file.label)
+            msg = "in file {} must provide files".format(ctx.attr.in_file.label)
+            fail(msg)
         elif len(ctx.files.in_file) == 1:
             in_path = ctx.files.in_file[0].short_path
         else:
-            fail("in file %s must be a single file or a target that provides DefaultOutputPathInfo or DirectoryPathInfo" % ctx.attr.in_file.label)
+            msg = "in file {} must be a single file or a target that provides DefaultOutputPathInfo or DirectoryPathInfo".format(ctx.attr.in_file.label)
+            fail(msg)
 
         out_path = "/".join([ctx.label.package, ctx.attr.out_file]) if ctx.label.package else ctx.attr.out_file
         paths.append((in_path, out_path))

@@ -137,18 +137,18 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
             )
             st = ctx.execute([bash_exe, "-c", command], working_directory = patch_directory)
             if st.return_code:
-                fail("Error applying patch %s:\n%s%s" %
-                     (str(patchfile), st.stderr, st.stdout))
+                msg = "Error applying patch {}:\n{}{}".format(str(patchfile), st.stderr, st.stdout)
+                fail(msg)
 
     if repo_utils.is_windows(ctx) and patch_cmds_win:
         for cmd in patch_cmds_win:
             st = ctx.execute([powershell_exe, "/c", cmd], working_directory = patch_directory)
             if st.return_code:
-                fail("Error applying patch command %s:\n%s%s" %
-                     (cmd, st.stdout, st.stderr))
+                msg = "Error applying patch command {}:\n{}{}".format(cmd, st.stdout, st.stderr)
+                fail(msg)
     else:
         for cmd in patch_cmds:
             st = ctx.execute([bash_exe, "-c", cmd], working_directory = patch_directory)
             if st.return_code:
-                fail("Error applying patch command %s:\n%s%s" %
-                     (cmd, st.stdout, st.stderr))
+                msg = "Error applying patch command {}:\n{}{}".format(cmd, st.stdout, st.stderr)
+                fail(msg)
