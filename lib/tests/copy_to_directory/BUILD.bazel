@@ -258,6 +258,12 @@ copy_directory(
 )
 
 copy_directory(
+    name = "g1'_out",
+    src = "g1'",
+    out = "g1'_out",
+)
+
+copy_directory(
     name = "g2_out",
     src = "g2",
     out = "g2_out",
@@ -274,5 +280,23 @@ copy_to_directory(
     root_paths = [
         "{}/g1_out".format(package_name()),
         "{}/g2_out".format(package_name()),
+    ],
+)
+
+# Case 12: srcs with overwrites
+copy_to_directory(
+    name = "case_12",
+    srcs = [
+        "g1",
+        "g1'",
+        "g1'_out",
+        "g1_out",
+    ],
+    allow_overwrites = True,
+    root_paths = [
+        "{}/g1".format(package_name()),
+        "{}/g1'".format(package_name()),
+        "{}/g1_out".format(package_name()),
+        "{}/g1'_out".format(package_name()),
     ],
 )
