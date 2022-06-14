@@ -55,6 +55,23 @@ target to {file_basename}'s package using:
                 package = "%s//%s" % (ctx.label.workspace_name, ctx.label.package),
             ),
         )
+
+    if file.path.startswith("bazel-"):
+        first = file.path.split("/")[0]
+        suffix = first[len("bazel-"):]
+        if suffix in ["testlogs", "bin", "out"]:
+            # buildifier: disable=print
+            print("""
+WARNING: sources are being copied from {bin}. This is probably not what you want.
+
+Add these lines to .bazelignore:
+bazel-out
+bazel-bin
+bazel-testlogs
+
+and/or correct the `glob` patterns that are including these files in the sources.
+""".format(bin = first))
+
     dst = ctx.actions.declare_file(file.basename, sibling = file)
     copy_file_action(ctx, file, dst, is_windows = is_windows)
     return dst
