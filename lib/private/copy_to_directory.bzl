@@ -76,6 +76,12 @@ _copy_to_directory_attr = {
 
         If there are multiple keys that match, the longest match wins.""",
     ),
+    "allow_overwrites": attr.bool(
+        doc = """If True, allow files to be overwritten if the same output file is copied to twice.
+        If set, then the order of srcs matters as the last copy of a particular file will win.
+
+        This setting has no effect on Windows where overwrites are always allowed.""",
+    ),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
@@ -131,6 +137,15 @@ def _copy_paths(ctx, root_paths, src):
 def _copy_to_dir_bash(ctx, copy_paths, dst_dir):
     cmds = [
         "set -o errexit -o nounset -o pipefail",
+        "OUT_CAPTURE=$(mktemp)",
+        """_exit() {
+    EXIT_CODE=$?;
+    if [ "$EXIT_CODE" != 0 ]; then
+        cat "$OUT_CAPTURE"
+    fi
+    exit $EXIT_CODE
+}""",
+        "trap _exit EXIT",
         "mkdir -p \"%s\"" % dst_dir.path,
     ]
 
@@ -139,11 +154,21 @@ def _copy_to_dir_bash(ctx, copy_paths, dst_dir):
     for src_path, dst_path, src_file in copy_paths:
         inputs.append(src_file)
 
+        maybe_force = "-f " if ctx.attr.allow_overwrites else "-n "
+        maybe_chmod_file = """if [ -e "{dst}" ]; then
+    chmod a+w "{dst}"
+fi
+""" if ctx.attr.allow_overwrites else ""
+        maybe_chmod_dir = """if [ -e "{dst}" ]; then
+    chmod -R a+w "{dst}"
+fi
+""" if ctx.attr.allow_overwrites else ""
+
         cmds.append("""
 if [[ ! -e "{src}" ]]; then echo "file '{src}' does not exist"; exit 1; fi
 if [[ -f "{src}" ]]; then
     mkdir -p "{dst_dir}"
-    cp -f "{src}" "{dst}"
+    {maybe_chmod_file}cp -v {maybe_force}"{src}" "{dst}" >> "$OUT_CAPTURE" 2>>"$OUT_CAPTURE"
 else
     if [[ -d "{dst}" ]]; then
         # When running outside the sandbox, then an earlier copy will create the dst folder
@@ -152,9 +177,16 @@ else
         find "{dst}" -type d -print0 | xargs -0 chmod a+w
     fi
     mkdir -p "{dst}"
-    cp -fR "{src}/." "{dst}"
+    {maybe_chmod_dir}cp -v -R {maybe_force}"{src}/." "{dst}" >> "$OUT_CAPTURE" 2>>"$OUT_CAPTURE"
 fi
-""".format(src = src_path, dst_dir = skylib_paths.dirname(dst_path), dst = dst_path))
+""".format(
+            src = src_path,
+            dst_dir = skylib_paths.dirname(dst_path),
+            dst = dst_path,
+            maybe_force = maybe_force,
+            maybe_chmod_file = maybe_chmod_file,
+            maybe_chmod_dir = maybe_chmod_dir,
+        ))
 
     ctx.actions.run_shell(
         inputs = inputs,
