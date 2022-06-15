@@ -172,3 +172,10 @@ write_source_files(
     diff_test = False,
     files = {"symlink_test": ":symlinks"},
 )
+
+write_source_files(
+    name = "write_from_external_repo",
+    files = {
+        "skylib_LICENSE": "@bazel_skylib//:LICENSE"
+    }
+)
