@@ -35,7 +35,9 @@ def _copy_cmd(ctx, src, src_path, dst):
     # quoting or escaping is required.
     # Put a hash of the file name into the name of the generated batch file to
     # make it unique within the package, so that users can define multiple copy_file's.
-    bat = ctx.actions.declare_file("%s-%s-cmd.bat" % (ctx.label.name, hash(src_path)))
+    # The label of the target is intentionally not included so that two different targets
+    # can copy the same file to the output tree.
+    bat = ctx.actions.declare_file("%s-cmd.bat" % hash(src_path))
 
     # Flags are documented at
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
