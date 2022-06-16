@@ -79,6 +79,9 @@ bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
     visibility = ["//lib:__subpackages__"],
+    deps = [
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 bzl_library(

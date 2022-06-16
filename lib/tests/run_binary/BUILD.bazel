@@ -27,7 +27,7 @@ sh_binary(
 run_binary(
     name = "dir_a",
     args = ["$(@D)"],
-    output_dir = True,
+    out_dirs = ["dir_a"],
     tool = ":make_dir_a",
 )
 
