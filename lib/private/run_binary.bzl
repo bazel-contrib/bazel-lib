@@ -49,7 +49,9 @@ def _impl(ctx):
         tools = tool_inputs,
         executable = ctx.executable.tool,
         arguments = [args],
-        mnemonic = "RunBinary",
+        mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
+        progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
+        execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
         use_default_shell_env = False,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
         input_manifests = tool_input_mfs,
@@ -75,6 +77,9 @@ _run_binary = rule(
         "out_dirs": attr.string_list(),
         "outs": attr.output_list(),
         "args": attr.string_list(),
+        "mnemonic": attr.string(),
+        "progress_message": attr.string(),
+        "execution_requirements": attr.string_dict(),
     },
 )
 
@@ -86,6 +91,9 @@ def run_binary(
         env = {},
         outs = [],
         out_dirs = [],
+        mnemonic = "RunBinary",
+        progress_message = None,
+        execution_requirements = None,
         # TODO: remove output_dir in 2.x release
         output_dir = False,
         **kwargs):
@@ -128,6 +136,26 @@ def run_binary(
 
             Output directories cannot be nested within other output directories in out_dirs.
 
+        mnemonic: A one-word description of the action, for example, CppCompile or GoLink.
+
+        progress_message: Progress message to show to the user during the build, for example,
+            "Compiling foo.cc to create foo.o". The message may contain %{label}, %{input}, or
+            %{output} patterns, which are substituted with label string, first input, or output's
+            path, respectively. Prefer to use patterns instead of static strings, because the former
+            are more efficient.
+
+        execution_requirements: Information for scheduling the action.
+
+            For example,
+
+            ```
+            execution_requirements = {
+                "no-cache": "1",
+            },
+            ```
+
+            See https://docs.bazel.build/versions/main/be/common-definitions.html#common.tags for useful keys.
+
         output_dir: If set to True then an output directory named the same as the target name
             is added to out_dirs.
 
@@ -143,5 +171,8 @@ def run_binary(
         env = env,
         outs = outs,
         out_dirs = out_dirs + ([name] if output_dir else []),
+        mnemonic = mnemonic,
+        progress_message = progress_message,
+        execution_requirements = execution_requirements,
         **kwargs
     )
