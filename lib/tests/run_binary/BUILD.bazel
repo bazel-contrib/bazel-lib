@@ -11,6 +11,7 @@ write_file(
     content = [
         "#!/usr/bin/env bash",
         "set -o errexit -o nounset -o pipefail",
+        "sleep 3",
         "outdir=$1",
         "echo 'foo' > \"$outdir/foo\"",
         "echo 'bar' > \"$outdir/bar\"",
@@ -27,7 +28,12 @@ sh_binary(
 run_binary(
     name = "dir_a",
     args = ["$(@D)"],
+    execution_requirements = {
+        "no-cache": "1",
+    },
+    mnemonic = "SomeAction",
     out_dirs = ["dir_a"],
+    progress_message = "doing some work to make %{output}",
     tool = ":make_dir_a",
 )
 
