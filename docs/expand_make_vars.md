@@ -95,10 +95,16 @@ This function is the same as ctx.expand_make_variables with the additional
 genrule-like substitutions of:
 
   - `$@`: The output file if it is a single file. Else triggers a build error.
-  - `$(@D)`: The output directory. If there is only one file name in outs,
-           this expands to the directory containing that file. If there are multiple files,
-           this instead expands to the package's root directory in the bin tree,
-           even if all generated files belong to the same subdirectory!
+
+  - `$(@D)`: The output directory.
+
+    If there is only one file name in outs, this expands to the directory containing that file.
+
+    If there is only one directory in outs, this expands to the single output directory.
+
+    If there are multiple files, this instead expands to the package's root directory in the bin tree,
+    even if all generated files belong to the same subdirectory!
+
   - `$(RULEDIR)`: The output directory of the rule, that is, the directory
     corresponding to the name of the package containing the rule under the bin tree.
 
@@ -115,7 +121,7 @@ for more information of how these special variables are expanded.
 | <a id="expand_variables-ctx"></a>ctx |  starlark rule context   |  none |
 | <a id="expand_variables-s"></a>s |  expression to expand   |  none |
 | <a id="expand_variables-outs"></a>outs |  declared outputs of the rule, for expanding references to outputs   |  <code>[]</code> |
-| <a id="expand_variables-output_dir"></a>output_dir |  whether the rule is expected to output a directory (TreeArtifact)   |  <code>False</code> |
+| <a id="expand_variables-output_dir"></a>output_dir |  whether the rule is expected to output a directory (TreeArtifact) Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Pass output tree artifacts to outs instead.   |  <code>False</code> |
 | <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression   |  <code>"args"</code> |
 
 **RETURNS**

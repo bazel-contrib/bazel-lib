@@ -1,5 +1,7 @@
 "Helpers to expand make variables"
 
+load("@bazel_skylib//lib:paths.bzl", _spaths = "paths")
+
 def expand_locations(ctx, input, targets = []):
     """Expand location templates.
 
@@ -43,10 +45,16 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
     genrule-like substitutions of:
 
       - `$@`: The output file if it is a single file. Else triggers a build error.
-      - `$(@D)`: The output directory. If there is only one file name in outs,
-               this expands to the directory containing that file. If there are multiple files,
-               this instead expands to the package's root directory in the bin tree,
-               even if all generated files belong to the same subdirectory!
+
+      - `$(@D)`: The output directory.
+
+        If there is only one file name in outs, this expands to the directory containing that file.
+
+        If there is only one directory in outs, this expands to the single output directory.
+
+        If there are multiple files, this instead expands to the package's root directory in the bin tree,
+        even if all generated files belong to the same subdirectory!
+
       - `$(RULEDIR)`: The output directory of the rule, that is, the directory
         corresponding to the name of the package containing the rule under the bin tree.
 
@@ -59,41 +67,47 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
         s: expression to expand
         outs: declared outputs of the rule, for expanding references to outputs
         output_dir: whether the rule is expected to output a directory (TreeArtifact)
+            Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Pass
+            output tree artifacts to outs instead.
         attribute_name: name of the attribute containing the expression
 
     Returns:
         `s` with the variables expanded
     """
-    rule_dir = [f for f in [
+    rule_dir = _spaths.join(
         ctx.bin_dir.path,
         ctx.label.workspace_root,
         ctx.label.package,
-    ] if f]
+    )
     additional_substitutions = {}
 
+    # TODO: remove output_dir in 2.x release
     if output_dir:
         if s.find("$@") != -1 or s.find("$(@)") != -1:
             fail("$@ substitution may only be used with output_dir=False.")
 
         # We'll write into a newly created directory named after the rule
-        output_dir = [f for f in [
+        output_dir = _spaths.join(
             ctx.bin_dir.path,
             ctx.label.workspace_root,
             ctx.label.package,
             ctx.label.name,
-        ] if f]
+        )
     else:
         if s.find("$@") != -1 or s.find("$(@)") != -1:
             if len(outs) > 1:
                 fail("$@ substitution may only be used with a single out.")
         if len(outs) == 1:
             additional_substitutions["@"] = outs[0].path
-            output_dir = outs[0].dirname.split("/")
+            if outs[0].is_directory:
+                output_dir = outs[0].path
+            else:
+                output_dir = outs[0].dirname
         else:
-            output_dir = rule_dir[:]
+            output_dir = rule_dir
 
-    additional_substitutions["@D"] = "/".join([o for o in output_dir if o])
-    additional_substitutions["RULEDIR"] = "/".join([o for o in rule_dir if o])
+    additional_substitutions["@D"] = output_dir
+    additional_substitutions["RULEDIR"] = rule_dir
 
     # Add some additional make variable substitutions for common useful values in the context
     additional_substitutions["BUILD_FILE_PATH"] = ctx.build_file_path
