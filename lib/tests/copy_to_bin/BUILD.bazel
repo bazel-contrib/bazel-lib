@@ -50,3 +50,18 @@ sh_test(
         ":pull_out_file2",
     ],
 )
+
+# Case: two different targets copying same file to bin
+copy_to_bin(
+    name = "copy_same_file_1",
+    srcs = [
+        "file3"
+    ]
+)
+
+copy_to_bin(
+    name = "copy_same_file_2",
+    srcs = [
+        "file3"
+    ]
+)
