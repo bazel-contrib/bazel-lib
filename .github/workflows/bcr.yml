@@ -61,7 +61,6 @@ jobs:
           commit-message: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           branch: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
           title: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}
-          assignees: ${{ github.actor }}
           body: |
             [Automated] Publish ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}.
       - name: Echo PR url
