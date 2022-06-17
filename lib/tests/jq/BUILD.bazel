@@ -109,3 +109,20 @@ diff_test(
     file1 = "genrule_output.json",
     file2 = "a_pretty.json",
 )
+
+# Raw input (--raw-input / -R)
+jq(
+    name = "case_raw_input",
+    srcs = ["raw.txt"],
+    args = [
+        "--raw-input",
+        "--slurp",
+    ],
+    filter = "split(\"\\n\")",
+)
+
+diff_test(
+    name = "case_raw_input_test",
+    file1 = ":case_raw_input",
+    file2 = "raw_expected.json",
+)
