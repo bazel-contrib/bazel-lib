@@ -114,6 +114,15 @@ def _relative_file_test_impl(ctx):
         ),
     )
 
+    asserts.equals(
+        env,
+        "../../../../../repo/some/external/repo/short/path.txt",
+        paths.relative_file(
+            "../repo/some/external/repo/short/path.txt",
+            "some/main/repo/short/path.txt",
+        ),
+    )
+
     return unittest.end(env)
 
 def _manifest_path_test_impl(ctx):
