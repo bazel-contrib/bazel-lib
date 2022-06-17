@@ -2,7 +2,7 @@
 
 _jq_attrs = {
     "srcs": attr.label_list(
-        allow_files = [".json"],
+        allow_files = True,
         mandatory = True,
         allow_empty = True,
     ),

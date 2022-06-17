@@ -68,6 +68,23 @@ jq(
     args = ["--slurp"],
     out = "foobar.json",
 )
+
+# Convert genquery output to json
+genquery(
+    name = "deps",
+    expression = "deps(//some:target)",
+    scope = ["//some:target"],
+)
+
+jq(
+    name = "deps_json",
+    srcs = [":deps"],
+    args = [
+        "--raw-input",
+        "--slurp",
+    ],
+    filter = "{ deps: split("\n") | map(select(. | length > 0)) }",
+)
 ```
 
 
@@ -77,7 +94,7 @@ jq(
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="jq-name"></a>name |  Name of the rule   |  none |
-| <a id="jq-srcs"></a>srcs |  List of input json files   |  none |
+| <a id="jq-srcs"></a>srcs |  List of input files   |  none |
 | <a id="jq-filter"></a>filter |  Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters)   |  <code>None</code> |
 | <a id="jq-filter_file"></a>filter_file |  File containing filter expression (alternative to <code>filter</code>)   |  <code>None</code> |
 | <a id="jq-args"></a>args |  Additional args to pass to jq   |  <code>[]</code> |
