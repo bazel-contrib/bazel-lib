@@ -10,7 +10,14 @@ Public API
 relative_file(<a href="#relative_file-to_file">to_file</a>, <a href="#relative_file-frm_file">frm_file</a>)
 </pre>
 
-Resolves a relative path between two files, "to_file" and "frm_file", they must share the same root
+Resolves a relative path between two files, "to_file" and "frm_file".
+
+If neither of the paths begin with ../ it is assumed that they share the same root. When finding the relative path,
+the incoming files are treated as actual files (not folders) so the resulting relative path may differ when compared
+to passing the same arguments to python's "os.path.relpath()" or NodeJs's "path.relative()".
+
+For example, 'relative_file("../foo/foo.txt", "bar/bar.txt")' will return '../../foo/foo.txt'
+
 
 **PARAMETERS**
 

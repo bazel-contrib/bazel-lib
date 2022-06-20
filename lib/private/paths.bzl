@@ -3,7 +3,13 @@
 load("@bazel_skylib//lib:paths.bzl", _spaths = "paths")
 
 def _relative_file(to_file, frm_file):
-    """Resolves a relative path between two files, "to_file" and "frm_file", they must share the same root
+    """Resolves a relative path between two files, "to_file" and "frm_file".
+    
+    If neither of the paths begin with ../ it is assumed that they share the same root. When finding the relative path,
+    the incoming files are treated as actual files (not folders) so the resulting relative path may differ when compared
+    to passing the same arguments to python's "os.path.relpath()" or NodeJs's "path.relative()".
+    
+    For example, 'relative_file("../foo/foo.txt", "bar/bar.txt")' will return '../../foo/foo.txt'
 
     Args:
         to_file: the path with file name to resolve to, from frm
@@ -13,32 +19,40 @@ def _relative_file(to_file, frm_file):
         The relative path from frm_file to to_file, including the file name
     """
 
+    to_parent_count = to_file.count("../")
+    frm_parent_count = frm_file.count("../")
+
+    parent_count = to_parent_count
+
+    if to_parent_count > 0 and frm_parent_count > 0:
+        if frm_parent_count > to_parent_count:
+            fail("traversing more parent directories (with '../') for 'frm_file' than 'to_file' requires file layout knowledge")
+
+        parent_count = to_parent_count - frm_parent_count
+
     to_segments = _spaths.normalize(_spaths.join("/", to_file)).split("/")[:-1]
     frm_segments = _spaths.normalize(_spaths.join("/", frm_file)).split("/")[:-1]
 
     if len(to_segments) == 0 and len(frm_segments) == 0:
         return to_file
 
-    if to_segments[0] != frm_segments[0]:
-        msg = "paths must share a common root, got '{}' and '{}'".format(to_file, frm_file)
-        fail(msg)
+    # since we prefix a "/" and normalize, the first segment is always "". So split point will be at least 1.
+    split_point = 1
 
-    longest_common = []
-    for to_seg, frm_seg in zip(to_segments, frm_segments):
-        if to_seg == frm_seg:
-            longest_common.append(to_seg)
-        else:
-            break
+    # If either of the paths starts with ../ then assume that any shared paths are a coincidence. 
+    if to_segments[0] != ".." and frm_segments != "..":
+        longest_common = []
+        for to_seg, frm_seg in zip(to_segments, frm_segments):
+            if to_seg == frm_seg:
+                longest_common.append(to_seg)
+            else:
+                break
 
-    split_point = len(longest_common)
-
-    if split_point == 0:
-        msg = "paths share no common ancestor, '{}' -> '{}'".format(frm_file, to_file)
-        fail(msg)
+        split_point = len(longest_common)
 
     return _spaths.join(
         *(
-            [".."] * (len(frm_segments) - split_point) +
+            [".."] * (len(frm_segments) - split_point + parent_count) +
             to_segments[split_point:] +
             [_spaths.basename(to_file)]
         )
