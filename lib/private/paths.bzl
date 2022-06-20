@@ -5,8 +5,11 @@ load("@bazel_skylib//lib:paths.bzl", _spaths = "paths")
 def _relative_file(to_file, frm_file):
     """Resolves a relative path between two files, "to_file" and "frm_file".
     
-    It is assumed that paths share the same root unless. This root can be changed by adding ../ to the front
-    of one of the paths. Paths are 
+    If neither of the paths begin with ../ it is assumed that they share the same root. When finding the relative path,
+    the incoming files are treated as actual files (not folders) so the resulting relative path may differ when compared
+    to passing the same arguments to python's "os.path.relpath()" or NodeJs's "path.relative()".
+    
+    For example, 'relative_file("../foo/foo.txt", "bar/bar.txt")' will return '../../foo/foo.txt'
 
     Args:
         to_file: the path with file name to resolve to, from frm
