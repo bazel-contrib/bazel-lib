@@ -36,26 +36,10 @@ def copy_file_to_bin_action(ctx, file, is_windows = False):
     """
     if not file.is_source:
         return file
+    if ctx.label.workspace_name != file.owner.workspace_name:
+        fail(_file_in_external_repo_error_msg(file))
     if ctx.label.package != file.owner.package:
-        fail(
-            """
-Expected to find file {file_basename} in {package}, but instead it is in {file_package}.
-
-To use copy_to_bin, either move {file_basename} to {package}, or move the copy_to_bin
-target to {file_basename}'s package using:
-    
-    buildozer 'new copy_to_bin {target_name}' {file_package}:__pkg__
-    buildozer 'add srcs {file_basename}' {file_package}:{target_name}
-    buildozer 'new_load @aspect_bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
-    buildozer 'add visibility {package}:__subpackages__' {file_package}:{target_name}
-
-""".format(
-                file_basename = file.basename,
-                file_package = "%s//%s" % (file.owner.workspace_name, file.owner.package),
-                target_name = paths.replace_extension(file.basename, ""),
-                package = "%s//%s" % (ctx.label.workspace_name, ctx.label.package),
-            ),
-        )
+        fail(_file_in_different_package_error_msg(file, ctx.label))
 
     if file.path.startswith("bazel-"):
         first = file.path.split("/")[0]
@@ -76,6 +60,34 @@ and/or correct the `glob` patterns that are including these files in the sources
     dst = ctx.actions.declare_file(file.basename, sibling = file)
     copy_file_action(ctx, file, dst, is_windows = is_windows)
     return dst
+
+def _file_in_external_repo_error_msg(file):
+    return """
+Cannot use copy_to_bin to copy {file_basename} from the external repository @{repository}.
+Files can only be copied from the source tree to their short path equivalent in the output tree.
+""".format(
+        file_basename = file.basename,
+        repository = file.owner.workspace_name,
+    )
+
+def _file_in_different_package_error_msg(file, curr_package_label):
+    return """
+Expected to find file {file_basename} in {package}, but instead it is in {file_package}.
+
+To use copy_to_bin, either move {file_basename} to {package}, or move the copy_to_bin
+target to {file_package} using:
+
+    buildozer 'new copy_to_bin {target_name}' {file_package}:__pkg__
+    buildozer 'add srcs {file_basename}' {file_package}:{target_name}
+    buildozer 'new_load @aspect_bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
+    buildozer 'add visibility {package}:__subpackages__' {file_package}:{target_name}
+
+    """.format(
+        file_basename = file.basename,
+        file_package = "%s//%s" % (file.owner.workspace_name, file.owner.package),
+        target_name = paths.replace_extension(file.basename, ""),
+        package = "%s//%s" % (curr_package_label.workspace_name, curr_package_label.package),
+    )
 
 def copy_files_to_bin_actions(ctx, files, is_windows = False):
     """Helper function that creates actions to copy files to the output tree.
