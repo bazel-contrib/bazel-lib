@@ -126,3 +126,12 @@ diff_test(
     file1 = ":case_raw_input",
     file2 = "raw_expected.json",
 )
+
+# Similar to copy_to_bin, this will create a file a.json in the output folder.
+# That's the same path as an input file, but that's okay as long as the jq
+# rule doesn't pre-declare that output.
+jq(
+    name = "a",
+    srcs = ["a.json"],
+    filter = """ .foo = "baz" """,
+)
