@@ -95,8 +95,9 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
         out: Name of the output json file; defaults to the rule name plus ".json"
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
-    if not out:
-        out = name + ".json"
+    default_name = name + ".json"
+    if not out and not default_name in srcs:
+        out = default_name
 
     _jq_rule(
         name = name,

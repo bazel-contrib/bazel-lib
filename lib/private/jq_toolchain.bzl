@@ -8,7 +8,9 @@ JQ_PLATFORMS = {
         release_platform = "osx-amd64",
         compatible_with = [
             "@platforms//os:macos",
-            "@platforms//cpu:x86_64",
+            # JQ only ships a universal binary; it should work on
+            # Apple Silicon (amd64) as well.
+            #"@platforms//cpu:x86_64",
         ],
     ),
     "linux_amd64": struct(

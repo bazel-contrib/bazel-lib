@@ -9,13 +9,13 @@ _jq_attrs = {
     "filter": attr.string(),
     "filter_file": attr.label(allow_single_file = True),
     "args": attr.string_list(),
-    "out": attr.output(mandatory = True),
+    "out": attr.output(),
 }
 
 def _jq_impl(ctx):
     jq_bin = ctx.toolchains["@aspect_bazel_lib//lib:jq_toolchain_type"].jqinfo.bin
 
-    out = ctx.outputs.out
+    out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".json")
     args = ctx.attr.args
     inputs = ctx.files.srcs[:]
 
