@@ -47,6 +47,7 @@ target to {file_basename}'s package using:
     buildozer 'new copy_to_bin {target_name}' {file_package}:__pkg__
     buildozer 'add srcs {file_basename}' {file_package}:{target_name}
     buildozer 'new_load @aspect_bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
+    buildozer 'add visibility {package}:__subpackages__' {file_package}:{target_name}
 
 """.format(
                 file_basename = file.basename,
