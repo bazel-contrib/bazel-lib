@@ -38,7 +38,7 @@ jobs:
         id: post_pr
         uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.DEREK_BCR_PAT }}
+          token: ${{ secrets.ASPECT_BCR_TOKEN }}
           path: bcr
           commit-message: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}-fork
           branch: ${{ github.repository }}@${{ steps.get_tag.outputs.TAG }}-fork
