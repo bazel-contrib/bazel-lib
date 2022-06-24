@@ -80,6 +80,8 @@ def write_source_files(
     ```
 
     If you have many sources that you want to update as a group, we recommend wrapping write_source_files in a macro that defaults `suggested_update_target` to the umbrella update target.
+    
+    NOTE: If you run formatters or linters on your codebase, it is advised that you exclude/ignore the outputs of this rule from those formatters/linters so as to avoid causing collisions and failing tests.
 
     Args:
         name: Name of the executable target that creates or updates the source file
