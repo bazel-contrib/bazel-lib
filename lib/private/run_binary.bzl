@@ -32,6 +32,20 @@ def _impl(ctx):
             if output.is_directory and out_dir.path.startswith(output.path + "/"):
                 fail("output directory {} is nested within output directory {}; outputs cannot be nested within each other!".format(out_dir.path, output.path))
         outputs.append(out_dir)
+    if len(outputs) < 1:
+        fail("""\
+ERROR: target {target} is not configured to produce any outputs.
+
+Bazel only executes actions when their outputs are required, so it's never correct to create an action with no outputs.
+
+Possible fixes:
+- Predict what outputs are created, and list them in the outs and out_dirs attributes.
+- If {rule_kind} is a binary, and you meant to run it for its side-effects,
+  then call it directly with `bazel run` and don't wrap it in a run_binary rule.
+""".format(
+            target = str(ctx.label),
+            rule_kind = str(ctx.attr.tool.label),
+        ))
 
     # `expand_locations(...).split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
     # _expand_locations returns an array of args to support $(execpaths) expansions.
