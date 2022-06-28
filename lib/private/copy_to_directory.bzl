@@ -11,6 +11,13 @@ _copy_to_directory_attr = {
         doc = """Files and/or directories or targets that provide DirectoryPathInfo to copy
         into the output directory.""",
     ),
+    # Cannot declare out as an output here, because there's no API for declaring
+    # TreeArtifact outputs.
+    "out": attr.string(
+        doc = """Path of the output directory, relative to this package.
+
+        If not set, the name of the target is used.""",
+    ),
     "root_paths": attr.string_list(
         default = ["."],
         doc = """List of paths that are roots in the output directory.
@@ -78,6 +85,7 @@ _copy_to_directory_attr = {
     ),
     "allow_overwrites": attr.bool(
         doc = """If True, allow files to be overwritten if the same output file is copied to twice.
+
         If set, then the order of srcs matters as the last copy of a particular file will win.
 
         This setting has no effect on Windows where overwrites are always allowed.""",
@@ -98,7 +106,12 @@ def _longest_match(subject, tests, allow_partial = False):
     return match
 
 # src can either be a File or a target with a DirectoryPathInfo
-def _copy_paths(ctx, root_paths, src):
+def _copy_paths(
+        src,
+        root_paths,
+        include_external_repositories,
+        exclude_prefixes,
+        replace_prefixes):
     if type(src) == "File":
         src_file = src
         src_path = src_file.path
@@ -112,7 +125,7 @@ def _copy_paths(ctx, root_paths, src):
 
     # if the file is from an external repository check if that repository should
     # be included in the output directory
-    if src_file.owner and src_file.owner.workspace_name and not src_file.owner.workspace_name in ctx.attr.include_external_repositories:
+    if src_file.owner and src_file.owner.workspace_name and not src_file.owner.workspace_name in include_external_repositories:
         return None, None, None
 
     # strip root paths
@@ -122,19 +135,19 @@ def _copy_paths(ctx, root_paths, src):
         output_path = "/".join(output_path.split("/")[strip_depth:])
 
     # check if this file matches an exclude_prefix
-    match = _longest_match(output_path, ctx.attr.exclude_prefixes, True)
+    match = _longest_match(output_path, exclude_prefixes, True)
     if match:
         # file is excluded due to match in exclude_prefix
         return None, None, None
 
     # apply a replacement if one is found
-    match = _longest_match(output_path, ctx.attr.replace_prefixes.keys(), True)
+    match = _longest_match(output_path, replace_prefixes.keys(), True)
     if match:
-        output_path = ctx.attr.replace_prefixes[match] + output_path[len(match):]
+        output_path = replace_prefixes[match] + output_path[len(match):]
 
     return src_path, output_path, src_file
 
-def _copy_to_dir_bash(ctx, copy_paths, dst_dir):
+def _copy_to_dir_bash(ctx, copy_paths, dst_dir, allow_overwrites):
     cmds = [
         "set -o errexit -o nounset -o pipefail",
         "OUT_CAPTURE=$(mktemp)",
@@ -154,15 +167,15 @@ def _copy_to_dir_bash(ctx, copy_paths, dst_dir):
     for src_path, dst_path, src_file in copy_paths:
         inputs.append(src_file)
 
-        maybe_force = "-f " if ctx.attr.allow_overwrites else "-n "
+        maybe_force = "-f " if allow_overwrites else "-n "
         maybe_chmod_file = """if [ -e "{dst}" ]; then
     chmod a+w "{dst}"
 fi
-""" if ctx.attr.allow_overwrites else ""
+""" if allow_overwrites else ""
         maybe_chmod_dir = """if [ -e "{dst}" ]; then
     chmod -R a+w "{dst}"
 fi
-""" if ctx.attr.allow_overwrites else ""
+""" if allow_overwrites else ""
 
         cmds.append("""
 if [[ ! -e "{src}" ]]; then echo "file '{src}' does not exist"; exit 1; fi
@@ -272,35 +285,122 @@ def _copy_to_directory_impl(ctx):
         msg = "srcs must not be empty in copy_to_directory %s" % ctx.label
         fail(msg)
 
-    # Replace "." root paths with the package name of the target
-    root_paths = [p if p != "." else ctx.label.package for p in ctx.attr.root_paths]
+    dst = ctx.actions.declare_directory(ctx.attr.out if ctx.attr.out else ctx.attr.name)
 
-    output = ctx.actions.declare_directory(ctx.attr.name)
+    copy_to_directory_action(
+        ctx,
+        srcs = ctx.attr.srcs,
+        dst = dst,
+        root_paths = ctx.attr.root_paths,
+        include_external_repositories = ctx.attr.include_external_repositories,
+        exclude_prefixes = ctx.attr.exclude_prefixes,
+        replace_prefixes = ctx.attr.replace_prefixes,
+        allow_overwrites = ctx.attr.allow_overwrites,
+        is_windows = is_windows,
+    )
+
+    return [
+        DefaultInfo(
+            files = depset([dst]),
+            runfiles = ctx.runfiles([dst]),
+        ),
+    ]
+
+def copy_to_directory_action(
+        ctx,
+        srcs,
+        dst,
+        additional_files = [],
+        root_paths = ["."],
+        include_external_repositories = [],
+        exclude_prefixes = [],
+        replace_prefixes = {},
+        allow_overwrites = False,
+        is_windows = False):
+    """Helper function to copy files to a directory.
+
+    This helper is used by copy_to_directory. It is exposed as a public API so it can be used within
+    other rule implementations where additional_files can also be passed in.
+
+    Args:
+        ctx: The rule context.
+
+        srcs: Files and/or directories or targets that provide DirectoryPathInfo to copy into the output directory.
+
+        dst: The directory to copy to. Must be a TreeArtifact.
+
+        additional_files: Additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
+
+        root_paths: List of paths that are roots in the output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        include_external_repositories: List of external repository names to include in the output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        exclude_prefixes: List of path prefixes to exclude from output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        replace_prefixes: Map of paths prefixes to replace in the output directory path when copying files.
+
+            See copy_to_directory rule documentation for more details.
+
+        allow_overwrites: If True, allow files to be overwritten if the same output file is copied to twice.
+
+            See copy_to_directory rule documentation for more details.
+
+        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+    """
+    if not srcs:
+        fail("srcs must not be empty")
+
+    # Replace "." root paths with the package name of the target
+    root_paths = [p if p != "." else ctx.label.package for p in root_paths]
 
     # Gather a list of src_path, dst_path pairs
     copy_paths = []
-    for src in ctx.attr.srcs:
+    for src in srcs:
         if DirectoryPathInfo in src:
-            src_path, output_path, src_file = _copy_paths(ctx, root_paths, src)
+            src_path, output_path, src_file = _copy_paths(
+                src = src,
+                root_paths = root_paths,
+                include_external_repositories = include_external_repositories,
+                exclude_prefixes = exclude_prefixes,
+                replace_prefixes = replace_prefixes,
+            )
             if src_path != None:
-                dst_path = skylib_paths.normalize("/".join([output.path, output_path]))
+                dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
                 copy_paths.append((src_path, dst_path, src_file))
-    for src_file in ctx.files.srcs:
-        src_path, output_path, src_file = _copy_paths(ctx, root_paths, src_file)
+        if DefaultInfo in src:
+            for src_file in src[DefaultInfo].files.to_list():
+                src_path, output_path, src_file = _copy_paths(
+                    src = src_file,
+                    root_paths = root_paths,
+                    include_external_repositories = include_external_repositories,
+                    exclude_prefixes = exclude_prefixes,
+                    replace_prefixes = replace_prefixes,
+                )
+                if src_path != None:
+                    dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
+                    copy_paths.append((src_path, dst_path, src_file))
+    for additional_file in additional_files:
+        src_path, output_path, src_file = _copy_paths(
+            src = additional_file,
+            root_paths = root_paths,
+            include_external_repositories = include_external_repositories,
+            exclude_prefixes = exclude_prefixes,
+            replace_prefixes = replace_prefixes,
+        )
         if src_path != None:
-            dst_path = skylib_paths.normalize("/".join([output.path, output_path]))
+            dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
             copy_paths.append((src_path, dst_path, src_file))
 
     if is_windows:
-        _copy_to_dir_cmd(ctx, copy_paths, output)
+        _copy_to_dir_cmd(ctx, copy_paths, dst)
     else:
-        _copy_to_dir_bash(ctx, copy_paths, output)
-    return [
-        DefaultInfo(
-            files = depset([output]),
-            runfiles = ctx.runfiles([output]),
-        ),
-    ]
+        _copy_to_dir_bash(ctx, copy_paths, dst, allow_overwrites)
 
 copy_to_directory_lib = struct(
     attrs = _copy_to_directory_attr,
