@@ -1,0 +1,31 @@
+load("//lib:diff_test.bzl", "diff_test")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load(":lib.bzl", "lib")
+load(":pkg.bzl", "pkg")
+
+lib(
+    name = "lib",
+    srcs = ["1"],
+    others = ["2"],
+)
+
+# pkg should copy DefaultInfo files and OtherInfo files
+pkg(
+    name = "pkg",
+    srcs = [":lib"],
+    out = "pkg",
+)
+
+copy_to_directory(
+    name = "expected_pkg",
+    srcs = [
+        "1",
+        "2",
+    ],
+)
+
+diff_test(
+    name = "test",
+    file1 = ":pkg",
+    file2 = ":expected_pkg",
+)

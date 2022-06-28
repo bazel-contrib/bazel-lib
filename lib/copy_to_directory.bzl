@@ -6,11 +6,13 @@ the `root_paths`, `exclude_prefixes` and `replace_prefixes` attributes.
 
 load(
     "//lib/private:copy_to_directory.bzl",
+    _copy_to_directory_action = "copy_to_directory_action",
     _copy_to_directory_lib = "copy_to_directory_lib",
 )
 
 # export the starlark library as a public API
 copy_to_directory_lib = _copy_to_directory_lib
+copy_to_directory_action = _copy_to_directory_action
 
 copy_to_directory = rule(
     implementation = _copy_to_directory_lib.impl,
