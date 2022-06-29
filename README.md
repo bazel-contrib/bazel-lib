@@ -33,7 +33,7 @@ Installation instructions are included on each release:
 
 ## Manipulating paths
 
-- [directory_path](<(docs/directory_path.md)>) Provide a label to reference some path within a directory, via DirectoryPathInfo.
+- [directory_path](docs/directory_path.md) Provide a label to reference some path within a directory, via DirectoryPathInfo.
 - [output_files](docs/output_files.md) Forwards a subset of the files (via the DefaultInfo provider) from a given target's DefaultInfo or OutputGroupInfo.
 
 ## Writing rules
