@@ -18,7 +18,8 @@ To use this rule you must register the jq toolchain in your WORKSPACE:
 
 ```starlark
 load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
-register_jq_toolchains(version = "1.6")
+
+register_jq_toolchains()
 ```
 
 Usage examples:
