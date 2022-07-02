@@ -17,7 +17,8 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
 
     ```starlark
     load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
-    register_jq_toolchains(version = "1.6")
+
+    register_jq_toolchains()
     ```
 
     Usage examples:

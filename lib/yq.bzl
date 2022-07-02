@@ -18,7 +18,7 @@ def yq(name, srcs, expression = ".", args = [], outs = None, **kwargs):
     ```starlark
     load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
 
-    register_yq_toolchains(version = "4.24.5")
+    register_yq_toolchains()
     ```
 
     Usage examples:
