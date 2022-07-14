@@ -76,6 +76,16 @@ propagate_well_known_tags_test = unittest.make(
 )
 
 # buildifier: disable=function-docstring
+def file_exists_test():
+    # Tests that must run in the loading phase
+    if utils.file_exists("does-not-exist"):
+        fail("does-not-exist does not exist")
+    if not utils.file_exists("utils_test.bzl"):
+        fail("utils_test.bzl does exist")
+    if (utils.file_exists("copy_to_bin")):
+        fail("copy_to_bin exists, but is a directory")
+
+# buildifier: disable=function-docstring
 def utils_test_suite():
     to_label_test(name = "to_label_tests", relative_asserts = {
         utils.to_label(":utils_test.bzl"): "//lib/tests:utils_test.bzl",
@@ -91,8 +101,4 @@ def utils_test_suite():
         name = "propagate_well_known_tags_tests",
     )
 
-    # Tests that must run in the loading phase
-    if utils.file_exists("does-not-exist"):
-        fail("does-not-exist does not exist")
-    if not utils.file_exists("utils_test.bzl"):
-        fail("utils_test.bzl does exist")
+    file_exists_test()
