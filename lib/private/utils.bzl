@@ -110,7 +110,7 @@ def _file_exists(path):
     label = _to_label(path)
     file_abs = "%s/%s" % (label.package, label.name)
     file_rel = file_abs[len(native.package_name()) + 1:]
-    file_glob = native.glob([file_rel])
+    file_glob = native.glob([file_rel], exclude_directories = 1)
     return len(file_glob) > 0
 
 utils = struct(
