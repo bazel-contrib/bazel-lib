@@ -2,6 +2,28 @@
 
 Public API
 
+<a id="file_exists"></a>
+
+## file_exists
+
+<pre>
+file_exists(<a href="#file_exists-path">path</a>)
+</pre>
+
+Check whether a file exists.
+
+Useful in macros to set defaults for a configuration file if it is present.
+This can only be called during the loading phase, not from a rule implementation.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="file_exists-path"></a>path |  a label, or a string which is a path relative to this package   |  none |
+
+
 <a id="glob_directories"></a>
 
 ## glob_directories
@@ -51,7 +73,7 @@ a bool
 path_to_workspace_root()
 </pre>
 
- Retuns the path to the workspace root under bazel
+ Returns the path to the workspace root under bazel
 
 
 **RETURNS**

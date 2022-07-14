@@ -84,7 +84,7 @@ def _is_external_label(param):
 
 # Path to the root of the workspace
 def _path_to_workspace_root():
-    """ Retuns the path to the workspace root under bazel
+    """ Returns the path to the workspace root under bazel
 
     Returns:
         Path to the workspace root
@@ -98,8 +98,24 @@ def _glob_directories(include, **kwargs):
     directories = [p for p in all if p not in files]
     return directories
 
+def _file_exists(path):
+    """Check whether a file exists.
+
+    Useful in macros to set defaults for a configuration file if it is present.
+    This can only be called during the loading phase, not from a rule implementation.
+
+    Args:
+        path: a label, or a string which is a path relative to this package
+    """
+    label = _to_label(path)
+    file_abs = "%s/%s" % (label.package, label.name)
+    file_rel = file_abs[len(native.package_name()) + 1:]
+    file_glob = native.glob([file_rel])
+    return len(file_glob) > 0
+
 utils = struct(
     is_external_label = _is_external_label,
+    file_exists = _file_exists,
     glob_directories = _glob_directories,
     path_to_workspace_root = _path_to_workspace_root,
     propagate_well_known_tags = _propagate_well_known_tags,
