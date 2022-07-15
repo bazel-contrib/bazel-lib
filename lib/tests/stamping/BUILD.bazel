@@ -1,0 +1,32 @@
+load(":stamp_aware_rule.bzl", "my_stamp_aware_rule")
+load("//lib:run_binary.bzl", "run_binary")
+
+my_stamp_aware_rule(
+    name = "test_stamped",
+    out = "always",
+    stamp = 1,
+)
+
+my_stamp_aware_rule(
+    name = "test_unstamped",
+    out = "never",
+    stamp = 0,
+)
+
+my_stamp_aware_rule(
+    name = "test_default",
+    out = "default",
+)
+
+sh_binary(
+    name = "stamper",
+    srcs = ["stamper.sh"],
+)
+
+# Build this with --stamp enabled to see your username in the resulting output file
+run_binary(
+    name = "run_stamper",
+    outs = ["stamped"],
+    args = ["$(location stamped)"],
+    tool = "stamper",
+)

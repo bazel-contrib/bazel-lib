@@ -1,4 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//lib/private:stamping.bzl", "stamp_build_setting")
 
 exports_files(
     glob(["*.bzl"]),
@@ -7,6 +8,9 @@ exports_files(
         "//lib:__subpackages__",
     ],
 )
+
+# Macro that creates targets enabling the use of `--stamp` in Starlark rules
+stamp_build_setting(name = "stamp")
 
 toolchain_type(
     name = "jq_toolchain_type",
@@ -164,4 +168,11 @@ bzl_library(
     deps = [
         "//lib/private:host_repo",
     ],
+)
+
+bzl_library(
+    name = "stamping",
+    srcs = ["stamping.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//lib/private:stamping"],
 )
