@@ -28,5 +28,7 @@ run_binary(
     name = "run_stamper",
     outs = ["stamped"],
     args = ["$(location stamped)"],
+    # Include status files as inputs when --stamp is set.
+    stamp = -1,
     tool = "stamper",
 )

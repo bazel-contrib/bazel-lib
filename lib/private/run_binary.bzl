@@ -117,7 +117,7 @@ def run_binary(
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
-        stamp = -1,
+        stamp = 0,
         # TODO: remove output_dir in 2.x release
         output_dir = False,
         **kwargs):
@@ -187,13 +187,16 @@ def run_binary(
 
         stamp: Whether to include build status files as inputs to the tool. Possible values:
 
+            - `stamp = 0` (default): Never include build status files as inputs to the tool.
+                This gives good build result caching.
+                Most tools don't use the status files, so including them in `--stamp` builds makes those
+                builds have many needless cache misses.
+                (Note: this default is different from most rules with an integer-typed `stamp` attribute.)
             - `stamp = 1`: Always include build status files as inputs to the tool, even in
                 [--nostamp](https://docs.bazel.build/versions/main/user-manual.html#flag--stamp) builds.
                 This setting should be avoided, since it is non-deterministic.
                 It potentially causes remote cache misses for the target and
                 any downstream actions that depend on the result.
-            - `stamp = 0`: Never include build status files as inputs to the tool.
-                This gives good build result caching.
             - `stamp = -1`: Inclusion of build status files as inputs is controlled by the
                 [--[no]stamp](https://docs.bazel.build/versions/main/user-manual.html#flag--stamp) flag.
                 Stamped targets are not rebuilt unless their dependencies change.
