@@ -93,4 +93,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:host_repo",
 )
 
+stardoc_with_diff_test(
+    name = "stamping",
+    bzl_library_target = "//lib:stamping",
+)
+
 update_docs()
