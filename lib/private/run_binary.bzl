@@ -16,6 +16,7 @@
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib/private:expand_make_vars.bzl", "expand_locations", "expand_variables")
+load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 def _impl(ctx):
     tool_as_list = [ctx.attr.tool]
@@ -57,9 +58,17 @@ Possible fixes:
     for k, v in ctx.attr.env.items():
         envs[k] = " ".join([expand_variables(ctx, e, outs = outputs, attribute_name = "env") for e in expand_locations(ctx, v, ctx.attr.srcs).split(" ")])
 
+    stamp = maybe_stamp(ctx)
+    if stamp:
+        inputs = ctx.files.srcs + [stamp.volatile_status_file, stamp.stable_status_file]
+        envs["BAZEL_STABLE_STATUS_FILE"] = stamp.stable_status_file.path
+        envs["BAZEL_VOLATILE_STATUS_FILE"] = stamp.volatile_status_file.path
+    else:
+        inputs = ctx.files.srcs
+
     ctx.actions.run(
         outputs = outputs,
-        inputs = ctx.files.srcs,
+        inputs = inputs,
         tools = tool_inputs,
         executable = ctx.executable.tool,
         arguments = [args],
@@ -77,7 +86,7 @@ Possible fixes:
 
 _run_binary = rule(
     implementation = _impl,
-    attrs = {
+    attrs = dict({
         "tool": attr.label(
             executable = True,
             allow_files = True,
@@ -94,7 +103,7 @@ _run_binary = rule(
         "mnemonic": attr.string(),
         "progress_message": attr.string(),
         "execution_requirements": attr.string_dict(),
-    },
+    }, **STAMP_ATTRS),
 )
 
 def run_binary(
@@ -108,6 +117,7 @@ def run_binary(
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
+        stamp = -1,
         # TODO: remove output_dir in 2.x release
         output_dir = False,
         **kwargs):
@@ -175,6 +185,25 @@ def run_binary(
 
             Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Use out_dirs instead.
 
+        stamp: Whether to include build status files as inputs to the tool. Possible values:
+
+            - `stamp = 1`: Always include build status files as inputs to the tool, even in
+                [--nostamp](https://docs.bazel.build/versions/main/user-manual.html#flag--stamp) builds.
+                This setting should be avoided, since it is non-deterministic.
+                It potentially causes remote cache misses for the target and
+                any downstream actions that depend on the result.
+            - `stamp = 0`: Never include build status files as inputs to the tool.
+                This gives good build result caching.
+            - `stamp = -1`: Inclusion of build status files as inputs is controlled by the
+                [--[no]stamp](https://docs.bazel.build/versions/main/user-manual.html#flag--stamp) flag.
+                Stamped targets are not rebuilt unless their dependencies change.
+
+            When stamping is enabled, an additional two environment variables will be set for the action:
+                - `BAZEL_STABLE_STATUS_FILE`
+                - `BAZEL_VOLATILE_STATUS_FILE`
+
+            These files can be read and parsed by the action, for example to pass some values to a linker.
+
         **kwargs: Additional arguments
     """
     _run_binary(
@@ -188,5 +217,6 @@ def run_binary(
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
+        stamp = stamp,
         **kwargs
     )
