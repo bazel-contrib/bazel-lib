@@ -14,7 +14,7 @@ DirectoryPathInfo = provider(
 
 def _directory_path(ctx):
     if not ctx.file.directory.is_directory:
-        msg = "expected directory to be a TreeArtifact (ctx.actions.declare_directory) but got {}".format(ctx.file.directory)
+        msg = "Expected directory to be a TreeArtifact (ctx.actions.declare_directory) but {} is either a source file or does not exist.".format(ctx.file.directory)
         fail(msg)
     return [DirectoryPathInfo(path = ctx.attr.path, directory = ctx.file.directory)]
 
