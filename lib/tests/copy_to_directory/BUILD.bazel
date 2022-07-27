@@ -23,6 +23,7 @@ load("//lib:directory_path.bzl", "make_directory_paths")
         "expected_8",
         "expected_9",
         "expected_10",
+        "expected_13_14",
     ]
 ]
 
@@ -31,9 +32,9 @@ case_srcs = [
     ":b",
     ":c",
     ":d",
-    ":e/e",
+    ":e/e1",
     ":e/e2",
-    "//lib/tests/copy_to_directory/f/f2:f",
+    "//lib/tests/copy_to_directory/f/f2:f1",
     "//lib/tests/copy_to_directory/f/f2:f2",
     "@external_test_repo//:test_a",
     "@external_test_repo//:test_b",
@@ -68,7 +69,7 @@ copy_to_directory(
         # put e into new/e except for e/e2 which goes into new/e2
         "e": "new/e",
         "e/e2": "new/e2/e2",
-        # f/f2/f => new/ff and f/f2/f2 => new/f2/f2
+        # f/f2/f1 => new/ff1 and f/f2/f2 => new/f2/f2
         "f/f2/": "////new/////f",
         "f/f2/f2": "////new/////f2///f2",
         # flatten test_a & test_b to the root
@@ -183,10 +184,10 @@ copy_to_directory(
     srcs = [
         ":c",
         ":d",
-        ":e/e",
+        ":e/e1",
         ":e/e2",
-        "//lib/tests/copy_to_directory/f/f2",
-        "//lib/tests/copy_to_directory/f/f2:f",
+        "//lib/tests/copy_to_directory/f/f2:f1",
+        "//lib/tests/copy_to_directory/f/f2:f2",
         "@external_test_repo//:test_c",
         "@external_test_repo//:test_d",
     ] + make_directory_paths(
@@ -211,7 +212,7 @@ copy_to_directory(
         # put e into new/e except for e/e2 which goes into new/e2
         "e": "new/e",
         "e/e2": "new/e2/e2",
-        # f/f2/f => new/ff and f/f2/f2 => new/f2/f2
+        # f/f2/f1 => new/ff1 and f/f2/f2 => new/f2/f2
         "f/f2/": "////new/////f",
         "f/f2/f2": "////new/////f2///f2",
         # flatten test_a & test_b to the root
@@ -299,4 +300,50 @@ copy_to_directory(
         "{}/g1_out".format(package_name()),
         "{}/g1'_out".format(package_name()),
     ],
+)
+
+# Case 13: include prefixes
+copy_to_directory(
+    name = "case_13",
+    srcs = case_srcs,
+    include_prefixes = [
+        # include a & b
+        "a",
+        "b",
+        # this partial match should include all of e
+        "e/e",
+        # this full match should include just f/f2/f2
+        "f/f2/f2",
+    ],
+)
+
+diff_test(
+    name = "case_13_test",
+    file1 = "case_13",
+    file2 = ":expected_13_14",
+)
+
+# Case 14: include & exclude prefixes
+copy_to_directory(
+    name = "case_14",
+    srcs = case_srcs,
+    exclude_prefixes = [
+        # this full match should exclude just f/f2/f1
+        "f/f2/f1",
+    ],
+    include_prefixes = [
+        # include a & b
+        "a",
+        "b",
+        # this partial match should include all of e
+        "e/e",
+        # include all of f/f2
+        "f/f2",
+    ],
+)
+
+diff_test(
+    name = "case_14_test",
+    file1 = "case_14",
+    file2 = ":expected_13_14",
 )

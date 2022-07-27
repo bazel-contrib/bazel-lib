@@ -22,7 +22,7 @@ _copy_to_directory_attr = {
         default = ["."],
         doc = """List of paths that are roots in the output directory.
 
-        "." values indicate the targets package path.
+        "." values indicate the target's package path.
 
         If a file or directory being copied is in one of the listed paths or one of its subpaths,
         the output directory path is the path relative to the root path instead of the path
@@ -34,7 +34,7 @@ _copy_to_directory_attr = {
 
         If there are multiple root paths that match, the longest match wins.
 
-        Defaults to [package_name()] so that the output directory path of files in the
+        Defaults to ["."] so that the output directory path of files in the
         target's package and and sub-packages are relative to the target's package and
         files outside of that retain their full workspace relative paths.""",
     ),
@@ -62,13 +62,47 @@ _copy_to_directory_attr = {
         Files from external repositories are subject to `root_paths`, `exclude_prefixes`
         and `replace_prefixes` in the same way as files form the main repository.""",
     ),
+    "include_prefixes": attr.string_list(
+        doc = """List of path prefixes to include in output directory.
+
+        If empty then all paths are included and subject to `exclude_prefixes` and `replace_prefixes`
+        which are matched *after* `include_prefixes`.
+
+        If not empty, a file is only copied to the output directory if 
+        the output directory path for a file or directory starts with or is equal to
+        a path in the list.
+
+        Forward slashes (`/`) should be used as path separators. The final path segment
+        of the key can be a partial match in the corresponding segment of the output
+        directory path.
+
+        `include_prefixes` are matched on the output path after `root_paths` are considered.
+
+        `include_prefixes` are matched *before* `exclude_prefixes` and `replace_prefixes` are applied.
+
+        NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
+        are not supported since matches are performed in Starlark. To use `include_prefixes` on files
+        within directories you can use the `make_directory_paths` helper to specify individual files inside
+        directories in `srcs`.""",
+    ),
     "exclude_prefixes": attr.string_list(
         doc = """List of path prefixes to exclude from output directory.
 
         If the output directory path for a file or directory starts with or is equal to
         a path in the list then that file is not copied to the output directory.
 
-        Exclude prefixes are matched *before* replace_prefixes are applied.""",
+        Forward slashes (`/`) should be used as path separators. The final path segment
+        of the key can be a partial match in the corresponding segment of the output
+        directory path.
+
+        `exclude_prefixes` are matched on the output path after `root_paths` are considered.
+
+        `exclude_prefixes` are matched *after* `include_prefixes` and *before* `replace_prefixes` are applied.
+        
+        NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
+        are not supported since matches are performed in Starlark. To use `exclude_prefixes` on files
+        within directories you can use the `make_directory_paths` helper to specify individual files inside
+        directories in `srcs`.""",
     ),
     "replace_prefixes": attr.string_dict(
         doc = """Map of paths prefixes to replace in the output directory path when copying files.
@@ -81,7 +115,16 @@ _copy_to_directory_attr = {
         of the key can be a partial match in the corresponding segment of the output
         directory path.
 
-        If there are multiple keys that match, the longest match wins.""",
+        `replace_prefixes` are matched on the output path after `root_paths` are considered.
+
+        `replace_prefixes` are matched *after* `include_prefixes` and `exclude_prefixes` are applied.
+
+        If there are multiple keys that match, the longest match wins.
+
+        NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
+        are not supported since matches are performed in Starlark. To use `replace_prefixes` on files
+        within directories you can use the `make_directory_paths` helper to specify individual files inside
+        directories in `srcs`.""",
     ),
     "allow_overwrites": attr.bool(
         doc = """If True, allow files to be overwritten if the same output file is copied to twice.
@@ -93,11 +136,18 @@ _copy_to_directory_attr = {
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
+def _first_match(subject, tests, allow_partial = False):
+    for test in tests:
+        starts_with_test = test if allow_partial or test.endswith("/") else test + "/"
+        if subject == test or subject.startswith(starts_with_test):
+            return test
+    return None
+
 def _longest_match(subject, tests, allow_partial = False):
     match = None
     high_score = 0
     for test in tests:
-        starts_with_test = test if allow_partial else test + "/"
+        starts_with_test = test if allow_partial or test.endswith("/") else test + "/"
         if subject == test or subject.startswith(starts_with_test):
             score = len(test)
             if score > high_score:
@@ -110,6 +160,7 @@ def _copy_paths(
         src,
         root_paths,
         include_external_repositories,
+        include_prefixes,
         exclude_prefixes,
         replace_prefixes):
     if type(src) == "File":
@@ -134,8 +185,15 @@ def _copy_paths(
         strip_depth = len(root_path.split("/"))
         output_path = "/".join(output_path.split("/")[strip_depth:])
 
+    if include_prefixes:
+        # check if this file matches an include_prefix if they are specified
+        match = _first_match(output_path, include_prefixes, True)
+        if not match:
+            # file is excluded as it does not match any specified include_prefix
+            return None, None, None
+
     # check if this file matches an exclude_prefix
-    match = _longest_match(output_path, exclude_prefixes, True)
+    match = _first_match(output_path, exclude_prefixes, True)
     if match:
         # file is excluded due to match in exclude_prefix
         return None, None, None
@@ -293,6 +351,7 @@ def _copy_to_directory_impl(ctx):
         dst = dst,
         root_paths = ctx.attr.root_paths,
         include_external_repositories = ctx.attr.include_external_repositories,
+        include_prefixes = ctx.attr.include_prefixes,
         exclude_prefixes = ctx.attr.exclude_prefixes,
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
@@ -313,6 +372,7 @@ def copy_to_directory_action(
         additional_files = [],
         root_paths = ["."],
         include_external_repositories = [],
+        include_prefixes = [],
         exclude_prefixes = [],
         replace_prefixes = {},
         allow_overwrites = False,
@@ -336,6 +396,10 @@ def copy_to_directory_action(
             See copy_to_directory rule documentation for more details.
 
         include_external_repositories: List of external repository names to include in the output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        include_prefixes: List of path prefixes to include in output directory.
 
             See copy_to_directory rule documentation for more details.
 
@@ -367,6 +431,7 @@ def copy_to_directory_action(
                 src = src,
                 root_paths = root_paths,
                 include_external_repositories = include_external_repositories,
+                include_prefixes = include_prefixes,
                 exclude_prefixes = exclude_prefixes,
                 replace_prefixes = replace_prefixes,
             )
@@ -379,6 +444,7 @@ def copy_to_directory_action(
                     src = src_file,
                     root_paths = root_paths,
                     include_external_repositories = include_external_repositories,
+                    include_prefixes = include_prefixes,
                     exclude_prefixes = exclude_prefixes,
                     replace_prefixes = replace_prefixes,
                 )
@@ -390,6 +456,7 @@ def copy_to_directory_action(
             src = additional_file,
             root_paths = root_paths,
             include_external_repositories = include_external_repositories,
+            include_prefixes = include_prefixes,
             exclude_prefixes = exclude_prefixes,
             replace_prefixes = replace_prefixes,
         )
