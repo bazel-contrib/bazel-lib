@@ -6,12 +6,15 @@ load("//lib:expand_make_vars.bzl", "expand_template")
 load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
 load(":utils_test.bzl", "utils_test_suite")
 load(":paths_test.bzl", "paths_test_suite")
+load(":glob_match_test.bzl", "glob_match_test_suite")
 
 expand_make_vars_test_suite()
 
 paths_test_suite()
 
 utils_test_suite()
+
+glob_match_test_suite()
 
 write_file(
     name = "gen_template",
