@@ -114,6 +114,12 @@ bzl_library(
 )
 
 bzl_library(
+    name = "glob_match",
+    srcs = ["glob_match.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
     name = "directory_path",
     srcs = ["directory_path.bzl"],
     visibility = ["//lib:__subpackages__"],
