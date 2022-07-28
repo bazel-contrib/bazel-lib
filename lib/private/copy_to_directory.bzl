@@ -4,6 +4,7 @@ load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
+load(":glob_match.bzl", "glob_match")
 
 _copy_to_directory_attr = {
     "srcs": attr.label_list(
@@ -23,6 +24,11 @@ _copy_to_directory_attr = {
         doc = """List of paths that are roots in the output directory.
 
         "." values indicate the target's package path.
+
+        Glob patterns `**`, `*` and `?` are supported but the path must not end with a `**` or `*` glob expression.
+
+        See `glob_match` documentation for more details on how to use glob patterns:
+        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
 
         If a file or directory being copied is in one of the listed paths or one of its subpaths,
         the output directory path is the path relative to the root path instead of the path
@@ -59,34 +65,66 @@ _copy_to_directory_attr = {
         )
         ```
 
-        Files from external repositories are subject to `root_paths`, `exclude_prefixes`
-        and `replace_prefixes` in the same way as files form the main repository.""",
+        Files from external repositories are subject to `root_paths`, `include_srcs_patterns`,
+        `exclude_srcs_patterns` and `replace_prefixes` in the same way as files form the main repository.""",
     ),
-    "include_prefixes": attr.string_list(
-        doc = """List of path prefixes to include in output directory.
+    "include_srcs_patterns": attr.string_list(
+        doc = """List of paths (with glob support) to  include in output directory.
 
-        If empty then all paths are included and subject to `exclude_prefixes` and `replace_prefixes`
-        which are matched *after* `include_prefixes`.
+        Glob patterns `**`, `*` and `?` are supported.
+
+        See `glob_match` documentation for more details on how to use glob patterns:
+        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
+
+        Defaults to ["**"] which includes all sources.
 
         If not empty, a file is only copied to the output directory if 
         the output directory path for a file or directory starts with or is equal to
         a path in the list.
 
+        `include_srcs_patterns` are matched on the output path after `root_paths` are considered.
+
+        `include_srcs_patterns` are matched *before* `exclude_srcs_patterns` and `replace_prefixes` are applied.
+
+        NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
+        are not supported since matches are performed in Starlark. To use `include_srcs_patterns` on files
+        within directories you can use the `make_directory_paths` helper to specify individual files inside
+        directories in `srcs`.""",
+        default = ["**"],
+    ),
+    "exclude_srcs_patterns": attr.string_list(
+        doc = """List of paths (with glob support) to  exclude from output directory.
+
+        Glob patterns `**`, `*` and `?` are supported.
+
+        See `glob_match` documentation for more details on how to use glob patterns:
+        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
+
+        If the output directory path for a file or directory starts with or is equal to
+        a path in the list then that file is not copied to the output directory.
+
         Forward slashes (`/`) should be used as path separators. The final path segment
         of the key can be a partial match in the corresponding segment of the output
         directory path.
 
-        `include_prefixes` are matched on the output path after `root_paths` are considered.
+        `exclude_srcs_patterns` are matched on the output path after `root_paths` are considered.
 
-        `include_prefixes` are matched *before* `exclude_prefixes` and `replace_prefixes` are applied.
-
+        `exclude_srcs_patterns` are matched *after* `include_srcs_patterns` and *before* `replace_prefixes` are applied.
+        
         NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
-        are not supported since matches are performed in Starlark. To use `include_prefixes` on files
+        are not supported since matches are performed in Starlark. To use `exclude_srcs_patterns` on files
         within directories you can use the `make_directory_paths` helper to specify individual files inside
         directories in `srcs`.""",
     ),
     "exclude_prefixes": attr.string_list(
         doc = """List of path prefixes to exclude from output directory.
+
+        DEPRECATED: use `exclude_srcs_patterns` instead
+
+        Glob patterns `**`, `*` and `?` are supported but the prefix must not end with a `**` or `*` glob expression.
+
+        See `glob_match` documentation for more details on how to use glob patterns:
+        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
 
         If the output directory path for a file or directory starts with or is equal to
         a path in the list then that file is not copied to the output directory.
@@ -97,7 +135,7 @@ _copy_to_directory_attr = {
 
         `exclude_prefixes` are matched on the output path after `root_paths` are considered.
 
-        `exclude_prefixes` are matched *after* `include_prefixes` and *before* `replace_prefixes` are applied.
+        `exclude_prefixes` are matched *after* `include_srcs_patterns` and *before* `replace_prefixes` are applied.
         
         NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
         are not supported since matches are performed in Starlark. To use `exclude_prefixes` on files
@@ -117,7 +155,7 @@ _copy_to_directory_attr = {
 
         `replace_prefixes` are matched on the output path after `root_paths` are considered.
 
-        `replace_prefixes` are matched *after* `include_prefixes` and `exclude_prefixes` are applied.
+        `replace_prefixes` are matched *after* `include_srcs_patterns` and `exclude_srcs_patterns` are applied.
 
         If there are multiple keys that match, the longest match wins.
 
@@ -136,32 +174,45 @@ _copy_to_directory_attr = {
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
-def _first_match(subject, tests, allow_partial = False):
-    for test in tests:
-        starts_with_test = test if allow_partial or test.endswith("/") else test + "/"
-        if subject == test or subject.startswith(starts_with_test):
-            return test
+def _any_globs_match(exprs, path):
+    for expr in exprs:
+        if glob_match(expr, path):
+            return True
     return None
 
-def _longest_match(subject, tests, allow_partial = False):
-    match = None
-    high_score = 0
-    for test in tests:
-        starts_with_test = test if allow_partial or test.endswith("/") else test + "/"
-        if subject == test or subject.startswith(starts_with_test):
-            score = len(test)
-            if score > high_score:
-                match = test
-                high_score = score
+def _longest_glob_match(expr, path):
+    if not glob_match(expr, path):
+        return None
+    match = path
+    for i in range(len(path) - 1):
+        maybe_match = path[:-(i + 1)]
+        if glob_match(expr, maybe_match):
+            match = maybe_match
+        else:
+            break
     return match
+
+def _longest_globs_match(exprs, path):
+    matching_expr = None
+    longest_match = None
+    longest_match_len = 0
+    for expr in exprs:
+        match = _longest_glob_match(expr, path)
+        if match:
+            match_len = len(match)
+            if match_len > longest_match_len:
+                matching_expr = expr
+                longest_match = match
+                longest_match_len = match_len
+    return matching_expr, longest_match
 
 # src can either be a File or a target with a DirectoryPathInfo
 def _copy_paths(
         src,
         root_paths,
         include_external_repositories,
-        include_prefixes,
-        exclude_prefixes,
+        include_srcs_patterns,
+        exclude_srcs_patterns,
         replace_prefixes):
     if type(src) == "File":
         src_file = src
@@ -180,28 +231,54 @@ def _copy_paths(
         return None, None, None
 
     # strip root paths
-    root_path = _longest_match(output_path, root_paths)
-    if root_path:
-        strip_depth = len(root_path.split("/"))
-        output_path = "/".join(output_path.split("/")[strip_depth:])
+    if root_paths:
+        exprs = []
+        for root_path in root_paths:
+            if root_path.endswith("*"):
+                msg = "root_path '{}' must not end with '*' or '**' glob expression".format(root_path)
+                fail(msg)
+            if root_path.endswith("/"):
+                exprs.append(root_path + "**")
+            else:
+                exprs.append(root_path + "/**")
+        _, longest_match = _longest_globs_match(exprs, output_path)
+        if longest_match:
+            output_path = output_path[len(longest_match):]
 
-    if include_prefixes:
-        # check if this file matches an include_prefix if they are specified
-        match = _first_match(output_path, include_prefixes, True)
-        if not match:
+    # apply include_srcs_patterns if "**" is not included in the list
+    if "**" not in include_srcs_patterns:
+        if not _any_globs_match(include_srcs_patterns, output_path):
             # file is excluded as it does not match any specified include_prefix
             return None, None, None
 
-    # check if this file matches an exclude_prefix
-    match = _first_match(output_path, exclude_prefixes, True)
-    if match:
-        # file is excluded due to match in exclude_prefix
+    if "**" in exclude_srcs_patterns:
+        fail("A '**' glob pattern in 'exclude_srcs_patterns' will exclude all srcs and result in an empty directory")
+
+    # apply exclude_srcs_patterns
+    if _any_globs_match(exclude_srcs_patterns, output_path):
+        # file is excluded due to a matching exclude_prefix
         return None, None, None
 
     # apply a replacement if one is found
-    match = _longest_match(output_path, replace_prefixes.keys(), True)
-    if match:
-        output_path = replace_prefixes[match] + output_path[len(match):]
+    if replace_prefixes:
+        exprs = {}
+        for replace_prefix in replace_prefixes.keys():
+            if replace_prefix.endswith("*"):
+                msg = "replace_prefix '{}' must not end with '*' or '**' glob expression".format(replace_prefix)
+                fail(msg)
+            if replace_prefix.endswith("/"):
+                exprs[replace_prefix + "**"] = replace_prefixes[replace_prefix]
+            else:
+                exprs[replace_prefix + "*/**"] = replace_prefixes[replace_prefix]
+                exprs[replace_prefix + "*"] = replace_prefixes[replace_prefix]
+        matching_expr, longest_match = _longest_globs_match(exprs.keys(), output_path)
+        if longest_match:
+            if longest_match.endswith("/") and matching_expr.endswith("*/**"):
+                # strip the trailing "/" from the longest match if the original expression did not end with it
+                longest_match = longest_match[:-1]
+
+            # replace the longest matching prefix in the output path
+            output_path = exprs[matching_expr] + output_path[len(longest_match):]
 
     return src_path, output_path, src_file
 
@@ -339,10 +416,6 @@ if exist "{src}\\*" (
 def _copy_to_directory_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
-    if not ctx.attr.srcs:
-        msg = "srcs must not be empty in copy_to_directory %s" % ctx.label
-        fail(msg)
-
     dst = ctx.actions.declare_directory(ctx.attr.out if ctx.attr.out else ctx.attr.name)
 
     copy_to_directory_action(
@@ -351,7 +424,8 @@ def _copy_to_directory_impl(ctx):
         dst = dst,
         root_paths = ctx.attr.root_paths,
         include_external_repositories = ctx.attr.include_external_repositories,
-        include_prefixes = ctx.attr.include_prefixes,
+        include_srcs_patterns = ctx.attr.include_srcs_patterns,
+        exclude_srcs_patterns = ctx.attr.exclude_srcs_patterns,
         exclude_prefixes = ctx.attr.exclude_prefixes,
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
@@ -372,7 +446,8 @@ def copy_to_directory_action(
         additional_files = [],
         root_paths = ["."],
         include_external_repositories = [],
-        include_prefixes = [],
+        include_srcs_patterns = ["**"],
+        exclude_srcs_patterns = [],
         exclude_prefixes = [],
         replace_prefixes = {},
         allow_overwrites = False,
@@ -399,13 +474,15 @@ def copy_to_directory_action(
 
             See copy_to_directory rule documentation for more details.
 
-        include_prefixes: List of path prefixes to include in output directory.
+        include_srcs_patterns: List of paths (with glob support) to  include in output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        exclude_srcs_patterns: List of paths (with glob support) to  exclude from output directory.
 
             See copy_to_directory rule documentation for more details.
 
         exclude_prefixes: List of path prefixes to exclude from output directory.
-
-            See copy_to_directory rule documentation for more details.
 
         replace_prefixes: Map of paths prefixes to replace in the output directory path when copying files.
 
@@ -423,16 +500,30 @@ def copy_to_directory_action(
     # Replace "." root paths with the package name of the target
     root_paths = [p if p != "." else ctx.label.package for p in root_paths]
 
+    # Convert and append exclude_prefixes to exclude_srcs_patterns
+    # TODO(2.0): remove exclude_prefixes this block and in a future breaking release
+    for exclude_prefix in exclude_prefixes:
+        if exclude_prefix.endswith("*"):
+            msg = "exclude_prefix '{}' must not end with '*' or '**' glob expression".format(exclude_prefix)
+            fail(msg)
+        if exclude_prefix.endswith("/"):
+            exclude_srcs_patterns.append(exclude_prefix + "**")
+        else:
+            exclude_srcs_patterns.append(exclude_prefix + "*/**")
+            exclude_srcs_patterns.append(exclude_prefix + "*")
+
     # Gather a list of src_path, dst_path pairs
+    found_input_paths = False
     copy_paths = []
     for src in srcs:
         if DirectoryPathInfo in src:
+            found_input_paths = True
             src_path, output_path, src_file = _copy_paths(
                 src = src,
                 root_paths = root_paths,
                 include_external_repositories = include_external_repositories,
-                include_prefixes = include_prefixes,
-                exclude_prefixes = exclude_prefixes,
+                include_srcs_patterns = include_srcs_patterns,
+                exclude_srcs_patterns = exclude_srcs_patterns,
                 replace_prefixes = replace_prefixes,
             )
             if src_path != None:
@@ -440,29 +531,36 @@ def copy_to_directory_action(
                 copy_paths.append((src_path, dst_path, src_file))
         if DefaultInfo in src:
             for src_file in src[DefaultInfo].files.to_list():
+                found_input_paths = True
                 src_path, output_path, src_file = _copy_paths(
                     src = src_file,
                     root_paths = root_paths,
                     include_external_repositories = include_external_repositories,
-                    include_prefixes = include_prefixes,
-                    exclude_prefixes = exclude_prefixes,
+                    include_srcs_patterns = include_srcs_patterns,
+                    exclude_srcs_patterns = exclude_srcs_patterns,
                     replace_prefixes = replace_prefixes,
                 )
                 if src_path != None:
                     dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
                     copy_paths.append((src_path, dst_path, src_file))
     for additional_file in additional_files:
+        found_input_paths = True
         src_path, output_path, src_file = _copy_paths(
             src = additional_file,
             root_paths = root_paths,
             include_external_repositories = include_external_repositories,
-            include_prefixes = include_prefixes,
-            exclude_prefixes = exclude_prefixes,
+            include_srcs_patterns = include_srcs_patterns,
+            exclude_srcs_patterns = exclude_srcs_patterns,
             replace_prefixes = replace_prefixes,
         )
         if src_path != None:
             dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
             copy_paths.append((src_path, dst_path, src_file))
+
+    if not found_input_paths:
+        fail("No files or directories found in srcs.")
+    if not copy_paths:
+        fail("There are no files or directories to copy after applying filters. Are your 'include_srcs_patterns' and 'exclude_srcs_patterns' attributes correct?")
 
     if is_windows:
         _copy_to_dir_cmd(ctx, copy_paths, dst)
