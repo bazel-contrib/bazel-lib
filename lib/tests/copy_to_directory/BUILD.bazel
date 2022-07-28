@@ -307,7 +307,7 @@ copy_to_directory(
     include_srcs_patterns = [
         "a",
         "b",
-        "e/e*",
+        "?/e*",
         "f/f2/f2",
     ],
 )
@@ -328,8 +328,8 @@ copy_to_directory(
     include_srcs_patterns = [
         "a",
         "b",
-        "e/e*",
-        "f/f2/**",
+        "?/e*",
+        "f/f?/**",
     ],
 )
 
