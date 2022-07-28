@@ -89,6 +89,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "glob_match",
+    bzl_library_target = "//lib:glob_match",
+)
+
+stardoc_with_diff_test(
     name = "host_repo",
     bzl_library_target = "//lib:host_repo",
 )
