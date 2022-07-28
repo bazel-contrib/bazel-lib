@@ -165,16 +165,14 @@ diff_test(
     file2 = ":expected_7",
 )
 
-# Case 8: exclude prefixes
+# Case 8: exclude_srcs_patterns
 copy_to_directory(
     name = "case_8",
     srcs = case_srcs,
-    exclude_prefixes = [
-        # exclude a & b
+    exclude_srcs_patterns = [
         "a",
         "b",
-        # this partial match should exclude all of e
-        "e/e",
+        "e/e*",
     ],
 )
 
@@ -302,17 +300,14 @@ copy_to_directory(
     ],
 )
 
-# Case 13: include prefixes
+# Case 13: include_srcs_patterns
 copy_to_directory(
     name = "case_13",
     srcs = case_srcs,
-    include_prefixes = [
-        # include a & b
+    include_srcs_patterns = [
         "a",
         "b",
-        # this partial match should include all of e
-        "e/e",
-        # this full match should include just f/f2/f2
+        "e/e*",
         "f/f2/f2",
     ],
 )
@@ -323,22 +318,18 @@ diff_test(
     file2 = ":expected_13_14",
 )
 
-# Case 14: include & exclude prefixes
+# Case 14: include_srcs_patterns & exclude_srcs_patterns
 copy_to_directory(
     name = "case_14",
     srcs = case_srcs,
-    exclude_prefixes = [
-        # this full match should exclude just f/f2/f1
+    exclude_srcs_patterns = [
         "f/f2/f1",
     ],
-    include_prefixes = [
-        # include a & b
+    include_srcs_patterns = [
         "a",
         "b",
-        # this partial match should include all of e
-        "e/e",
-        # include all of f/f2
-        "f/f2",
+        "e/e*",
+        "f/f2/**",
     ],
 )
 

@@ -35,6 +35,7 @@ bzl_library(
     deps = [
         ":copy_common",
         ":directory_path",
+        ":glob_match",
         ":output_files",
         ":paths",
         "@bazel_skylib//lib:paths",
