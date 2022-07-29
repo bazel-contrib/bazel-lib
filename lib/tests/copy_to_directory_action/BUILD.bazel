@@ -6,7 +6,11 @@ load(":pkg.bzl", "pkg")
 lib(
     name = "lib",
     srcs = ["1"],
-    others = ["2"],
+    # intentionally dup on "1" to make sure it is gracefully handled
+    others = [
+        "1",
+        "2",
+    ],
 )
 
 # pkg should copy DefaultInfo files and OtherInfo files

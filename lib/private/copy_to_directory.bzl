@@ -544,6 +544,9 @@ def copy_to_directory_action(
                     dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
                     copy_paths.append((src_path, dst_path, src_file))
     for additional_file in additional_files:
+        if additional_file in ctx.files.srcs:
+            # already added above
+            continue
         found_input_paths = True
         src_path, output_path, src_file = _copy_paths(
             src = additional_file,
