@@ -24,6 +24,10 @@ load("//lib:directory_path.bzl", "make_directory_paths")
         "expected_9",
         "expected_10",
         "expected_13_14",
+        "expected_15",
+        "expected_16",
+        "expected_17",
+        "expected_18",
     ]
 ]
 
@@ -46,7 +50,7 @@ case_srcs = [
 copy_to_directory(
     name = "case_1",
     srcs = case_srcs,
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["externa?_*_rep*"],
 )
 
 diff_test(
@@ -337,4 +341,62 @@ diff_test(
     name = "case_14_test",
     file1 = "case_14",
     file2 = ":expected_13_14",
+)
+
+# Case 15: include_srcs_packages
+copy_to_directory(
+    name = "case_15",
+    srcs = case_srcs,
+    include_external_repositories = ["externa?_*_rep*"],
+    include_srcs_packages = [package_name()],
+)
+
+diff_test(
+    name = "case_15_test",
+    file1 = "case_15",
+    file2 = ":expected_15",
+)
+
+# Case 16: include_srcs_packages multiple with root package
+copy_to_directory(
+    name = "case_16",
+    srcs = case_srcs,
+    include_external_repositories = ["externa?_*_rep*"],
+    include_srcs_packages = [
+        package_name(),
+        "",
+    ],
+)
+
+diff_test(
+    name = "case_16_test",
+    file1 = "case_16",
+    file2 = ":expected_16",
+)
+
+# Case 17: exclude_srcs_packages
+copy_to_directory(
+    name = "case_17",
+    srcs = case_srcs,
+    exclude_srcs_packages = [package_name()],
+)
+
+diff_test(
+    name = "case_17_test",
+    file1 = "case_17",
+    file2 = ":expected_17",
+)
+
+# Case 18: exclude_srcs_packages to exclude all subpackages
+copy_to_directory(
+    name = "case_18",
+    srcs = case_srcs,
+    exclude_srcs_packages = ["{}/**".format(package_name())],
+    include_external_repositories = ["e?ter*_test_repo"],
+)
+
+diff_test(
+    name = "case_18_test",
+    file1 = "case_18",
+    file2 = ":expected_18",
 )
