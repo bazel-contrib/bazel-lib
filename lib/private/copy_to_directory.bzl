@@ -69,7 +69,7 @@ _copy_to_directory_attr = {
         `exclude_srcs_patterns` and `replace_prefixes` in the same way as files form the main repository.""",
     ),
     "include_srcs_patterns": attr.string_list(
-        doc = """List of paths (with glob support) to  include in output directory.
+        doc = """List of paths (with glob support) to include in output directory.
 
         Glob patterns `**`, `*` and `?` are supported.
 
@@ -78,22 +78,18 @@ _copy_to_directory_attr = {
 
         Defaults to ["**"] which includes all sources.
 
-        If not empty, a file is only copied to the output directory if 
-        the output directory path for a file or directory starts with or is equal to
-        a path in the list.
-
         `include_srcs_patterns` are matched on the output path after `root_paths` are considered.
 
         `include_srcs_patterns` are matched *before* `exclude_srcs_patterns` and `replace_prefixes` are applied.
 
-        NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
+        NB: Patterns that nest into source directories or generated directories (TreeArtifacts) targets
         are not supported since matches are performed in Starlark. To use `include_srcs_patterns` on files
         within directories you can use the `make_directory_paths` helper to specify individual files inside
         directories in `srcs`.""",
         default = ["**"],
     ),
     "exclude_srcs_patterns": attr.string_list(
-        doc = """List of paths (with glob support) to  exclude from output directory.
+        doc = """List of paths (with glob support) to exclude from output directory.
 
         Glob patterns `**`, `*` and `?` are supported.
 
@@ -111,7 +107,7 @@ _copy_to_directory_attr = {
 
         `exclude_srcs_patterns` are matched *after* `include_srcs_patterns` and *before* `replace_prefixes` are applied.
         
-        NB: Prefixes that nest into source directories or generated directories (TreeArtifacts) targets
+        NB: Patterns that nest into source directories or generated directories (TreeArtifacts) targets
         are not supported since matches are performed in Starlark. To use `exclude_srcs_patterns` on files
         within directories you can use the `make_directory_paths` helper to specify individual files inside
         directories in `srcs`.""",
@@ -474,11 +470,11 @@ def copy_to_directory_action(
 
             See copy_to_directory rule documentation for more details.
 
-        include_srcs_patterns: List of paths (with glob support) to  include in output directory.
+        include_srcs_patterns: List of paths (with glob support) to include in output directory.
 
             See copy_to_directory rule documentation for more details.
 
-        exclude_srcs_patterns: List of paths (with glob support) to  exclude from output directory.
+        exclude_srcs_patterns: List of paths (with glob support) to exclude from output directory.
 
             See copy_to_directory rule documentation for more details.
 
