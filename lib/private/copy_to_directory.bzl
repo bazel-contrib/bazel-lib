@@ -99,9 +99,7 @@ _copy_to_directory_attr = {
         If the output directory path for a file or directory starts with or is equal to
         a path in the list then that file is not copied to the output directory.
 
-        Forward slashes (`/`) should be used as path separators. The final path segment
-        of the key can be a partial match in the corresponding segment of the output
-        directory path.
+        Forward slashes (`/`) should be used as path separators.
 
         `exclude_srcs_patterns` are matched on the output path after `root_paths` are considered.
 
@@ -125,9 +123,7 @@ _copy_to_directory_attr = {
         If the output directory path for a file or directory starts with or is equal to
         a path in the list then that file is not copied to the output directory.
 
-        Forward slashes (`/`) should be used as path separators. The final path segment
-        of the key can be a partial match in the corresponding segment of the output
-        directory path.
+        Forward slashes (`/`) should be used as path separators.
 
         `exclude_prefixes` are matched on the output path after `root_paths` are considered.
 
@@ -140,6 +136,11 @@ _copy_to_directory_attr = {
     ),
     "replace_prefixes": attr.string_dict(
         doc = """Map of paths prefixes to replace in the output directory path when copying files.
+
+        Glob patterns `**`, `*` and `?` are supported but the prefix must not end with a `**` or `*` glob expression.
+
+        See `glob_match` documentation for more details on how to use glob patterns:
+        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
 
         If the output directory path for a file or directory starts with or is equal to
         a key in the dict then the matching portion of the output directory path is
