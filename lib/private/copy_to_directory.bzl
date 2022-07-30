@@ -58,7 +58,9 @@ _copy_to_directory_attr = {
         Only complete path segments are matched. Partial matches on the last segment of the root path
         are ignored.
 
-        Forward slashes (`/`) should be used as path separators. A "." value indicate the target's package path.
+        Forward slashes (`/`) should be used as path separators.
+
+        A "." value expands to the target's package path (`ctx.label.package`).
 
         Defaults to ["."] which results in the output directory path of files in the
         target's package and and sub-packages are relative to the target's package and
@@ -114,6 +116,10 @@ _copy_to_directory_attr = {
         the Bazel package of the file or directory matches one of the patterns specified.
 
         Forward slashes (`/`) should be used as path separators.
+
+        A "." value expands to the target's package path (`ctx.label.package`).
+        A "./**" value expands to the target's package path followed by a slash and a
+        globstar (`"{{}}/**".format(ctx.label.package)`).
 
         Defaults to ["**"] which includes sources from all packages.
 
@@ -629,8 +635,14 @@ def copy_to_directory_action(
     if not srcs:
         fail("srcs must not be empty")
 
-    # Replace "." root paths with the package name of the target
+    # Replace "." in root_paths with the package name of the target
     root_paths = [p if p != "." else ctx.label.package for p in root_paths]
+
+    # Replace "." in include_srcs_packages with the package name of the target
+    include_srcs_packages = [p if p != "." else ctx.label.package for p in include_srcs_packages]
+
+    # Replace "./**" in include_srcs_packages with the package name of the target followed by slash a globstar
+    include_srcs_packages = [p if p != "./**" else "{}/**".format(ctx.label.package) for p in include_srcs_packages]
 
     # Convert and append exclude_prefixes to exclude_srcs_patterns
     # TODO(2.0): remove exclude_prefixes this block and in a future breaking release
