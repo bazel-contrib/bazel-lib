@@ -325,8 +325,14 @@ def _copy_paths(
         msg = "Expected owner target label for file {} to have a package name but found None".format(src_file)
         fail(msg)
 
+    if not include_srcs_packages:
+        fail("An empty 'include_srcs_packages' list will exclude all srcs and result in an empty directory")
+
     if "**" in exclude_srcs_packages:
         fail("A '**' glob pattern in 'exclude_srcs_packages' will exclude all srcs and result in an empty directory")
+
+    if not include_srcs_patterns:
+        fail("An empty 'include_srcs_patterns' list will exclude all srcs and result in an empty directory")
 
     if "**" in exclude_srcs_patterns:
         fail("A '**' glob pattern in 'exclude_srcs_patterns' will exclude all srcs and result in an empty directory")
