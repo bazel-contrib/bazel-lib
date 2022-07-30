@@ -379,7 +379,7 @@ diff_test(
 copy_to_directory(
     name = "case_17",
     srcs = case_srcs,
-    exclude_srcs_packages = [package_name()],
+    exclude_srcs_packages = ["."],
 )
 
 diff_test(
@@ -392,7 +392,7 @@ diff_test(
 copy_to_directory(
     name = "case_18",
     srcs = case_srcs,
-    exclude_srcs_packages = ["{}/**".format(package_name())],
+    exclude_srcs_packages = ["./**"],
     include_external_repositories = ["e?ter*_test_repo"],
 )
 
