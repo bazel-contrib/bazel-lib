@@ -28,6 +28,7 @@ load("//lib:directory_path.bzl", "make_directory_paths")
         "expected_16",
         "expected_17",
         "expected_18",
+        "expected_19",
     ]
 ]
 
@@ -348,7 +349,7 @@ copy_to_directory(
     name = "case_15",
     srcs = case_srcs,
     include_external_repositories = ["externa?_*_rep*"],
-    include_srcs_packages = [package_name()],
+    include_srcs_packages = ["."],
 )
 
 diff_test(
@@ -363,7 +364,7 @@ copy_to_directory(
     srcs = case_srcs,
     include_external_repositories = ["externa?_*_rep*"],
     include_srcs_packages = [
-        package_name(),
+        ".",
         "",
     ],
 )
@@ -399,4 +400,18 @@ diff_test(
     name = "case_18_test",
     file1 = "case_18",
     file2 = ":expected_18",
+)
+
+# Case 19: include_srcs_packages with "./**" expansion
+copy_to_directory(
+    name = "case_19",
+    srcs = case_srcs,
+    include_external_repositories = ["externa?_*_rep*"],
+    include_srcs_packages = ["./**"],
+)
+
+diff_test(
+    name = "case_19_test",
+    file1 = "case_19",
+    file2 = ":expected_19",
 )
