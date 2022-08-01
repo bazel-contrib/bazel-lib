@@ -1,7 +1,13 @@
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:copy_to_bin.bzl", "copy_to_bin")
 load(":lib.bzl", "lib")
 load(":pkg.bzl", "pkg")
+
+copy_to_bin(
+    name = "copy_1",
+    srcs = ["1"],
+)
 
 lib(
     name = "lib",
@@ -9,6 +15,9 @@ lib(
     # intentionally dup on "1" to make sure it is gracefully handled
     others = [
         "1",
+        # also pass in a copy_to_bin copy of "1" to spice things up;
+        # this case is handled in the fix in https://github.com/aspect-build/bazel-lib/pull/205
+        "copy_1",
         "2",
     ],
 )
