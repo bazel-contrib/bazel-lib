@@ -410,7 +410,7 @@ def _copy_paths(
             # replace the longest matching prefix in the output path
             output_path = replace_prefixes[matching_expr] + output_path[len(longest_match):]
 
-    return src_path, output_path, src_file
+    return skylib_paths.normalize(src_path), skylib_paths.normalize(output_path), src_file
 
 def _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
     for i, s in enumerate(copy_paths):
