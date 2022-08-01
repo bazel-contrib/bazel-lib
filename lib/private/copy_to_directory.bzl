@@ -412,6 +412,25 @@ def _copy_paths(
 
     return src_path, output_path, src_file
 
+def _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
+    for i, s in enumerate(copy_paths):
+        _, maybe_dst_path, maybe_src_file = s
+        if dst_path == maybe_dst_path:
+            if src_file == maybe_src_file:
+                return True
+            if src_file.short_path == maybe_src_file.short_path:
+                if maybe_src_file.is_source and not src_file.is_source:
+                    # If the files are the at the same path but one in the source tree and one in
+                    # the output tree, always copy the output tree file. This is also the default
+                    # Bazel behavior for layout out runfiles if there are files that have the same
+                    # path in the source tree and the output tree. This can happen, for example, if
+                    # the source file and a generated file that is a copy to the source file are
+                    # both added to the package which can happen, for example, through 'additional_files'
+                    # in 'copy_to_directory_action'.
+                    copy_paths[i] = (src_path, dst_path, src_file)
+                return True
+    return False
+
 def _copy_to_dir_bash(ctx, copy_paths, dst_dir, allow_overwrites):
     cmds = [
         "set -o errexit -o nounset -o pipefail",
@@ -682,7 +701,8 @@ def copy_to_directory_action(
             )
             if src_path != None:
                 dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
-                copy_paths.append((src_path, dst_path, src_file))
+                if not _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
+                    copy_paths.append((src_path, dst_path, src_file))
         if DefaultInfo in src:
             for src_file in src[DefaultInfo].files.to_list():
                 found_input_paths = True
@@ -698,11 +718,9 @@ def copy_to_directory_action(
                 )
                 if src_path != None:
                     dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
-                    copy_paths.append((src_path, dst_path, src_file))
+                    if not _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
+                        copy_paths.append((src_path, dst_path, src_file))
     for additional_file in additional_files:
-        if additional_file in ctx.files.srcs:
-            # already added above
-            continue
         found_input_paths = True
         src_path, output_path, src_file = _copy_paths(
             src = additional_file,
@@ -716,7 +734,8 @@ def copy_to_directory_action(
         )
         if src_path != None:
             dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
-            copy_paths.append((src_path, dst_path, src_file))
+            if not _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
+                copy_paths.append((src_path, dst_path, src_file))
 
     if not found_input_paths:
         fail("No files or directories found in srcs.")
