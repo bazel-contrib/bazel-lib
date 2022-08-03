@@ -1,0 +1,8 @@
+---
+env:
+  CC: /dev/null
+workspaces:
+  - .
+  - e2e/bzlmod
+tasks:
+  test:
