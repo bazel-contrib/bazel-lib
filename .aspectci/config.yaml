@@ -1,6 +1,6 @@
 ---
 env:
-  CC: /dev/null
+  CC: /bin/false
 workspaces:
   - .
   - e2e/bzlmod
