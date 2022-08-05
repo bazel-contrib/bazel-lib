@@ -1,5 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
+package(default_visibility = ["//lib:__subpackages__"])
+
 exports_files(
     glob(["*.bzl"]),
     visibility = ["//docs:__pkg__"],
@@ -8,13 +10,11 @@ exports_files(
 bzl_library(
     name = "copy_common",
     srcs = ["copy_common.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "copy_file",
     srcs = ["copy_file.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         ":copy_common",
         ":directory_path",
@@ -24,14 +24,12 @@ bzl_library(
 bzl_library(
     name = "copy_directory",
     srcs = ["copy_directory.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [":copy_common"],
 )
 
 bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         ":copy_common",
         ":directory_path",
@@ -45,7 +43,6 @@ bzl_library(
 bzl_library(
     name = "copy_to_bin",
     srcs = ["copy_to_bin.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         ":copy_file",
         "@bazel_skylib//lib:paths",
@@ -55,21 +52,18 @@ bzl_library(
 bzl_library(
     name = "params_file",
     srcs = ["params_file.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [":expand_make_vars"],
 )
 
 bzl_library(
     name = "paths",
     srcs = ["paths.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = ["@bazel_skylib//lib:paths"],
 )
 
 bzl_library(
     name = "docs",
     srcs = ["docs.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         "//lib:write_source_files",
         "@io_bazel_stardoc//stardoc:stardoc_lib",
@@ -79,7 +73,6 @@ bzl_library(
 bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         "@bazel_skylib//lib:paths",
     ],
@@ -88,19 +81,16 @@ bzl_library(
 bzl_library(
     name = "utils",
     srcs = ["utils.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "jq",
     srcs = ["jq.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "write_source_file",
     srcs = ["write_source_file.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         ":directory_path",
         ":output_files",
@@ -111,39 +101,33 @@ bzl_library(
 bzl_library(
     name = "fail_with_message_test",
     srcs = ["fail_with_message_test.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "glob_match",
     srcs = ["glob_match.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "directory_path",
     srcs = ["directory_path.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = ["//lib:utils"],
 )
 
 bzl_library(
     name = "output_files",
     srcs = ["output_files.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = ["//lib:utils"],
 )
 
 bzl_library(
     name = "diff_test",
     srcs = ["diff_test.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "run_binary",
     srcs = ["run_binary.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [
         ":expand_make_vars",
         "//lib:stamping",
@@ -154,31 +138,26 @@ bzl_library(
 bzl_library(
     name = "repo_utils",
     srcs = ["repo_utils.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "patch",
     srcs = ["patch.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [":repo_utils"],
 )
 
 bzl_library(
     name = "yq",
     srcs = ["yq.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
 
 bzl_library(
     name = "host_repo",
     srcs = ["host_repo.bzl"],
-    visibility = ["//lib:__subpackages__"],
     deps = [":repo_utils"],
 )
 
 bzl_library(
     name = "stamping",
     srcs = ["stamping.bzl"],
-    visibility = ["//lib:__subpackages__"],
 )
