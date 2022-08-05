@@ -1,6 +1,9 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
 
+# Ensure that users building their own rules can dep on our bzl_library targets for their stardoc
+package(default_visibility = ["//visibility:public"])
+
 exports_files(
     glob(["*.bzl"]),
     visibility = [
@@ -14,46 +17,39 @@ stamp_build_setting(name = "stamp")
 
 toolchain_type(
     name = "jq_toolchain_type",
-    visibility = ["//visibility:public"],
 )
 
 toolchain_type(
     name = "yq_toolchain_type",
-    visibility = ["//visibility:public"],
 )
 
 bzl_library(
     name = "docs",
     srcs = ["docs.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:docs"],
 )
 
 bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:expand_make_vars"],
 )
 
 bzl_library(
     name = "params_file",
     srcs = ["params_file.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:params_file"],
 )
 
 bzl_library(
     name = "paths",
     srcs = ["paths.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:paths"],
 )
 
 bzl_library(
     name = "utils",
     srcs = ["utils.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:utils"],
 )
 
@@ -67,49 +63,42 @@ bzl_library(
 bzl_library(
     name = "directory_path",
     srcs = ["directory_path.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:directory_path"],
 )
 
 bzl_library(
     name = "output_files",
     srcs = ["output_files.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:output_files"],
 )
 
 bzl_library(
     name = "copy_file",
     srcs = ["copy_file.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:copy_file"],
 )
 
 bzl_library(
     name = "copy_directory",
     srcs = ["copy_directory.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:copy_directory"],
 )
 
 bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:copy_to_directory"],
 )
 
 bzl_library(
     name = "copy_to_bin",
     srcs = ["copy_to_bin.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:copy_to_bin"],
 )
 
 bzl_library(
     name = "write_source_files",
     srcs = ["write_source_files.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         ":diff_test",
         ":utils",
@@ -121,33 +110,28 @@ bzl_library(
 bzl_library(
     name = "diff_test",
     srcs = ["diff_test.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:diff_test"],
 )
 
 bzl_library(
     name = "run_binary",
     srcs = ["run_binary.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:run_binary"],
 )
 
 bzl_library(
     name = "transitions",
     srcs = ["transitions.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 bzl_library(
     name = "windows_utils",
     srcs = ["windows_utils.bzl"],
-    visibility = ["//visibility:public"],
 )
 
 bzl_library(
     name = "repo_utils",
     srcs = ["repo_utils.bzl"],
-    visibility = ["//visibility:public"],
     deps = [
         "//lib/private:patch",
         "//lib/private:repo_utils",
@@ -157,31 +141,29 @@ bzl_library(
 bzl_library(
     name = "yq",
     srcs = ["yq.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:yq"],
 )
 
 bzl_library(
     name = "glob_match",
     srcs = ["glob_match.bzl"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//lib/private:glob_match",
-    ],
+    deps = ["//lib/private:glob_match"],
 )
 
 bzl_library(
     name = "host_repo",
     srcs = ["host_repo.bzl"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//lib/private:host_repo",
-    ],
+    deps = ["//lib/private:host_repo"],
 )
 
 bzl_library(
     name = "stamping",
     srcs = ["stamping.bzl"],
-    visibility = ["//visibility:public"],
     deps = ["//lib/private:stamping"],
+)
+
+bzl_library(
+    name = "testing",
+    srcs = ["testing.bzl"],
+    deps = ["@bazel_skylib//rules:write_file"],
 )

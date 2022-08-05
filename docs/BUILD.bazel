@@ -103,4 +103,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:stamping",
 )
 
+stardoc_with_diff_test(
+    name = "testing",
+    bzl_library_target = "//lib:testing",
+)
+
 update_docs()
