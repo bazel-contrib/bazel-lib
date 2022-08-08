@@ -21,6 +21,7 @@ jobs:
     executor: continuation/default
     resource_class: aspect-build/default
     steps:
+      - checkout
       - run:
           name: Generate config
           command: |
