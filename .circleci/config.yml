@@ -19,7 +19,6 @@ orbs:
 jobs:
   setup:
     executor: continuation/default
-    machine: true
     resource_class: aspect-build/default
     steps:
       - run:
