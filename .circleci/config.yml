@@ -1,17 +1,5 @@
 version: 2.1
 
-# workflows:
-#   testing:
-#     jobs:
-#       - bazel-test
-# jobs:
-#   bazel-test:
-#     machine: true
-#     resource_class: aspect-build/default
-#     steps:
-#       - checkout
-#       - run: bazel test //...
-
 # enable CircleCI's dynamic configuration feature
 setup: true
 orbs:
@@ -25,7 +13,7 @@ jobs:
       - run:
           name: Generate config
           command: |
-            rosetta steps .aspectci/config.yaml --queue default > generated_config.yml
+            rosetta steps .aspectci/config.yaml --host circleci --queue default > generated_config.yml
       - continuation/continue:
           configuration_path: generated_config.yml
 workflows:
