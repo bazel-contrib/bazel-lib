@@ -117,11 +117,16 @@ _copy_to_directory_attr = {
 
         Forward slashes (`/`) should be used as path separators.
 
-        A "." value expands to the target's package path (`ctx.label.package`).
-        A "./**" value expands to the target's package path followed by a slash and a
-        globstar (`"{{}}/**".format(ctx.label.package)`).
+        A `"."` value means include srcs that are in the target's package.
+        It expands to the target's package path (`ctx.label.package`). This
+        will be an empty string `""` if the target is in the root package.
 
-        Defaults to ["**"] which includes sources from all packages.
+        A `"./**"` value means include srcs that are in subpackages of the target's package.
+        It expands to the target's package path followed by a slash and a
+        globstar (`"{{}}/**".format(ctx.label.package)`). If the target's package is
+        the root package, `"./**"` expands to `["?*", "?*/**"]` instead.
+
+        Defaults to `["**"]` which includes sources from all packages.
 
         Files and directories that have matching Bazel packages are subject to subsequent filters and
         transformations to determine if they are copied and what their path in the output
@@ -142,9 +147,14 @@ _copy_to_directory_attr = {
 
         Forward slashes (`/`) should be used as path separators.
 
-        A "." value expands to the target's package path (`ctx.label.package`).
-        A "./**" value expands to the target's package path followed by a slash and a
-        globstar (`"{{}}/**".format(ctx.label.package)`).
+        A `"."` value means exclude srcs that are in the target's package.
+        It expands to the target's package path (`ctx.label.package`). This
+        will be an empty string `""` if the target is in the root package.
+
+        A `"./**"` value means exclude srcs that are in subpackages of the target's package.
+        It expands to the target's package path followed by a slash and a
+        globstar (`"{{}}/**".format(ctx.label.package)`). If the target's package is
+        the root package, `"./**"` expands to `["?*", "?*/**"]` instead.
 
         Files and directories that have do not have matching Bazel packages are subject to subsequent
         filters and transformations to determine if they are copied and what their path in the output
@@ -590,6 +600,22 @@ def _copy_to_directory_impl(ctx):
         ),
     ]
 
+def _expand_src_packages_patterns(patterns, package):
+    result = []
+    for pattern in patterns:
+        if pattern == ".":
+            result.append(package)
+        elif pattern == "./**":
+            if package:
+                result.append("{}/**".format(package))
+            else:
+                # special case for the root package so we match on subpackages but
+                # not on the empty root package itself
+                result.extend(["?*", "?*/**"])
+        else:
+            result.append(pattern)
+    return result
+
 def copy_to_directory_action(
         ctx,
         srcs,
@@ -661,13 +687,9 @@ def copy_to_directory_action(
     # Replace "." in root_paths with the package name of the target
     root_paths = [p if p != "." else ctx.label.package for p in root_paths]
 
-    # Replace "." in include_srcs_packages & exclude_srcs_packages with the package name of the target
-    include_srcs_packages = [p if p != "." else ctx.label.package for p in include_srcs_packages]
-    exclude_srcs_packages = [p if p != "." else ctx.label.package for p in exclude_srcs_packages]
-
-    # Replace "./**" in include_srcs_packages & exclude_srcs_packages with the package name of the target followed by slash a globstar
-    include_srcs_packages = [p if p != "./**" else "{}/**".format(ctx.label.package) for p in include_srcs_packages]
-    exclude_srcs_packages = [p if p != "./**" else "{}/**".format(ctx.label.package) for p in exclude_srcs_packages]
+    # Replace "." and "./**" patterns in in include_srcs_packages & exclude_srcs_packages
+    include_srcs_packages = _expand_src_packages_patterns(include_srcs_packages, ctx.label.package)
+    exclude_srcs_packages = _expand_src_packages_patterns(exclude_srcs_packages, ctx.label.package)
 
     # Convert and append exclude_prefixes to exclude_srcs_patterns
     # TODO(2.0): remove exclude_prefixes this block and in a future breaking release
