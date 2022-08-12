@@ -15,10 +15,11 @@ Template expansion
 This performs a simple search over the template file for the keys in substitutions,
 and replaces them with the corresponding values.
 
-Values may also use location templates as documented in [expand_locations](#expand_locations)
-as well as [configuration variables] such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)`.
-
-[configuration variables]: https://docs.bazel.build/versions/main/skylark/lib/ctx.html#var
+Values may also use location templates as documented in
+[expand_locations](https://github.com/aspect-build/bazel-lib/blob/main/docs/expand_make_vars.md#expand_locations)
+as well as [configuration variables](https://docs.bazel.build/versions/main/skylark/lib/ctx.html#var)
+such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
+[expand_variables](https://github.com/aspect-build/bazel-lib/blob/main/docs/expand_make_vars.md#expand_variables).
 
 
 **ATTRIBUTES**
@@ -108,6 +109,16 @@ genrule-like substitutions of:
   - `$(RULEDIR)`: The output directory of the rule, that is, the directory
     corresponding to the name of the package containing the rule under the bin tree.
 
+  - $(BUILD_FILE_PATH)": ctx.build_file_path
+
+  - $(VERSION_FILE)": ctx.version_file.path
+
+  - $(INFO_FILE)": ctx.info_file.path
+
+  - $(TARGET)": "@%s//%s:%s" % (ctx.label.workspace_name, ctx.label.package, ctx.label.name)
+
+  - $(WORKSPACE)": ctx.workspace_name
+
 See https://docs.bazel.build/versions/main/be/general.html#genrule.cmd and
 https://docs.bazel.build/versions/main/be/make-variables.html#predefined_genrule_variables
 for more information of how these special variables are expanded.
@@ -122,7 +133,7 @@ for more information of how these special variables are expanded.
 | <a id="expand_variables-s"></a>s |  expression to expand   |  none |
 | <a id="expand_variables-outs"></a>outs |  declared outputs of the rule, for expanding references to outputs   |  <code>[]</code> |
 | <a id="expand_variables-output_dir"></a>output_dir |  whether the rule is expected to output a directory (TreeArtifact) Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Pass output tree artifacts to outs instead.   |  <code>False</code> |
-| <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression   |  <code>"args"</code> |
+| <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression. Used for error reporting.   |  <code>"args"</code> |
 
 **RETURNS**
 

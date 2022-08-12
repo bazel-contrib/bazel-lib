@@ -15,7 +15,8 @@
 """run_binary implementation"""
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
-load("//lib/private:expand_make_vars.bzl", "expand_locations", "expand_variables")
+load(":expand_locations.bzl", "expand_locations")
+load(":expand_variables.bzl", "expand_variables")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 def _impl(ctx):

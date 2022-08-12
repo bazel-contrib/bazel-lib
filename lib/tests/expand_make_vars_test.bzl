@@ -3,7 +3,7 @@ See https://docs.bazel.build/versions/main/skylark/testing.html#for-testing-star
 """
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:expand_make_vars.bzl", "expand_variables")
+load("//lib:expand_make_vars.bzl", "expand_variables")
 
 def _variables_test_impl(ctx):
     env = unittest.begin(ctx)
