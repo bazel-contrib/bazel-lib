@@ -32,7 +32,11 @@ bzl_library(
 bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
-    deps = ["//lib/private:expand_make_vars"],
+    deps = [
+        "//lib/private:expand_locations",
+        "//lib/private:expand_template",
+        "//lib/private:expand_variables",
+    ],
 )
 
 bzl_library(

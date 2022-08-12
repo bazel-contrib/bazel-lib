@@ -1,6 +1,6 @@
 "params_file rule"
 
-load("//lib/private:expand_make_vars.bzl", "expand_locations")
+load(":expand_locations.bzl", "expand_locations")
 
 _ATTRS = {
     "args": attr.string_list(),

@@ -24,7 +24,7 @@ write_file(
         "#!/bin/bash",
         "set -o errexit",
         """[ "{thing}" == "stuff" ]""",
-        """[ "%path%" == "BINDIR/lib/tests/template.txt" ]""",
+        """[ "%path%" == "{BINDIR}/lib/tests/template.txt" ]""",
     ],
 )
 
@@ -36,7 +36,7 @@ expand_template(
     substitutions = {
         "{thing}": "stuff",
         "%path%": "$(execpath :gen_template)",
-        "BINDIR": "$(BINDIR)",
+        "{BINDIR}": "$(BINDIR)",
     },
     template = "template.txt",
 )
