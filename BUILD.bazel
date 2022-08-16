@@ -37,7 +37,10 @@ genrule(
 write_source_files(
     name = "write_source_file_root-test",
     diff_test = False,
-    files = {"test-out/dist/write_source_file_root-test": ":write_source_file_root"},
+    files = {
+        "test-out/dist/write_source_file_root-test": ":write_source_file_root",
+        "test-out/dist/write_source_file_root-test_b": ":write_source_file_root",
+    },
 )
 
 # Test that yq works in the root package
