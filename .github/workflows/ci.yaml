@@ -18,6 +18,9 @@ jobs:
 
     strategy:
       matrix:
+        config:
+          - "local"
+          - "rbe"
         folder:
           - "."
           - "e2e/bzlmod"
@@ -35,12 +38,25 @@ jobs:
             "~/.cache/bazel-repo"
           key: bazel-cache-${{ hashFiles('**/BUILD.bazel', '**/*.bzl', 'WORKSPACE') }}
           restore-keys: bazel-cache-
+      - name: Write engflow credentials
+        if: ${{ matrix.config == 'rbe' }}
+        working-directory: ${{ matrix.folder }}
+        run: |
+          touch engflow.crt
+          chmod 0600 engflow.crt
+          echo "$ENGFLOW_CLIENT_CRT" > engflow.crt
+          touch engflow.key
+          chmod 0600 engflow.key
+          echo "$ENGFLOW_PRIVATE_KEY" > engflow.key
+        env:
+          ENGFLOW_CLIENT_CRT: ${{ secrets.ENGFLOW_CLIENT_CRT }}
+          ENGFLOW_PRIVATE_KEY: ${{ secrets.ENGFLOW_PRIVATE_KEY }}
       - name: bazel test //...
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
         working-directory: ${{ matrix.folder }}
-        run: bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+        run: bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
       - name: integration tests
         if: ${{ matrix.folder == '.' }}
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
