@@ -29,6 +29,7 @@ load("//lib:directory_path.bzl", "make_directory_paths")
         "expected_17",
         "expected_18",
         "expected_19",
+        "expected_20",
     ]
 ]
 
@@ -414,4 +415,26 @@ diff_test(
     name = "case_19_test",
     file1 = "case_19",
     file2 = ":expected_19",
+)
+
+# Case 20: handling of root_paths in the presence of globs in dependencies.
+copy_to_directory(
+    name = "case_20_a",
+    srcs = glob(["dir_a/*"]),
+)
+
+copy_to_directory(
+    name = "case_20",
+    srcs = [
+        ":case_20_a",
+    ],
+    root_paths = [
+        "%s/case_20_a" % package_name(),
+    ],
+)
+
+diff_test(
+    name = "case_20_test",
+    file1 = "case_20",
+    file2 = ":expected_20",
 )
