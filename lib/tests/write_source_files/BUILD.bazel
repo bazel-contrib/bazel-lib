@@ -118,6 +118,8 @@ write_source_files(
         "f2.js": ":f-desired",
         "g2.js": ":g-desired",
     },
+    # TODO: figure out ERROR: cannot compare a directory against a file
+    tags = ["no-remote-exec"],
 )
 
 genrule(
@@ -176,6 +178,6 @@ write_source_files(
 write_source_files(
     name = "write_from_external_repo",
     files = {
-        "skylib_LICENSE": "@bazel_skylib//:LICENSE"
-    }
+        "skylib_LICENSE": "@bazel_skylib//:LICENSE",
+    },
 )
