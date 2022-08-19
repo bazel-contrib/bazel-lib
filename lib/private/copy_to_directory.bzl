@@ -326,10 +326,12 @@ def _copy_paths(
         include_srcs_patterns,
         exclude_srcs_patterns,
         replace_prefixes):
+    output_path_is_directory = False
     if type(src) == "File":
         src_file = src
         src_path = src_file.path
         output_path = paths.to_workspace_path(src_file)
+        output_path_is_directory = src_file.is_directory
     elif DirectoryPathInfo in src:
         src_file = src[DirectoryPathInfo].directory
         src_path = "/".join([src_file.path, src[DirectoryPathInfo].path])
@@ -388,14 +390,22 @@ def _copy_paths(
 
     # apply root_paths
     if root_paths:
-        # match against the output_path dirname and not the full output path
-        # so we don't match against the filename on an ending '**' glob pattern
-        output_dir = skylib_paths.dirname(output_path)
-        _, longest_match = _longest_globs_match(root_paths, output_dir)
+        globstar_suffix = False
+        for root_path in root_paths:
+            if root_path.endswith("/**"):
+                globstar_suffix = True
+                break
+        if not output_path_is_directory and globstar_suffix:
+            # match against the output_path dirname and not the full output path
+            # so we don't match against the filename on an ending '**' glob pattern
+            output_root = skylib_paths.dirname(output_path)
+        else:
+            output_root = output_path
+        _, longest_match = _longest_globs_match(root_paths, output_root)
         if longest_match:
             if longest_match.endswith("/"):
                 longest_match = longest_match[:-1]
-            if len(longest_match) == len(output_dir) or output_dir[len(longest_match)] == "/":
+            if len(longest_match) == len(output_root) or output_root[len(longest_match)] == "/":
                 output_path = output_path[len(longest_match) + 1:]
 
     # apply include_srcs_patterns if "**" is not included in the list
