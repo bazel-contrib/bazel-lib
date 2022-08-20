@@ -154,19 +154,9 @@ bzl_library(
 )
 
 bzl_library(
-    name = "repo_utils",
-    srcs = ["repo_utils.bzl"],
-)
-
-bzl_library(
     name = "patch",
     srcs = ["patch.bzl"],
     deps = [":repo_utils"],
-)
-
-bzl_library(
-    name = "yq",
-    srcs = ["yq.bzl"],
 )
 
 bzl_library(
@@ -176,6 +166,28 @@ bzl_library(
 )
 
 bzl_library(
+    name = "jq_toolchain",
+    srcs = ["jq_toolchain.bzl"],
+    deps = [":repo_utils"],
+)
+
+bzl_library(
+    name = "repo_utils",
+    srcs = ["repo_utils.bzl"],
+)
+
+bzl_library(
     name = "stamping",
     srcs = ["stamping.bzl"],
+)
+
+bzl_library(
+    name = "yq",
+    srcs = ["yq.bzl"],
+)
+
+bzl_library(
+    name = "yq_toolchain",
+    srcs = ["yq_toolchain.bzl"],
+    deps = [":repo_utils"],
 )

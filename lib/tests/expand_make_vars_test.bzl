@@ -2,6 +2,7 @@
 See https://docs.bazel.build/versions/main/skylark/testing.html#for-testing-starlark-utilities
 """
 
+load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//lib:expand_make_vars.bzl", "expand_variables")
 
@@ -35,4 +36,4 @@ def _variables_test_impl(ctx):
 t0_test = unittest.make(_variables_test_impl)
 
 def expand_make_vars_test_suite():
-    unittest.suite("make_vars_tests", t0_test)
+    unittest.suite("make_vars_tests", partial.make(t0_test, timeout = "short"))

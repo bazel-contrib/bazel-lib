@@ -2,6 +2,45 @@
 
 Public API
 
+<a id="default_timeout"></a>
+
+## default_timeout
+
+<pre>
+default_timeout(<a href="#default_timeout-size">size</a>, <a href="#default_timeout-timeout">timeout</a>)
+</pre>
+
+Provide a sane default for *_test timeout attribute.
+
+The [test-encyclopedia](https://bazel.build/reference/test-encyclopedia) says
+> Tests may return arbitrarily fast regardless of timeout.
+> A test is not penalized for an overgenerous timeout, although a warning may be issued:
+> you should generally set your timeout as tight as you can without incurring any flakiness.
+
+However Bazel's default for timeout is medium, which is dumb given this guidance.
+
+It also says:
+> Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
+Therefore if size is specified, we should allow timeout to take its implied default.
+If neither is set, then we can fix Bazel's wrong default here to avoid warnings under
+`--test_verbose_timeout_warnings`.
+
+This function can be used in a macro which wraps a testing rule.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="default_timeout-size"></a>size |  the size attribute of a test target   |  none |
+| <a id="default_timeout-timeout"></a>timeout |  the timeout attribute of a test target   |  none |
+
+**RETURNS**
+
+"short" if neither is set, otherwise timeout
+
+
 <a id="file_exists"></a>
 
 ## file_exists

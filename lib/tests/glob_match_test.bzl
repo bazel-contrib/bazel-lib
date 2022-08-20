@@ -1,5 +1,6 @@
 """unit tests for glob_match"""
 
+load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//lib:glob_match.bzl", "glob_match")
 
@@ -151,17 +152,17 @@ mixed_wrapper_globstar_test = unittest.make(_mixed_wrapping_globstar)
 def glob_match_test_suite():
     unittest.suite(
         "glob_match_tests",
-        star_test,
-        globstar_test,
-        qmark_test,
-        qmark_qmark_test,
-        wrapped_qmark_test,
-        mixed_wrapped_qmark_test,
-        ending_star_test,
-        wrapping_star_test,
-        wrapped_star_test,
-        starting_star_test,
-        mixed_trailing_globstar_test,
-        mixed_leading_globstar_test,
-        mixed_wrapper_globstar_test,
+        partial.make(star_test, timeout = "short"),
+        partial.make(globstar_test, timeout = "short"),
+        partial.make(qmark_test, timeout = "short"),
+        partial.make(qmark_qmark_test, timeout = "short"),
+        partial.make(wrapped_qmark_test, timeout = "short"),
+        partial.make(mixed_wrapped_qmark_test, timeout = "short"),
+        partial.make(ending_star_test, timeout = "short"),
+        partial.make(wrapping_star_test, timeout = "short"),
+        partial.make(wrapped_star_test, timeout = "short"),
+        partial.make(starting_star_test, timeout = "short"),
+        partial.make(mixed_trailing_globstar_test, timeout = "short"),
+        partial.make(mixed_leading_globstar_test, timeout = "short"),
+        partial.make(mixed_wrapper_globstar_test, timeout = "short"),
     )

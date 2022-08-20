@@ -155,6 +155,7 @@ copy_to_directory(
 
 sh_test(
     name = "case_6_test",
+    timeout = "short",
     srcs = ["case6.sh"],
     data = ["case_6"],
 )
