@@ -36,3 +36,16 @@ diff_test(
     file1 = ":a",
     file2 = ":a_copy_from_dir",
 )
+
+# Case: can copy the same file to different outputs
+copy_file(
+    name = "copy_same_file_a",
+    src = "file1",
+    out = "file1_copy_a"
+)
+
+copy_file(
+    name = "copy_same_file_b",
+    src = "file1",
+    out = "file1_copy_b"
+)
