@@ -1,5 +1,6 @@
 """unit tests for paths"""
 
+load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//lib/private:paths.bzl", "paths")
 
@@ -227,8 +228,8 @@ workspace_path_test = unittest.make(_workspace_path_test_impl, attrs = _ATTRS)
 def paths_test_suite():
     unittest.suite(
         "paths_tests",
-        relative_file_test,
-        manifest_path_test,
-        output_relative_path_test,
-        workspace_path_test,
+        partial.make(relative_file_test, timeout = "short"),
+        partial.make(manifest_path_test, timeout = "short"),
+        partial.make(output_relative_path_test, timeout = "short"),
+        partial.make(workspace_path_test, timeout = "short"),
     )

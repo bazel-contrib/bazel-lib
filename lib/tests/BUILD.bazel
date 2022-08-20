@@ -43,6 +43,7 @@ expand_template(
 
 sh_test(
     name = "expand_template_test",
+    timeout = "short",
     srcs = ["expand_template"],
 )
 

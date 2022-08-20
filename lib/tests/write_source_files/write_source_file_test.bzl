@@ -186,4 +186,5 @@ def write_source_file_test(name, in_file, out_file):
         write_source_file_target = name + "_updater",
         in_file = in_file,
         out_file = out_file,
+        timeout = "short",
     )

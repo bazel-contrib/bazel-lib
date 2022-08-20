@@ -89,16 +89,18 @@ def file_exists_test():
 def utils_test_suite():
     to_label_test(name = "to_label_tests", relative_asserts = {
         utils.to_label(":utils_test.bzl"): "//lib/tests:utils_test.bzl",
-    })
+    }, timeout = "short")
 
     is_external_label_test(
         name = "is_external_label_tests",
         external_as_string = utils.is_external_label("@foo//some/label"),
         internal_with_workspace_as_string = utils.is_external_label("@aspect_bazel_lib//some/label"),
+        timeout = "short",
     )
 
     propagate_well_known_tags_test(
         name = "propagate_well_known_tags_tests",
+        timeout = "short",
     )
 
     file_exists_test()

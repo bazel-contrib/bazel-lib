@@ -19,6 +19,7 @@ command (fc.exe) on Windows (no Bash is required).
 """
 
 load(":directory_path.bzl", "DirectoryPathInfo")
+load("//lib:utils.bzl", "default_timeout")
 
 def _runfiles_path(f):
     if f.root.path:
@@ -255,7 +256,7 @@ _diff_test = rule(
     implementation = _diff_test_impl,
 )
 
-def diff_test(name, file1, file2, **kwargs):
+def diff_test(name, file1, file2, size = None, timeout = None, **kwargs):
     """A test that compares two files.
 
     The test succeeds if the files' contents match.
@@ -264,11 +265,16 @@ def diff_test(name, file1, file2, **kwargs):
       name: The name of the test rule.
       file1: Label of the file to compare to <code>file2</code>.
       file2: Label of the file to compare to <code>file1</code>.
+      size: standard attribute for tests
+      timeout: standard attribute for tests. Defaults to "short" if both timeout and size are unspecified.
       **kwargs: The <a href="https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-tests">common attributes for tests</a>.
     """
+
     _diff_test(
         name = name,
         file1 = file1,
         file2 = file2,
+        size = size,
+        timeout = default_timeout(size, timeout),
         **kwargs
     )

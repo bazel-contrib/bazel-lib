@@ -124,16 +124,6 @@ bzl_library(
 )
 
 bzl_library(
-    name = "transitions",
-    srcs = ["transitions.bzl"],
-)
-
-bzl_library(
-    name = "windows_utils",
-    srcs = ["windows_utils.bzl"],
-)
-
-bzl_library(
     name = "repo_utils",
     srcs = ["repo_utils.bzl"],
     deps = [
@@ -169,5 +159,35 @@ bzl_library(
 bzl_library(
     name = "testing",
     srcs = ["testing.bzl"],
-    deps = ["@bazel_skylib//rules:write_file"],
+    deps = [
+        ":utils",
+        "@bazel_skylib//rules:write_file",
+    ],
+)
+
+bzl_library(
+    name = "extensions",
+    srcs = ["extensions.bzl"],
+    deps = ["@aspect_bazel_lib//lib:repositories"],
+)
+
+bzl_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    deps = [
+        "//lib/private:jq_toolchain",
+        "//lib/private:yq_toolchain",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
+)
+
+bzl_library(
+    name = "transitions",
+    srcs = ["transitions.bzl"],
+)
+
+bzl_library(
+    name = "windows_utils",
+    srcs = ["windows_utils.bzl"],
 )
