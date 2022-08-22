@@ -1,4 +1,4 @@
-"""Version Stamping
+"""# Version Stamping
 
 Bazel is generally only a build tool, and is unaware of your version control system.
 However, when publishing releases, you may want to embed version information in the resulting distribution.
@@ -21,7 +21,8 @@ They will usually say something like "subject to stamp variable replacements".
 
 ## Stamping with a Workspace status script
 
-To define additional statuses, pass the `--workspace_status_command` argument to `bazel`.
+To define additional statuses, pass the `--workspace_status_command` flag to `bazel`.
+This slows down every build, so you should avoid passing this flag unless you need to stamp this build.
 The value of this flag is a path to a script that prints space-separated key/value pairs, one per line, such as
 
 ```bash
@@ -66,9 +67,9 @@ def _rule_impl(ctx):
     inputs = []
     stamp = maybe_stamp(ctx)
     if stamp:
-        args.add("--volatile_status_file", stamp.volatile_status)
-        args.add("--stable_status_file", stamp.stable_status)
-        inputs.extend([stamp.volatile_status, stamp.stable_status])
+        args.add("--volatile_status_file", stamp.volatile_status_file.path)
+        args.add("--stable_status_file", stamp.stable_status_file.path)
+        inputs.extend([stamp.volatile_status_file, stamp.stable_status_file])
 
     # ... call actions which parse the stamp files and do something with the values ...
 ```

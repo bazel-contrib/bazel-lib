@@ -23,6 +23,10 @@ build --enable_runfiles
 
 common --enable_platform_specific_config
 
+# For testing our --stamp behavior.
+# Normally users would use a --workspace_status_command with a script that calls `git describe`.
+build --embed_label=v1.2.3
+
 # Turn off legacy external runfiles on all platforms except Windows.
 # This allows our users to turn on this flag as well, which is a performance win.
 # Skylib's diff_test implementation for Windows depends on legacy external

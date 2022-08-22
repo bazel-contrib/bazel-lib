@@ -1,5 +1,6 @@
 load("//lib/tests/jq:diff_test.bzl", "diff_test")
 load("//lib:jq.bzl", "jq")
+load("//lib:testing.bzl", "assert_contains")
 
 exports_files([
     "a_pretty.json",
@@ -93,6 +94,39 @@ diff_test(
     name = "case_filter_file_test",
     file1 = "a_b_merged.json",
     file2 = ":case_filter_file",
+)
+
+# Filter that uses a stamp variable
+[
+    jq(
+        name = ("" if stamp else "un") + "stamped",
+        srcs = ["a.json"],
+        filter = "|".join([
+            # Don't directly reference $STAMP as it's only set when stamping
+            "$ARGS.named.STAMP as $stamp",
+            # Provide a default using the "alternative operator"
+            ".foo = ($stamp.BUILD_EMBED_LABEL // \"<unstamped>\")",
+            ".value = ($stamp.BUILD_TIMESTAMP // 1 | tonumber)",
+        ]),
+        stamp = stamp,
+    )
+    for stamp in [
+        0,
+        1,
+    ]
+]
+
+assert_contains(
+    name = "check_stamped",
+    actual = "stamped.json",
+    # v1.2.3 comes from the --embed_label flag in .bazelrc
+    expected = """foo": "v1.2.3""",
+)
+
+assert_contains(
+    name = "check_unstamped",
+    actual = "unstamped.json",
+    expected = """foo": "<unstamped>""",
 )
 
 # Call jq within a genrule
