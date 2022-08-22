@@ -86,6 +86,19 @@ jq(
     ],
     filter = "{ deps: split("\n") | map(select(. | length > 0)) }",
 )
+
+# With --stamp, causes properties to be replaced by version control info.
+jq(
+    name = "stamped",
+    srcs = ["package.json"],
+    filter = "|".join([
+        # Don't directly reference $STAMP as it's only set when stamping
+        # This 'as' syntax results in $stamp being null in unstamped builds.
+        "$ARGS.named.STAMP as $stamp",
+        # Provide a default using the "alternative operator" in case $stamp is null.
+        ".version = ($stamp.BUILD_EMBED_LABEL // "<unstamped>")",
+    ]),
+)
 ```
 
 
@@ -96,7 +109,7 @@ jq(
 | :------------- | :------------- | :------------- |
 | <a id="jq-name"></a>name |  Name of the rule   |  none |
 | <a id="jq-srcs"></a>srcs |  List of input files   |  none |
-| <a id="jq-filter"></a>filter |  Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters)   |  <code>None</code> |
+| <a id="jq-filter"></a>filter |  Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters). Subject to stamp variable replacements, see [Stamping](./stamping.md). When stamping is enabled, a variable named "STAMP" will be available in the filter.<br><br>Be careful to write the filter so that it handles unstamped builds, as in the example above.   |  <code>None</code> |
 | <a id="jq-filter_file"></a>filter_file |  File containing filter expression (alternative to <code>filter</code>)   |  <code>None</code> |
 | <a id="jq-args"></a>args |  Additional args to pass to jq   |  <code>[]</code> |
 | <a id="jq-out"></a>out |  Name of the output json file; defaults to the rule name plus ".json"   |  <code>None</code> |

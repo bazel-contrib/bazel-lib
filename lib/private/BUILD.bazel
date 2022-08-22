@@ -7,6 +7,11 @@ exports_files(
     visibility = ["//docs:__pkg__"],
 )
 
+exports_files(
+    ["parse_status_file.jq"],
+    visibility = ["//visibility:public"],
+)
+
 bzl_library(
     name = "copy_common",
     srcs = ["copy_common.bzl"],
@@ -103,6 +108,7 @@ bzl_library(
 bzl_library(
     name = "jq",
     srcs = ["jq.bzl"],
+    deps = ["//lib:stamping"],
 )
 
 bzl_library(
