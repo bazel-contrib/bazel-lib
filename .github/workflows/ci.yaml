@@ -42,11 +42,9 @@ jobs:
         if: ${{ matrix.config == 'rbe' }}
         working-directory: ${{ matrix.folder }}
         run: |
-          touch engflow.crt
-          chmod 0600 engflow.crt
+          touch engflow.crt engflow.key
+          chmod 0600 engflow.crt engflow.key
           echo "$ENGFLOW_CLIENT_CRT" > engflow.crt
-          touch engflow.key
-          chmod 0600 engflow.key
           echo "$ENGFLOW_PRIVATE_KEY" > engflow.key
         env:
           ENGFLOW_CLIENT_CRT: ${{ secrets.ENGFLOW_CLIENT_CRT }}
