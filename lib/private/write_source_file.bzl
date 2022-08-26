@@ -271,7 +271,7 @@ def _write_source_file_impl(ctx):
         elif len(ctx.files.in_file) == 1:
             in_path = ctx.files.in_file[0].short_path
         else:
-            msg = "in file {} must be a single file or a target that provides DefaultOutputPathInfo or DirectoryPathInfo".format(ctx.attr.in_file.label)
+            msg = "in file {} must be a single file or a target that provides a DirectoryPathInfo".format(ctx.attr.in_file.label)
             fail(msg)
 
         out_path = "/".join([ctx.label.package, ctx.attr.out_file]) if ctx.label.package else ctx.attr.out_file
