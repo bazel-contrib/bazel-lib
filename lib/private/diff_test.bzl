@@ -64,6 +64,7 @@ def _diff_test_impl(ctx):
         template = template,
         output = test_bin,
         substitutions = {
+            "{name}": ctx.attr.name,
             "{fail_msg}": ctx.attr.failure_message,
             "{file1}": file1_path,
             "{file2}": file2_path,
