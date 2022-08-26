@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
+escape() {
+  echo "$1" \
+    | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' \
+    | awk 1 ORS='&#10;' # preserve newlines
+}
+fail() {
+  cat << EOF >"${XML_OUTPUT_FILE:-/dev/null}"
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="$(escape "{name}")" tests="1" failures="1">
+  <testsuite name="$(escape "{name}")" tests="1" failures="1" id="0">
+    <testcase name="$(escape "{name}")" assertions="1" status="failed">
+      <failure message="$(escape "$1")" type="diff"></failure>
+    </testcase>
+  </testsuite>
+</testsuites>
+EOF
+  echo >&2 "FAIL: $1"
+  exit 1
+}
 F1="{file1}"
 F2="{file2}"
 [[ "$F1" =~ ^external/ ]] && F1="${F1#external/}" || F1="$TEST_WORKSPACE/$F1"
@@ -31,13 +50,11 @@ if [[ ! "$DF1" ]] && [[ "$DF2" ]]; then
 fi
 if [[ "$DF1" ]] || [[ "$DF2" ]]; then
   if ! diff -r "$RF1" "$RF2"; then
-    echo >&2 "FAIL: directories \"{file1}\" and \"{file2}\" differ. {fail_msg}"
-    exit 1
+    fail "directories \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 else
   if ! diff "$RF1" "$RF2"; then
-    echo >&2 "FAIL: files \"{file1}\" and \"{file2}\" differ. {fail_msg}"
-    exit 1
+    fail "files \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 fi
 
