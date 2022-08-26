@@ -392,7 +392,7 @@ def _copy_paths(
     if root_paths:
         globstar_suffix = False
         for root_path in root_paths:
-            if root_path.endswith("/**"):
+            if root_path.endswith("**"):
                 globstar_suffix = True
                 break
         if not output_path_is_directory and globstar_suffix:
