@@ -22,15 +22,15 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
       - `$(RULEDIR)`: The output directory of the rule, that is, the directory
         corresponding to the name of the package containing the rule under the bin tree.
 
-      - $(BUILD_FILE_PATH)": ctx.build_file_path
+      - `$(BUILD_FILE_PATH)`: ctx.build_file_path
 
-      - $(VERSION_FILE)": ctx.version_file.path
+      - `$(VERSION_FILE)`: ctx.version_file.path
 
-      - $(INFO_FILE)": ctx.info_file.path
+      - `$(INFO_FILE)`: ctx.info_file.path
 
-      - $(TARGET)": "@%s//%s:%s" % (ctx.label.workspace_name, ctx.label.package, ctx.label.name)
+      - `$(TARGET)`: ctx.label
 
-      - $(WORKSPACE)": ctx.workspace_name
+      - `$(WORKSPACE)`: ctx.workspace_name
 
     See https://docs.bazel.build/versions/main/be/general.html#genrule.cmd and
     https://docs.bazel.build/versions/main/be/make-variables.html#predefined_genrule_variables
@@ -87,7 +87,11 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
     additional_substitutions["BUILD_FILE_PATH"] = ctx.build_file_path
     additional_substitutions["VERSION_FILE"] = ctx.version_file.path
     additional_substitutions["INFO_FILE"] = ctx.info_file.path
-    additional_substitutions["TARGET"] = "@%s//%s:%s" % (ctx.label.workspace_name, ctx.label.package, ctx.label.name)
+    additional_substitutions["TARGET"] = "{}//{}:{}".format(
+        "@" + ctx.label.workspace_name if ctx.label.workspace_name else "",
+        ctx.label.package,
+        ctx.label.name,
+    )
     additional_substitutions["WORKSPACE"] = ctx.workspace_name
 
     return ctx.expand_make_variables(attribute_name, s, additional_substitutions)
