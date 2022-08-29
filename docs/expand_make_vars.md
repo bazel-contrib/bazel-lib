@@ -109,15 +109,15 @@ genrule-like substitutions of:
   - `$(RULEDIR)`: The output directory of the rule, that is, the directory
     corresponding to the name of the package containing the rule under the bin tree.
 
-  - $(BUILD_FILE_PATH)": ctx.build_file_path
+  - `$(BUILD_FILE_PATH)`: ctx.build_file_path
 
-  - $(VERSION_FILE)": ctx.version_file.path
+  - `$(VERSION_FILE)`: ctx.version_file.path
 
-  - $(INFO_FILE)": ctx.info_file.path
+  - `$(INFO_FILE)`: ctx.info_file.path
 
-  - $(TARGET)": "@%s//%s:%s" % (ctx.label.workspace_name, ctx.label.package, ctx.label.name)
+  - `$(TARGET)`: ctx.label
 
-  - $(WORKSPACE)": ctx.workspace_name
+  - `$(WORKSPACE)`: ctx.workspace_name
 
 See https://docs.bazel.build/versions/main/be/general.html#genrule.cmd and
 https://docs.bazel.build/versions/main/be/make-variables.html#predefined_genrule_variables
