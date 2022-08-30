@@ -8,7 +8,7 @@ exports_files(
 )
 
 exports_files(
-    ["parse_status_file.jq"],
+    ["diff_test_tmpl.sh", "diff_test_tmpl.bat", "parse_status_file.jq"],
     visibility = ["//visibility:public"],
 )
 

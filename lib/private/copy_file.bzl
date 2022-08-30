@@ -43,7 +43,7 @@ def _copy_cmd(ctx, src, src_path, dst):
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
     cmd_tmpl = "@copy /Y \"{src}\" \"{dst}\" >NUL"
     mnemonic = "CopyFile"
-    progress_message = "Copying file %s" % src_path
+    progress_message = "Copying file %{input}"
 
     ctx.actions.write(
         output = bat,
@@ -70,7 +70,7 @@ def _copy_cmd(ctx, src, src_path, dst):
 def _copy_bash(ctx, src, src_path, dst):
     cmd_tmpl = "cp -f \"$1\" \"$2\""
     mnemonic = "CopyFile"
-    progress_message = "Copying file %s" % src_path
+    progress_message = "Copying file %{input}"
 
     ctx.actions.run_shell(
         tools = [src],
