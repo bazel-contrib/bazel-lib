@@ -727,8 +727,7 @@ def copy_to_directory_action(
                 include_external_repositories = include_external_repositories,
                 include_srcs_packages = include_srcs_packages,
                 exclude_srcs_packages = exclude_srcs_packages,
-                include_srcs_patterns = include_srcs_patterns,
-                exclude_srcs_patterns = exclude_srcs_patterns,
+                include_srcs_patterns BREAK IT clude_srcs_patterns,
                 replace_prefixes = replace_prefixes,
             )
             if src_path != None:
