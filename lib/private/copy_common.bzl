@@ -57,3 +57,12 @@ COPY_EXECUTION_REQUIREMENTS = {
     "no-sandbox": "1",
     "local": "1",
 }
+
+COPY_EXEC_GROUPS = {
+    "windows": exec_group(
+        exec_compatible_with = ["@platforms//os:windows"],
+    ),
+    "not_windows": exec_group(
+        exec_compatible_with = ["@platforms//os:linux", "@platforms//os:osx"],
+    ),
+}

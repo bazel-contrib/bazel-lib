@@ -4,7 +4,7 @@ This rule copies a directory to another location using Bash (on Linux/macOS) or
 cmd.exe (on Windows).
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", "COPY_EXEC_GROUPS", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 
 def _copy_cmd(ctx, src, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
@@ -43,6 +43,7 @@ def _copy_cmd(ctx, src, dst):
         progress_message = progress_message,
         use_default_shell_env = True,
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        exec_group = "windows",
     )
 
 def _copy_bash(ctx, src, dst):
@@ -59,9 +60,10 @@ def _copy_bash(ctx, src, dst):
         progress_message = progress_message,
         use_default_shell_env = True,
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        exec_group = "not_windows",
     )
 
-def copy_directory_action(ctx, src, dst, is_windows = False):
+def copy_directory_action(ctx, src, dst):
     """Helper function that creates an action to copy a directory from src to dst.
 
     This helper is used by copy_directory. It is exposed as a public API so it can be used within
@@ -71,22 +73,17 @@ def copy_directory_action(ctx, src, dst, is_windows = False):
         ctx: The rule context.
         src: The directory to make a copy of. Can be a source directory or TreeArtifact.
         dst: The directory to copy to. Must be a TreeArtifact.
-        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
     """
     if not src.is_source and not dst.is_directory:
         fail("src must be a source directory or TreeArtifact")
     if dst.is_source or not dst.is_directory:
         fail("dst must be a TreeArtifact")
-    if is_windows:
-        _copy_cmd(ctx, src, dst)
-    else:
-        _copy_bash(ctx, src, dst)
+    _copy_cmd(ctx, src, dst)
+    _copy_bash(ctx, src, dst)
 
 def _copy_directory_impl(ctx):
-    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
-
     dst = ctx.actions.declare_directory(ctx.attr.out)
-    copy_directory_action(ctx, ctx.file.src, dst, is_windows)
+    copy_directory_action(ctx, ctx.file.src, dst)
 
     files = depset(direct = [dst])
     runfiles = ctx.runfiles(files = [dst])
@@ -101,8 +98,8 @@ _copy_directory = rule(
         # Cannot declare out as an output here, because there's no API for declaring
         # TreeArtifact outputs.
         "out": attr.string(mandatory = True),
-        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
+    exec_groups = COPY_EXEC_GROUPS,
 )
 
 def copy_directory(name, src, out, **kwargs):

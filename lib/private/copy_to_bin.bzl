@@ -16,6 +16,7 @@
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":copy_file.bzl", "copy_file_action")
+load(":copy_common.bzl", "COPY_EXEC_GROUPS")
 
 def copy_file_to_bin_action(ctx, file, is_windows = False):
     """Helper function that creates an action to copy a file to the output tree.
@@ -124,6 +125,7 @@ _copy_to_bin = rule(
         "srcs": attr.label_list(mandatory = True, allow_files = True),
         "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
+    exec_groups = COPY_EXEC_GROUPS,
 )
 
 def copy_to_bin(name, srcs, **kwargs):
