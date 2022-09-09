@@ -730,6 +730,15 @@ def copy_to_directory_action(
         if DefaultInfo in src:
             src_depsets.append(src[DefaultInfo].files)
 
+    # Convert potentially-large arrays into slices to pass by reference
+    # instead of copying when invoking _copy_paths()
+    root_paths = root_paths[:]
+    include_external_repositories = include_external_repositories[:]
+    include_srcs_packages = include_srcs_packages[:]
+    exclude_srcs_packages = exclude_srcs_packages[:]
+    include_srcs_patterns = include_srcs_patterns[:]
+    exclude_srcs_patterns = exclude_srcs_patterns[:]
+
     all_srcs = src_dirs + depset(additional_files, transitive = additional_files_depsets + src_depsets).to_list()
     for src in all_srcs:
         found_input_paths = True

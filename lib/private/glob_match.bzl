@@ -37,6 +37,8 @@ def _split_on(expr, splits):
         result.append(accumulator)
     return result
 
+GLOB_SYMBOLS = ["**", "*", "?"]
+
 def glob_match(expr, path, match_path_separator = False):
     """Test if the passed path matches the glob expression.
 
@@ -61,7 +63,7 @@ def glob_match(expr, path, match_path_separator = False):
     if expr.find("***") != -1:
         fail("glob_match: invalid *** pattern found in glob expression")
 
-    expr_parts = _split_on(expr, ["**", "*", "?"])
+    expr_parts = _split_on(expr, GLOB_SYMBOLS[:])
 
     for i, expr_part in enumerate(expr_parts):
         if expr_part == "**":
