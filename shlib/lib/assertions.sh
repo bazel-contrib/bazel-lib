@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# This is used to determine if the library has been loaded
-cgrindel_bazel_shlib_lib_assertions_loaded() { return; }
-
 # Fail a test with the specified message.
 #
 # Args:
