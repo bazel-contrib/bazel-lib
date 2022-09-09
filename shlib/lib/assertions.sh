@@ -10,7 +10,9 @@
 #   stderr: The error message.
 fail() {
   local err_msg="${1:-}"
-  [[ -n "${err_msg}" ]] || err_msg="Unspecified error occurred."
+  if [[ -z "${err_msg:-}" ]]; then
+    err_msg="Unspecified error occurred."
+  fi
   echo >&2 "${err_msg}"
   exit 1
 }
@@ -18,8 +20,9 @@ fail() {
 make_err_msg() {
   local err_msg="${1}"
   local prefix="${2:-}"
-  [[ -z "${prefix}" ]] || \
-    local err_msg="${prefix} ${err_msg}"
+  if [[  -n "${prefix:-}" ]]; then
+    err_msg="${prefix} ${err_msg}"
+  fi
   echo "${err_msg}"
 }
 
@@ -38,8 +41,13 @@ assert_equal() {
   local expected="${1}"
   local actual="${2}"
   local err_msg
-  err_msg="$(make_err_msg "Expected to be equal. expected: ${expected}, actual: ${actual}" "${3:-}")"
-  [[ "${expected}" == "${actual}" ]] || fail "${err_msg}"
+  err_msg="$(\
+    make_err_msg \
+      "Expected to be equal. expected: ${expected}, actual: ${actual}" "${3:-}" \
+  )"
+  if [[ "${expected}" != "${actual}" ]]; then
+    fail "${err_msg}"
+  fi
 }
 
 # Asserts that the actual value contains the specified regex pattern.
@@ -56,8 +64,13 @@ assert_match() {
   local pattern=${1}
   local actual="${2}"
   local err_msg
-  err_msg="$(make_err_msg "Expected to match. pattern: ${pattern}, actual: ${actual}" "${3:-}")"
-  [[ "${actual}" =~ ${pattern} ]] || fail "${err_msg}"
+  err_msg="$(\
+    make_err_msg \
+      "Expected to match. pattern: ${pattern}, actual: ${actual}" "${3:-}" \
+  )"
+  if [[ ! "${actual}" =~ ${pattern} ]]; then
+    fail "${err_msg}"
+  fi
 }
 
 # Asserts that the actual value does not contain the specified regex pattern.
@@ -74,8 +87,13 @@ assert_no_match() {
   local pattern=${1}
   local actual="${2}"
   local err_msg
-  err_msg="$(make_err_msg "Expected not to match. pattern: ${pattern}, actual: ${actual}" "${3:-}")"
-  [[ "${actual}" =~ ${pattern} ]] && fail "${err_msg}"
+  err_msg="$(\
+    make_err_msg \
+      "Expected not to match. pattern: ${pattern}, actual: ${actual}" "${3:-}" \
+  )"
+  if [[ "${actual}" =~ ${pattern} ]]; then
+    fail "${err_msg}"
+  fi
   # Because this is a negative test, we need to end on a positive note if all is well.
   echo ""
 }
