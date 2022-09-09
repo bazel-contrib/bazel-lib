@@ -16,8 +16,11 @@ def _output_files(ctx):
         files_depset = ctx.attr.target[OutputGroupInfo][ctx.attr.output_group]
     else:
         files_depset = ctx.attr.target[DefaultInfo].files
+
+    files_list = files_depset.to_list()
+
     for path in ctx.attr.paths:
-        file = _find_short_path_in_files_depset(files_depset, path)
+        file = _find_short_path_in_files_list(files_list, path)
         if not file:
             if ctx.attr.output_group:
                 msg = "%s file not found within the %s output group of %s" % (path, ctx.attr.output_group, ctx.attr.target)
@@ -70,18 +73,16 @@ def make_output_files(name, target, paths, **kwargs):
     )
     return _to_label(name)
 
-def _find_short_path_in_files_depset(files_depset, short_path):
+def _find_short_path_in_files_list(files_list, short_path):
     """Helper function find a file in a DefaultInfo by short path
 
     Args:
-        files_depset: a depset
+        files_list: a list of files
         short_path: the short path (path relative to root) to search for
-
     Returns:
         The File if found else None
     """
-    if files_depset:
-        for file in files_depset.to_list():
-            if file.short_path == short_path:
-                return file
+    for file in files_list:
+        if file.short_path == short_path:
+            return file
     return None

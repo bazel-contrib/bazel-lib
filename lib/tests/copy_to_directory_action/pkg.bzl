@@ -27,7 +27,7 @@ def _impl(ctx):
         ctx,
         srcs = ctx.attr.srcs,
         dst = dst,
-        additional_files = depset(transitive = additional_files_depsets).to_list(),
+        additional_files_depsets = additional_files_depsets,
         is_windows = is_windows,
     )
 
