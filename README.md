@@ -45,6 +45,7 @@ Installation instructions are included on each release:
 - [params_file](docs/params_file.md) Generate encoded params file from a list of arguments.
 - [repo_utils](docs/repo_utils.md) Useful methods for repository rule implementations.
 - [run_binary](docs/run_binary.md) Like skylib's run_binary but adds directory output support.
+- [stamping](docs/stamping.md) Support version stamping in custom rules.
 
 ## Generating documentation
 
