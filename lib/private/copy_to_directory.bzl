@@ -1,7 +1,7 @@
 "copy_to_directory implementation"
 
 load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _is_windows_host = "is_windows_host")
 load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":glob_match.bzl", "glob_match")
@@ -279,7 +279,6 @@ _copy_to_directory_attr = {
 
         This setting has no effect on Windows where overwrites are always allowed.""",
     ),
-    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _any_globs_match(exprs, path):
@@ -580,11 +579,10 @@ if exist "{src}\\*" (
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory",
         use_default_shell_env = True,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
 def _copy_to_directory_impl(ctx):
-    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
-
     dst = ctx.actions.declare_directory(ctx.attr.out if ctx.attr.out else ctx.attr.name)
 
     copy_to_directory_action(
@@ -600,7 +598,6 @@ def _copy_to_directory_impl(ctx):
         exclude_prefixes = ctx.attr.exclude_prefixes,
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
-        is_windows = is_windows,
     )
 
     return [
@@ -640,7 +637,7 @@ def copy_to_directory_action(
         exclude_prefixes = [],
         replace_prefixes = {},
         allow_overwrites = False,
-        is_windows = False):
+        is_windows = None):
     """Helper function to copy files to a directory.
 
     This helper is used by copy_to_directory. It is exposed as a public API so it can be used within
@@ -689,8 +686,10 @@ def copy_to_directory_action(
 
             See copy_to_directory rule documentation for more details.
 
-        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+        is_windows: Deprecated and unused
     """
+
+    # TODO(2.0): remove depcreated & unused is_windows parameter
     if not srcs:
         fail("srcs must not be empty")
 
@@ -762,6 +761,10 @@ def copy_to_directory_action(
     if not copy_paths:
         fail("There are no files or directories to copy after applying filters. Are your 'include_srcs_patterns' and 'exclude_srcs_patterns' attributes correct?")
 
+    # Because copy actions have "local" execution requirements, we can safely assume
+    # the execution is the same as the host platform and generate different actions for Windows
+    # and non-Windows host platforms
+    is_windows = _is_windows_host()
     if is_windows:
         _copy_to_dir_cmd(ctx, copy_paths, dst)
     else:

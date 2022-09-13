@@ -24,7 +24,7 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 `_copy_file` does not.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _is_windows_host = "is_windows_host")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
 def _copy_cmd(ctx, src, src_path, dst):
@@ -83,7 +83,7 @@ def _copy_bash(ctx, src, src_path, dst):
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
-def copy_file_action(ctx, src, dst, dir_path = None, is_windows = False):
+def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
     """Helper function that creates an action to copy a file from src to dst.
 
     If src is a TreeArtifact, dir_path must be specified as the path within
@@ -97,8 +97,10 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = False):
         src: The source file to copy or TreeArtifact to copy a single file out of.
         dst: The destination file.
         dir_path: If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.
-        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+        is_windows: Deprecated and unused
     """
+
+    # TODO(2.0): remove depcreated & unused is_windows parameter
     if dst.is_directory:
         fail("dst must not be a TreeArtifact")
     if src.is_directory:
@@ -107,14 +109,17 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = False):
         src_path = "/".join([src.path, dir_path])
     else:
         src_path = src.path
+
+    # Because copy actions have "local" execution requirements, we can safely assume
+    # the execution is the same as the host platform and generate different actions for Windows
+    # and non-Windows host platforms
+    is_windows = _is_windows_host()
     if is_windows:
         _copy_cmd(ctx, src, src_path, dst)
     else:
         _copy_bash(ctx, src, src_path, dst)
 
 def _copy_file_impl(ctx):
-    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
-
     if ctx.attr.allow_symlink:
         if len(ctx.files.src) != 1:
             fail("src must be a single file when allow_symlink is True")
@@ -131,14 +136,13 @@ def _copy_file_impl(ctx):
             ctx.attr.src[DirectoryPathInfo].directory,
             ctx.outputs.out,
             dir_path = ctx.attr.src[DirectoryPathInfo].path,
-            is_windows = is_windows,
         )
     else:
         if len(ctx.files.src) != 1:
             fail("src must be a single file or a target that provides a DirectoryPathInfo")
         if ctx.files.src[0].is_directory:
             fail("cannot use copy_file on a directory; try copy_directory instead")
-        copy_file_action(ctx, ctx.files.src[0], ctx.outputs.out, is_windows = is_windows)
+        copy_file_action(ctx, ctx.files.src[0], ctx.outputs.out)
 
     files = depset(direct = [ctx.outputs.out])
     runfiles = ctx.runfiles(files = [ctx.outputs.out])
@@ -152,7 +156,6 @@ _ATTRS = {
     "is_executable": attr.bool(mandatory = True),
     "allow_symlink": attr.bool(mandatory = True),
     "out": attr.output(mandatory = True),
-    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 _copy_file = rule(
