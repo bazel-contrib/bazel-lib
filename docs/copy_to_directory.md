@@ -42,7 +42,7 @@ copy_to_directory(<a href="#copy_to_directory-name">name</a>, <a href="#copy_to_
 ## copy_to_directory_action
 
 <pre>
-copy_to_directory_action(<a href="#copy_to_directory_action-ctx">ctx</a>, <a href="#copy_to_directory_action-srcs">srcs</a>, <a href="#copy_to_directory_action-dst">dst</a>, <a href="#copy_to_directory_action-additional_files">additional_files</a>, <a href="#copy_to_directory_action-additional_files_depsets">additional_files_depsets</a>, <a href="#copy_to_directory_action-root_paths">root_paths</a>,
+copy_to_directory_action(<a href="#copy_to_directory_action-ctx">ctx</a>, <a href="#copy_to_directory_action-srcs">srcs</a>, <a href="#copy_to_directory_action-dst">dst</a>, <a href="#copy_to_directory_action-additional_files">additional_files</a>, <a href="#copy_to_directory_action-root_paths">root_paths</a>,
                          <a href="#copy_to_directory_action-include_external_repositories">include_external_repositories</a>, <a href="#copy_to_directory_action-include_srcs_packages">include_srcs_packages</a>, <a href="#copy_to_directory_action-exclude_srcs_packages">exclude_srcs_packages</a>,
                          <a href="#copy_to_directory_action-include_srcs_patterns">include_srcs_patterns</a>, <a href="#copy_to_directory_action-exclude_srcs_patterns">exclude_srcs_patterns</a>, <a href="#copy_to_directory_action-exclude_prefixes">exclude_prefixes</a>,
                          <a href="#copy_to_directory_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_action-is_windows">is_windows</a>)
@@ -62,8 +62,7 @@ other rule implementations where additional_files can also be passed in.
 | <a id="copy_to_directory_action-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_to_directory_action-srcs"></a>srcs |  Files and/or directories or targets that provide DirectoryPathInfo to copy into the output directory.   |  none |
 | <a id="copy_to_directory_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
-| <a id="copy_to_directory_action-additional_files"></a>additional_files |  Additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs   |  <code>[]</code> |
-| <a id="copy_to_directory_action-additional_files_depsets"></a>additional_files_depsets |  Additional depsets to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs   |  <code>[]</code> |
+| <a id="copy_to_directory_action-additional_files"></a>additional_files |  List or depset of additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs   |  <code>[]</code> |
 | <a id="copy_to_directory_action-root_paths"></a>root_paths |  List of paths that are roots in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["."]</code> |
 | <a id="copy_to_directory_action-include_external_repositories"></a>include_external_repositories |  List of external repository names to include in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>[]</code> |
 | <a id="copy_to_directory_action-include_srcs_packages"></a>include_srcs_packages |  List of Bazel packages to include in output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["**"]</code> |

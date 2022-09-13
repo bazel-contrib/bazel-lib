@@ -631,7 +631,6 @@ def copy_to_directory_action(
         srcs,
         dst,
         additional_files = [],
-        additional_files_depsets = [],
         root_paths = ["."],
         include_external_repositories = [],
         include_srcs_packages = ["**"],
@@ -654,9 +653,7 @@ def copy_to_directory_action(
 
         dst: The directory to copy to. Must be a TreeArtifact.
 
-        additional_files: Additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
-
-        additional_files_depsets: Additional depsets to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
+        additional_files: List or depset of additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
 
         root_paths: List of paths that are roots in the output directory.
 
@@ -739,7 +736,10 @@ def copy_to_directory_action(
     include_srcs_patterns = include_srcs_patterns[:]
     exclude_srcs_patterns = exclude_srcs_patterns[:]
 
-    all_srcs = src_dirs + depset(additional_files, transitive = additional_files_depsets + src_depsets).to_list()
+    if type(additional_files) == "list":
+        additional_files = depset(additional_files)
+
+    all_srcs = src_dirs + depset(transitive = [additional_files] + src_depsets).to_list()
     for src in all_srcs:
         found_input_paths = True
         src_path, output_path, src_file = _copy_paths(
@@ -753,7 +753,7 @@ def copy_to_directory_action(
             replace_prefixes = replace_prefixes,
         )
         if src_path != None:
-            dst_path = skylib_paths.normalize("%s/%s" % (dst.path, output_path))
+            dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
             if not _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
                 copy_paths.append((src_path, dst_path, src_file))
 
