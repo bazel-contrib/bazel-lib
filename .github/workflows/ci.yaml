@@ -43,6 +43,10 @@ jobs:
           - "."
           - "e2e/bzlmod"
           - "e2e/copy_to_directory"
+        exclude:
+          # bzlmod broken at 5.3.0 which the RBE bazel fork is bazed on
+          - config: rbe
+            folder: e2e/bzlmod
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
