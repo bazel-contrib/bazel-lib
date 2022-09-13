@@ -653,7 +653,7 @@ def copy_to_directory_action(
 
         dst: The directory to copy to. Must be a TreeArtifact.
 
-        additional_files: Additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
+        additional_files: List or depset of additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
 
         root_paths: List of paths that are roots in the output directory.
 
@@ -717,45 +717,33 @@ def copy_to_directory_action(
 
     # Gather a list of src_path, dst_path pairs
     found_input_paths = False
+
+    src_dirs = []
+    src_depsets = []
     copy_paths = []
     for src in srcs:
         if DirectoryPathInfo in src:
-            found_input_paths = True
-            src_path, output_path, src_file = _copy_paths(
-                src = src,
-                root_paths = root_paths,
-                include_external_repositories = include_external_repositories,
-                include_srcs_packages = include_srcs_packages,
-                exclude_srcs_packages = exclude_srcs_packages,
-                include_srcs_patterns = include_srcs_patterns,
-                exclude_srcs_patterns = exclude_srcs_patterns,
-                replace_prefixes = replace_prefixes,
-            )
-            if src_path != None:
-                dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
-                if not _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
-                    copy_paths.append((src_path, dst_path, src_file))
+            src_dirs.append(src)
         if DefaultInfo in src:
-            for src_file in src[DefaultInfo].files.to_list():
-                found_input_paths = True
-                src_path, output_path, src_file = _copy_paths(
-                    src = src_file,
-                    root_paths = root_paths,
-                    include_external_repositories = include_external_repositories,
-                    include_srcs_packages = include_srcs_packages,
-                    exclude_srcs_packages = exclude_srcs_packages,
-                    include_srcs_patterns = include_srcs_patterns,
-                    exclude_srcs_patterns = exclude_srcs_patterns,
-                    replace_prefixes = replace_prefixes,
-                )
-                if src_path != None:
-                    dst_path = skylib_paths.normalize("/".join([dst.path, output_path]))
-                    if not _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
-                        copy_paths.append((src_path, dst_path, src_file))
-    for additional_file in additional_files:
+            src_depsets.append(src[DefaultInfo].files)
+
+    # Convert potentially-large arrays into slices to pass by reference
+    # instead of copying when invoking _copy_paths()
+    root_paths = root_paths[:]
+    include_external_repositories = include_external_repositories[:]
+    include_srcs_packages = include_srcs_packages[:]
+    exclude_srcs_packages = exclude_srcs_packages[:]
+    include_srcs_patterns = include_srcs_patterns[:]
+    exclude_srcs_patterns = exclude_srcs_patterns[:]
+
+    if type(additional_files) == "list":
+        additional_files = depset(additional_files)
+
+    all_srcs = src_dirs + depset(transitive = [additional_files] + src_depsets).to_list()
+    for src in all_srcs:
         found_input_paths = True
         src_path, output_path, src_file = _copy_paths(
-            src = additional_file,
+            src = src,
             root_paths = root_paths,
             include_external_repositories = include_external_repositories,
             include_srcs_packages = include_srcs_packages,

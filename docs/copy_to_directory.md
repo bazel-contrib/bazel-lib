@@ -62,7 +62,7 @@ other rule implementations where additional_files can also be passed in.
 | <a id="copy_to_directory_action-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_to_directory_action-srcs"></a>srcs |  Files and/or directories or targets that provide DirectoryPathInfo to copy into the output directory.   |  none |
 | <a id="copy_to_directory_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
-| <a id="copy_to_directory_action-additional_files"></a>additional_files |  Additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs   |  <code>[]</code> |
+| <a id="copy_to_directory_action-additional_files"></a>additional_files |  List or depset of additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs   |  <code>[]</code> |
 | <a id="copy_to_directory_action-root_paths"></a>root_paths |  List of paths that are roots in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["."]</code> |
 | <a id="copy_to_directory_action-include_external_repositories"></a>include_external_repositories |  List of external repository names to include in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>[]</code> |
 | <a id="copy_to_directory_action-include_srcs_packages"></a>include_srcs_packages |  List of Bazel packages to include in output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["**"]</code> |
