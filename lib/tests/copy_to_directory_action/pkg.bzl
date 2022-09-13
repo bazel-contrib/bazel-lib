@@ -8,12 +8,9 @@ load(":other_info.bzl", "OtherInfo")
 _attrs = {
     "srcs": attr.label_list(allow_files = True),
     "out": attr.string(mandatory = True),
-    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _impl(ctx):
-    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
-
     dst = ctx.actions.declare_directory(ctx.attr.out)
 
     additional_files_depsets = []
@@ -27,8 +24,7 @@ def _impl(ctx):
         ctx,
         srcs = ctx.attr.srcs,
         dst = dst,
-        additional_files = depset(transitive = additional_files_depsets).to_list(),
-        is_windows = is_windows,
+        additional_files = depset(transitive = additional_files_depsets),
     )
 
     return [

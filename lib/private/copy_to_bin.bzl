@@ -17,7 +17,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":copy_file.bzl", "copy_file_action")
 
-def copy_file_to_bin_action(ctx, file, is_windows = False):
+def copy_file_to_bin_action(ctx, file, is_windows = None):
     """Helper function that creates an action to copy a file to the output tree.
 
     File are copied to the same workspace-relative path. The resulting files is
@@ -29,11 +29,13 @@ def copy_file_to_bin_action(ctx, file, is_windows = False):
     Args:
         ctx: The rule context.
         file: The file to copy.
-        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+        is_windows: Deprecated and unused
 
     Returns:
         A File in the output tree.
     """
+
+    # TODO(2.0): remove depcreated & unused is_windows parameter
     if not file.is_source:
         return file
     if ctx.label.workspace_name != file.owner.workspace_name:
@@ -89,7 +91,7 @@ target to {file_package} using:
         package = "%s//%s" % (curr_package_label.workspace_name, curr_package_label.package),
     )
 
-def copy_files_to_bin_actions(ctx, files, is_windows = False):
+def copy_files_to_bin_actions(ctx, files, is_windows = None):
     """Helper function that creates actions to copy files to the output tree.
 
     Files are copied to the same workspace-relative path. The resulting list of
@@ -101,17 +103,17 @@ def copy_files_to_bin_actions(ctx, files, is_windows = False):
     Args:
         ctx: The rule context.
         files: List of File objects.
-        is_windows: If true, an cmd.exe action is created so there is no bash dependency.
+        is_windows: Deprecated and unused
 
     Returns:
         List of File objects in the output tree.
     """
+
+    # TODO(2.0): remove depcreated & unused is_windows parameter
     return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
 
 def _impl(ctx):
-    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
-
-    files = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = is_windows)
+    files = copy_files_to_bin_actions(ctx, ctx.files.srcs)
     return DefaultInfo(
         files = depset(files),
         runfiles = ctx.runfiles(files = files),
@@ -122,7 +124,6 @@ _copy_to_bin = rule(
     provides = [DefaultInfo],
     attrs = {
         "srcs": attr.label_list(mandatory = True, allow_files = True),
-        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
 )
 

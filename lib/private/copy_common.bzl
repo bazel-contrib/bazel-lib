@@ -1,5 +1,7 @@
 "Helpers for copy rules"
 
+load("@local_config_platform//:constraints.bzl", "HOST_CONSTRAINTS")
+
 # Hints for Bazel spawn strategy
 COPY_EXECUTION_REQUIREMENTS = {
     # ----------------+-----------------------------------------------------------------------------
@@ -57,3 +59,6 @@ COPY_EXECUTION_REQUIREMENTS = {
     "no-sandbox": "1",
     "local": "1",
 }
+
+def is_windows_host():
+    return "@platforms//os:windows" in HOST_CONSTRAINTS

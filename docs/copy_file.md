@@ -72,6 +72,6 @@ other rule implementations.
 | <a id="copy_file_action-src"></a>src |  The source file to copy or TreeArtifact to copy a single file out of.   |  none |
 | <a id="copy_file_action-dst"></a>dst |  The destination file.   |  none |
 | <a id="copy_file_action-dir_path"></a>dir_path |  If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.   |  <code>None</code> |
-| <a id="copy_file_action-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
+| <a id="copy_file_action-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 

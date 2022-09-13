@@ -33,7 +33,7 @@ without a copy action.
 | :------------- | :------------- | :------------- |
 | <a id="copy_file_to_bin_action-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_file_to_bin_action-file"></a>file |  The file to copy.   |  none |
-| <a id="copy_file_to_bin_action-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
+| <a id="copy_file_to_bin_action-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 **RETURNS**
 
@@ -64,7 +64,7 @@ directly to the result without a copy action.
 | :------------- | :------------- | :------------- |
 | <a id="copy_files_to_bin_actions-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_files_to_bin_actions-files"></a>files |  List of File objects.   |  none |
-| <a id="copy_files_to_bin_actions-is_windows"></a>is_windows |  If true, an cmd.exe action is created so there is no bash dependency.   |  <code>False</code> |
+| <a id="copy_files_to_bin_actions-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 **RETURNS**
 

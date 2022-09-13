@@ -8,13 +8,18 @@ exports_files(
 )
 
 exports_files(
-    ["diff_test_tmpl.sh", "diff_test_tmpl.bat", "parse_status_file.jq"],
+    [
+        "diff_test_tmpl.sh",
+        "diff_test_tmpl.bat",
+        "parse_status_file.jq",
+    ],
     visibility = ["//visibility:public"],
 )
 
 bzl_library(
     name = "copy_common",
     srcs = ["copy_common.bzl"],
+    deps = ["@local_config_platform//:constraints"],
 )
 
 bzl_library(
