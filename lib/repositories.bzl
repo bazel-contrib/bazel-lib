@@ -4,6 +4,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", _http_archive = "http_archi
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
+load("//lib/private:local_config_platform.bzl", "local_config_platform")
 
 # Don't wrap later calls with maybe() as that prevents renovate from parsing our deps
 def http_archive(name, **kwargs):
@@ -18,6 +19,10 @@ def aspect_bazel_lib_dependencies():
             "https://github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
             "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
         ],
+    )
+
+    local_config_platform(
+        name = "aspect_bazel_lib_local_config_platform",
     )
 
 # Re-export the default versions

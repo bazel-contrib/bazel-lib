@@ -1,6 +1,6 @@
 "Helpers for copy rules"
 
-load("@local_config_platform//:constraints.bzl", "HOST_CONSTRAINTS")
+load("@aspect_bazel_lib_local_config_platform//:constraints.bzl", "HOST_CONSTRAINTS")
 
 # Hints for Bazel spawn strategy
 COPY_EXECUTION_REQUIREMENTS = {
