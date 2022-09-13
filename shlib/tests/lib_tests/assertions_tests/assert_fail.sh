@@ -3,7 +3,7 @@
 FAIL_ERR_MSGS=()
 
 fail() {
-  local err_msg="${1:-Unspecified error occurred.}"
+  local err_msg="${1:-"Unspecified error occurred."}"
   FAIL_ERR_MSGS+=( "${err_msg}" )
 }
 
