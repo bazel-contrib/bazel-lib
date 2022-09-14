@@ -35,10 +35,3 @@ go_rules_dependencies()
 go_register_toolchains(version = "1.17.2")
 
 gazelle_dependencies()
-
-# buildifier: disable=bzl-visibility
-load("//lib/private:local_config_platform.bzl", "local_config_platform")
-
-local_config_platform(
-    name = "local_config_platform",
-)

@@ -176,6 +176,7 @@ bzl_library(
     srcs = ["repositories.bzl"],
     deps = [
         "//lib/private:jq_toolchain",
+        "//lib/private:local_config_platform",
         "//lib/private:yq_toolchain",
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
