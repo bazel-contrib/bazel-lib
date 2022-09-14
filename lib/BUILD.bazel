@@ -192,3 +192,9 @@ bzl_library(
     name = "windows_utils",
     srcs = ["windows_utils.bzl"],
 )
+
+bzl_library(
+    name = "platform_utils",
+    srcs = ["platform_utils.bzl"],
+    deps = ["//lib/private:platform_utils"],
+)

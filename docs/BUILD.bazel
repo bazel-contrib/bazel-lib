@@ -99,6 +99,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "platform_utils",
+    bzl_library_target = "//lib:platform_utils",
+)
+
+stardoc_with_diff_test(
     name = "stamping",
     bzl_library_target = "//lib:stamping",
 )

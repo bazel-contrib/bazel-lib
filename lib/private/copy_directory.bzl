@@ -4,7 +4,8 @@ This rule copies a directory to another location using Bash (on Linux/macOS) or
 cmd.exe (on Windows).
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _is_windows_host = "is_windows_host")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 def _copy_cmd(ctx, src, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
@@ -83,7 +84,7 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
     # Because copy actions have "local" execution requirements, we can safely assume
     # the execution is the same as the host platform and generate different actions for Windows
     # and non-Windows host platforms
-    is_windows = _is_windows_host()
+    is_windows = _platform_utils.host_platform_is_windows()
     if is_windows:
         _copy_cmd(ctx, src, dst)
     else:
