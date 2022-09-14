@@ -24,8 +24,9 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 `_copy_file` does not.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _is_windows_host = "is_windows_host")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
+load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 def _copy_cmd(ctx, src, src_path, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
@@ -113,7 +114,7 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
     # Because copy actions have "local" execution requirements, we can safely assume
     # the execution is the same as the host platform and generate different actions for Windows
     # and non-Windows host platforms
-    is_windows = _is_windows_host()
+    is_windows = _platform_utils.host_platform_is_windows()
     if is_windows:
         _copy_cmd(ctx, src, src_path, dst)
     else:

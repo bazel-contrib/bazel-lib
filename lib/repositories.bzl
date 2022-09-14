@@ -10,8 +10,15 @@ load("//lib/private:local_config_platform.bzl", "local_config_platform")
 def http_archive(name, **kwargs):
     maybe(_http_archive, name = name, **kwargs)
 
-def aspect_bazel_lib_dependencies():
-    "Load dependencies required by aspect rules"
+def aspect_bazel_lib_dependencies(override_local_config_platform = False):
+    """Load dependencies required by aspect rules
+
+    Args:
+        override_local_config_platform: override the @local_config_platform repository with one that adds stardoc
+            support for loading constraints.bzl.
+
+            Should be set in repositories that load @aspect_bazel_lib copy actions and also generate stardoc.
+    """
     http_archive(
         name = "bazel_skylib",
         sha256 = "f7be3474d42aae265405a592bb7da8e171919d74c16f082a5457840f06054728",
@@ -21,9 +28,10 @@ def aspect_bazel_lib_dependencies():
         ],
     )
 
-    local_config_platform(
-        name = "aspect_bazel_lib_local_config_platform",
-    )
+    if override_local_config_platform:
+        local_config_platform(
+            name = "local_config_platform",
+        )
 
 # Re-export the default versions
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION

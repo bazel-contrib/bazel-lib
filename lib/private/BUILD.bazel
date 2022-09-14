@@ -19,7 +19,12 @@ exports_files(
 bzl_library(
     name = "copy_common",
     srcs = ["copy_common.bzl"],
-    deps = ["@aspect_bazel_lib_local_config_platform//:constraints"],
+)
+
+bzl_library(
+    name = "platform_utils",
+    srcs = ["platform_utils.bzl"],
+    deps = ["@local_config_platform//:constraints"],
 )
 
 bzl_library(
@@ -28,13 +33,17 @@ bzl_library(
     deps = [
         ":copy_common",
         ":directory_path",
+        ":platform_utils",
     ],
 )
 
 bzl_library(
     name = "copy_directory",
     srcs = ["copy_directory.bzl"],
-    deps = [":copy_common"],
+    deps = [
+        ":copy_common",
+        ":platform_utils",
+    ],
 )
 
 bzl_library(
@@ -46,6 +55,7 @@ bzl_library(
         ":glob_match",
         ":output_files",
         ":paths",
+        ":platform_utils",
         "@bazel_skylib//lib:paths",
     ],
 )

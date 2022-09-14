@@ -1,10 +1,11 @@
 "copy_to_directory implementation"
 
 load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _is_windows_host = "is_windows_host")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":glob_match.bzl", "glob_match")
+load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:
 
@@ -764,7 +765,7 @@ def copy_to_directory_action(
     # Because copy actions have "local" execution requirements, we can safely assume
     # the execution is the same as the host platform and generate different actions for Windows
     # and non-Windows host platforms
-    is_windows = _is_windows_host()
+    is_windows = _platform_utils.host_platform_is_windows()
     if is_windows:
         _copy_to_dir_cmd(ctx, copy_paths, dst)
     else:
