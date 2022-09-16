@@ -25,6 +25,10 @@ local_repository(
     path = "./lib/tests/external_test_repo",
 )
 
+load("//lib:host_repo.bzl", "host_repo")
+
+host_repo(name = "aspect_bazel_lib_host")
+
 ############################################
 # Gazelle, for generating bzl_library targets
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
