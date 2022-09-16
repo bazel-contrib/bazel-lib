@@ -147,7 +147,10 @@ bzl_library(
 bzl_library(
     name = "host_repo",
     srcs = ["host_repo.bzl"],
-    deps = ["//lib/private:host_repo"],
+    deps = [
+        "//lib/private:host_repo",
+        "@bazel_skylib//lib:versions",
+    ],
 )
 
 bzl_library(
