@@ -31,7 +31,7 @@ echo STABLE_GIT_COMMIT $(git rev-parse HEAD)
 ```
 > For a more full-featured script, take a look at the [bazel_stamp_vars in Angular]
 
-Make sure you set the executable bit, eg. `chmod 755 tools/bazel_stamp_vars.sh`.
+Make sure you set the executable bit, eg. `chmod +x tools/bazel_stamp_vars.sh`.
 
 > **NOTE** keys that start with `STABLE_` will cause a re-build when they change.
 > Other keys will NOT cause a re-build, so stale values can appear in your app.
