@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Generate config
           command: |
-            rosetta steps .aspectci/config.yaml > generated_config.yml
+            rosetta steps > generated_config.yml
       - continuation/continue:
           configuration_path: generated_config.yml
 workflows:
