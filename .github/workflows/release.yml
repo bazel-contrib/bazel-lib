@@ -35,3 +35,4 @@ jobs:
           # Use GH feature to populate the changelog automatically
           generate_release_notes: true
           body_path: release_notes.txt
+          token: ${{ secrets.DEREK_BCR_PAT }}
