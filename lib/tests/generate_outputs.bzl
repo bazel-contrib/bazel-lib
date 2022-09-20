@@ -1,6 +1,6 @@
 """A simple rule that generates provides a DefaultOutput with some files"""
 
-def _impl(ctx):
+def _generate_outputs_impl(ctx):
     if len(ctx.attr.output_files) != len(ctx.attr.output_contents):
         fail("Number of output_files must match number of output_contents")
     outputs = []
@@ -24,7 +24,7 @@ def _impl(ctx):
     return provide
 
 generate_outputs = rule(
-    implementation = _impl,
+    implementation = _generate_outputs_impl,
     provides = [DefaultInfo],
     attrs = {
         "output_files": attr.string_list(),

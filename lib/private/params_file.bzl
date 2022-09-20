@@ -19,7 +19,7 @@ def _expand_locations(ctx, s):
     # locations has a space in the name, we will incorrectly split it into multiple arguments
     return expand_locations(ctx, s, targets = ctx.attr.data).split(" ")
 
-def _impl(ctx):
+def _params_file_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
     if ctx.attr.newline == "auto":
@@ -49,7 +49,7 @@ def _impl(ctx):
     return [DefaultInfo(files = files, runfiles = runfiles)]
 
 params_file = rule(
-    implementation = _impl,
+    implementation = _params_file_impl,
     provides = [DefaultInfo],
     attrs = _ATTRS,
 )

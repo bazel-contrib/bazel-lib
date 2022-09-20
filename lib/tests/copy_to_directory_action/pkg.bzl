@@ -10,7 +10,7 @@ _attrs = {
     "out": attr.string(mandatory = True),
 }
 
-def _impl(ctx):
+def _pkg_impl(ctx):
     dst = ctx.actions.declare_directory(ctx.attr.out)
 
     additional_files_depsets = []
@@ -32,7 +32,7 @@ def _impl(ctx):
     ]
 
 pkg = rule(
-    implementation = _impl,
+    implementation = _pkg_impl,
     attrs = _attrs,
     provides = [DefaultInfo],
 )

@@ -4,7 +4,7 @@
 load("//lib/private:write_source_file.bzl", _write_source_file = "write_source_file")
 load("//lib/private:directory_path.bzl", "DirectoryPathInfo")
 
-def _impl_sh(ctx, in_file_path, out_file_path):
+def _write_source_file_test_impl_sh(ctx, in_file_path, out_file_path):
     test = ctx.actions.declare_file(
         ctx.label.name + "_test.sh",
     )
@@ -54,7 +54,7 @@ assert_same {in_file} {out_file}""".format(
 
     return test
 
-def _impl_bat(ctx, in_file_path, out_file_path):
+def _write_source_file_test_impl_bat(ctx, in_file_path, out_file_path):
     test = ctx.actions.declare_file(
         ctx.label.name + "_test.bat",
     )
@@ -122,7 +122,7 @@ exit /b 1
 
     return test
 
-def _impl(ctx):
+def _write_source_file_test_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
     if DirectoryPathInfo in ctx.attr.in_file:
@@ -135,9 +135,9 @@ def _impl(ctx):
         in_file_path = in_file.short_path
 
     if is_windows:
-        test = _impl_bat(ctx, in_file_path, ctx.file.out_file.short_path)
+        test = _write_source_file_test_impl_bat(ctx, in_file_path, ctx.file.out_file.short_path)
     else:
-        test = _impl_sh(ctx, in_file_path, ctx.file.out_file.short_path)
+        test = _write_source_file_test_impl_sh(ctx, in_file_path, ctx.file.out_file.short_path)
 
     return DefaultInfo(
         executable = test,
@@ -147,7 +147,7 @@ def _impl(ctx):
     )
 
 _write_source_file_test = rule(
-    implementation = _impl,
+    implementation = _write_source_file_test_impl,
     attrs = {
         "write_source_file_target": attr.label(
             allow_single_file = True,
