@@ -128,6 +128,7 @@ bzl_library(
     srcs = ["wrap_binary.bzl"],
     deps = [
         ":paths",
+        ":utils",
         "//lib/private:run_binary",
         "@bazel_skylib//rules:write_file",
     ],

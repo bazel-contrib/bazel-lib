@@ -34,7 +34,7 @@ from the user so they don't need to know about that flag.
 | :------------- | :------------- | :------------- |
 | <a id="chdir_binary-name"></a>name |  Name of the rule.   |  none |
 | <a id="chdir_binary-binary"></a>binary |  Label of an executable target to wrap.   |  none |
-| <a id="chdir_binary-chdir"></a>chdir |  Argument for the <code>cd</code> command, the default is commonly used with <code>bazel run</code> to run the program in the root of the Bazel workspace, in the source tree.   |  <code>"$BUILD_WORKSPACE_DIRECTORY"</code> |
+| <a id="chdir_binary-chdir"></a>chdir |  Argument for the <code>cd</code> command. By default, supports using the binary under <code>bazel run</code> by running program in the root of the Bazel workspace, in the source tree.   |  <code>"$BUILD_WORKSPACE_DIRECTORY"</code> |
 | <a id="chdir_binary-kwargs"></a>kwargs |  Additional named arguments for the resulting sh_binary rule.   |  none |
 
 
