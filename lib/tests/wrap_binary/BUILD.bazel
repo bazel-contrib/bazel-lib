@@ -1,0 +1,25 @@
+load("@bazel_skylib//rules:run_binary.bzl", "run_binary")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@aspect_bazel_lib//lib:wrap_binary.bzl", "chdir_binary")
+
+sh_binary(
+    name = "fixture",
+    srcs = ["needs-working-dir.sh"],
+)
+
+chdir_binary(
+    name = "wrap",
+    binary = "fixture",
+    chdir = package_name(),
+)
+
+run_binary(
+    name = "assert",
+    outs = ["thing"],
+    tool = "wrap",
+)
+
+build_test(
+    name = "test",
+    targets = ["assert"],
+)

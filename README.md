@@ -47,6 +47,10 @@ Installation instructions are included on each release:
 - [run_binary](docs/run_binary.md) Like skylib's run_binary but adds directory output support.
 - [stamping](docs/stamping.md) Support version stamping in custom rules.
 
+## Running programs
+
+- [wrap_binary](docs/wrap_binary.md) Compatibility shims which wrap binaries to adapt to the Bazel execution environment.
+
 ## Generating documentation
 
 - [docs](docs/docs.md) Rules for generating docs and stamping tests to ensure they are up to date.

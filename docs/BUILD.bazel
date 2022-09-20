@@ -74,6 +74,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "wrap_binary",
+    bzl_library_target = "//lib:wrap_binary",
+)
+
+stardoc_with_diff_test(
     name = "transitions",
     bzl_library_target = "//lib:transitions",
 )
