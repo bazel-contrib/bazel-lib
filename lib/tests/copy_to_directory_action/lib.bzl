@@ -9,14 +9,14 @@ _attrs = {
     "others": attr.label_list(allow_files = True),
 }
 
-def _impl(ctx):
+def _lib_impl(ctx):
     return [
         DefaultInfo(files = depset(ctx.files.srcs)),
         OtherInfo(files = depset(ctx.files.others)),
     ]
 
 lib = rule(
-    implementation = _impl,
+    implementation = _lib_impl,
     attrs = _attrs,
     provides = [DefaultInfo, OtherInfo],
 )

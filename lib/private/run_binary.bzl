@@ -19,7 +19,7 @@ load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
-def _impl(ctx):
+def _run_binary_impl(ctx):
     tool_as_list = [ctx.attr.tool]
     tool_inputs, tool_input_mfs = ctx.resolve_tools(tools = tool_as_list)
     args = ctx.actions.args()
@@ -86,7 +86,7 @@ Possible fixes:
     )
 
 _run_binary = rule(
-    implementation = _impl,
+    implementation = _run_binary_impl,
     attrs = dict({
         "tool": attr.label(
             executable = True,

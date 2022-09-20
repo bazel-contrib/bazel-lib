@@ -112,7 +112,7 @@ def copy_files_to_bin_actions(ctx, files, is_windows = None):
     # TODO(2.0): remove depcreated & unused is_windows parameter
     return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
 
-def _impl(ctx):
+def _copy_to_bin_impl(ctx):
     files = copy_files_to_bin_actions(ctx, ctx.files.srcs)
     return DefaultInfo(
         files = depset(files),
@@ -120,7 +120,7 @@ def _impl(ctx):
     )
 
 _copy_to_bin = rule(
-    implementation = _impl,
+    implementation = _copy_to_bin_impl,
     provides = [DefaultInfo],
     attrs = {
         "srcs": attr.label_list(mandatory = True, allow_files = True),
