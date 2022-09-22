@@ -38,3 +38,24 @@ from the user so they don't need to know about that flag.
 | <a id="chdir_binary-kwargs"></a>kwargs |  Additional named arguments for the resulting sh_binary rule.   |  none |
 
 
+<a id="tty_binary"></a>
+
+## tty_binary
+
+<pre>
+tty_binary(<a href="#tty_binary-name">name</a>, <a href="#tty_binary-binary">binary</a>, <a href="#tty_binary-runfiles_manifest_key">runfiles_manifest_key</a>, <a href="#tty_binary-kwargs">kwargs</a>)
+</pre>
+
+Wrap a binary such that it sees a tty attached to its stdin
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="tty_binary-name"></a>name |  Name of the rule   |  none |
+| <a id="tty_binary-binary"></a>binary |  Label of an executable target to wrap   |  none |
+| <a id="tty_binary-runfiles_manifest_key"></a>runfiles_manifest_key |  WORKAROUND: a lookup into the runfiles manifest for the binary   |  none |
+| <a id="tty_binary-kwargs"></a>kwargs |  Additional named arguments for the resulting sh_binary rule.   |  none |
+
+

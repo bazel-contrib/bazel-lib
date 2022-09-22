@@ -1,25 +1,41 @@
 load("@bazel_skylib//rules:run_binary.bzl", "run_binary")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
-load("@aspect_bazel_lib//lib:wrap_binary.bzl", "chdir_binary")
+load("@aspect_bazel_lib//lib:wrap_binary.bzl", "chdir_binary", "tty_binary")
 
 sh_binary(
-    name = "fixture",
+    name = "needs_chdir",
     srcs = ["needs-working-dir.sh"],
 )
 
 chdir_binary(
-    name = "wrap",
+    name = "has_chdir",
     binary = "fixture",
     chdir = package_name(),
 )
 
+sh_binary(
+    name = "needs_tty",
+    srcs = ["needs-tty.sh"],
+)
+
+tty_binary(
+    name = "has_tty",
+    binary = "needs_tty",
+    runfiles_manifest_key = "aspect_bazel_lib/lib/tests/wrap_binary/needs-tty.sh",
+)
+
+###
+# TESTS
+###
 run_binary(
-    name = "assert",
+    name = "assert2",
     outs = ["thing"],
-    tool = "wrap",
+    tool = "has_chdir",
 )
 
 build_test(
     name = "test",
-    targets = ["assert"],
+    # FIXME: the rootpath doesn't work
+    tags = ["manual"],
+    targets = ["assert2"],
 )

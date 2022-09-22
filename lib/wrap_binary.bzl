@@ -60,3 +60,49 @@ def chdir_binary(name, binary, chdir = "$BUILD_WORKSPACE_DIRECTORY", **kwargs):
         deps = ["@bazel_tools//tools/bash/runfiles"],
         **kwargs
     )
+
+def tty_binary(name, binary, runfiles_manifest_key, **kwargs):
+    """Wrap a binary such that it sees a tty attached to its stdin
+
+    Args:
+        name: Name of the rule
+        binary: Label of an executable target to wrap
+        runfiles_manifest_key: WORKAROUND: a lookup into the runfiles manifest for the binary
+        **kwargs: Additional named arguments for the resulting sh_binary rule.
+    """
+
+    script = "_{}_w_tty.sh".format(name)
+    binary = to_label(binary)
+
+    write_file(
+        name = "_{}_wrap".format(name),
+        out = script,
+        content = [
+            "#!/usr/bin/env bash",
+            BASH_RLOCATION_FUNCTION,
+            # Remove external/ prefix that is included in $(rootpath) but not supported by $(rlocation)
+            #"bin=$(rlocation ${1#external/})",
+            "bin=$(rlocation {})".format(runfiles_manifest_key),
+
+            # Replace the current process with socat
+            # Based on https://unix.stackexchange.com/questions/157458/make-program-in-a-pipe-think-it-has-tty
+            #
+            # Explanation of options:
+            # pty: Establishes communication with the sub process using a pseudo terminal instead of a socket pair.
+            #      Creates the pty with an available mechanism.
+            #      If openpty and ptmx are both available, it uses ptmx because this is POSIX compliant
+            # setsid: Makes the process the leader of a new session
+            # ctty: Makes the pty the controlling tty of the sub process
+            "exec socat - EXEC:\"$bin $@\",pty,setsid,ctty",
+        ],
+        is_executable = True,
+    )
+
+    native.sh_binary(
+        name = name,
+        srcs = [script],
+        #args = ["$(rootpath {})".format(binary)] + kwargs.pop("args", []),
+        data = [binary],
+        deps = ["@bazel_tools//tools/bash/runfiles"],
+        **kwargs
+    )
