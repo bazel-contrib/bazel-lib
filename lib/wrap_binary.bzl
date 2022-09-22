@@ -64,6 +64,10 @@ def chdir_binary(name, binary, chdir = "$BUILD_WORKSPACE_DIRECTORY", **kwargs):
 def tty_binary(name, binary, runfiles_manifest_key, **kwargs):
     """Wrap a binary such that it sees a tty attached to its stdin
 
+    FIXME: document
+    load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
+    rules_foreign_cc_dependencies()
+
     Args:
         name: Name of the rule
         binary: Label of an executable target to wrap

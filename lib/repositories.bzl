@@ -28,6 +28,21 @@ def aspect_bazel_lib_dependencies(override_local_config_platform = False):
         ],
     )
 
+    http_archive(
+        name = "socat",
+        build_file = "socat.BUILD",
+        sha256 = "d697245144731423ddbbceacabbd29447089ea223e9a439b28f9ff90d0dd216e",
+        strip_prefix = "socat-1.7.4.3",
+        urls = ["http://www.dest-unreach.org/socat/download/socat-1.7.4.3.tar.gz"],
+    )
+
+    http_archive(
+        name = "rules_foreign_cc",
+        sha256 = "2a4d07cd64b0719b39a7c12218a3e507672b82a97b98c6a89d38565894cf7c51",
+        strip_prefix = "rules_foreign_cc-0.9.0",
+        url = "https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/0.9.0.tar.gz",
+    )
+
     if override_local_config_platform:
         local_config_platform(
             name = "local_config_platform",
