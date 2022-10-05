@@ -30,6 +30,9 @@ def write_source_file(
         suggested_update_target: Label of the write_source_file target to suggest running when files are out of date
         diff_test: Generate a test target to check that the source file(s) exist and are up to date with the generated files(s).
         **kwargs: Other common named parameters such as `tags` or `visibility`
+
+    Returns:
+        Name of the generated test target if requested, otherwise None.
     """
     if out_file:
         if not in_file:
@@ -59,7 +62,7 @@ def write_source_file(
     )
 
     if not in_file or not out_file or not diff_test:
-        return
+        return None
 
     out_file_missing = _is_file_missing(out_file)
     test_target_name = "%s_test" % name
@@ -125,6 +128,8 @@ To update *only* this file, run:
             failure_message = message,
             **kwargs
         )
+
+    return test_target_name
 
 _write_source_file_attrs = {
     "in_file": attr.label(allow_files = True, mandatory = False),

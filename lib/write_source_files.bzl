@@ -95,6 +95,7 @@ def write_source_files(
 
     single_update_target = len(files.keys()) == 1
     update_targets = []
+    test_targets = []
     for i, pair in enumerate(files.items()):
         out_file, in_file = pair
 
@@ -108,7 +109,7 @@ def write_source_files(
                 this_suggested_update_target = name
 
         # Runnable target that writes to the out file to the source tree
-        _write_source_file(
+        test_target = _write_source_file(
             name = update_target_name,
             in_file = in_file,
             out_file = out_file,
@@ -116,6 +117,17 @@ def write_source_files(
             suggested_update_target = this_suggested_update_target,
             diff_test = diff_test,
             **kwargs
+        )
+
+        if test_target:
+            test_targets.append(test_target)
+
+    if len(test_targets) > 0:
+        native.test_suite(
+            name = "%s_tests" % name,
+            tests = test_targets,
+            visibility = kwargs.get("visibility"),
+            tags = kwargs.get("tags"),
         )
 
     if not single_update_target:
