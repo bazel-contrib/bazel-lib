@@ -21,26 +21,15 @@ bzl_library(
 )
 """)
 
-    # TODO: we can detect the host CPU in the future as well if needed;
-    # see the repo_utils.platform(rctx) function for an example of this
-    if repo_utils.is_darwin(rctx):
-        rctx.file("constraints.bzl", content = """HOST_CONSTRAINTS = [
-  '@platforms//cpu:x86_64',
-  '@platforms//os:osx',
+    [os, cpu] = repo_utils.platform(rctx).split("_")
+    cpu_constraint = "@platforms//cpu:{0}".format("x86_64" if cpu == "amd64" else cpu)
+    os_constraint = "@platforms//os:{0}".format("osx" if os == "darwin" else os)
+
+    rctx.file("constraints.bzl", content = """HOST_CONSTRAINTS = [
+  '{0}',
+  '{1}',
 ]
-""")
-    elif repo_utils.is_windows(rctx):
-        rctx.file("constraints.bzl", content = """HOST_CONSTRAINTS = [
-  '@platforms//cpu:x86_64',
-  '@platforms//os:windows',
-]
-""")
-    else:
-        rctx.file("constraints.bzl", content = """HOST_CONSTRAINTS = [
-  '@platforms//cpu:x86_64',
-  '@platforms//os:linux',
-]
-""")
+""".format(cpu_constraint, os_constraint))
 
 local_config_platform = repository_rule(
     implementation = _impl,
