@@ -36,7 +36,7 @@ def _is_external_label_test_impl(ctx):
     asserts.false(env, utils.is_external_label("@//some/label"))
 
     # TODO(Bazel 6.0): enable this test when the @@ syntax is available
-    # asserts.false(env, utils.is_external_label("@@//some/label"))
+    asserts.false(env, utils.is_external_label(Label("@@//some/label")))
     asserts.false(env, utils.is_external_label(Label("@aspect_bazel_lib//some/label")))
     asserts.false(env, ctx.attr.internal_with_workspace_as_string)
 
