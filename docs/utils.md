@@ -82,6 +82,47 @@ glob_directories(<a href="#glob_directories-include">include</a>, <a href="#glob
 | <a id="glob_directories-kwargs"></a>kwargs |  <p align="center"> - </p>   |  none |
 
 
+<a id="is_bazel_6_or_greater"></a>
+
+## is_bazel_6_or_greater
+
+<pre>
+is_bazel_6_or_greater()
+</pre>
+
+Detects if the Bazel version being used is greater than or equal to 6 (including Bazel 6 pre-releases and RCs).
+
+Detecting Bazel 6 or greater is particularly useful in rules as slightly different code paths may be needed to
+support bzlmod which was added in Bazel 6.
+
+Unlike the undocumented `native.bazel_version`, which only works in WORKSPACE and repository rules, this function can
+be used in rules and BUILD files.
+
+An alternate approach to make the Bazel version available in BUILD files and rules would be to
+use the [host_repo](https://github.com/aspect-build/bazel-lib/blob/main/docs/host_repo.md) repository rule
+which contains the bazel_version in the exported `host` struct:
+
+WORKSPACE:
+```
+load("@aspect_bazel_lib//lib:host_repo.bzl", "host_repo")
+host_repo(name = "aspect_bazel_lib_host")
+```
+
+BUILD.bazel:
+```
+load("@aspect_bazel_lib_host//:defs.bzl", "host")
+print(host.bazel_version)
+```
+
+That approach, however, incurs a cost in the user's WORKSPACE.
+
+
+
+**RETURNS**
+
+True if the Bazel version being used is greater than or equal to 6 (including pre-releases and RCs)
+
+
 <a id="is_external_label"></a>
 
 ## is_external_label
