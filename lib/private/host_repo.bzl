@@ -36,5 +36,8 @@ host = struct(
 
 host_repo = repository_rule(
     implementation = _host_repo_impl,
+    # always invalidate this repository since so that the bazel_version is
+    # always updated on every invocation of bazel
+    local = True,
     doc = "Exposes information about the host platform",
 )

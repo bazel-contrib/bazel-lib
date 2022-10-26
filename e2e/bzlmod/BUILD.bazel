@@ -7,7 +7,6 @@ You'll see a aspect_bazel_lib.ext.yq_toolchains repo, but no downloaded yq binar
 """
 
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
-load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test")
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
@@ -21,10 +20,12 @@ bzl_library(
 # https://github.com/bazelbuild/stardoc/issues/117
 # This happens to work because we don't reference any external repos
 # from defs.bzl.
-stardoc_with_diff_test(
-    name = "docs",
-    bzl_library_target = "//:defs",
-)
+# TODO: re-enable this once it works
+# load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test")
+# stardoc_with_diff_test(
+#     name = "docs",
+#     bzl_library_target = "//:defs",
+# )
 
 # Validate that JQ works and resolves its toolchain
 jq(

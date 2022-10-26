@@ -12,46 +12,75 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Dynamically generate a bit of JSON depending on whether our action has access to repository secrets.
-  # When running on a pull_request from a fork, the author is untrusted so the secret will be absent.
-  # Insanely complex for how simple this requirement is... inspired from
+  # matrix-prep-* steps dynamically generate a bit of JSON depending on whether our action has
+  # access to repository secrets. When running on a pull_request from a fork, the author is
+  # untrusted so the secret will be absent. Insanely complex for how simple this requirement is...
+  # inspired from
   # https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional
-  matrix-prep:
+
+  matrix-prep-config:
+    # Prepares the 'config' axis of the test matrix
     runs-on: ubuntu-latest
     env:
       ENGFLOW_PRIVATE_KEY: ${{ secrets.ENGFLOW_PRIVATE_KEY }}
     steps:
       - id: local
         run: echo "::set-output name=config::local"
-      - id: maybe-rbe
-        if: ${{ env.ENGFLOW_PRIVATE_KEY != '' }}
+      - id: rbe
         run: echo "::set-output name=config::rbe"
+        # Don't run RBE if there are no EngFlow creds which is the case on forks
+        if: ${{ env.ENGFLOW_PRIVATE_KEY != '' }}
     outputs:
       # Will look like '["local", "rbe"]'
       configs: ${{ toJSON(steps.*.outputs.config) }}
 
+  matrix-prep-bazelversion:
+    # Prepares the 'bazelversion' axis of the test matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: bazel_6
+        run: echo "::set-output name=bazelversion::$(head -n 1 .bazelversion)"
+      - id: bazel_5
+        run: echo "::set-output name=bazelversion::5.3.2"
+    outputs:
+      # Will look like '["6.0.0rc1", "5.3.2"]'
+      bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
+
   test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    needs: matrix-prep
+
+    needs:
+      - matrix-prep-config
+      - matrix-prep-bazelversion
 
     strategy:
       fail-fast: false
       matrix:
-        config: ${{ fromJSON(needs.matrix-prep.outputs.configs) }}
+        config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
+        bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         folder:
           - "."
           - "e2e/bzlmod"
           - "e2e/copy_to_directory"
         exclude:
-          # bzlmod broken at 5.3.0 which the RBE bazel fork is bazed on
+          # bzlmod broken at 5.3.2 which the RBE:
+          # ```
+          # ERROR: /home/runner/work/bazel-lib/bazel-lib/e2e/bzlmod/BUILD.bazel:37:10: While resolving
+          # toolchains for target //:test: com.google.devtools.build.lib.packages.BuildFileNotFoundException:
+          # no such package '@aspect_bazel_lib//platforms': The repository '@aspect_bazel_lib' could not be
+          # resolved: Repository '@aspect_bazel_lib' is not defined
+          # ```
           - config: rbe
+            bazelversion: 5.3.2
             folder: e2e/bzlmod
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+
       - name: Mount bazel caches
         uses: actions/cache@v3
         with:
@@ -60,6 +89,11 @@ jobs:
             ~/.cache/bazel-repo
           key: bazel-cache-${{ hashFiles('**/BUILD.bazel', '**/*.bzl', 'WORKSPACE') }}
           restore-keys: bazel-cache-
+
+      - name: Configure Bazel version
+        working-directory: ${{ matrix.folder }}
+        run: echo "USE_BAZEL_VERSION=${{ matrix.bazelversion }}" >> $GITHUB_ENV
+
       - name: Write engflow credentials
         if: ${{ matrix.config == 'rbe' }}
         working-directory: ${{ matrix.folder }}
@@ -71,12 +105,18 @@ jobs:
         env:
           ENGFLOW_CLIENT_CRT: ${{ secrets.ENGFLOW_CLIENT_CRT }}
           ENGFLOW_PRIVATE_KEY: ${{ secrets.ENGFLOW_PRIVATE_KEY }}
+
       - name: bazel test //...
+        working-directory: ${{ matrix.folder }}
+        # NB: we need to write the bazel version from the matrix to .bazelversion since
+        # the //:bazel_version_test uses it and it needs to match the Bazel version being run
+        run: |
+          echo "${{ matrix.bazelversion }}" > .bazelversion
+          bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
-        working-directory: ${{ matrix.folder }}
-        run: bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
+
       - name: integration tests
         if: ${{ matrix.folder == '.' }}
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
