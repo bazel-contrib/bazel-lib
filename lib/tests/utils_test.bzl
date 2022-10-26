@@ -16,6 +16,23 @@ def _to_label_test_impl(ctx):
     # assert that to_label can convert from string to label
     asserts.true(env, utils.to_label("//hello/world") == Label("//hello/world:world"))
     asserts.true(env, utils.to_label("//hello/world:world") == Label("//hello/world:world"))
+    asserts.true(env, utils.to_label("@//hello/world") == Label("@//hello/world:world"))
+    asserts.true(env, utils.to_label("@//hello/world:world") == Label("@//hello/world:world"))
+    asserts.true(env, utils.to_label("@somewhere//hello/world") == Label("@somewhere//hello/world:world"))
+    asserts.true(env, utils.to_label("@somewhere//hello/world:world") == Label("@somewhere//hello/world:world"))
+
+    # the "@@" repository name syntax applies to Bazel 6 or greater
+    if utils.is_bazel_6_or_greater():
+        asserts.true(env, utils.to_label("@@//hello/world") == Label("@@//hello/world:world"))
+        asserts.true(env, utils.to_label("@@//hello/world:world") == Label("@@//hello/world:world"))
+        asserts.true(env, utils.to_label("@@somewhere//hello/world") == Label("@@somewhere//hello/world:world"))
+        asserts.true(env, utils.to_label("@@somewhere//hello/world:world") == Label("@@somewhere//hello/world:world"))
+
+        # In this context, "@@" should evaluate to the same label as "@"
+        asserts.true(env, utils.to_label("@@//hello/world") == Label("@//hello/world:world"))
+        asserts.true(env, utils.to_label("@@//hello/world:world") == Label("@//hello/world:world"))
+        asserts.true(env, utils.to_label("@@somewhere//hello/world") == Label("@somewhere//hello/world:world"))
+        asserts.true(env, utils.to_label("@@somewhere//hello/world:world") == Label("@somewhere//hello/world:world"))
 
     # assert that to_label will handle a Label as an argument
     asserts.true(env, utils.to_label(Label("//hello/world")) == Label("//hello/world:world"))
