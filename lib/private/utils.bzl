@@ -48,23 +48,16 @@ def _to_label(param):
     Returns:
         a Label
     """
+    root_repo = "@@" if _is_bazel_6_or_greater() else "@"
     param_type = type(param)
     if param_type == "string":
         if param.startswith("@"):
             return Label(param)
         if param.startswith("//"):
-            return Label("@" + param)
-
-        # resolve the relative label from the current package
-        # if 'param' is in another workspace, then this would return the label relative to that workspace, eg:
-        # `Label("@my//foo:bar").relative("@other//baz:bill") == Label("@other//baz:bill")`
+            return Label("{}{}".format(root_repo, param))
         if param.startswith(":"):
             param = param[1:]
-        if native.package_name():
-            return Label("@//" + native.package_name()).relative(param)
-        else:
-            return Label("@//:" + param)
-
+        return Label("{}//{}:{}".format(root_repo, native.package_name(), param))
     elif param_type == "Label":
         return param
     else:
