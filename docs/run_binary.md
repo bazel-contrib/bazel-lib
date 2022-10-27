@@ -10,7 +10,7 @@ This fork of bazel-skylib's run_binary adds directory output support and better 
 ## run_binary
 
 <pre>
-run_binary(<a href="#run_binary-name">name</a>, <a href="#run_binary-tool">tool</a>, <a href="#run_binary-srcs">srcs</a>, <a href="#run_binary-args">args</a>, <a href="#run_binary-env">env</a>, <a href="#run_binary-outs">outs</a>, <a href="#run_binary-out_dirs">out_dirs</a>, <a href="#run_binary-mnemonic">mnemonic</a>, <a href="#run_binary-progress_message">progress_message</a>,
+run_binary(<a href="#run_binary-name">name</a>, <a href="#run_binary-tool">tool</a>, <a href="#run_binary-command">command</a>, <a href="#run_binary-srcs">srcs</a>, <a href="#run_binary-args">args</a>, <a href="#run_binary-env">env</a>, <a href="#run_binary-outs">outs</a>, <a href="#run_binary-out_dirs">out_dirs</a>, <a href="#run_binary-mnemonic">mnemonic</a>, <a href="#run_binary-progress_message">progress_message</a>,
            <a href="#run_binary-execution_requirements">execution_requirements</a>, <a href="#run_binary-stamp">stamp</a>, <a href="#run_binary-output_dir">output_dir</a>, <a href="#run_binary-kwargs">kwargs</a>)
 </pre>
 
@@ -25,7 +25,8 @@ This rule does not require Bash (unlike `native.genrule`).
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="run_binary-name"></a>name |  The target name   |  none |
-| <a id="run_binary-tool"></a>tool |  The tool to run in the action.<br><br>Must be the label of a *_binary rule of a rule that generates an executable file, or of a file that can be executed as a subprocess (e.g. an .exe or .bat file on Windows or a binary with executable permission on Linux). This label is available for <code>$(location)</code> expansion in <code>args</code> and <code>env</code>.   |  none |
+| <a id="run_binary-tool"></a>tool |  The tool to run in the action.<br><br>Must be the label of a *_binary rule of a rule that generates an executable file, or of a file that can be executed as a subprocess (e.g. an .exe or .bat file on Windows or a binary with executable permission on Linux). This label is available for <code>$(location)</code> expansion in <code>args</code> and <code>env</code>.<br><br>Only one of <code>command</code> or <code>tool</code> may be specified.   |  <code>None</code> |
+| <a id="run_binary-command"></a>command |  The command to run in the action.<br><br>Only one of <code>command</code> or <code>tool</code> may be specified.   |  <code>None</code> |
 | <a id="run_binary-srcs"></a>srcs |  Additional inputs of the action.<br><br>These labels are available for <code>$(location)</code> expansion in <code>args</code> and <code>env</code>.   |  <code>[]</code> |
 | <a id="run_binary-args"></a>args |  Command line arguments of the binary.<br><br>Subject to <code>$(location)</code> and makevar expansions.   |  <code>[]</code> |
 | <a id="run_binary-env"></a>env |  Environment variables of the action.<br><br>Subject to <code>$(location)</code> and makevar expansions.   |  <code>{}</code> |

@@ -20,8 +20,11 @@ load(":expand_variables.bzl", "expand_variables")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 def _run_binary_impl(ctx):
-    tool_as_list = [ctx.attr.tool]
-    tool_inputs, tool_input_mfs = ctx.resolve_tools(tools = tool_as_list)
+    if not ctx.attr.tool and not ctx.attr.command:
+        fail("Either tool or command must be specified")
+    if ctx.attr.tool and ctx.attr.command:
+        fail("Only one of tool or command may be specified")
+
     args = ctx.actions.args()
 
     outputs = []
@@ -35,19 +38,19 @@ def _run_binary_impl(ctx):
                 fail("output directory {} is nested within output directory {}; outputs cannot be nested within each other!".format(out_dir.path, output.path))
         outputs.append(out_dir)
     if len(outputs) < 1:
-        fail("""\
+        msg = """\
 ERROR: target {target} is not configured to produce any outputs.
 
 Bazel only executes actions when their outputs are required, so it's never correct to create an action with no outputs.
 
 Possible fixes:
 - Predict what outputs are created, and list them in the outs and out_dirs attributes.
-- If {rule_kind} is a binary, and you meant to run it for its side-effects,
-  then call it directly with `bazel run` and don't wrap it in a run_binary rule.
-""".format(
-            target = str(ctx.label),
-            rule_kind = str(ctx.attr.tool.label),
-        ))
+""".format(target = str(ctx.label))
+        if ctx.attr.tool:
+            msg += """- If {rule_kind} is a binary, and you meant to run it for its side-effects,
+then call it directly with `bazel run` and don't wrap it in a run_binary rule.
+""".format(rule_kind = str(ctx.attr.tool.label))
+        fail(msg)
 
     # `expand_locations(...).split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
     # _expand_locations returns an array of args to support $(execpaths) expansions.
@@ -67,19 +70,34 @@ Possible fixes:
     else:
         inputs = ctx.files.srcs
 
-    ctx.actions.run(
-        outputs = outputs,
-        inputs = inputs,
-        tools = tool_inputs,
-        executable = ctx.executable.tool,
-        arguments = [args],
-        mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
-        progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
-        execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
-        use_default_shell_env = False,
-        env = dicts.add(ctx.configuration.default_shell_env, envs),
-        input_manifests = tool_input_mfs,
-    )
+    if ctx.attr.tool:
+        tool_inputs, tool_input_mfs = ctx.resolve_tools(tools = [ctx.attr.tool])
+        ctx.actions.run(
+            outputs = outputs,
+            inputs = inputs,
+            tools = tool_inputs,
+            executable = ctx.executable.tool,
+            arguments = [args],
+            mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
+            progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
+            execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
+            use_default_shell_env = False,
+            env = dicts.add(ctx.configuration.default_shell_env, envs),
+            input_manifests = tool_input_mfs,
+        )
+    else:
+        ctx.actions.run_shell(
+            outputs = outputs,
+            inputs = inputs,
+            command = ctx.attr.command,
+            arguments = [args],
+            mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
+            progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
+            execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
+            use_default_shell_env = False,
+            env = dicts.add(ctx.configuration.default_shell_env, envs),
+        )
+
     return DefaultInfo(
         files = depset(outputs),
         runfiles = ctx.runfiles(files = outputs),
@@ -91,9 +109,9 @@ _run_binary = rule(
         "tool": attr.label(
             executable = True,
             allow_files = True,
-            mandatory = True,
             cfg = "exec",
         ),
+        "command": attr.string(),
         "env": attr.string_dict(),
         "srcs": attr.label_list(
             allow_files = True,
@@ -109,7 +127,8 @@ _run_binary = rule(
 
 def run_binary(
         name,
-        tool,
+        tool = None,
+        command = None,
         srcs = [],
         args = [],
         env = {},
@@ -135,6 +154,13 @@ def run_binary(
             a file that can be executed as a subprocess (e.g. an .exe or .bat file on Windows or a
             binary with executable permission on Linux). This label is available for `$(location)`
             expansion in `args` and `env`.
+
+            Only one of `command` or `tool` may be specified.
+
+        command: The command to run in the action.
+
+            Only one of `command` or `tool` may be specified.
+
         srcs: Additional inputs of the action.
 
             These labels are available for `$(location)` expansion in `args` and `env`.
@@ -213,6 +239,7 @@ def run_binary(
     _run_binary(
         name = name,
         tool = tool,
+        command = command,
         srcs = srcs,
         args = args,
         env = env,
