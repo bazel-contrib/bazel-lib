@@ -145,6 +145,55 @@ Returns True if the given Label (or stringy version of a label) represents a tar
 a bool
 
 
+<a id="maybe_http_archive"></a>
+
+## maybe_http_archive
+
+<pre>
+maybe_http_archive(<a href="#maybe_http_archive-kwargs">kwargs</a>)
+</pre>
+
+Adapts a maybe(http_archive, ...) to look like an http_archive.
+
+This makes WORKSPACE dependencies easier to read and update.
+
+Typical usage looks like,
+
+```
+load("//lib:utils.bzl", http_archive = "maybe_http_archive")
+
+http_archive(
+    name = "aspect_rules_js",
+    sha256 = "5bb643d9e119832a383e67f946dc752b6d719d66d1df9b46d840509ceb53e1f1",
+    strip_prefix = "rules_js-1.6.2",
+    url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.6.2.tar.gz",
+)
+```
+
+instead of the classic maybe pattern of,
+
+```
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+
+maybe(
+    http_archive,
+    name = "aspect_rules_js",
+    sha256 = "5bb643d9e119832a383e67f946dc752b6d719d66d1df9b46d840509ceb53e1f1",
+    strip_prefix = "rules_js-1.6.2",
+    url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.6.2.tar.gz",
+)
+```
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="maybe_http_archive-kwargs"></a>kwargs |  all arguments to pass-forward to http_archive   |  none |
+
+
 <a id="path_to_workspace_root"></a>
 
 ## path_to_workspace_root
