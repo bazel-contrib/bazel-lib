@@ -108,7 +108,11 @@ bzl_library(
 
 bzl_library(
     name = "utils",
-    srcs = ["//lib/private:utils.bzl"],
+    srcs = [
+        "//lib/private:utils.bzl",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
 )
 
 bzl_library(

@@ -4,13 +4,8 @@ Users should *not* need to install these. If users see a load()
 statement from these, that's a bug in our distribution.
 """
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", _http_archive = "http_archive")
-load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//lib:repositories.bzl", "register_jq_toolchains", "register_yq_toolchains")
-
-# Don't wrap later calls with maybe() as that prevents renovate from parsing our deps
-def http_archive(name, **kwargs):
-    maybe(_http_archive, name = name, **kwargs)
+load("//lib:utils.bzl", http_archive = "maybe_http_archive")
 
 # buildifier: disable=unnamed-macro
 def bazel_lib_internal_deps():

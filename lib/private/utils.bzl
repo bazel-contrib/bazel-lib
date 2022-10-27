@@ -1,5 +1,8 @@
 """General utility functions"""
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", _http_archive = "http_archive")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+
 def _propagate_well_known_tags(tags = []):
     """Returns a list of tags filtered from the input set that only contains the ones that are considered "well known"
 
@@ -178,12 +181,51 @@ def _is_bazel_6_or_greater():
     # native.bazel_version only works in repository rules.
     return "apple_binary" not in dir(native)
 
+def _maybe_http_archive(**kwargs):
+    """Adapts a maybe(http_archive, ...) to look like an http_archive.
+
+    This makes WORKSPACE dependencies easier to read and update.
+
+    Typical usage looks like,
+
+    ```
+    load("//lib:utils.bzl", http_archive = "maybe_http_archive")
+
+    http_archive(
+        name = "aspect_rules_js",
+        sha256 = "5bb643d9e119832a383e67f946dc752b6d719d66d1df9b46d840509ceb53e1f1",
+        strip_prefix = "rules_js-1.6.2",
+        url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.6.2.tar.gz",
+    )
+    ```
+
+    instead of the classic maybe pattern of,
+
+    ```
+    load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+    load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+
+    maybe(
+        http_archive,
+        name = "aspect_rules_js",
+        sha256 = "5bb643d9e119832a383e67f946dc752b6d719d66d1df9b46d840509ceb53e1f1",
+        strip_prefix = "rules_js-1.6.2",
+        url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.6.2.tar.gz",
+    )
+    ```
+
+    Args:
+      **kwargs: all arguments to pass-forward to http_archive
+    """
+    maybe(_http_archive, **kwargs)
+
 utils = struct(
     default_timeout = _default_timeout,
     file_exists = _file_exists,
     glob_directories = _glob_directories,
     is_bazel_6_or_greater = _is_bazel_6_or_greater,
     is_external_label = _is_external_label,
+    maybe_http_archive = _maybe_http_archive,
     path_to_workspace_root = _path_to_workspace_root,
     propagate_well_known_tags = _propagate_well_known_tags,
     to_label = _to_label,
