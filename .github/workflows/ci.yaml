@@ -25,9 +25,9 @@ jobs:
       ENGFLOW_PRIVATE_KEY: ${{ secrets.ENGFLOW_PRIVATE_KEY }}
     steps:
       - id: local
-        run: echo "::set-output name=config::local"
+        run: echo "config=local" >> $GITHUB_OUTPUT
       - id: rbe
-        run: echo "::set-output name=config::rbe"
+        run: echo "config=rbe" >> $GITHUB_OUTPUT
         # Don't run RBE if there are no EngFlow creds which is the case on forks
         if: ${{ env.ENGFLOW_PRIVATE_KEY != '' }}
     outputs:
@@ -40,9 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: bazel_6
-        run: echo "::set-output name=bazelversion::$(head -n 1 .bazelversion)"
+        run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
       - id: bazel_5
-        run: echo "::set-output name=bazelversion::5.3.2"
+        run: echo "bazelversion=5.3.2" >> $GITHUB_OUTPUT
     outputs:
       # Will look like '["6.0.0rc1", "5.3.2"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
