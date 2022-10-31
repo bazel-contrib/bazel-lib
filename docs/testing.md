@@ -27,3 +27,23 @@ Depends on bash, as it creates an sh_test target.
 | <a id="assert_contains-timeout"></a>timeout |  the timeout attribute of the test target   |  <code>None</code> |
 
 
+<a id="assert_outputs"></a>
+
+## assert_outputs
+
+<pre>
+assert_outputs(<a href="#assert_outputs-name">name</a>, <a href="#assert_outputs-actual">actual</a>, <a href="#assert_outputs-expected">expected</a>)
+</pre>
+
+Assert that the default outputs of a target are the expected ones.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="assert_outputs-name"></a>name |  name of the resulting diff_test   |  none |
+| <a id="assert_outputs-actual"></a>actual |  string of the label to check the outputs   |  none |
+| <a id="assert_outputs-expected"></a>expected |  a list of rootpaths of expected outputs, as they would appear in a runfiles manifest   |  none |
+
+

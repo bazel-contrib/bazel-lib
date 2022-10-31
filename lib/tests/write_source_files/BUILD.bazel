@@ -4,6 +4,7 @@ load("//lib:write_source_files.bzl", "write_source_files")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:directory_path.bzl", "directory_path")
 load("//lib:output_files.bzl", "output_files")
+load("//lib:testing.bzl", "assert_outputs")
 
 genrule(
     name = "a-desired",
@@ -21,6 +22,15 @@ generate_outputs(
     output_files = [
         "b-desired.js",
         "c-desired.js",
+    ],
+)
+
+assert_outputs(
+    name = "test_assert_outputs",
+    actual = "b_c-desired",
+    expected = [
+        "lib/tests/write_source_files/b-desired.js",
+        "lib/tests/write_source_files/c-desired.js",
     ],
 )
 
