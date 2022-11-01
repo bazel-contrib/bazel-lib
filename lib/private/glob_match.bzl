@@ -39,6 +39,22 @@ def _split_on(expr, splits):
 
 GLOB_SYMBOLS = ["**", "*", "?"]
 
+def is_glob(expr):
+    """Determine if the passed string is a globa expression
+
+    Args:
+        expr: the potential glob expression
+
+    Returns:
+        True if the passed string is a globa expression
+    """
+
+    for s in GLOB_SYMBOLS:
+        if -1 != expr.find(s):
+            return True
+
+    return False
+
 def glob_match(expr, path, match_path_separator = False):
     """Test if the passed path matches the glob expression.
 

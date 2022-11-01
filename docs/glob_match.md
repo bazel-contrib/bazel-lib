@@ -33,3 +33,25 @@ Test if the passed path matches the glob expression.
 True if the path matches the glob expression
 
 
+<a id="is_glob"></a>
+
+## is_glob
+
+<pre>
+is_glob(<a href="#is_glob-expr">expr</a>)
+</pre>
+
+Determine if the passed string is a globa expression
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="is_glob-expr"></a>expr |  the potential glob expression   |  none |
+
+**RETURNS**
+
+True if the passed string is a globa expression
+
+

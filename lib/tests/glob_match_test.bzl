@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib:glob_match.bzl", "glob_match")
+load("//lib:glob_match.bzl", "glob_match", "is_glob")
 
 def _glob_match_test(ctx, expr, matches, non_matches, mps_matches = None, mps_non_matches = None):
     """`mps sands for `match path segment`
@@ -28,6 +28,23 @@ def _glob_match_test(ctx, expr, matches, non_matches, mps_matches = None, mps_no
         asserts.equals(env, False, glob_match(expr, path, match_path_separator = True), "Expected expr '{}' with match_path_separator to _not_ match on path '{}'".format(expr, path))
 
     return unittest.end(env)
+
+def _basic(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, True, glob_match("a", "a"), "single directory")
+    asserts.equals(env, True, glob_match("a/", "a/"), "trailing slash single directory")
+    asserts.equals(env, True, glob_match("/a", "/a"), "leading slash single directory")
+    asserts.equals(env, True, glob_match("/a/", "/a/"), "leading slash and trailing slash single directory")
+
+    asserts.equals(env, True, glob_match("a/b", "a/b"), "nested directory")
+    asserts.equals(env, True, glob_match("a/b/", "a/b/"), "trailing slash nested directory")
+    asserts.equals(env, True, glob_match("/a/b", "/a/b"), "leading slash nested directory")
+    asserts.equals(env, True, glob_match("/a/b/", "/a/b/"), "leading and trailing slash nested directory")
+
+    return unittest.end(env)
+
+basic_test = unittest.make(_basic)
 
 def _star(ctx):
     return _glob_match_test(
@@ -149,9 +166,41 @@ def _mixed_wrapping_globstar(ctx):
 
 mixed_wrapper_globstar_test = unittest.make(_mixed_wrapping_globstar)
 
+
+def _is_glob(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, False, is_glob(""))
+    asserts.equals(env, False, is_glob("/"))
+    asserts.equals(env, False, is_glob("."))
+    asserts.equals(env, False, is_glob("./"))
+    asserts.equals(env, False, is_glob(".."))
+    asserts.equals(env, False, is_glob("../"))
+    asserts.equals(env, False, is_glob("/./."))
+    asserts.equals(env, False, is_glob("/../."))
+    asserts.equals(env, False, is_glob("/a/b/c/d"))
+    asserts.equals(env, False, is_glob("/a/."))
+
+    asserts.equals(env, True, is_glob("*"))
+    asserts.equals(env, True, is_glob("**"))
+    asserts.equals(env, True, is_glob("?"))
+    asserts.equals(env, True, is_glob("/*"))
+    asserts.equals(env, True, is_glob("/**"))
+    asserts.equals(env, True, is_glob("/?"))
+    asserts.equals(env, True, is_glob(".*"))
+    asserts.equals(env, True, is_glob(".?"))
+    asserts.equals(env, True, is_glob("./foo/**/bar"))
+    asserts.equals(env, True, is_glob("*.txt"))
+    asserts.equals(env, True, is_glob("a/?.txt"))
+
+    return unittest.end(env)
+
+is_glob_test = unittest.make(_is_glob)
+
 def glob_match_test_suite():
     unittest.suite(
-        "glob_match_tests",
+        "glob_match",
+        partial.make(basic_test, timeout = "short"),
         partial.make(star_test, timeout = "short"),
         partial.make(globstar_test, timeout = "short"),
         partial.make(qmark_test, timeout = "short"),
@@ -165,4 +214,9 @@ def glob_match_test_suite():
         partial.make(mixed_trailing_globstar_test, timeout = "short"),
         partial.make(mixed_leading_globstar_test, timeout = "short"),
         partial.make(mixed_wrapper_globstar_test, timeout = "short"),
+    )
+
+    unittest.suite(
+        "is_glob",
+        partial.make(is_glob_test, timeout = "short")
     )
