@@ -4,7 +4,7 @@ load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
-load(":glob_match.bzl", "glob_match")
+load(":glob_match.bzl", "glob_match", "is_glob")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:
@@ -291,6 +291,9 @@ def _any_globs_match(exprs, path):
     return None
 
 def _longest_glob_match(expr, path):
+    if not is_glob(expr):
+        return path[:len(expr)] if path.startswith(expr) else None
+
     # For a given glob & path, find the longest subpath that matches the glob
     if glob_match(expr, path):
         # Full path matches
