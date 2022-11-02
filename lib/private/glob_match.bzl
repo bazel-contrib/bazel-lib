@@ -15,6 +15,7 @@ def _split_on(expr, splits):
     result = []
     accumulator = ""
     skip = 0
+    has_splits = False
     for i in range(len(expr)):
         j = i + skip
         if j >= len(expr):
@@ -29,13 +30,14 @@ def _split_on(expr, splits):
                 result.append(split)
                 skip = skip + len(split)
                 j = i + skip
+                has_splits = True
                 break
         if j >= len(expr):
             break
         accumulator = accumulator + expr[j]
     if accumulator:
         result.append(accumulator)
-    return result
+    return result, has_splits
 
 GLOB_SYMBOLS = ["**", "*", "?"]
 
@@ -79,7 +81,11 @@ def glob_match(expr, path, match_path_separator = False):
     if expr.find("***") != -1:
         fail("glob_match: invalid *** pattern found in glob expression")
 
-    expr_parts = _split_on(expr, GLOB_SYMBOLS[:])
+    expr_parts, has_splits = _split_on(expr, GLOB_SYMBOLS[:])
+
+    # Quick exit for simple cases.
+    if not has_splits:
+        return expr == path
 
     for i, expr_part in enumerate(expr_parts):
         if expr_part == "**":
