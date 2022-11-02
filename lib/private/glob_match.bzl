@@ -78,6 +78,9 @@ def glob_match(expr, path, match_path_separator = False):
     expr_i = 0
     path_i = 0
 
+    if expr == "":
+        fail("glob_match: invalid empty glob expression")
+
     if expr.find("***") != -1:
         fail("glob_match: invalid *** pattern found in glob expression")
 
