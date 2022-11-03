@@ -4,7 +4,7 @@ load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
-load(":glob_match.bzl", "glob_match")
+load(":glob_match.bzl", "glob_match", "is_glob")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:
@@ -283,20 +283,26 @@ _copy_to_directory_attr = {
 }
 
 def _any_globs_match(exprs, path):
+    # Exit quick in the common case of having a "**".
+    if "**" in exprs:
+        return True
+
+    # Special case: support non-standard empty glob expr.
+    # Only an empty expression matches an empty path.
+    if path == "":
+        return "" in exprs
+
     for expr in exprs:
-        if expr == path:
-            return True
-        if glob_match(expr, path):
+        if expr != "" and glob_match(expr, path):
             return True
     return None
 
 def _longest_glob_match(expr, path):
-    # For a given glob & path, find the longest subpath that matches the glob
-    if glob_match(expr, path):
-        # Full path matches
-        return path
-    for i in range(len(path) - 1):
-        maybe_match = path[:-(i + 1)]
+    if not is_glob(expr):
+        return path[:len(expr)] if path.startswith(expr) else None
+
+    for i in range(len(path)):
+        maybe_match = path[:-i]
         if glob_match(expr, maybe_match):
             # Some subpath matches
             return maybe_match
@@ -378,10 +384,9 @@ def _copy_paths(
             return None, None, None
 
     # apply include_srcs_packages if "**" is not included in the list
-    if "**" not in include_srcs_packages:
-        if not _any_globs_match(include_srcs_packages, src_file.owner.package):
-            # file is excluded as it does not match any specified include_srcs_packages
-            return None, None, None
+    if not _any_globs_match(include_srcs_packages, src_file.owner.package):
+        # file is excluded as it does not match any specified include_srcs_packages
+        return None, None, None
 
     # apply exclude_srcs_packages
     if _any_globs_match(exclude_srcs_packages, src_file.owner.package):
@@ -409,10 +414,9 @@ def _copy_paths(
                 output_path = output_path[len(longest_match) + 1:]
 
     # apply include_srcs_patterns if "**" is not included in the list
-    if "**" not in include_srcs_patterns:
-        if not _any_globs_match(include_srcs_patterns, output_path):
-            # file is excluded as it does not match any specified include_srcs_patterns
-            return None, None, None
+    if not _any_globs_match(include_srcs_patterns, output_path):
+        # file is excluded as it does not match any specified include_srcs_patterns
+        return None, None, None
 
     # apply exclude_srcs_patterns
     if _any_globs_match(exclude_srcs_patterns, output_path):
