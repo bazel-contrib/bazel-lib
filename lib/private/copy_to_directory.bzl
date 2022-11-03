@@ -299,7 +299,7 @@ def _any_globs_match(exprs, path):
 
 def _longest_glob_match(expr, path):
     if not is_glob(expr):
-        return path[:len(expr)] if path.startswith(expr) else None
+        return expr if path.startswith(expr) else None
 
     for i in range(len(path)):
         maybe_match = path[:-i]
