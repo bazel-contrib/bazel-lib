@@ -5,7 +5,6 @@ load(":repo_utils.bzl", "repo_utils")
 
 def _impl(rctx):
     rctx.file("BUILD.bazel", """load(':constraints.bzl', 'HOST_CONSTRAINTS')
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 package(default_visibility = ['//visibility:public'])
 
@@ -14,11 +13,10 @@ platform(name = 'host',
   constraint_values = HOST_CONSTRAINTS,
 )
 
-bzl_library(
-    name = "constraints",
-    srcs = ["constraints.bzl"],
-    visibility = ["//visibility:public"],
-)
+exports_files([
+  # Export constraints.bzl for use in downstream bzl_library targets.
+  'constraints.bzl',
+])
 """)
 
     [os, cpu] = repo_utils.platform(rctx).split("_")
