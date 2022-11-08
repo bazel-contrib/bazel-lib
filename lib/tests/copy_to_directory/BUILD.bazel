@@ -30,6 +30,7 @@ load("//lib:directory_path.bzl", "make_directory_paths")
         "expected_18",
         "expected_19",
         "expected_20",
+        "expected_21",
     ]
 ]
 
@@ -438,4 +439,17 @@ diff_test(
     name = "case_20_test",
     file1 = "case_20",
     file2 = ":expected_20",
+)
+
+# Case 21: "**" root_paths
+copy_to_directory(
+    name = "case_21",
+    srcs = case_srcs,
+    root_paths = ["**"],
+)
+
+diff_test(
+    name = "case_21_test",
+    file1 = "case_21",
+    file2 = ":expected_21",
 )
