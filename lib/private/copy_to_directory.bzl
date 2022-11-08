@@ -302,7 +302,7 @@ def _longest_glob_match(expr, path):
         return expr if path.startswith(expr) else None
 
     for i in range(len(path)):
-        maybe_match = path[:-i]
+        maybe_match = path[:-i] if i > 0 else path
         if glob_match(expr, maybe_match):
             # Some subpath matches
             return maybe_match

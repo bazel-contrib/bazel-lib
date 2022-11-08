@@ -84,6 +84,10 @@ def glob_match(expr, path, match_path_separator = False):
     if expr.find("***") != -1:
         fail("glob_match: invalid *** pattern found in glob expression")
 
+    if expr == "**":
+        # matches everything
+        return True
+
     expr_parts, has_splits = _split_on(expr, GLOB_SYMBOLS[:])
 
     # Quick exit for simple cases.
