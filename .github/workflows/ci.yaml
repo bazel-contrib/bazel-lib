@@ -112,6 +112,8 @@ jobs:
         # the //:bazel_version_test uses it and it needs to match the Bazel version being run
         run: |
           echo "${{ matrix.bazelversion }}" > .bazelversion
+          # Overwrite bazeliskrc if there is one, since it may have alternative BAZELISK_BASE_URL
+          echo "USE_BAZEL_VERSION=${{ matrix.bazelversion }}" > .bazeliskrc
           bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
