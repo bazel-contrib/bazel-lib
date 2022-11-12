@@ -92,7 +92,10 @@ jobs:
 
       - name: Configure Bazel version
         working-directory: ${{ matrix.folder }}
-        run: echo "USE_BAZEL_VERSION=${{ matrix.bazelversion }}" >> $GITHUB_ENV
+        # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
+        # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
+        # then use .bazelversion to determine which Bazel version to use
+        run: echo "${{ matrix.bazelversion }}" > .bazelversion
 
       - name: Write engflow credentials
         if: ${{ matrix.config == 'rbe' }}
@@ -108,13 +111,7 @@ jobs:
 
       - name: bazel test //...
         working-directory: ${{ matrix.folder }}
-        # NB: we need to write the bazel version from the matrix to .bazelversion since
-        # the //:bazel_version_test uses it and it needs to match the Bazel version being run
-        run: |
-          echo "${{ matrix.bazelversion }}" > .bazelversion
-          # Overwrite bazeliskrc if there is one, since it may have alternative BAZELISK_BASE_URL
-          echo "USE_BAZEL_VERSION=${{ matrix.bazelversion }}" > .bazeliskrc
-          bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
+        run: bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
