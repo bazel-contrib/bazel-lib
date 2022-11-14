@@ -75,11 +75,12 @@ def glob_match(expr, path, match_path_separator = False):
         True if the path matches the glob expression
     """
 
-    expr_i = 0
-    path_i = 0
-
     if expr == "":
         fail("glob_match: invalid empty glob expression")
+
+    if not is_glob(expr):
+        # the expression is not a glob (does bot have any glob symbols) so the only match is an exact match
+        return expr == path
 
     if expr.find("***") != -1:
         fail("glob_match: invalid *** pattern found in glob expression")
@@ -105,6 +106,8 @@ def glob_match(expr, path, match_path_separator = False):
 
     # Locations a * was terminated that can be rolled back to.
     branches = []
+    expr_i = 0
+    path_i = 0
 
     # Loop "forever" (2^30).
     for _ in range(1073741824):
