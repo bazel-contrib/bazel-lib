@@ -46,7 +46,7 @@ Installation instructions are included on each release:
 - [repo_utils](docs/repo_utils.md) Useful methods for repository rule implementations.
 - [run_binary](docs/run_binary.md) Like skylib's run_binary but adds directory output support.
 - [stamping](docs/stamping.md) Support version stamping in custom rules.
-- [baze64](docs/base64.md) Starlark Base64 encoder & decoder.
+- [base64](docs/base64.md) Starlark Base64 encoder & decoder.
 
 ## Generating documentation
 
