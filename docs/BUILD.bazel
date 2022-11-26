@@ -113,4 +113,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:testing",
 )
 
+stardoc_with_diff_test(
+    name = "base64",
+    bzl_library_target = "//lib:base64",
+)
+
 update_docs()

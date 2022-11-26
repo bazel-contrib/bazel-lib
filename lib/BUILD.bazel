@@ -203,3 +203,9 @@ bzl_library(
     srcs = ["platform_utils.bzl"],
     deps = ["//lib/private/docs:platform_utils"],
 )
+
+bzl_library(
+    name = "base64",
+    srcs = ["base64.bzl"],
+    deps = ["//lib/private/docs:base64"],
+)
