@@ -218,3 +218,8 @@ bzl_library(
     srcs = ["//lib/private:yq_toolchain.bzl"],
     deps = [":repo_utils"],
 )
+
+bzl_library(
+    name = "base64",
+    srcs = ["//lib/private:base64.bzl"],
+)
