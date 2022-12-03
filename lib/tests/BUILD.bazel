@@ -24,8 +24,8 @@ write_file(
     name = "gen_template",
     out = "template.txt",
     content = [
-        "#!/bin/bash",
-        "set -o errexit",
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
         """[ "{thing}" == "stuff" ]""",
         """[ "%path%" == "{BINDIR}/lib/tests/template.txt" ]""",
     ],
