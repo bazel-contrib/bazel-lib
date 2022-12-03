@@ -14,6 +14,9 @@
 
 """A test rule that compares two binary files or two directories.
 
+Similar to `bazel-skylib`'s [`diff_test`](https://github.com/bazelbuild/bazel-skylib/blob/main/rules/diff_test.bzl)
+but also supports comparing directories.
+
 The rule uses a Bash command (diff) on Linux/macOS/non-Windows, and a cmd.exe
 command (fc.exe) on Windows (no Bash is required).
 """

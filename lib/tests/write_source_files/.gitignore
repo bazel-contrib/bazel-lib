@@ -1,3 +1,5 @@
 dist.js
+dist_executable.js
 subdir_test
+subdir_executable_test
 symlink_test

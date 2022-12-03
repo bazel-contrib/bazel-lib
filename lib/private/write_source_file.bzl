@@ -16,19 +16,34 @@ def write_source_file(
         name,
         in_file = None,
         out_file = None,
+        executable = False,
         additional_update_targets = [],
         suggested_update_target = None,
         diff_test = True,
         **kwargs):
-    """Write a file or folder to the output tree. Stamp out tests that ensure the sources exist and are up to date.
+    """Write a file or directory to the source tree.
+
+    By default, `diff_test` targets are generated that ensure the source tree file or directory to be written to
+    is up to date and the rule also checks that the source tree file or directory to be written to exists.
+    To disable the exists check and up-to-date test set `diff_test` to `False`.
 
     Args:
-        name: Name of the executable target that creates or updates the source file
-        in_file: File to use as the desired content to write to out_file. If in_file is a TreeArtifact then entire directory contents are copied.
-        out_file: The file to write to in the source tree. Must be within the same bazel package as the target.
-        additional_update_targets: List of other write_source_file or other executable updater targets to call in the same run
-        suggested_update_target: Label of the write_source_file target to suggest running when files are out of date
-        diff_test: Generate a test target to check that the source file(s) exist and are up to date with the generated files(s).
+        name: Name of the runnable target that creates or updates the source tree file or directory.
+
+        in_file: File or directory to use as the desired content to write to `out_file`.
+
+            This is typically a file or directory output of another target. If `in_file` is a directory then entire directory contents are copied.
+
+        out_file: The file or directory to write to in the source tree. Must be within the same bazel package as the target.
+
+        executable: Whether source tree file or files within the source tree directory written should be made executable.
+
+        additional_update_targets: List of other `write_source_files`, write_source_file` or other executable updater targets to call in the same run.
+
+        suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
+
+        diff_test: Test that the source tree file or directory exist and is up to date.
+
         **kwargs: Other common named parameters such as `tags` or `visibility`
 
     Returns:
@@ -57,6 +72,7 @@ def write_source_file(
         name = name,
         in_file = in_file,
         out_file = out_file.name if out_file else None,
+        executable = executable,
         additional_update_targets = additional_update_targets,
         **kwargs
     )
@@ -140,12 +156,16 @@ _write_source_file_attrs = {
     # and it goes into an infinite update, notify loop when running this target.
     # See https://github.com/aspect-build/bazel-lib/pull/52 for more context.
     "out_file": attr.string(mandatory = False),
+    "executable": attr.bool(),
     # buildifier: disable=attr-cfg
     "additional_update_targets": attr.label_list(cfg = "host", mandatory = False, providers = [WriteSourceFileInfo]),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
+    "_macos_constraint": attr.label(default = "@platforms//os:macos"),
 }
 
 def _write_source_file_sh(ctx, paths):
+    is_macos = ctx.target_platform_has_constraint(ctx.attr._macos_constraint[platform_common.ConstraintValueInfo])
+
     updater = ctx.actions.declare_file(
         ctx.label.name + "_update.sh",
     )
@@ -162,24 +182,46 @@ if [[ ! -z "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
     cd "$BUILD_WORKSPACE_DIRECTORY"
 fi"""]
 
+    if ctx.attr.executable:
+        executable_file = "chmod +x \"$out\""
+        executable_dir = "chmod -R +x \"$out\"/*"
+    else:
+        executable_file = "chmod -x \"$out\""
+        if is_macos:
+            # -x+X doesn't work on macos so we have to find files and remove the execute bits only from those
+            executable_dir = "find \"$out\" -type file | xargs chmod -x"
+        else:
+            # Remove execute/search bit recursively from files bit not directories: https://superuser.com/a/434418
+            executable_dir = "chmod -R -x+X \"$out\"/*"
+
     for in_path, out_path in paths:
         contents.append("""
 in=$runfiles_dir/{in_path}
 out={out_path}
 
 mkdir -p "$(dirname "$out")"
-echo "Copying $in to $out in $PWD"
-
 if [[ -f "$in" ]]; then
+    echo "Copying file $in to $out in $PWD"
+    rm -Rf "$out"
     cp -f "$in" "$out"
+    # cp should make the file writable but call chmod anyway as a defense in depth
     chmod ug+w "$out"
+    # cp should make the file not-executable but set the desired execute bit in both cases as a defense in depth
+    {executable_file}
 else
+    echo "Copying directory $in to $out in $PWD"
     rm -Rf "$out"/*
     mkdir -p "$out"
     cp -fRL "$in"/* "$out"
     chmod -R ug+w "$out"/*
+    {executable_dir}
 fi
-""".format(in_path = in_path, out_path = out_path))
+""".format(
+            in_path = in_path,
+            out_path = out_path,
+            executable_file = executable_file,
+            executable_dir = executable_dir,
+        ))
 
     contents.extend([
         "cd \"$runfiles_dir\"",

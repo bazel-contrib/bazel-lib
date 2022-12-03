@@ -1,18 +1,39 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
 
-set -e
+function run_test {
+    bazel run //lib/tests/write_source_files:write_symlinks
 
-bazel run //lib/tests/write_source_files:write_symlinks
+    local expected_out="lib/tests/write_source_files/symlink_test/a/test.txt"
+    if [ ! -e "$expected_out" ]; then
+        echo "ERROR: expected $expected_out to exist"
+        exit 1
+    fi
+    if [ -x "$expected_out" ]; then
+        echo "ERROR: expected $expected_out to not be executable"
+        exit 1
+    fi
+    if [ -L "$expected_out" ]; then
+        echo "ERROR: expected $expected_out to not be a symlink"
+        exit 1
+    fi
 
-# Ensure exists
-[ -e lib/tests/write_source_files/symlink_test/a/test.txt ]
-[ -e lib/tests/write_source_files/symlink_test/b/test.txt ]
+    local expected_out="lib/tests/write_source_files/symlink_test/b/test.txt"
+    if [ ! -e "$expected_out" ]; then
+        echo "ERROR: expected $expected_out to exist"
+        exit 1
+    fi
+    if [ -x "$expected_out" ]; then
+        echo "ERROR: expected $expected_out to not be executable"
+        exit 1
+    fi
+    if [ -L "$expected_out" ]; then
+        echo "ERROR: expected $expected_out to not be a symlink"
+        exit 1
+    fi
+}
 
-# Exit if any symlinks
-if [ -L lib/tests/write_source_files/symlink_test/a/test.txt ]; then
-    exit 1
-fi
-
-if [ -L lib/tests/write_source_files/symlink_test/b/test.txt ]; then
-    exit 1
-fi
+# Run twice to make sure we can have permission to overwrite the outputs of a previous run
+run_test
+run_test
+echo "All tests passed"

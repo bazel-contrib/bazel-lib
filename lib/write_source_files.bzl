@@ -5,14 +5,22 @@ load(
     _write_source_file = "write_source_file",
 )
 
+# TODO: Make write_source_file part of the public API
+# write_source_file = _write_source_file
+
 def write_source_files(
         name,
         files = {},
+        executable = False,
         additional_update_targets = [],
         suggested_update_target = None,
         diff_test = True,
         **kwargs):
-    """Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
+    """Write one or more files and/or directories to the source tree.
+
+    By default, `diff_test` targets are generated that ensure the source tree files and/or directories to be written to
+    are up to date and the rule also checks that all source tree files and/or directories to be written to exist.
+    To disable the exists check and up-to-date tests set `diff_test` to `False`.
 
     Usage:
 
@@ -28,11 +36,16 @@ def write_source_files(
     ```
 
     To update the source file, run:
+
     ```bash
     bazel run //:write_foobar
     ```
 
-    A test will fail if the source file doesn't exist or if it's out of date with instructions on how to create/update it.
+    The generated `diff_test` will fail if the file is out of date and print out instructions on
+    how to update it.
+
+    If the file does not exist, Bazel will fail at analysis time and print out instructions on
+    how to create it.
 
     You can declare a tree of generated source file targets:
 
@@ -55,7 +68,8 @@ def write_source_files(
     bazel run //:write_all
     ```
 
-    When a file is out of date, you can leave a suggestion to run a target further up in the tree by specifying `suggested_update_target`. E.g.,
+    When a file is out of date, you can leave a suggestion to run a target further up in the tree by specifying `suggested_update_target`.
+    For example,
 
     ```starlark
     write_source_files(
@@ -67,7 +81,7 @@ def write_source_files(
     )
     ```
 
-    A test failure from foo.json being out of date will yield the following message:
+    A test failure from `foo.json` being out of date will yield the following message:
 
     ```
     //a/b:c:foo.json is out of date. To update this and other generated files, run:
@@ -79,17 +93,32 @@ def write_source_files(
         bazel run //a/b/c:write_foo
     ```
 
-    If you have many sources that you want to update as a group, we recommend wrapping write_source_files in a macro that defaults `suggested_update_target` to the umbrella update target.
-    
-    NOTE: If you run formatters or linters on your codebase, it is advised that you exclude/ignore the outputs of this rule from those formatters/linters so as to avoid causing collisions and failing tests.
+    If you have many `write_source_files` targets that you want to update as a group, we recommend wrapping
+    `write_source_files` in a macro that defaults `suggested_update_target` to the umbrella update target.
+
+    NOTE: If you run formatters or linters on your codebase, it is advised that you exclude/ignore the outputs of this
+          rule from those formatters/linters so as to avoid causing collisions and failing tests.
 
     Args:
-        name: Name of the executable target that creates or updates the source file
-        files: A dict where the keys are source files or folders to write to and the values are labels pointing to the desired content.
-            Sources must be within the same bazel package as the target.
-        additional_update_targets: (Optional) List of other write_source_file or other executable updater targets to call in the same run
-        suggested_update_target: (Optional) Label of the write_source_file target to suggest running when files are out of date
-        diff_test: (Optional) Generate a test target to check that the source file(s) exist and are up to date with the generated files(s).
+        name: Name of the runnable target that creates or updates the source tree files and/or directories.
+
+        files: A dict where the keys are files or directories in the source tree to write to and the values are labels
+            pointing to the desired content, typically file or directory outputs of other targets.
+
+            Source tree files and directories must be within the same bazel package as the target.
+
+        executable: Whether source tree files written should be made executable.
+
+            This applies to all source tree files written by this target. This attribute is not propagated to `additional_update_targets`.
+
+            To set different executable permissions on different source tree files use multiple `write_source_files` targets.
+
+        additional_update_targets: List of other `write_source_files` or other executable updater targets to call in the same run.
+
+        suggested_update_target: Label of the `write_source_files` target to suggest running when files are out of date.
+
+        diff_test: Test that the source tree files and/or directories exist and are up to date.
+
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
 
@@ -113,6 +142,7 @@ def write_source_files(
             name = update_target_name,
             in_file = in_file,
             out_file = out_file,
+            executable = executable,
             additional_update_targets = additional_update_targets if single_update_target else [],
             suggested_update_target = this_suggested_update_target,
             diff_test = diff_test,
