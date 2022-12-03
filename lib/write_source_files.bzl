@@ -5,9 +5,6 @@ load(
     _write_source_file = "write_source_file",
 )
 
-# TODO: Make write_source_file part of the public API
-# write_source_file = _write_source_file
-
 def write_source_files(
         name,
         files = {},
@@ -113,9 +110,9 @@ def write_source_files(
 
             To set different executable permissions on different source tree files use multiple `write_source_files` targets.
 
-        additional_update_targets: List of other `write_source_files` or other executable updater targets to call in the same run.
+        additional_update_targets: List of other `write_source_files` or `write_source_file` targets to call in the same run.
 
-        suggested_update_target: Label of the `write_source_files` target to suggest running when files are out of date.
+        suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
 
         diff_test: Test that the source tree files and/or directories exist and are up to date.
 
@@ -168,3 +165,5 @@ def write_source_files(
             diff_test = False,
             **kwargs
         )
+
+write_source_file = _write_source_file

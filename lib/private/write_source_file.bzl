@@ -38,7 +38,7 @@ def write_source_file(
 
         executable: Whether source tree file or files within the source tree directory written should be made executable.
 
-        additional_update_targets: List of other `write_source_files`, write_source_file` or other executable updater targets to call in the same run.
+        additional_update_targets: List of other `write_source_files` or `write_source_file` targets to call in the same run.
 
         suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
 
