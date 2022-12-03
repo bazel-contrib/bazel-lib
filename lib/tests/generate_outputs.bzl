@@ -1,4 +1,4 @@
-"""A simple rule that generates provides a DefaultOutput with some files"""
+"""A simple rule that generates and provides a DefaultOutput with some files"""
 
 def _generate_outputs_impl(ctx):
     if len(ctx.attr.output_files) != len(ctx.attr.output_contents):

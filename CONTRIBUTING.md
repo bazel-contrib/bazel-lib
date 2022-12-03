@@ -17,7 +17,7 @@ Otherwise later tooling on CI may yell at you about formatting/linting violation
 
 Some targets are generated from sources.
 Currently this is just the `bzl_library` targets.
-Run `bazel run //:gazelle` to keep them up-to-date.
+Run `bazel run //:gazelle` to keep them up to date.
 
 ## Using this as a development dependency of other rules
 

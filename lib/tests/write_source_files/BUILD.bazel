@@ -1,6 +1,7 @@
 load("//lib/tests/write_source_files:write_source_file_test.bzl", "write_source_file_test")
 load("//lib/tests:generate_outputs.bzl", "generate_outputs")
 load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib/private:write_source_file.bzl", "write_source_file")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:directory_path.bzl", "directory_path")
 load("//lib:output_files.bzl", "output_files")
@@ -51,6 +52,14 @@ copy_to_directory(
     srcs = [":e-contained"],
 )
 
+copy_to_directory(
+    name = "es_dir-desired",
+    srcs = [":e-contained"],
+    replace_prefixes = {
+        "e-contained.js": "subdir/e-contained.js",
+    },
+)
+
 genrule(
     name = "f-contained",
     outs = ["f-contained.js"],
@@ -93,25 +102,47 @@ output_files(
 )
 
 write_source_file_test(
-    name = "write_to_source_files_a_test",
+    name = "a_test",
     in_file = ":a-desired",
     out_file = "a.js",
 )
 
 write_source_file_test(
-    name = "write_to_source_files_b_test",
+    name = "b_test",
     in_file = ":b-desired",
     out_file = "b.js",
 )
 
+write_source_file(
+    name = "e_dir_test",
+    in_file = ":e_dir-desired",
+    out_file = "e_dir",
+    # The diff_test that is contained within this macro takes `out_file` which is a source directory
+    # as an input but source directories are not supported on remote execution so we must tag that
+    # rule with "no-remote-exec".
+    # ERROR: cannot compare a directory "lib/tests/write_source_files/e_dir-desired" against a file "lib/tests/write_source_files/e_dir"
+    tags = ["no-remote-exec"],
+)
+
+write_source_file(
+    name = "es_dir_test",
+    in_file = ":es_dir-desired",
+    out_file = "es_dir",
+    # The diff_test that is contained within this macro takes `out_file` which is a source directory
+    # as an input but source directories are not supported on remote execution so we must tag that
+    # rule with "no-remote-exec".
+    # ERROR: cannot compare a directory "lib/tests/write_source_files/es_dir-desired" against a file "lib/tests/write_source_files/es_dir"
+    tags = ["no-remote-exec"],
+)
+
 write_source_file_test(
-    name = "write_to_source_files_f_test",
+    name = "f_test",
     in_file = ":f-desired",
     out_file = "f.js",
 )
 
 write_source_file_test(
-    name = "write_to_source_files_g_test",
+    name = "g_test",
     in_file = ":g-desired",
     out_file = "g.js",
 )
@@ -125,10 +156,13 @@ write_source_files(
         "a2.js": ":a-desired",
         "b2.js": ":b-desired",
         "e2_dir": ":e_dir-desired",
+        "es2_dir": ":es_dir-desired",
         "f2.js": ":f-desired",
         "g2.js": ":g-desired",
     },
-    # TODO: figure out ERROR: cannot compare a directory against a file
+    # The diff_test that is contained within this macro takes output directories `es_dir` and
+    # `es2dir` which are source directories as inputs but source directories are not supported on
+    # remote execution so we must tag that rule with "no-remote-exec".
     tags = ["no-remote-exec"],
 )
 
@@ -138,22 +172,28 @@ genrule(
     cmd = "echo 'dist' > $@",
 )
 
-# ibazel run //lib/tests/write_source_files:write_dist
-# See e2e/write_source_files_gitignored
+# See e2e/write_source_files
 write_source_files(
     name = "write_dist",
     diff_test = False,
     files = {"dist.js": ":dist"},
 )
 
-# Generate a readonly file in nested readonly directories
+# See e2e/write_source_files
+write_source_files(
+    name = "write_dist_executable",
+    diff_test = False,
+    executable = True,
+    files = {"dist_executable.js": ":dist"},
+)
+
+# Generate a file in nested directories
 genrule(
     name = "subdir",
     outs = ["subdir_test"],
     cmd = ";".join([
         "mkdir -p $@/a/b/c",
         "echo 'test' > $@/a/b/c/test.txt",
-        "chmod -R -w $@/*",
     ]),
 )
 
@@ -163,6 +203,15 @@ write_source_files(
     name = "write_subdir",
     diff_test = False,
     files = {"subdir_test": ":subdir"},
+)
+
+# Write nested subdirectories to source
+# See e2e/write_source_files_subdir_multiple_runs
+write_source_files(
+    name = "write_subdir_executable",
+    diff_test = False,
+    executable = True,
+    files = {"subdir_executable_test": ":subdir"},
 )
 
 # Generate some directories including symlinks
