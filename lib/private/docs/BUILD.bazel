@@ -166,7 +166,11 @@ bzl_library(
 
 bzl_library(
     name = "diff_test",
-    srcs = ["//lib/private:diff_test.bzl"],
+    srcs = [
+        "//lib:utils",
+        "//lib/private:diff_test.bzl",
+        "//lib/private:directory_path.bzl",
+    ],
 )
 
 bzl_library(
