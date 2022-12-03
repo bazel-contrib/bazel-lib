@@ -47,7 +47,7 @@ def _copy_cmd(ctx, src, dst):
     )
 
 def _copy_bash(ctx, src, dst):
-    cmd = "rm -rf \"$2\" && cp -fR \"$1/\" \"$2\""
+    cmd = "rm -Rf \"$2\" && cp -fR \"$1/\" \"$2\""
     mnemonic = "CopyDirectory"
     progress_message = "Copying directory %s" % src.path
 
