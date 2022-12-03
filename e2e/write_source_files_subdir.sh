@@ -26,8 +26,8 @@ function run_test {
 }
 
 # Run twice to make sure we can have permission to overwrite the outputs of a previous run
-rm -rf lib/tests/write_source_files/subdir_test
-rm -rf lib/tests/write_source_files/subdir_executable_test
+rm -Rf lib/tests/write_source_files/subdir_test
+rm -Rf lib/tests/write_source_files/subdir_executable_test
 run_test
 run_test
 echo "All tests passed"

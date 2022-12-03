@@ -26,6 +26,8 @@ function run_test {
 }
 
 # Run twice to make sure we can have permission to overwrite the outputs of a previous run
+rm -f lib/tests/write_source_files/dist.js
+rm -f lib/tests/write_source_files/dist_executable.js
 run_test
 run_test
 echo "All tests passed"

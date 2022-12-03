@@ -15,6 +15,7 @@ function run_test {
 }
 
 # Run twice to make sure we can have permission to overwrite the outputs of a previous run
+rm -Rf test-out
 run_test
 run_test
 echo "All tests passed"

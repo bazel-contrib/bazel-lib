@@ -34,6 +34,8 @@ function run_test {
 }
 
 # Run twice to make sure we can have permission to overwrite the outputs of a previous run
+rm -f lib/tests/write_source_files/symlink_test/a/test.txt
+rm -f lib/tests/write_source_files/symlink_test/b/test.txt
 run_test
 run_test
 echo "All tests passed"
