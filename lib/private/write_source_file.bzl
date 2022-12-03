@@ -158,7 +158,15 @@ _write_source_file_attrs = {
     "out_file": attr.string(mandatory = False),
     "executable": attr.bool(),
     # buildifier: disable=attr-cfg
-    "additional_update_targets": attr.label_list(cfg = "host", mandatory = False, providers = [WriteSourceFileInfo]),
+    "additional_update_targets": attr.label_list(
+        # Intentionally use the target platform since the target is always meant to be `bazel run`
+        # on the host machine but we don't want to transition it to the host platform and have the
+        # generated file rebuilt in a separate output tree. Target platform should always be equal
+        # to the host platform when using `write_source_files`.
+        cfg = "target",
+        mandatory = False,
+        providers = [WriteSourceFileInfo],
+    ),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     "_macos_constraint": attr.label(default = "@platforms//os:macos"),
 }

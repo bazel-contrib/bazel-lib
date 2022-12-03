@@ -152,7 +152,10 @@ _write_source_file_test = rule(
         "write_source_file_target": attr.label(
             allow_single_file = True,
             executable = True,
-            # Should be cfg = "exec" but a bazel bug causes a wrong executable symlink on windows
+            # Intentionally use the target platform since the target is always meant to be `bazel
+            # run` on the host machine but we don't want to transition it to the host platform and
+            # have the generated file rebuilt in a separate output tree. Target platform should
+            # always be equal to the host platform when using `write_source_files`.
             cfg = "target",
             mandatory = True,
         ),
