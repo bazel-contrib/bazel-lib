@@ -10,9 +10,9 @@ SHA=$(git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip | shasum -a 256
 
 cat << EOF
 
-## Using Bzlmod:
+## Using Bzlmod with Bazel 6:
 
-1. Enable with \`--experimental_enable_bzlmod\` in \`.bazelrc\`.
+1. Enable with \`common --enable_bzlmod\` in \`.bazelrc\`.
 2. Add to your \`MODULE.bazel\` file:
 
 \`\`\`starlark
