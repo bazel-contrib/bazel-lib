@@ -22,7 +22,10 @@ def decode(data):
 
     binstring = ""
     for i in range(len(data)):
-        binstring += _int_to_binary(BASE64_CHARS.index(data[i]), 6)
+        index = BASE64_CHARS.find(data[i])
+        if index == -1:
+            fail("expected a base64 encoded string")
+        binstring += _int_to_binary(index, 6)
 
     eight_chunks = _chunk(binstring, 8)
 
