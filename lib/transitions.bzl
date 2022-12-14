@@ -57,23 +57,25 @@ def _platform_transition_binary_impl(ctx):
     default_info = binary[DefaultInfo]
 
     new_executable = None
-    files = default_info.files
     original_executable = default_info.files_to_run.executable
     runfiles = default_info.default_runfiles
-    if original_executable:
-        new_executable_name = ctx.attr.basename if ctx.attr.basename else original_executable.basename
 
-        # In order for the symlink to have the same basename as the original
-        # executable (important in the case of proto plugins), put it in a
-        # subdirectory named after the label to prevent collisions.
-        new_executable = ctx.actions.declare_file(paths.join(ctx.label.name, new_executable_name))
-        ctx.actions.symlink(
-            output = new_executable,
-            target_file = original_executable,
-            is_executable = True,
-        )
-        files = depset(direct = [new_executable])
-        runfiles = runfiles.merge(ctx.runfiles([new_executable]))
+    if not original_executable:
+        fail("Cannot transition a 'binary' that is not executable")
+
+    new_executable_name = ctx.attr.basename if ctx.attr.basename else original_executable.basename
+
+    # In order for the symlink to have the same basename as the original
+    # executable (important in the case of proto plugins), put it in a
+    # subdirectory named after the label to prevent collisions.
+    new_executable = ctx.actions.declare_file(paths.join(ctx.label.name, new_executable_name))
+    ctx.actions.symlink(
+        output = new_executable,
+        target_file = original_executable,
+        is_executable = True,
+    )
+    files = depset(direct = [new_executable])
+    runfiles = runfiles.merge(ctx.runfiles([new_executable]))
 
     result.append(
         DefaultInfo(
