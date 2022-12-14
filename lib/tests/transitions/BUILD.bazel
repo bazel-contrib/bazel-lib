@@ -1,6 +1,7 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//lib:transitions.bzl", "platform_transition_filegroup")
+load("//lib:transitions.bzl", "platform_transition_binary", "platform_transition_filegroup")
 load("//lib:diff_test.bzl", "diff_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary")
 
 platform(
     name = "armv7_linux",
@@ -15,6 +16,15 @@ platform(
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
+    ],
+)
+
+platform(
+    name = "arm64_linux",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+        "@io_bazel_rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
     ],
 )
 
@@ -89,4 +99,42 @@ diff_test(
     name = "test_arm",
     file1 = ":for_arm_path",
     file2 = ":expected_arm_path",
+)
+
+go_binary(
+    name = "test_transition_binary",
+    srcs = ["main.go"],
+    tags = ["manual"],
+)
+
+platform_transition_binary(
+    name = "transitioned_go_binary_x86_64",
+    binary = ":test_transition_binary",
+    target_platform = "x86_64_linux",
+)
+
+platform_transition_binary(
+    name = "transitioned_go_binary_arm64",
+    binary = ":test_transition_binary",
+    target_platform = "arm64_linux",
+)
+
+sh_test(
+    name = "test_go_binary_is_x86_64",
+    srcs = ["test_file_type_contains.sh"],
+    args = [
+        "$(rootpath :transitioned_go_binary_x86_64)",
+        "x86-64",
+    ],
+    data = [":transitioned_go_binary_x86_64"],
+)
+
+sh_test(
+    name = "test_go_binary_is_arm64",
+    srcs = ["test_file_type_contains.sh"],
+    args = [
+        "$(rootpath :transitioned_go_binary_arm64)",
+        "aarch64",
+    ],
+    data = [":transitioned_go_binary_arm64"],
 )
