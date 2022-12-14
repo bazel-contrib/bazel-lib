@@ -55,7 +55,7 @@ def _platform_transition_binary_impl(ctx):
     binary = ctx.attr.binary[0]
 
     default_info = binary[DefaultInfo]
-
+    files = default_info.files
     new_executable = None
     original_executable = default_info.files_to_run.executable
     runfiles = default_info.default_runfiles
@@ -74,7 +74,7 @@ def _platform_transition_binary_impl(ctx):
         target_file = original_executable,
         is_executable = True,
     )
-    files = depset(direct = [new_executable])
+    files = depset(direct = [new_executable], transitive = [files])
     runfiles = runfiles.merge(ctx.runfiles([new_executable]))
 
     result.append(
