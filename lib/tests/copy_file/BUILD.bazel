@@ -41,11 +41,11 @@ diff_test(
 copy_file(
     name = "copy_same_file_a",
     src = "file1",
-    out = "file1_copy_a"
+    out = "file1_copy_a",
 )
 
 copy_file(
     name = "copy_same_file_b",
     src = "file1",
-    out = "file1_copy_b"
+    out = "file1_copy_b",
 )
