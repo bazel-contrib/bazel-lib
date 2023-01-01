@@ -1,7 +1,7 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:transitions.bzl", "platform_transition_binary", "platform_transition_filegroup")
 load("//lib:diff_test.bzl", "diff_test")
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 platform(
     name = "armv7_linux",
@@ -104,8 +104,9 @@ diff_test(
 
 go_binary(
     name = "test_transition_binary",
-    srcs = ["main.go"],
+    embed = [":transitions_lib"],
     tags = ["manual"],
+    visibility = ["//visibility:public"],
 )
 
 platform_transition_binary(
@@ -138,4 +139,11 @@ sh_test(
         "aarch64",
     ],
     data = [":transitioned_go_binary_arm64"],
+)
+
+go_library(
+    name = "transitions_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/aspect-build/bazel-lib/lib/tests/transitions",
+    visibility = ["//visibility:private"],
 )
