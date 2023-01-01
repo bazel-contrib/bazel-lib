@@ -3,7 +3,7 @@
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 load("//lib/private:local_config_platform.bzl", "local_config_platform")
-load("//lib:utils.bzl", http_archive = "maybe_http_archive")
+load("//lib:utils.bzl", "is_bazel_6_or_greater", http_archive = "maybe_http_archive")
 
 def aspect_bazel_lib_dependencies(override_local_config_platform = False):
     """Load dependencies required by aspect rules
@@ -23,7 +23,10 @@ def aspect_bazel_lib_dependencies(override_local_config_platform = False):
         ],
     )
 
-    if override_local_config_platform:
+    # Bazel 6 now has the exports that our custom local_config_platform rule made
+    # so it should never be needed when running Bazel 6 or newer
+    # TODO(2.0): remove the override_local_config_platform attribute entirely
+    if not is_bazel_6_or_greater() and override_local_config_platform:
         local_config_platform(
             name = "local_config_platform",
         )
