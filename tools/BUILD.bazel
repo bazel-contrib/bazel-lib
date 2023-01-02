@@ -1,0 +1,19 @@
+load(":release.bzl", "multi_platform_go_binaries", "release")
+
+exports_files([
+    "create_release.sh",
+])
+
+multi_platform_go_binaries(
+    name = "copy_to_directory",
+    embed = ["//tools/copy_to_directory:copy_to_directory_lib"],
+    tags = ["manual"],
+)
+
+release(
+    name = "release",
+    tags = ["manual"],
+    targets = [
+        ":copy_to_directory",
+    ],
+)
