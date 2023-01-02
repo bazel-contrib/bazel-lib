@@ -75,7 +75,7 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
         is_windows: Deprecated and unused
     """
 
-    # TODO(2.0): remove depcreated & unused is_windows parameter
+    # TODO(2.0): remove deprecated & unused is_windows parameter
     if not src.is_source and not dst.is_directory:
         fail("src must be a source directory or TreeArtifact")
     if dst.is_source or not dst.is_directory:

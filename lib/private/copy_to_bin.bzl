@@ -35,7 +35,7 @@ def copy_file_to_bin_action(ctx, file, is_windows = None):
         A File in the output tree.
     """
 
-    # TODO(2.0): remove depcreated & unused is_windows parameter
+    # TODO(2.0): remove deprecated & unused is_windows parameter
     if not file.is_source:
         return file
     if ctx.label.workspace_name != file.owner.workspace_name:
@@ -109,7 +109,7 @@ def copy_files_to_bin_actions(ctx, files, is_windows = None):
         List of File objects in the output tree.
     """
 
-    # TODO(2.0): remove depcreated & unused is_windows parameter
+    # TODO(2.0): remove deprecated & unused is_windows parameter
     return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
 
 def _copy_to_bin_impl(ctx):

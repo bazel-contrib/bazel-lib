@@ -280,6 +280,15 @@ _copy_to_directory_attr = {
 
         This setting has no effect on Windows where overwrites are always allowed.""",
     ),
+    # TODO: flip to copy_to_directory_bin_action once ready
+    # "verbose": attr.bool(
+    #     doc = """If true, prints out verbose logs to stdout""",
+    # ),
+    # "_tool": attr.label(
+    #     executable = True,
+    #     cfg = "exec",
+    #     default = "//tools/copy_to_directory",
+    # ),
 }
 
 def _any_globs_match(exprs, path):
@@ -383,7 +392,7 @@ def _copy_paths(
             # file is excluded as its external repository does not match any patterns in include_external_repositories
             return None, None, None
 
-    # apply include_srcs_packages if "**" is not included in the list
+    # apply include_srcs_packages
     if not _any_globs_match(include_srcs_packages, src_file.owner.package):
         # file is excluded as it does not match any specified include_srcs_packages
         return None, None, None
@@ -605,6 +614,26 @@ def _copy_to_directory_impl(ctx):
         allow_overwrites = ctx.attr.allow_overwrites,
     )
 
+    # TODO: flip to copy_to_directory_bin_action once ready
+    # copy_to_directory_bin_action(
+    #     ctx,
+    #     name = ctx.attr.name,
+    #     dst = dst,
+    #     copy_to_directory_bin = ctx.executable._tool,
+    #     files = ctx.files.srcs,
+    #     targets = [t for t in ctx.attr.srcs if DirectoryPathInfo in t],
+    #     root_paths = ctx.attr.root_paths,
+    #     include_external_repositories = ctx.attr.include_external_repositories,
+    #     include_srcs_packages = ctx.attr.include_srcs_packages,
+    #     exclude_srcs_packages = ctx.attr.exclude_srcs_packages,
+    #     include_srcs_patterns = ctx.attr.include_srcs_patterns,
+    #     exclude_srcs_patterns = ctx.attr.exclude_srcs_patterns,
+    #     exclude_prefixes = ctx.attr.exclude_prefixes,
+    #     replace_prefixes = ctx.attr.replace_prefixes,
+    #     allow_overwrites = ctx.attr.allow_overwrites,
+    #     verbose = ctx.attr.verbose,
+    # )
+
     return [
         DefaultInfo(
             files = depset([dst]),
@@ -627,6 +656,201 @@ def _expand_src_packages_patterns(patterns, package):
         else:
             result.append(pattern)
     return result
+
+def copy_to_directory_bin_action(
+        ctx,
+        name,
+        dst,
+        copy_to_directory_bin,
+        files = [],
+        targets = [],
+        root_paths = ["."],
+        include_external_repositories = [],
+        include_srcs_packages = ["**"],
+        exclude_srcs_packages = [],
+        include_srcs_patterns = ["**"],
+        exclude_srcs_patterns = [],
+        exclude_prefixes = [],
+        replace_prefixes = {},
+        allow_overwrites = False,
+        verbose = False):
+    """Helper function to copy files to a directory using a tool binary.
+
+    The tool binary will typically be the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary`
+    either built from source or provided by a toolchain.
+
+    This helper is used by copy_to_directory. It is exposed as a public API so it can be used within
+    other rule implementations where additional_files can also be passed in.
+
+    Args:
+        ctx: The rule context.
+
+        name: Name of target creating this action used for config file generation.
+
+        dst: The directory to copy to. Must be a TreeArtifact.
+
+        copy_to_directory_bin: Copy to directory tool binary.
+
+        files: List of files to copy into the output directory.
+
+        targets: List of targets that provide DirectoryPathInfo to copy into the output directory.
+
+        root_paths: List of paths that are roots in the output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        include_external_repositories: List of external repository names to include in the output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        include_srcs_packages: List of Bazel packages to include in output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        exclude_srcs_packages: List of Bazel packages (with glob support) to exclude from output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        include_srcs_patterns: List of paths (with glob support) to include in output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        exclude_srcs_patterns: List of paths (with glob support) to exclude from output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        exclude_prefixes: List of path prefixes to exclude from output directory.
+
+            See copy_to_directory rule documentation for more details.
+
+        replace_prefixes: Map of paths prefixes to replace in the output directory path when copying files.
+
+            See copy_to_directory rule documentation for more details.
+
+        allow_overwrites: If True, allow files to be overwritten if the same output file is copied to twice.
+
+            See copy_to_directory rule documentation for more details.
+
+        verbose: If true, prints out verbose logs to stdout
+    """
+
+    # Replace "." in root_paths with the package name of the target
+    root_paths = [p if p != "." else ctx.label.package for p in root_paths]
+
+    # Replace "." and "./**" patterns in in include_srcs_packages & exclude_srcs_packages
+    include_srcs_packages = _expand_src_packages_patterns(include_srcs_packages, ctx.label.package)
+    exclude_srcs_packages = _expand_src_packages_patterns(exclude_srcs_packages, ctx.label.package)
+
+    # Convert and append exclude_prefixes to exclude_srcs_patterns
+    # TODO(2.0): remove exclude_prefixes this block and in a future breaking release
+    for exclude_prefix in exclude_prefixes:
+        if exclude_prefix.endswith("**"):
+            exclude_srcs_patterns.append(exclude_prefix)
+        elif exclude_prefix.endswith("*"):
+            exclude_srcs_patterns.append(exclude_prefix + "/**")
+            exclude_srcs_patterns.append(exclude_prefix)
+        elif exclude_prefix.endswith("/"):
+            exclude_srcs_patterns.append(exclude_prefix + "**")
+        else:
+            exclude_srcs_patterns.append(exclude_prefix + "*/**")
+            exclude_srcs_patterns.append(exclude_prefix + "*")
+
+    if not include_srcs_packages:
+        fail("An empty 'include_srcs_packages' list will exclude all srcs and result in an empty directory")
+
+    if "**" in exclude_srcs_packages:
+        fail("A '**' glob pattern in 'exclude_srcs_packages' will exclude all srcs and result in an empty directory")
+
+    if not include_srcs_patterns:
+        fail("An empty 'include_srcs_patterns' list will exclude all srcs and result in an empty directory")
+
+    if "**" in exclude_srcs_patterns:
+        fail("A '**' glob pattern in 'exclude_srcs_patterns' will exclude all srcs and result in an empty directory")
+
+    for replace_prefix in replace_prefixes.keys():
+        if replace_prefix.endswith("**"):
+            msg = "replace_prefix '{}' must not end with '**' glob expression".format(replace_prefix)
+            fail(msg)
+
+    files_and_targets = []
+    for f in files:
+        files_and_targets.append(struct(
+            file = f,
+            path = f.path,
+            root_path = f.root.path,
+            short_path = f.short_path,
+            workspace_path = paths.to_workspace_path(f),
+        ))
+    for t in targets:
+        if not DirectoryPathInfo in t:
+            continue
+        files_and_targets.append(struct(
+            file = t[DirectoryPathInfo].directory,
+            path = "/".join([t[DirectoryPathInfo].directory.path, t[DirectoryPathInfo].path]),
+            root_path = t[DirectoryPathInfo].directory.root.path,
+            short_path = "/".join([t[DirectoryPathInfo].directory.short_path, t[DirectoryPathInfo].path]),
+            workspace_path = "/".join([paths.to_workspace_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
+        ))
+
+    file_infos = []
+    file_inputs = []
+    for f in files_and_targets:
+        if not f.file.owner:
+            msg = "Expected an owner target label for file {} but found none".format(f)
+            fail(msg)
+
+        if f.file.owner.package == None:
+            msg = "Expected owner target label for file {} to have a package name but found None".format(f)
+            fail(msg)
+
+        if f.file.owner.workspace_name == None:
+            msg = "Expected owner target label for file {} to have a workspace name but found None".format(f)
+            fail(msg)
+
+        file_infos.append({
+            # the path might be a file if it came from a DirectoryPathInfo or it is a source directory
+            "maybe_directory": f.file.is_directory or f.file.is_source,
+            "package": f.file.owner.package,
+            "path": f.path,
+            "root_path": f.root_path,
+            "short_path": f.short_path,
+            "workspace": f.file.owner.workspace_name,
+            "workspace_path": f.workspace_path,
+        })
+        file_inputs.append(f.file)
+
+    if not file_inputs:
+        fail("No files to copy")
+
+    config = {
+        "allow_overwrites": allow_overwrites,
+        "dst": dst.path,
+        "exclude_srcs_packages": exclude_srcs_packages,
+        "exclude_srcs_patterns": exclude_srcs_patterns,
+        "files": file_infos,
+        "include_external_repositories": include_external_repositories,
+        "include_srcs_packages": include_srcs_packages,
+        "include_srcs_patterns": include_srcs_patterns,
+        "replace_prefixes": replace_prefixes,
+        "root_paths": root_paths,
+        "verbose": verbose,
+    }
+
+    config_file = ctx.actions.declare_file("{}_config.json".format(name))
+    ctx.actions.write(
+        output = config_file,
+        content = json.encode_indent(config),
+    )
+
+    ctx.actions.run(
+        inputs = file_inputs + [config_file],
+        outputs = [dst],
+        executable = copy_to_directory_bin,
+        arguments = [config_file.path],
+        mnemonic = "CopyToDirectory",
+        progress_message = "Copying files to directory",
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+    )
 
 def copy_to_directory_action(
         ctx,
@@ -683,6 +907,8 @@ def copy_to_directory_action(
 
         exclude_prefixes: List of path prefixes to exclude from output directory.
 
+            See copy_to_directory rule documentation for more details.
+
         replace_prefixes: Map of paths prefixes to replace in the output directory path when copying files.
 
             See copy_to_directory rule documentation for more details.
@@ -694,7 +920,7 @@ def copy_to_directory_action(
         is_windows: Deprecated and unused
     """
 
-    # TODO(2.0): remove depcreated & unused is_windows parameter
+    # TODO(2.0): remove deprecated & unused is_windows parameter
     if not srcs:
         fail("srcs must not be empty")
 

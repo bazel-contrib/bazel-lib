@@ -29,11 +29,17 @@ load("//lib:host_repo.bzl", "host_repo")
 
 host_repo(name = "aspect_bazel_lib_host")
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+load("//:deps.bzl", "go_dependencies")
+
+# gazelle:repository_macro deps.bzl%go_dependencies
+# gazelle:repository go_repository name=org_golang_x_tools importpath=golang.org/x/tools
+# https://github.com/bazelbuild/bazel-gazelle/issues/1217#issuecomment-1152236735
+go_dependencies()
 
 ############################################
 # Gazelle, for generating bzl_library targets
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 go_rules_dependencies()
 

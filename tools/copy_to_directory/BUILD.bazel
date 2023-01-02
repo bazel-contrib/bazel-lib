@@ -5,6 +5,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/aspect-build/bazel-lib/tools/copy_to_directory",
     visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_gobwas_glob//:glob",
+        "@org_golang_x_exp//maps",
+    ],
 )
 
 go_binary(

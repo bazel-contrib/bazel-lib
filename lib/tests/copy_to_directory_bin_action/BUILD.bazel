@@ -1,0 +1,53 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//lib:diff_test.bzl", "diff_test")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:copy_to_bin.bzl", "copy_to_bin")
+load(":lib.bzl", "lib")
+load(":pkg.bzl", "pkg")
+
+copy_to_bin(
+    name = "copy_1",
+    srcs = ["1"],
+)
+
+lib(
+    name = "lib",
+    srcs = ["1"],
+    # intentionally dup on "1" to make sure it is gracefully handled
+    others = [
+        "1",
+        # also pass in a copy_to_bin copy of "1" to spice things up;
+        # this case is handled in the fix in https://github.com/aspect-build/bazel-lib/pull/205
+        "copy_1",
+        "2",
+        "d",
+    ],
+)
+
+# pkg should copy DefaultInfo files and OtherInfo files
+pkg(
+    name = "pkg",
+    srcs = [":lib"],
+    out = "pkg",
+)
+
+copy_to_directory(
+    name = "expected_pkg",
+    srcs = [
+        "1",
+        "2",
+        "d",
+    ],
+)
+
+diff_test(
+    name = "test",
+    file1 = ":pkg",
+    file2 = ":expected_pkg",
+)
+
+bzl_library(
+    name = "other_info",
+    srcs = ["other_info.bzl"],
+    visibility = ["//visibility:public"],
+)
