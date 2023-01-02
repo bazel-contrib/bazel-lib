@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "sha256sum_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/aspect-build/bazel-lib/tools/sha256sum",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "sha256sum",
+    embed = [":sha256sum_lib"],
+    visibility = ["//visibility:public"],
+)
