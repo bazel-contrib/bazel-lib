@@ -29,10 +29,23 @@ jobs:
         run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
       - name: Prepare workspace snippet
         run: .github/workflows/workspace_snippet.sh ${{ env.GITHUB_REF_NAME }} > release_notes.txt
+      - name: Build release artifacts
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            >&2 echo "ERROR: the git state is not clean, aborting build..."
+            exit 1
+          fi
+          rm -rf /tmp/aspect/release
+          bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc run --config=release //tools:release -- /tmp/aspect/release
+          if /tmp/aspect/release/copy_to_directory-linux_amd64 version | grep '(with local changes)'; then
+            >&2 echo "ERROR: the release contained changes in the git state and the release will not be produced"
+            exit 1
+          fi
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           # Use GH feature to populate the changelog automatically
           generate_release_notes: true
+          files: /tmp/aspect/release/*
           body_path: release_notes.txt
           token: ${{ secrets.DEREK_BCR_PAT }}

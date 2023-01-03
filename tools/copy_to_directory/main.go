@@ -317,7 +317,42 @@ func copy(src, dst string) (int64, error) {
 	return nBytes, err
 }
 
+// https://play.golang.org/p/Qg_uv_inCek
+// contains checks if a string is present in a slice
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
+func version() string {
+	var versionBuilder strings.Builder
+	if Release != "" && Release != PreStampRelease {
+		versionBuilder.WriteString(Release)
+		if GitStatus != CleanGitStatus {
+			versionBuilder.WriteString(NotCleanVersionSuffix)
+		}
+	} else {
+		versionBuilder.WriteString(NoReleaseVersion)
+	}
+	return versionBuilder.String()
+}
+
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: copy_to_directory [config_file]")
+		os.Exit(1)
+	}
+
+	if contains(os.Args[1:], "--version") || contains(os.Args[1:], "-v") {
+		fmt.Printf("copy_to_directory %s\n", version())
+		return
+	}
+
 	cfg, err := parseConfig(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
