@@ -27,8 +27,6 @@ jobs:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
         run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
-      - name: Prepare workspace snippet
-        run: .github/workflows/workspace_snippet.sh ${{ env.GITHUB_REF_NAME }} > release_notes.txt
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -41,6 +39,8 @@ jobs:
             >&2 echo "ERROR: the release contained changes in the git state and the release will not be produced"
             exit 1
           fi
+      - name: Prepare workspace snippet
+        run: .github/workflows/workspace_snippet.sh ${{ env.GITHUB_REF_NAME }} > release_notes.txt
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
