@@ -22,6 +22,17 @@ gazelle(
     gazelle = "gazelle_bin",
 )
 
+gazelle(
+    name = "gazelle_update_repos",
+    args = [
+        "-build_file_proto_mode=disable_global",
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
 bzl_library(
     name = "internal_deps",
     srcs = ["internal_deps.bzl"],

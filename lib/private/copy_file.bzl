@@ -101,7 +101,7 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
         is_windows: Deprecated and unused
     """
 
-    # TODO(2.0): remove depcreated & unused is_windows parameter
+    # TODO(2.0): remove deprecated & unused is_windows parameter
     if dst.is_directory:
         fail("dst must not be a TreeArtifact")
     if src.is_directory:

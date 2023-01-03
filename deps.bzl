@@ -1,0 +1,43 @@
+"""This module contains the project repository dependencies.
+"""
+
+load("@bazel_gazelle//:deps.bzl", "go_repository")
+
+def go_dependencies():
+    """The Go dependencies.
+    """
+    go_repository(
+        name = "com_github_gobwas_glob",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/gobwas/glob",
+        sum = "h1:A4xDbljILXROh+kObIiy5kIaPYD8e96x1tgBhUI5J+Y=",
+        version = "v0.2.3",
+    )
+    go_repository(
+        name = "com_github_google_go_cmp",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/google/go-cmp",
+        sum = "h1:e6P7q2lk1O+qJJb4BtCQXlK8vWEO8V1ZeuEdJNOqZyg=",
+        version = "v0.5.8",
+    )
+    go_repository(
+        name = "org_golang_x_exp",
+        build_file_proto_mode = "disable_global",
+        importpath = "golang.org/x/exp",
+        sum = "h1:m9O6OTJ627iFnN2JIWfdqlZCzneRO6EEBsHXI25P8ws=",
+        version = "v0.0.0-20221230185412-738e83a70c30",
+    )
+    go_repository(
+        name = "org_golang_x_mod",
+        build_file_proto_mode = "disable_global",
+        importpath = "golang.org/x/mod",
+        sum = "h1:b9gGHsz9/HhJ3HF5DHQytPpuwocVTChQJK3AvoLRD5I=",
+        version = "v0.6.0",
+    )
+    go_repository(
+        name = "org_golang_x_sys",
+        build_file_proto_mode = "disable_global",
+        importpath = "golang.org/x/sys",
+        sum = "h1:kunALQeHf1/185U1i0GOB/fy1IPRDDpuoOOqRReG57U=",
+        version = "v0.1.0",
+    )
