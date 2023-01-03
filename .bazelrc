@@ -27,6 +27,10 @@ common --enable_platform_specific_config
 # Normally users would use a --workspace_status_command with a script that calls `git describe`.
 build --embed_label=v1.2.3
 
+# For releasing, use --workspace_status_command and stamp
+build:release --workspace_status_command "${PWD}/workspace_status.sh"
+build:release -c opt --stamp
+
 # Turn off legacy external runfiles on all platforms except Windows.
 # This allows our users to turn on this flag as well, which is a performance win.
 # Skylib's diff_test implementation for Windows depends on legacy external
