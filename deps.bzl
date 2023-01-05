@@ -7,12 +7,13 @@ def go_dependencies():
     """The Go dependencies.
     """
     go_repository(
-        name = "com_github_gobwas_glob",
+        name = "com_github_bmatcuk_doublestar_v4",
         build_file_proto_mode = "disable_global",
-        importpath = "github.com/gobwas/glob",
-        sum = "h1:A4xDbljILXROh+kObIiy5kIaPYD8e96x1tgBhUI5J+Y=",
-        version = "v0.2.3",
+        importpath = "github.com/bmatcuk/doublestar/v4",
+        sum = "h1:HTuxyug8GyFbRkrffIpzNCSK4luc0TY3wzXvzIZhEXc=",
+        version = "v4.6.0",
     )
+
     go_repository(
         name = "com_github_google_go_cmp",
         build_file_proto_mode = "disable_global",
