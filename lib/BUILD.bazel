@@ -23,6 +23,10 @@ toolchain_type(
     name = "yq_toolchain_type",
 )
 
+toolchain_type(
+    name = "copy_to_directory_toolchain_type",
+)
+
 bzl_library(
     name = "docs",
     srcs = ["docs.bzl"],
@@ -182,6 +186,7 @@ bzl_library(
     srcs = ["repositories.bzl"],
     deps = [
         ":utils",
+        "//lib/private/docs:copy_to_directory_toolchain",
         "//lib/private/docs:jq_toolchain",
         "//lib/private/docs:local_config_platform",
         "//lib/private/docs:yq_toolchain",

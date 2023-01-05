@@ -27,6 +27,12 @@ For more information each filters / transformations applied, see
 the documentation for the specific filter / transformation attribute.
 """
 
+_glob_support_docstring = """Glob patterns are supported. Standard wildcards (globbing patterns) plus the `**` doublestar (aka. super-asterisk)
+are supported with the underlying globbing library, https://github.com/bmatcuk/doublestar. This is the same
+globbing library used by [gazelle](https://github.com/bazelbuild/bazel-gazelle). See https://github.com/bmatcuk/doublestar#patterns
+for more information on supported globbing patterns.
+"""
+
 _copy_to_directory_attr = {
     "srcs": attr.label_list(
         allow_files = True,
@@ -45,13 +51,9 @@ _copy_to_directory_attr = {
         default = ["."],
         doc = """List of paths (with glob support) that are roots in the output directory.
 
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
-
-        If any parent directory of a file or directory being copied matches one of the root paths
+        If any parent directory of a file being copied matches one of the root paths
         patterns specified, the output directory path will be the path relative to the root path
-        instead of the path relative to the file's or directory's workspace. If there are multiple
+        instead of the path relative to the file's workspace. If there are multiple
         root paths that match, the longest match wins.
 
         Matching is done on the parent directory of the output file path so a trailing '**' glob patterm
@@ -67,15 +69,16 @@ _copy_to_directory_attr = {
         target's package and and sub-packages are relative to the target's package and
         files outside of that retain their full workspace relative paths.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "include_external_repositories": attr.string_list(
         doc = """List of external repository names (with glob support) to include in the output directory.
-
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
 
         Files from external repositories are only copied into the output directory if
         the external repository they come from matches one of the external repository patterns
@@ -96,182 +99,153 @@ _copy_to_directory_attr = {
         )
         ```
 
-        Files and directories that come from matching external are subject to subsequent filters and
+        Files that come from matching external are subject to subsequent filters and
         transformations to determine if they are copied and what their path in the output
-        directory will be. The external repository name of the file or directory from an external
+        directory will be. The external repository name of the file from an external
         repository is not included in the output directory path and is considered in subsequent
         filters and transformations.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "include_srcs_packages": attr.string_list(
         default = ["**"],
         doc = """List of Bazel packages (with glob support) to include in output directory.
 
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
+        Files in srcs are only copied to the output directory if
+        the Bazel package of the file matches one of the patterns specified.
 
-        Files and directories in srcs are only copied to the output directory if
-        the Bazel package of the file or directory matches one of the patterns specified.
-
-        Forward slashes (`/`) should be used as path separators.
-
-        A `"."` value means include srcs that are in the target's package.
-        It expands to the target's package path (`ctx.label.package`). This
-        will be an empty string `""` if the target is in the root package.
-
-        A `"./**"` value means include srcs that are in subpackages of the target's package.
-        It expands to the target's package path followed by a slash and a
-        globstar (`"{{}}/**".format(ctx.label.package)`). If the target's package is
-        the root package, `"./**"` expands to `["?*", "?*/**"]` instead.
+        Forward slashes (`/`) should be used as path separators. A first character of `"."`
+        will be replaced by the target's package path.
 
         Defaults to `["**"]` which includes sources from all packages.
 
-        Files and directories that have matching Bazel packages are subject to subsequent filters and
+        Files that have matching Bazel packages are subject to subsequent filters and
         transformations to determine if they are copied and what their path in the output
         directory will be.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "exclude_srcs_packages": attr.string_list(
         doc = """List of Bazel packages (with glob support) to exclude from output directory.
 
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
+        Files in srcs are not copied to the output directory if
+        the Bazel package of the file matches one of the patterns specified.
 
-        Files and directories in srcs are not copied to the output directory if
-        the Bazel package of the file or directory matches one of the patterns specified.
+        Forward slashes (`/`) should be used as path separators. A first character of `"."`
+        will be replaced by the target's package path.
 
-        Forward slashes (`/`) should be used as path separators.
-
-        A `"."` value means exclude srcs that are in the target's package.
-        It expands to the target's package path (`ctx.label.package`). This
-        will be an empty string `""` if the target is in the root package.
-
-        A `"./**"` value means exclude srcs that are in subpackages of the target's package.
-        It expands to the target's package path followed by a slash and a
-        globstar (`"{{}}/**".format(ctx.label.package)`). If the target's package is
-        the root package, `"./**"` expands to `["?*", "?*/**"]` instead.
-
-        Files and directories that have do not have matching Bazel packages are subject to subsequent
+        Files that have do not have matching Bazel packages are subject to subsequent
         filters and transformations to determine if they are copied and what their path in the output
         directory will be.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "include_srcs_patterns": attr.string_list(
         default = ["**"],
         doc = """List of paths (with glob support) to include in output directory.
 
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
-
-        Files and directories in srcs are only copied to the output directory if their output
+        Files in srcs are only copied to the output directory if their output
         directory path, after applying `root_paths`, matches one of the patterns specified.
-
-        Patterns do not look into files within source directory or generated directory (TreeArtifact)
-        targets since matches are performed in Starlark. To use `include_srcs_patterns` on files
-        within directories you can use the `make_directory_paths` helper to specify individual files inside
-        directories in `srcs`. This restriction may be fixed in a future release by performing matching
-        inside the copy action instead of in Starlark.
 
         Forward slashes (`/`) should be used as path separators.
 
         Defaults to ["**"] which includes all sources.
 
-        Files and directories that have matching output directory paths are subject to subsequent
+        Files that have matching output directory paths are subject to subsequent
         filters and transformations to determine if they are copied and what their path in the output
         directory will be.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "exclude_srcs_patterns": attr.string_list(
         doc = """List of paths (with glob support) to exclude from output directory.
 
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
-
-        Files and directories in srcs are not copied to the output directory if their output
+        Files in srcs are not copied to the output directory if their output
         directory path, after applying `root_paths`, matches one of the patterns specified.
-
-        Patterns do not look into files within source directory or generated directory (TreeArtifact)
-        targets since matches are performed in Starlark. To use `include_srcs_patterns` on files
-        within directories you can use the `make_directory_paths` helper to specify individual files inside
-        directories in `srcs`. This restriction may be fixed in a future release by performing matching
-        inside the copy action instead of in Starlark.
 
         Forward slashes (`/`) should be used as path separators.
 
-        Files and directories that do not have matching output directory paths are subject to subsequent
+        Files that do not have matching output directory paths are subject to subsequent
         filters and transformations to determine if they are copied and what their path in the output
         directory will be.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "exclude_prefixes": attr.string_list(
         doc = """List of path prefixes (with glob support) to exclude from output directory.
 
         DEPRECATED: use `exclude_srcs_patterns` instead
 
-        Glob patterns `**`, `*` and `?` are supported. See `glob_match` documentation for
-        more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
-
-        Files and directories in srcs are not copied to the output directory if their output
+        Files in srcs are not copied to the output directory if their output
         directory path, after applying `root_paths`, starts with or fully matches one of the
         patterns specified.
 
-        Patterns do not look into files within source directory or generated directory (TreeArtifact)
-        targets since matches are performed in Starlark. To use `include_srcs_patterns` on files
-        within directories you can use the `make_directory_paths` helper to specify individual files inside
-        directories in `srcs`. This restriction may be fixed in a future release by performing matching
-        inside the copy action instead of in Starlark.
-
         Forward slashes (`/`) should be used as path separators.
 
-        Files and directories that do not have matching output directory paths are subject to subsequent
+        Files that do not have matching output directory paths are subject to subsequent
         filters and transformations to determine if they are copied and what their path in the output
         directory will be.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "replace_prefixes": attr.string_dict(
         doc = """Map of paths prefixes (with glob support) to replace in the output directory path when copying files.
 
-        Glob patterns `**`, `*` and `?` are supported but the pattern must not end with a `**` glob
-        expression. See `glob_match` documentation for more details on how to use glob patterns:
-        https://github.com/aspect-build/bazel-lib/blob/main/docs/glob_match.md.
-
-        If the output directory path for a file or directory starts with or fully matches a
+        If the output directory path for a file starts with or fully matches a
         a key in the dict then the matching portion of the output directory path is
         replaced with the dict value for that key. The final path segment
         matched can be a partial match of that segment and only the matching portion will
         be replaced. If there are multiple keys that match, the longest match wins.
 
-        Patterns do not look into files within source directory or generated directory (TreeArtifact)
-        targets since matches are performed in Starlark. To use `replace_prefixes` on files
-        within directories you can use the `make_directory_paths` helper to specify individual files inside
-        directories in `srcs`. This restriction may be fixed in a future release by performing matching
-        inside the copy action instead of in Starlark.
-
         Forward slashes (`/`) should be used as path separators. 
 
         Replace prefix transformation are the final step in the list of filters and transformations.
-        The final output path of a file or directory being copied into the output directory
+        The final output path of a file being copied into the output directory
         is determined at this step.
 
+        {glob_support_docstring}
+
         {filters_transform_order_docstring}
-        """.format(filters_transform_order_docstring = _filter_transforms_order_docstring),
+        """.format(
+            filters_transform_order_docstring = _filter_transforms_order_docstring,
+            glob_support_docstring = _glob_support_docstring,
+        ),
     ),
     "allow_overwrites": attr.bool(
         doc = """If True, allow files to be overwritten if the same output file is copied to twice.
@@ -280,10 +254,11 @@ _copy_to_directory_attr = {
 
         This setting has no effect on Windows where overwrites are always allowed.""",
     ),
-    # TODO: flip to copy_to_directory_bin_action once ready
-    # "verbose": attr.bool(
-    #     doc = """If true, prints out verbose logs to stdout""",
-    # ),
+    "verbose": attr.bool(
+        doc = """If true, prints out verbose logs to stdout""",
+    ),
+    # use '_tool' attribute for development only; do not commit with this attribute active since it
+    # propagates a dependency on rules_go which would be breaking for users
     # "_tool": attr.label(
     #     executable = True,
     #     cfg = "exec",
@@ -597,12 +572,17 @@ if exist "{src}\\*" (
     )
 
 def _copy_to_directory_impl(ctx):
+    copy_to_directory_bin = ctx.toolchains["@aspect_bazel_lib//lib:copy_to_directory_toolchain_type"].copy_to_directory_info.bin
+
     dst = ctx.actions.declare_directory(ctx.attr.out if ctx.attr.out else ctx.attr.name)
 
-    copy_to_directory_action(
+    copy_to_directory_bin_action(
         ctx,
-        srcs = ctx.attr.srcs,
+        name = ctx.attr.name,
         dst = dst,
+        copy_to_directory_bin = copy_to_directory_bin,  # use ctx.executable._tool for development
+        files = ctx.files.srcs,
+        targets = [t for t in ctx.attr.srcs if DirectoryPathInfo in t],
         root_paths = ctx.attr.root_paths,
         include_external_repositories = ctx.attr.include_external_repositories,
         include_srcs_packages = ctx.attr.include_srcs_packages,
@@ -612,27 +592,8 @@ def _copy_to_directory_impl(ctx):
         exclude_prefixes = ctx.attr.exclude_prefixes,
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
+        verbose = ctx.attr.verbose,
     )
-
-    # TODO: flip to copy_to_directory_bin_action once ready
-    # copy_to_directory_bin_action(
-    #     ctx,
-    #     name = ctx.attr.name,
-    #     dst = dst,
-    #     copy_to_directory_bin = ctx.executable._tool,
-    #     files = ctx.files.srcs,
-    #     targets = [t for t in ctx.attr.srcs if DirectoryPathInfo in t],
-    #     root_paths = ctx.attr.root_paths,
-    #     include_external_repositories = ctx.attr.include_external_repositories,
-    #     include_srcs_packages = ctx.attr.include_srcs_packages,
-    #     exclude_srcs_packages = ctx.attr.exclude_srcs_packages,
-    #     include_srcs_patterns = ctx.attr.include_srcs_patterns,
-    #     exclude_srcs_patterns = ctx.attr.exclude_srcs_patterns,
-    #     exclude_prefixes = ctx.attr.exclude_prefixes,
-    #     replace_prefixes = ctx.attr.replace_prefixes,
-    #     allow_overwrites = ctx.attr.allow_overwrites,
-    #     verbose = ctx.attr.verbose,
-    # )
 
     return [
         DefaultInfo(
@@ -644,15 +605,12 @@ def _copy_to_directory_impl(ctx):
 def _expand_src_packages_patterns(patterns, package):
     result = []
     for pattern in patterns:
-        if pattern == ".":
-            result.append(package)
-        elif pattern == "./**":
-            if package:
-                result.append("{}/**".format(package))
+        if pattern.startswith("."):
+            if not package and pattern.startswith("./"):
+                # special case in the root package
+                result.append(pattern[2:])
             else:
-                # special case for the root package so we match on subpackages but
-                # not on the empty root package itself
-                result.extend(["?*", "?*/**"])
+                result.append(package + pattern[1:])
         else:
             result.append(pattern)
     return result
@@ -737,7 +695,7 @@ def copy_to_directory_bin_action(
     # Replace "." in root_paths with the package name of the target
     root_paths = [p if p != "." else ctx.label.package for p in root_paths]
 
-    # Replace "." and "./**" patterns in in include_srcs_packages & exclude_srcs_packages
+    # Replace a leading "." with the package name of the target in include_srcs_packages & exclude_srcs_packages
     include_srcs_packages = _expand_src_packages_patterns(include_srcs_packages, ctx.label.package)
     exclude_srcs_packages = _expand_src_packages_patterns(exclude_srcs_packages, ctx.label.package)
 
@@ -850,6 +808,7 @@ def copy_to_directory_bin_action(
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
+# TODO(2.0): remove the legacy copy_to_directory_action helper
 def copy_to_directory_action(
         ctx,
         srcs,
@@ -865,7 +824,13 @@ def copy_to_directory_action(
         replace_prefixes = {},
         allow_overwrites = False,
         is_windows = None):
-    """Helper function to copy files to a directory.
+    """Legacy helper function to copy files to a directory.
+
+    This helper calculates copy paths in Starlark during analysis and performs the copies in a
+    bash/bat script. For improved analysis and runtime performance, it is recommended the switch
+    to `copy_to_directory_bin_action` which calculates copy paths and performs copies with a tool
+    binary, typically the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary` either built
+    from source or provided by a toolchain.
 
     This helper is used by copy_to_directory. It is exposed as a public API so it can be used within
     other rule implementations where additional_files can also be passed in.
@@ -925,7 +890,7 @@ def copy_to_directory_action(
     # Replace "." in root_paths with the package name of the target
     root_paths = [p if p != "." else ctx.label.package for p in root_paths]
 
-    # Replace "." and "./**" patterns in in include_srcs_packages & exclude_srcs_packages
+    # Replace a leading "." with the package name of the target in include_srcs_packages & exclude_srcs_packages
     include_srcs_packages = _expand_src_packages_patterns(include_srcs_packages, ctx.label.package)
     exclude_srcs_packages = _expand_src_packages_patterns(exclude_srcs_packages, ctx.label.package)
 

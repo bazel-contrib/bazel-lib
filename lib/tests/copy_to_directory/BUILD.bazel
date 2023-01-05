@@ -82,9 +82,6 @@ copy_to_directory(
         # flatten test_a & test_b to the root
         "test_a": "",
         "test_b": "",
-        # some paths that won't match
-        "a/": "wont_match_a_is_terminal_path",
-        "a/a2": "wont_match_since_a2_is_in_a_tree_artifact",
     },
 )
 
@@ -100,6 +97,7 @@ copy_to_directory(
     srcs = case_srcs,
     include_external_repositories = ["external_test_repo"],
     root_paths = [],
+    verbose = True,
 )
 
 diff_test(
@@ -178,10 +176,16 @@ copy_to_directory(
     name = "case_8",
     srcs = case_srcs,
     exclude_srcs_patterns = [
-        "a",
-        "b",
+        "a/*",
+        "b/*",
         "e/e*",
     ],
+)
+
+diff_test(
+    name = "case_8_test",
+    file1 = "case_8",
+    file2 = ":expected_8",
 )
 
 # Case 9: directory_path srcs & replace_prefixes (with external repo)
@@ -224,8 +228,6 @@ copy_to_directory(
         # flatten test_a & test_b to the root
         "test_a": "",
         "test_b": "",
-        # some paths that won't match
-        "a/a2": "wont_match_since_a2_is_not_included_in_the_directory_path_in_srcs",
     },
 )
 
@@ -233,12 +235,6 @@ diff_test(
     name = "case_9_test",
     file1 = "case_9",
     file2 = ":expected_9",
-)
-
-diff_test(
-    name = "case_8_test",
-    file1 = "case_8",
-    file2 = ":expected_8",
 )
 
 # Case 10: copy folder containing hidden file
@@ -313,8 +309,8 @@ copy_to_directory(
     name = "case_13",
     srcs = case_srcs,
     include_srcs_patterns = [
-        "a",
-        "b",
+        "a/*",
+        "b/*",
         "?/e*",
         "f/f2/f2",
     ],
@@ -334,8 +330,8 @@ copy_to_directory(
         "f/f2/f1",
     ],
     include_srcs_patterns = [
-        "a",
-        "b",
+        "a/*",
+        "b/*",
         "?/e*",
         "f/f?/**",
     ],
@@ -395,7 +391,7 @@ diff_test(
 copy_to_directory(
     name = "case_18",
     srcs = case_srcs,
-    exclude_srcs_packages = ["./**"],
+    exclude_srcs_packages = ["./*/**"],
     include_external_repositories = ["e?ter*_test_repo"],
 )
 
@@ -405,12 +401,12 @@ diff_test(
     file2 = ":expected_18",
 )
 
-# Case 19: include_srcs_packages with "./**" expansion
+# Case 19: include_srcs_packages with "./*/**" expansion
 copy_to_directory(
     name = "case_19",
     srcs = case_srcs,
     include_external_repositories = ["externa?_*_rep*"],
-    include_srcs_packages = ["./**"],
+    include_srcs_packages = ["./*/**"],
 )
 
 diff_test(

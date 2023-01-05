@@ -2,9 +2,11 @@
 
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
+load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFORMS", "copy_to_directory_platform_repo", "copy_to_directory_toolchains_repo")
 load("//lib/private:local_config_platform.bzl", "local_config_platform")
 load("//lib:utils.bzl", "is_bazel_6_or_greater", http_archive = "maybe_http_archive")
 
+# buildifier: disable=unnamed-macro
 def aspect_bazel_lib_dependencies(override_local_config_platform = False):
     """Load dependencies required by aspect rules
 
@@ -30,6 +32,9 @@ def aspect_bazel_lib_dependencies(override_local_config_platform = False):
         local_config_platform(
             name = "local_config_platform",
         )
+
+    # Always register the copy_to_directory toolchain
+    register_copy_to_directory_toolchains()
 
 # Re-export the default versions
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
@@ -81,6 +86,27 @@ def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register =
     yq_host_alias_repo(name = name)
 
     yq_toolchains_repo(
+        name = "%s_toolchains" % name,
+        user_repository_name = name,
+    )
+
+def register_copy_to_directory_toolchains(name = "copy_to_directory", register = True):
+    """Registers copy_to_directory toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    for [platform, meta] in COPY_TO_DIRECTORY_PLATFORMS.items():
+        copy_to_directory_platform_repo(
+            name = "%s_%s" % (name, platform),
+            platform = platform,
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
+    copy_to_directory_toolchains_repo(
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
