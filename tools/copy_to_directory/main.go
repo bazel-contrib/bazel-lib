@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gobwas/glob"
+	"github.com/bmatcuk/doublestar/v4"
 	"golang.org/x/exp/maps"
 )
 
@@ -38,14 +38,7 @@ type config struct {
 	RootPaths                   []string          `json:"root_paths"`
 	Verbose                     bool              `json:"verbose"`
 
-	ExcludeSrcsPackagesGlobs         []glob.Glob
-	ExcludeSrcsPatternsGlobs         []glob.Glob
-	IncludeExternalRepositoriesGlobs []glob.Glob
-	IncludeSrcsPackagesGlobs         []glob.Glob
-	IncludeSrcsPatternsGlobs         []glob.Glob
-	ReplacePrefixesGlobs             []glob.Glob
-	ReplacePrefixesKeys              []string
-	RootPathsGlobs                   []glob.Glob
+	ReplacePrefixesKeys []string
 }
 
 type copyPaths map[string]fileInfo
@@ -67,88 +60,52 @@ func parseConfig(configPath string) (*config, error) {
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
 
-	// compile all globs
-	cfg.ExcludeSrcsPackagesGlobs, err = compileGlobs(cfg.ExcludeSrcsPackages)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.ExcludeSrcsPatternsGlobs, err = compileGlobs(cfg.ExcludeSrcsPatterns)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.IncludeExternalRepositoriesGlobs, err = compileGlobs(cfg.IncludeExternalRepositories)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.IncludeSrcsPackagesGlobs, err = compileGlobs(cfg.IncludeSrcsPackages)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.IncludeSrcsPatternsGlobs, err = compileGlobs(cfg.IncludeSrcsPatterns)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.RootPathsGlobs, err = compileGlobs(cfg.RootPaths)
-	if err != nil {
-		return nil, err
-	}
-
 	cfg.ReplacePrefixesKeys = maps.Keys(cfg.ReplacePrefixes)
-	cfg.ReplacePrefixesGlobs, err = compileGlobs(cfg.ReplacePrefixesKeys)
-	if err != nil {
-		return nil, err
-	}
 
 	return &cfg, nil
 }
 
-func compileGlobs(patterns []string) ([]glob.Glob, error) {
-	result := make([]glob.Glob, len(patterns))
-	for i, pattern := range patterns {
-		g, err := glob.Compile(pattern)
-		if err != nil {
-			return nil, fmt.Errorf("failed to compile glob pattern '%s': %w", pattern, err)
-		}
-		result[i] = g
-	}
-	return result, nil
-}
-
-func anyGlobsMatch(globs []glob.Glob, test string) bool {
+func anyGlobsMatch(globs []string, test string) (bool, error) {
 	for _, g := range globs {
-		if g.Match(test) {
-			return true
+		match, err := doublestar.Match(g, test)
+		if err != nil {
+			return false, err
+		}
+		if match {
+			return true, nil
 		}
 	}
-	return false
+	return false, nil
 }
 
-func longestGlobsMatch(globs []glob.Glob, test string) (string, int) {
+func longestGlobsMatch(globs []string, test string) (string, int, error) {
 	result := ""
 	index := 0
 	for i, g := range globs {
-		match := longestGlobMatch(g, test)
+		match, err := longestGlobMatch(g, test)
+		if err != nil {
+			return "", 0, err
+		}
 		if len(match) > len(result) {
 			result = match
 			index = i
 		}
 	}
-	return result, index
+	return result, index, nil
 }
 
-func longestGlobMatch(g glob.Glob, test string) string {
+func longestGlobMatch(g string, test string) (string, error) {
 	for i := 0; i < len(test); i++ {
 		t := test[:len(test)-i]
-		if g.Match(t) {
-			return t
+		match, err := doublestar.Match(g, t)
+		if err != nil {
+			return "", err
+		}
+		if match {
+			return t, nil
 		}
 	}
-	return ""
+	return "", nil
 }
 
 // From https://stackoverflow.com/a/49196644
@@ -181,23 +138,38 @@ func calcCopyPath(cfg *config, copyPaths copyPaths, file fileInfo) error {
 
 	// apply include_external_repositories (if the file is from an external repository)
 	if file.Workspace != "" {
-		if !anyGlobsMatch(cfg.IncludeExternalRepositoriesGlobs, file.Workspace) {
+		match, err := anyGlobsMatch(cfg.IncludeExternalRepositories, file.Workspace)
+		if err != nil {
+			return err
+		}
+		if !match {
 			return nil // external workspace is not included
 		}
 	}
 
 	// apply include_srcs_packages
-	if !anyGlobsMatch(cfg.IncludeSrcsPackagesGlobs, file.Package) {
+	match, err := anyGlobsMatch(cfg.IncludeSrcsPackages, file.Package)
+	if err != nil {
+		return err
+	}
+	if !match {
 		return nil // package is not included
 	}
 
 	// apply exclude_srcs_packages
-	if anyGlobsMatch(cfg.ExcludeSrcsPackagesGlobs, file.Package) {
+	match, err = anyGlobsMatch(cfg.ExcludeSrcsPackages, file.Package)
+	if err != nil {
+		return err
+	}
+	if match {
 		return nil // package is excluded
 	}
 
 	// apply root_paths
-	rootPathMatch, _ := longestGlobsMatch(cfg.RootPathsGlobs, outputRoot)
+	rootPathMatch, _, err := longestGlobsMatch(cfg.RootPaths, outputRoot)
+	if err != nil {
+		return err
+	}
 	if rootPathMatch != "" {
 		outputPath = outputPath[len(rootPathMatch):]
 		if strings.HasPrefix(outputPath, "/") {
@@ -206,17 +178,28 @@ func calcCopyPath(cfg *config, copyPaths copyPaths, file fileInfo) error {
 	}
 
 	// apply include_srcs_patterns
-	if !anyGlobsMatch(cfg.IncludeSrcsPatternsGlobs, outputPath) {
+	match, err = anyGlobsMatch(cfg.IncludeSrcsPatterns, outputPath)
+	if err != nil {
+		return err
+	}
+	if !match {
 		return nil // outputPath is not included
 	}
 
-	// apply include_srcs_patterns
-	if anyGlobsMatch(cfg.ExcludeSrcsPatternsGlobs, outputPath) {
+	// apply exclude_srcs_patterns
+	match, err = anyGlobsMatch(cfg.ExcludeSrcsPatterns, outputPath)
+	if err != nil {
+		return err
+	}
+	if match {
 		return nil // outputPath is excluded
 	}
 
 	// apply replace_prefixes
-	replacePrefixMatch, replacePrefixIndex := longestGlobsMatch(cfg.ReplacePrefixesGlobs, outputPath)
+	replacePrefixMatch, replacePrefixIndex, err := longestGlobsMatch(cfg.ReplacePrefixesKeys, outputPath)
+	if err != nil {
+		return err
+	}
 	if replacePrefixMatch != "" {
 		replaceWith := cfg.ReplacePrefixes[cfg.ReplacePrefixesKeys[replacePrefixIndex]]
 		outputPath = replaceWith + outputPath[len(replacePrefixMatch):]
