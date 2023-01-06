@@ -808,8 +808,6 @@ def copy_to_directory_bin_action(
             fail(msg)
 
         file_infos.append({
-            # the path might be a file if it came from a DirectoryPathInfo or it is a source directory
-            "maybe_directory": f.file.is_directory or f.file.is_source,
             "package": f.file.owner.package,
             "path": f.path,
             "root_path": f.root_path,

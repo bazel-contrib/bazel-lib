@@ -1,6 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("//lib:diff_test.bzl", "diff_test")
-load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:copy_directory.bzl", "copy_directory")
 load("//lib:copy_to_bin.bzl", "copy_to_bin")
 load(":lib.bzl", "lib")
 load(":pkg.bzl", "pkg")
@@ -8,6 +8,12 @@ load(":pkg.bzl", "pkg")
 copy_to_bin(
     name = "copy_1",
     srcs = ["1"],
+)
+
+copy_directory(
+    name = "tree_artifact",
+    src = "ds",
+    out = "dsc",
 )
 
 lib(
@@ -27,23 +33,26 @@ lib(
 # pkg should copy DefaultInfo files and OtherInfo files
 pkg(
     name = "pkg",
-    srcs = [":lib"],
-    out = "pkg",
-)
-
-copy_to_directory(
-    name = "expected_pkg",
     srcs = [
-        "1",
-        "2",
-        "d",
+        ":lib",
+        # pass in a tree artifact to ensure that that is handled correctly and
+        # that symlinks to tree artifacts are handled correctly (see pkg.bzl
+        # implementation which creates symlinks to each file in ctx.files.srcs)
+        ":tree_artifact",
     ],
+    out = "pkg",
+    use_declare_symlink = select({
+        "//lib/tests:experimental_allow_unresolved_symlinks": True,
+        "//conditions:default": False,
+    }),
 )
 
 diff_test(
     name = "test",
     file1 = ":pkg",
     file2 = ":expected_pkg",
+    # Source directories are not support on remote execution.
+    tags = ["no-remote-exec"],
 )
 
 bzl_library(

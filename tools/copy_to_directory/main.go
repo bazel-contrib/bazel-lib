@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,13 +17,14 @@ import (
 )
 
 type fileInfo struct {
-	MaybeDirectory bool   `json:"maybe_directory"`
-	Package        string `json:"package"`
-	Path           string `json:"path"`
-	RootPath       string `json:"root_path"`
-	ShortPath      string `json:"short_path"`
-	Workspace      string `json:"workspace"`
-	WorkspacePath  string `json:"workspace_path"`
+	Package       string `json:"package"`
+	Path          string `json:"path"`
+	RootPath      string `json:"root_path"`
+	ShortPath     string `json:"short_path"`
+	Workspace     string `json:"workspace"`
+	WorkspacePath string `json:"workspace_path"`
+
+	FileInfo fs.FileInfo
 }
 
 type config struct {
@@ -41,7 +43,8 @@ type config struct {
 	ReplacePrefixesKeys []string
 }
 
-type copyPaths map[string]fileInfo
+type copyMap map[string]fileInfo
+type pathSet map[string]bool
 
 func parseConfig(configPath string) (*config, error) {
 	f, err := os.Open(configPath)
@@ -108,19 +111,91 @@ func longestGlobMatch(g string, test string) (string, error) {
 	return "", nil
 }
 
-// From https://stackoverflow.com/a/49196644
-func filePathWalkDir(root string) ([]string, error) {
-	var files []string
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			files = append(files, path)
+func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo) error {
+	if srcPaths == nil {
+		srcPaths = pathSet{}
+	}
+	srcPaths[file.Path] = true
+	// filepath.WalkDir walks the file tree rooted at root, calling fn for each file or directory in
+	// the tree, including root. See https://pkg.go.dev/path/filepath#WalkDir for more info.
+	// TODO: switch to the more efficient https://pkg.go.dev/io/fs#WalkDirFunc variant?
+	return filepath.Walk(file.Path, func(p string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			// remember that this directory was visited to prevent infinite recursive symlink loops and
+			// then short-circuit by returning nil since filepath.Walk will visit files contained within
+			// this directory automatically
+			srcPaths[p] = true
+			return nil
 		}
-		return nil
+
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
+			// a symlink to a directory which is intentionally never followed by filepath.Walk to avoid infinite recursion
+			linkPath, err := os.Readlink(p)
+			if err != nil {
+				return err
+			}
+			if !path.IsAbs(linkPath) {
+				linkPath = path.Join(path.Dir(p), linkPath)
+			}
+			if srcPaths[linkPath] {
+				// recursive symlink; silently ignore
+				return nil
+			}
+			stat, err := os.Stat(linkPath)
+			if err != nil {
+				return fmt.Errorf("failed to stat file %s pointed to by symlink %s: %w", file.Path, p, err)
+			}
+			if stat.IsDir() {
+				// a symlink to a directory which is intentionally not followed by filepath.Walk to avoid
+				// infinite recursive loops
+				f := fileInfo{
+					Package:       file.Package,
+					Path:          linkPath,
+					RootPath:      file.RootPath,
+					ShortPath:     path.Join(file.ShortPath),
+					Workspace:     file.Workspace,
+					WorkspacePath: path.Join(file.WorkspacePath),
+					FileInfo:      stat,
+				}
+				return calcCopyDir(cfg, copyPaths, srcPaths, f)
+			} else {
+				// a regular file
+				r, err := filepath.Rel(file.Path, p)
+				if err != nil {
+					return fmt.Errorf("failed to walk directory %s: %w", file.Path, err)
+				}
+				f := fileInfo{
+					Package:       file.Package,
+					Path:          linkPath,
+					RootPath:      file.RootPath,
+					ShortPath:     path.Join(file.ShortPath, r),
+					Workspace:     file.Workspace,
+					WorkspacePath: path.Join(file.WorkspacePath, r),
+					FileInfo:      stat,
+				}
+				return calcCopyPath(cfg, copyPaths, f)
+			}
+		}
+
+		// a regular file
+		r, err := filepath.Rel(file.Path, p)
+		if err != nil {
+			return fmt.Errorf("failed to walk directory %s: %w", file.Path, err)
+		}
+		f := fileInfo{
+			Package:       file.Package,
+			Path:          p,
+			RootPath:      file.RootPath,
+			ShortPath:     path.Join(file.ShortPath, r),
+			Workspace:     file.Workspace,
+			WorkspacePath: path.Join(file.WorkspacePath, r),
+			FileInfo:      info,
+		}
+		return calcCopyPath(cfg, copyPaths, f)
 	})
-	return files, err
 }
 
-func calcCopyPath(cfg *config, copyPaths copyPaths, file fileInfo) error {
+func calcCopyPath(cfg *config, copyPaths copyMap, file fileInfo) error {
 	// Apply filters and transformations in the following order:
 	//
 	// - `include_external_repositories`
@@ -211,11 +286,9 @@ func calcCopyPath(cfg *config, copyPaths copyPaths, file fileInfo) error {
 	dup, exists := copyPaths[outputPath]
 	if exists {
 		if dup.ShortPath == file.ShortPath {
-			// this is likely the same file listed twice: the original in the source
-			// tree and the copy in the output tree
-			// TODO: stat the two files to double check that they are the same
-			if file.RootPath == "" {
-				// when this happens prefer the output tree copy.
+			if file.FileInfo.Size() == dup.FileInfo.Size() && file.RootPath == "" {
+				// this is likely the same file listed twice: the original in the source tree and the copy
+				// in the output tree; when this happens prefer the output tree copy.
 				return nil
 			}
 		} else if !cfg.AllowOverwrites {
@@ -227,77 +300,46 @@ func calcCopyPath(cfg *config, copyPaths copyPaths, file fileInfo) error {
 	return nil
 }
 
-func calcCopyPaths(cfg *config) (copyPaths, error) {
-	result := copyPaths{}
-
+func calcCopyPaths(cfg *config) (copyMap, error) {
+	copyPaths := copyMap{}
 	for _, file := range cfg.Files {
-		if file.MaybeDirectory {
-			// This entry may be a directory
-			s, err := os.Stat(file.Path)
-			if err != nil {
-				return nil, fmt.Errorf("failed to stats file %s: %w", file.Path, err)
-			}
-			if s.IsDir() {
-				// List files in the directory recursively and copy each file individually
-				files, err := filePathWalkDir(file.Path)
-				if err != nil {
-					return nil, fmt.Errorf("failed to walk directory %s: %w", file.Path, err)
-				}
-				for _, f := range files {
-					r, err := filepath.Rel(file.Path, f)
-					if err != nil {
-						return nil, fmt.Errorf("failed to walk directory %s: %w", file.Path, err)
-					}
-					dirFile := fileInfo{
-						MaybeDirectory: false,
-						Package:        file.Package,
-						Path:           f,
-						RootPath:       file.RootPath,
-						ShortPath:      path.Join(file.ShortPath, r),
-						Workspace:      file.Workspace,
-						WorkspacePath:  path.Join(file.WorkspacePath, r),
-					}
-					if err := calcCopyPath(cfg, result, dirFile); err != nil {
-						return nil, err
-					}
-				}
-				continue
-			}
-			// The entry is not a directory
-			file.MaybeDirectory = false
+		stat, err := os.Stat(file.Path)
+		if err != nil {
+			return nil, fmt.Errorf("failed to stat file %s: %w", file.Path, err)
 		}
-		if err := calcCopyPath(cfg, result, file); err != nil {
-			return nil, err
+		file.FileInfo = stat
+		if file.FileInfo.IsDir() {
+			if err := calcCopyDir(cfg, copyPaths, nil, file); err != nil {
+				return nil, err
+			}
+		} else {
+			if err := calcCopyPath(cfg, copyPaths, file); err != nil {
+				return nil, err
+			}
 		}
 	}
-
-	return result, nil
+	return copyPaths, nil
 }
 
 // From https://opensource.com/article/18/6/copying-files-go
-func copy(src, dst string) (int64, error) {
-	sourceFileStat, err := os.Stat(src)
-	if err != nil {
-		return 0, err
+func copy(src fileInfo, dst string) error {
+	if !src.FileInfo.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", src.Path)
 	}
 
-	if !sourceFileStat.Mode().IsRegular() {
-		return 0, fmt.Errorf("%s is not a regular file", src)
-	}
-
-	source, err := os.Open(src)
+	source, err := os.Open(src.Path)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	defer source.Close()
 
 	destination, err := os.Create(dst)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	defer destination.Close()
-	nBytes, err := io.Copy(destination, source)
-	return nBytes, err
+	_, err = io.Copy(destination, source)
+	return err
 }
 
 // https://play.golang.org/p/Qg_uv_inCek
@@ -351,13 +393,13 @@ func main() {
 	// TODO: split out into parallel go routines?
 	for to, from := range copyPaths {
 		if cfg.Verbose {
-			fmt.Printf("%v => %v\n", from.Path, to)
+			fmt.Printf("copying %v => %v\n", from.Path, to)
 		}
 		err := os.MkdirAll(path.Dir(to), os.ModePerm)
 		if err != nil {
 			log.Fatal(err)
 		}
-		_, err = copy(from.Path, to)
+		err = copy(from, to)
 		if err != nil {
 			log.Fatal(err)
 		}
