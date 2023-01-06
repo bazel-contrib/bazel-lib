@@ -6,4 +6,4 @@
 
 set -o errexit -o nounset -o pipefail
 
-file "$(realpath "$1")" | grep -q "$2"
+file "$1" | grep -q "$2"
