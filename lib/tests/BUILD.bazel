@@ -10,6 +10,12 @@ load(":paths_test.bzl", "paths_test_suite")
 load(":glob_match_test.bzl", "glob_match_test_suite")
 load(":base64_tests.bzl", "base64_test_suite")
 
+config_setting(
+    name = "experimental_allow_unresolved_symlinks",
+    values = {"experimental_allow_unresolved_symlinks": "true"},
+    visibility = ["//visibility:public"],
+)
+
 expand_make_vars_test_suite()
 
 paths_test_suite()
