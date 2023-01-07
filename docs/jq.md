@@ -2,6 +2,31 @@
 
 Public API for jq
 
+<a id="assert_json_matches"></a>
+
+## assert_json_matches
+
+<pre>
+assert_json_matches(<a href="#assert_json_matches-name">name</a>, <a href="#assert_json_matches-file1">file1</a>, <a href="#assert_json_matches-filter1">filter1</a>, <a href="#assert_json_matches-file2">file2</a>, <a href="#assert_json_matches-filter2">filter2</a>)
+</pre>
+
+Assert that the given json files have the same semantic content.
+
+Uses jq to filter each file. Use `"."` as the filter to compare the whole file.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="assert_json_matches-name"></a>name |  name of resulting diff_test target   |  none |
+| <a id="assert_json_matches-file1"></a>file1 |  a json file   |  none |
+| <a id="assert_json_matches-filter1"></a>filter1 |  a jq filter to apply to file1   |  none |
+| <a id="assert_json_matches-file2"></a>file2 |  another json file   |  none |
+| <a id="assert_json_matches-filter2"></a>filter2 |  a jq filter to apply to file2   |  none |
+
+
 <a id="jq"></a>
 
 ## jq
