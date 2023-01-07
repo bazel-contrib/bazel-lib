@@ -65,7 +65,10 @@ bzl_library(
     name = "jq",
     srcs = ["jq.bzl"],
     visibility = ["//visibility:public"],
-    deps = ["//lib/private/docs:jq"],
+    deps = [
+        "//lib/private/docs:jq",
+        "@bazel_skylib//rules:diff_test",
+    ],
 )
 
 bzl_library(
