@@ -227,3 +227,8 @@ bzl_library(
     name = "base64",
     srcs = ["//lib/private:base64.bzl"],
 )
+
+bzl_library(
+    name = "copy_to_directory_toolchain",
+    srcs = ["//lib/private:copy_to_directory_toolchain.bzl"],
+)
