@@ -1,0 +1,17 @@
+module(
+    name = "e2e_bzlmod_write_source_files_external",
+    compatibility_level = 1,
+    version = "0.0.0",
+)
+
+bazel_dep(name = "aspect_bazel_lib", version = "0.0.0")
+
+local_path_override(
+    module_name = "aspect_bazel_lib",
+    path = "../..",
+)
+
+test_ext = use_extension("//:test_extension.bzl", "test_ext")
+
+use_repo(test_ext, "test")
+
