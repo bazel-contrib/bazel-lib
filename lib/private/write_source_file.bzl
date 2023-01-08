@@ -57,8 +57,7 @@ def write_source_file(
         if not out_file:
             fail("out_file must be specified if in_file is set")
 
-    if in_file and out_file:
-        in_file = utils.to_label(in_file)
+    if out_file:
         out_file = utils.to_label(out_file)
 
         if utils.is_external_label(out_file):
