@@ -78,13 +78,8 @@ def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
     Uses jq to filter each file. The default value of `"."` as the filter
     means to compare the whole file.
 
-    WORKSPACE users must register the jq toolchain in their to use this rule:
-
-    ```starlark
-    load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
-
-    register_jq_toolchains()
-    ```
+    See the [jq rule](./jq.md#jq) for more about the filter expressions as well as
+    setup notes for the `jq` toolchain.
 
     Args:
         name: name of resulting diff_test target
