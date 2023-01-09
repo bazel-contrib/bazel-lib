@@ -1,45 +1,6 @@
 """Public API for jq"""
 
 load("//lib/private:jq.bzl", _jq_lib = "jq_lib")
-load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-
-def assert_json_matches(name, file1, filter1, file2, filter2):
-    """Assert that the given json files have the same semantic content.
-
-    Uses jq to filter each file. Use `"."` as the filter to compare the whole file.
-
-    Args:
-        name: name of resulting diff_test target
-        file1: a json file
-        file2: another json file
-        filter1: a jq filter to apply to file1
-        filter2: a jq filter to apply to file2
-    """
-    name1 = "_{}_jq1".format(name)
-    name2 = "_{}_jq2".format(name)
-    jq(
-        name = name1,
-        srcs = [file1],
-        filter = filter1,
-    )
-
-    jq(
-        name = name2,
-        srcs = [file2],
-        filter = filter2,
-    )
-
-    diff_test(
-        name = name,
-        file1 = name1,
-        file2 = name2,
-        failure_message = "'{}' from {} doesn't match '{}' from {}".format(
-            filter1,
-            file1,
-            filter2,
-            file2,
-        ),
-    )
 
 _jq_rule = rule(
     attrs = _jq_lib.attrs,

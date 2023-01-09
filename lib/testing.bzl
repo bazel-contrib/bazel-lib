@@ -5,6 +5,7 @@ load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:utils.bzl", "default_timeout")
+load("//lib:jq.bzl", "jq")
 
 def assert_contains(name, actual, expected, size = None, timeout = None):
     """Generates a test target which fails if the file doesn't contain the string.
@@ -69,4 +70,51 @@ def assert_outputs(name, actual, expected):
         name = name,
         file1 = "_expected_ " + name,
         file2 = "_actual_" + name,
+    )
+
+def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
+    """Assert that the given json files have the same semantic content.
+
+    Uses jq to filter each file. The default value of `"."` as the filter
+    means to compare the whole file.
+
+    WORKSPACE users must register the jq toolchain in their to use this rule:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
+
+    register_jq_toolchains()
+    ```
+
+    Args:
+        name: name of resulting diff_test target
+        file1: a json file
+        file2: another json file
+        filter1: a jq filter to apply to file1
+        filter2: a jq filter to apply to file2
+    """
+    name1 = "_{}_jq1".format(name)
+    name2 = "_{}_jq2".format(name)
+    jq(
+        name = name1,
+        srcs = [file1],
+        filter = filter1,
+    )
+
+    jq(
+        name = name2,
+        srcs = [file2],
+        filter = filter2,
+    )
+
+    diff_test(
+        name = name,
+        file1 = name1,
+        file2 = name2,
+        failure_message = "'{}' from {} doesn't match '{}' from {}".format(
+            filter1,
+            file1,
+            filter2,
+            file2,
+        ),
     )
