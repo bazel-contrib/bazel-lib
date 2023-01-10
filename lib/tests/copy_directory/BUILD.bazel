@@ -28,10 +28,24 @@ copy_directory(
     name = "dir_copy",
     src = "dir",
     out = "copy_of_dir",
+    verbose = True,
 )
 
 diff_test(
     name = "copy_directory_test",
     file1 = ":dir",
     file2 = ":dir_copy",
+)
+
+copy_directory(
+    name = "external_dir_copy",
+    src = "@external_test_repo//:test_a",
+    out = "external_dir",
+    verbose = True,
+)
+
+diff_test(
+    name = "copy_external_directory_test",
+    file1 = ":external_dir_copy",
+    file2 = "@external_test_repo//:test_a",
 )

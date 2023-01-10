@@ -206,10 +206,25 @@ Globs are supported (see rule docstring above).
     # allow_overwrites
     "allow_overwrites": """If True, allow files to be overwritten if the same output file is copied to twice.
 
-If set, then the order of srcs matters as the last copy of a particular file will win.
-
-This setting has no effect on Windows where overwrites are always allowed.
+The order of srcs matters as the last copy of a particular file will win when overwriting.
+Performance of copy_to_directory will be slightly degraded when allow_overwrites is True
+since copies cannot be parallelized out as they are calculated. Instead all copy paths
+must be calculated before any copies can be started.
 """,
+    # hardlink
+    "hardlink": """Controls when to use hardlinks to files instead of making copies.
+
+Creating hardlinks is much faster than making copies of files with the caveat that
+hardlinks share file permissions with their source.
+
+Since Bazel removes write permissions on files in the output tree after an action completes,
+hardlinks to source files are not recommended since write permissions will be inadvertently
+removed from sources files.
+
+- `auto`: hardlinks are used for generated files already in the output tree
+- `off`: all files are copied
+- `on`: hardlinks are used for all files (not recommended)
+    """,
     # verbose
     "verbose": """If true, prints out verbose logs to stdout""",
 }
@@ -253,6 +268,11 @@ _copy_to_directory_attr = {
     ),
     "allow_overwrites": attr.bool(
         doc = _copy_to_directory_attr_doc["allow_overwrites"],
+    ),
+    "hardlink": attr.string(
+        values = ["auto", "off", "on"],
+        default = "auto",
+        doc = _copy_to_directory_attr_doc["hardlink"],
     ),
     "verbose": attr.bool(
         doc = _copy_to_directory_attr_doc["verbose"],
@@ -580,7 +600,8 @@ def _copy_to_directory_impl(ctx):
         ctx,
         name = ctx.attr.name,
         dst = dst,
-        copy_to_directory_bin = copy_to_directory_bin,  # use ctx.executable._tool for development
+        # copy_to_directory_bin = ctx.executable._tool,  # use for development
+        copy_to_directory_bin = copy_to_directory_bin,
         files = ctx.files.srcs,
         targets = [t for t in ctx.attr.srcs if DirectoryPathInfo in t],
         root_paths = ctx.attr.root_paths,
@@ -592,6 +613,7 @@ def _copy_to_directory_impl(ctx):
         exclude_prefixes = ctx.attr.exclude_prefixes,
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
+        hardlink = ctx.attr.hardlink,
         verbose = ctx.attr.verbose,
     )
 
@@ -631,6 +653,7 @@ def copy_to_directory_bin_action(
         exclude_prefixes = [],
         replace_prefixes = {},
         allow_overwrites = False,
+        hardlink = "auto",
         verbose = False):
     """Factory function to copy files to a directory using a tool binary.
 
@@ -686,6 +709,10 @@ def copy_to_directory_bin_action(
             See copy_to_directory rule documentation for more details.
 
         allow_overwrites: If True, allow files to be overwritten if the same output file is copied to twice.
+
+            See copy_to_directory rule documentation for more details.
+
+        hardlink: Controls when to use hardlinks to files instead of making copies.
 
             See copy_to_directory rule documentation for more details.
 
@@ -765,6 +792,12 @@ def copy_to_directory_bin_action(
             msg = "Expected owner target label for file {} to have a workspace name but found None".format(f)
             fail(msg)
 
+        hardlink_file = False
+        if hardlink == "on":
+            hardlink_file = True
+        elif hardlink == "auto":
+            hardlink_file = not f.file.is_source
+
         file_infos.append({
             "package": f.file.owner.package,
             "path": f.path,
@@ -772,6 +805,7 @@ def copy_to_directory_bin_action(
             "short_path": f.short_path,
             "workspace": f.file.owner.workspace_name,
             "workspace_path": f.workspace_path,
+            "hardlink": hardlink_file,
         })
         file_inputs.append(f.file)
 

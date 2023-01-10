@@ -62,8 +62,15 @@ def _copy_bash(ctx, src, dst):
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
+# TODO(2.0): remove the legacy copy_directory_action helper
 def copy_directory_action(ctx, src, dst, is_windows = None):
-    """Factory function that creates an action to copy a directory from src to dst.
+    """Legacy factory function that creates an action to copy a directory from src to dst.
+
+    For improved analysis and runtime performance, it is recommended the switch
+    to `copy_directory_bin_action` which takes a tool binary, typically the
+    `@aspect_bazel_lib//tools/copy_to_directory` `go_binary` either built from
+    source or provided by a toolchain and creates hard links instead of performing full
+    file copies.
 
     This helper is used by copy_directory. It is exposed as a public API so it can be used within
     other rule implementations.
@@ -115,6 +122,7 @@ def copy_directory_bin_action(
         copy_directory_bin: Copy to directory tool binary.
 
         hardlink: Controls when to use hardlinks to files instead of making copies.
+
             See copy_directory rule documentation for more details.
 
         verbose: If true, prints out verbose logs to stdout
@@ -142,13 +150,26 @@ def copy_directory_bin_action(
     )
 
 def _copy_directory_impl(ctx):
+    copy_directory_bin = ctx.toolchains["@aspect_bazel_lib//lib:copy_directory_toolchain_type"].copy_directory_info.bin
+
     dst = ctx.actions.declare_directory(ctx.attr.out)
-    copy_directory_action(ctx, ctx.file.src, dst)
 
-    files = depset(direct = [dst])
-    runfiles = ctx.runfiles(files = [dst])
+    copy_directory_bin_action(
+        ctx,
+        src = ctx.file.src,
+        dst = dst,
+        # copy_directory_bin = ctx.executable._tool,  # use for development
+        copy_directory_bin = copy_directory_bin,
+        hardlink = ctx.attr.hardlink,
+        verbose = ctx.attr.verbose,
+    )
 
-    return [DefaultInfo(files = files, runfiles = runfiles)]
+    return [
+        DefaultInfo(
+            files = depset([dst]),
+            runfiles = ctx.runfiles([dst]),
+        ),
+    ]
 
 _copy_directory = rule(
     implementation = _copy_directory_impl,
@@ -158,10 +179,28 @@ _copy_directory = rule(
         # Cannot declare out as an output here, because there's no API for declaring
         # TreeArtifact outputs.
         "out": attr.string(mandatory = True),
+        "hardlink": attr.string(
+            values = ["auto", "off", "on"],
+            default = "auto",
+        ),
+        "verbose": attr.bool(),
+        # use '_tool' attribute for development only; do not commit with this attribute active since it
+        # propagates a dependency on rules_go which would be breaking for users
+        # "_tool": attr.label(
+        #     executable = True,
+        #     cfg = "exec",
+        #     default = "//tools/copy_directory",
+        # ),
     },
+    toolchains = ["@aspect_bazel_lib//lib:copy_directory_toolchain_type"],
 )
 
-def copy_directory(name, src, out, **kwargs):
+def copy_directory(
+        name,
+        src,
+        out,
+        hardlink = "auto",
+        **kwargs):
     """Copies a directory to another location.
 
     This rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command on Windows (no Bash is required).
@@ -174,13 +213,30 @@ def copy_directory(name, src, out, **kwargs):
 
     Args:
       name: Name of the rule.
+
       src: The directory to make a copy of. Can be a source directory or TreeArtifact.
+
       out: Path of the output directory, relative to this package.
+
+      hardlink: Controls when to use hardlinks to files instead of making copies.
+
+        Creating hardlinks is much faster than making copies of files with the caveat that
+        hardlinks share file permissions with their source.
+
+        Since Bazel removes write permissions on files in the output tree after an action completes,
+        hardlinks to source files within source directories is not recommended since write
+        permissions will be inadvertently removed from sources files.
+
+        - "auto": hardlinks are used if src is a tree artifact already in the output tree
+        - "off": files are always copied
+        - "on": hardlinks are always used (not recommended)
+
       **kwargs: further keyword arguments, e.g. `visibility`
     """
     _copy_directory(
         name = name,
         src = src,
         out = out,
+        hardlink = hardlink,
         **kwargs
     )

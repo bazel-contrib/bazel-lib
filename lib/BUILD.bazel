@@ -24,6 +24,10 @@ toolchain_type(
 )
 
 toolchain_type(
+    name = "copy_directory_toolchain_type",
+)
+
+toolchain_type(
     name = "copy_to_directory_toolchain_type",
 )
 
@@ -193,6 +197,7 @@ bzl_library(
     srcs = ["repositories.bzl"],
     deps = [
         ":utils",
+        "//lib/private/docs:copy_directory_toolchain",
         "//lib/private/docs:copy_to_directory_toolchain",
         "//lib/private/docs:coreutils_toolchain",
         "//lib/private/docs:jq_toolchain",

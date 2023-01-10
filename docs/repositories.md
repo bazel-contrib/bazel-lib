@@ -20,6 +20,25 @@ Load dependencies required by aspect rules
 | <a id="aspect_bazel_lib_dependencies-override_local_config_platform"></a>override_local_config_platform |  override the @local_config_platform repository with one that adds stardoc support for loading constraints.bzl.<br><br>Should be set in repositories that load @aspect_bazel_lib copy actions and also generate stardoc.   |  <code>False</code> |
 
 
+<a id="register_copy_directory_toolchains"></a>
+
+## register_copy_directory_toolchains
+
+<pre>
+register_copy_directory_toolchains(<a href="#register_copy_directory_toolchains-name">name</a>, <a href="#register_copy_directory_toolchains-register">register</a>)
+</pre>
+
+Registers copy_directory toolchain and repositories
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="register_copy_directory_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"copy_directory"</code> |
+| <a id="register_copy_directory_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+
+
 <a id="register_copy_to_directory_toolchains"></a>
 
 ## register_copy_to_directory_toolchains
