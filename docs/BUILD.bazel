@@ -18,8 +18,8 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
-    name = "copy_to_bin",
-    bzl_library_target = "//lib:copy_to_bin",
+    name = "output_filegroup",
+    bzl_library_target = "//lib:output_filegroup",
 )
 
 stardoc_with_diff_test(

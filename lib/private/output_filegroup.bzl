@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Implementation of copy_to_bin macro and underlying rules."""
+"""Implementation of output_filegroup macro and underlying rules."""
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":copy_file.bzl", "copy_file_action")
 
-def copy_file_to_bin_action(ctx, file, is_windows = None):
+def output_file_action(ctx, file, is_windows = None):
     """Helper function that creates an action to copy a file to the output tree.
 
     File are copied to the same workspace-relative path. The resulting files is
@@ -65,7 +65,7 @@ and/or correct the `glob` patterns that are including these files in the sources
 
 def _file_in_external_repo_error_msg(file):
     return """
-Cannot use copy_to_bin to copy {file_basename} from the external repository @{repository}.
+Cannot use output_filegroup to copy {file_basename} from the external repository @{repository}.
 Files can only be copied from the source tree to their short path equivalent in the output tree.
 """.format(
         file_basename = file.basename,
@@ -73,15 +73,16 @@ Files can only be copied from the source tree to their short path equivalent in 
     )
 
 def _file_in_different_package_error_msg(file, curr_package_label):
+    # TODO: fix bug when file is in a subfolder of a package the suggested target is incorrect
     return """
 Expected to find file {file_basename} in {package}, but instead it is in {file_package}.
 
-To use copy_to_bin, either move {file_basename} to {package}, or move the copy_to_bin
+To use output_filegroup, either move {file_basename} to {package}, or move the output_filegroup
 target to {file_package} using:
 
-    buildozer 'new copy_to_bin {target_name}' {file_package}:__pkg__
+    buildozer 'new output_filegroup {target_name}' {file_package}:__pkg__
     buildozer 'add srcs {file_basename}' {file_package}:{target_name}
-    buildozer 'new_load @aspect_bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
+    buildozer 'new_load @aspect_bazel_lib//lib:output_filegroup.bzl output_filegroup' {file_package}:__pkg__
     buildozer 'add visibility {package}:__subpackages__' {file_package}:{target_name}
 
     """.format(
@@ -91,7 +92,7 @@ target to {file_package} using:
         package = "%s//%s" % (curr_package_label.workspace_name, curr_package_label.package),
     )
 
-def copy_files_to_bin_actions(ctx, files, is_windows = None):
+def output_files_actions(ctx, files, is_windows = None):
     """Helper function that creates actions to copy files to the output tree.
 
     Files are copied to the same workspace-relative path. The resulting list of
@@ -110,24 +111,24 @@ def copy_files_to_bin_actions(ctx, files, is_windows = None):
     """
 
     # TODO(2.0): remove deprecated & unused is_windows parameter
-    return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
+    return [output_file_action(ctx, file, is_windows = is_windows) for file in files]
 
-def _copy_to_bin_impl(ctx):
-    files = copy_files_to_bin_actions(ctx, ctx.files.srcs)
+def _output_filegroup_impl(ctx):
+    files = output_files_actions(ctx, ctx.files.srcs)
     return DefaultInfo(
         files = depset(files),
         runfiles = ctx.runfiles(files = files),
     )
 
-_copy_to_bin = rule(
-    implementation = _copy_to_bin_impl,
+_output_filegroup = rule(
+    implementation = _output_filegroup_impl,
     provides = [DefaultInfo],
     attrs = {
         "srcs": attr.label_list(mandatory = True, allow_files = True),
     },
 )
 
-def copy_to_bin(name, srcs, **kwargs):
+def output_filegroup(name, srcs, **kwargs):
     """Copies a source file to output tree at the same workspace-relative path.
 
     e.g. `<execroot>/path/to/file -> <execroot>/bazel-out/<platform>/bin/path/to/file`
@@ -147,7 +148,7 @@ def copy_to_bin(name, srcs, **kwargs):
         srcs: A list of labels. File(s) to copy.
         **kwargs: further keyword arguments, e.g. `visibility`
     """
-    _copy_to_bin(
+    _output_filegroup(
         name = name,
         srcs = srcs,
         **kwargs

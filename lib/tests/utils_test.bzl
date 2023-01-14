@@ -103,8 +103,8 @@ def file_exists_test():
         fail("does-not-exist does not exist")
     if not utils.file_exists("utils_test.bzl"):
         fail("utils_test.bzl does exist")
-    if (utils.file_exists("copy_to_bin")):
-        fail("copy_to_bin exists, but is a directory")
+    if (utils.file_exists("output_filegroup")):
+        fail("output_filegroup exists, but is a directory")
 
 # buildifier: disable=function-docstring
 def utils_test_suite():

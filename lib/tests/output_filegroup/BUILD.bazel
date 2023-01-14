@@ -1,9 +1,9 @@
-"tests for copy_to_bin"
+"tests for output_filegroup"
 
-load("//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//lib:output_filegroup.bzl", "output_filegroup")
 load("//lib:output_files.bzl", "output_files")
 
-copy_to_bin(
+output_filegroup(
     name = "copy",
     srcs = [
         "file1",
@@ -28,7 +28,7 @@ sh_test(
     timeout = "short",
     srcs = ["test.sh"],
     args = [
-        "lib/tests/copy_to_bin/file1",
+        "lib/tests/output_filegroup/file1",
         "$(execpath file1)",
         "$(execpath :pull_out_file1)",
     ],
@@ -43,7 +43,7 @@ sh_test(
     timeout = "short",
     srcs = ["test.sh"],
     args = [
-        "lib/tests/copy_to_bin/file2",
+        "lib/tests/output_filegroup/file2",
         "$(execpath file2)",
         "$(execpath :pull_out_file2)",
     ],
@@ -54,14 +54,14 @@ sh_test(
 )
 
 # Case: two different targets copying same file to bin
-copy_to_bin(
+output_filegroup(
     name = "copy_same_file_1",
     srcs = [
         "file3",
     ],
 )
 
-copy_to_bin(
+output_filegroup(
     name = "copy_same_file_2",
     srcs = [
         "file3",

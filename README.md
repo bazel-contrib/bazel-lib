@@ -22,8 +22,8 @@ Installation instructions are included on each release:
 
 - [copy_directory](docs/copy_directory.md) Copies directories to another package.
 - [copy_file](docs/copy_file.md) Copies files to another package.
-- [copy_to_bin](docs/copy_to_bin.md) Copies a source file to output tree at the same workspace-relative path.
 - [copy_to_directory](docs/copy_to_directory.md) Copies and arranges files and directories into a new directory.
+- [output_filegroup](docs/output_filegroup.md) Copies a source file to output tree at the same workspace-relative path.
 - [write_source_files](docs/write_source_files.md) Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
 ## Transforming files

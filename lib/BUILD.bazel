@@ -101,9 +101,9 @@ bzl_library(
 )
 
 bzl_library(
-    name = "copy_to_bin",
-    srcs = ["copy_to_bin.bzl"],
-    deps = ["//lib/private/docs:copy_to_bin"],
+    name = "output_filegroup",
+    srcs = ["output_filegroup.bzl"],
+    deps = ["//lib/private/docs:output_filegroup"],
 )
 
 bzl_library(

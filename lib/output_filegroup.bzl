@@ -14,7 +14,6 @@ load(
     _output_files_actions = "output_files_actions",
 )
 
-# TODO(2.0): remove these legacy names
-copy_file_to_bin_action = _output_file_action
-copy_files_to_bin_actions = _output_files_actions
-copy_to_bin = _output_filegroup
+output_file_action = _output_file_action
+output_files_actions = _output_files_actions
+output_filegroup = _output_filegroup
