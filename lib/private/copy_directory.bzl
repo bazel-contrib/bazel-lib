@@ -22,7 +22,7 @@ def _copy_cmd(ctx, src, dst):
     # NB: robocopy return non-zero exit codes on success so we must exit 0 after calling it
     cmd_tmpl = "@robocopy \"{src}\" \"{dst}\" /E >NUL & @exit 0"
     mnemonic = "CopyDirectory"
-    progress_message = "Copying directory %s" % src.path
+    progress_message = "Copying directory %{input}"
 
     ctx.actions.write(
         output = bat,
@@ -49,7 +49,7 @@ def _copy_cmd(ctx, src, dst):
 def _copy_bash(ctx, src, dst):
     cmd = "rm -Rf \"$2\" && cp -fR \"$1/\" \"$2\""
     mnemonic = "CopyDirectory"
-    progress_message = "Copying directory %s" % src.path
+    progress_message = "Copying directory %{input}"
 
     ctx.actions.run_shell(
         tools = [src],
@@ -63,7 +63,7 @@ def _copy_bash(ctx, src, dst):
     )
 
 def copy_directory_action(ctx, src, dst, is_windows = None):
-    """Helper function that creates an action to copy a directory from src to dst.
+    """Factory function that creates an action to copy a directory from src to dst.
 
     This helper is used by copy_directory. It is exposed as a public API so it can be used within
     other rule implementations.
@@ -89,6 +89,57 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
         _copy_cmd(ctx, src, dst)
     else:
         _copy_bash(ctx, src, dst)
+
+def copy_directory_bin_action(
+        ctx,
+        src,
+        dst,
+        copy_directory_bin,
+        hardlink = "auto",
+        verbose = False):
+    """Factory function that creates an action to copy a directory from src to dst using a tool binary.
+
+    The tool binary will typically be the `@aspect_bazel_lib//tools/copy_directory` `go_binary`
+    either built from source or provided by a toolchain.
+
+    This helper is used by the copy_directory rule. It is exposed as a public API so it can be used
+    within other rule implementations.
+
+    Args:
+        ctx: The rule context.
+
+        src: The source directory to copy.
+
+        dst: The directory to copy to. Must be a TreeArtifact.
+
+        copy_directory_bin: Copy to directory tool binary.
+
+        hardlink: Controls when to use hardlinks to files instead of making copies.
+            See copy_directory rule documentation for more details.
+
+        verbose: If true, prints out verbose logs to stdout
+    """
+    args = [
+        src.path,
+        dst.path,
+    ]
+    if verbose:
+        args.append("--verbose")
+
+    if hardlink == "on":
+        args.append("--hardlink")
+    elif hardlink == "auto" and not src.is_source:
+        args.append("--hardlink")
+
+    ctx.actions.run(
+        inputs = [src],
+        outputs = [dst],
+        executable = copy_directory_bin,
+        arguments = args,
+        mnemonic = "CopyDirectory",
+        progress_message = "Copying directory %{input}",
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+    )
 
 def _copy_directory_impl(ctx):
     dst = ctx.actions.declare_directory(ctx.attr.out)

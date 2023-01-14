@@ -130,7 +130,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 		}
 
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
-			// a symlink to a directory which is intentionally never followed by filepath.Walk to avoid infinite recursion
+			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
 			linkPath, err := os.Readlink(p)
 			if err != nil {
 				return err
@@ -144,11 +144,10 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 			}
 			stat, err := os.Stat(linkPath)
 			if err != nil {
-				return fmt.Errorf("failed to stat file %s pointed to by symlink %s: %w", file.Path, p, err)
+				return fmt.Errorf("failed to stat file %s pointed to by symlink %s: %w", linkPath, p, err)
 			}
 			if stat.IsDir() {
-				// a symlink to a directory which is intentionally not followed by filepath.Walk to avoid
-				// infinite recursive loops
+				// symlink points to a directory
 				f := fileInfo{
 					Package:       file.Package,
 					Path:          linkPath,
@@ -161,7 +160,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 				}
 				return calcCopyDir(cfg, copyPaths, srcPaths, f)
 			} else {
-				// a regular file
+				// symlink points to a regular file
 				r, err := filepath.Rel(file.Path, p)
 				if err != nil {
 					return fmt.Errorf("failed to walk directory %s: %w", file.Path, err)

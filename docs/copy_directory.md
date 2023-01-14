@@ -44,7 +44,7 @@ for more context.
 copy_directory_action(<a href="#copy_directory_action-ctx">ctx</a>, <a href="#copy_directory_action-src">src</a>, <a href="#copy_directory_action-dst">dst</a>, <a href="#copy_directory_action-is_windows">is_windows</a>)
 </pre>
 
-Helper function that creates an action to copy a directory from src to dst.
+Factory function that creates an action to copy a directory from src to dst.
 
 This helper is used by copy_directory. It is exposed as a public API so it can be used within
 other rule implementations.

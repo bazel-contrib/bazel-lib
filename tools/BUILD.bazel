@@ -10,10 +10,17 @@ multi_platform_go_binaries(
     tags = ["manual"],
 )
 
+multi_platform_go_binaries(
+    name = "copy_directory",
+    embed = ["//tools/copy_directory:copy_directory_lib"],
+    tags = ["manual"],
+)
+
 release(
     name = "release",
     tags = ["manual"],
     targets = [
+        ":copy_directory",
         ":copy_to_directory",
     ],
 )

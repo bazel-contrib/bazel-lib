@@ -49,7 +49,7 @@ copy_to_directory_action(<a href="#copy_to_directory_action-ctx">ctx</a>, <a hre
                          <a href="#copy_to_directory_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_action-is_windows">is_windows</a>)
 </pre>
 
-Legacy helper function to copy files to a directory.
+Legacy factory function to copy files to a directory.
 
 This helper calculates copy paths in Starlark during analysis and performs the copies in a
 bash/bat script. For improved analysis and runtime performance, it is recommended the switch
@@ -93,7 +93,7 @@ copy_to_directory_bin_action(<a href="#copy_to_directory_bin_action-ctx">ctx</a>
                              <a href="#copy_to_directory_bin_action-exclude_prefixes">exclude_prefixes</a>, <a href="#copy_to_directory_bin_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_bin_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_bin_action-verbose">verbose</a>)
 </pre>
 
-Helper function to copy files to a directory using a tool binary.
+Factory function to copy files to a directory using a tool binary.
 
 The tool binary will typically be the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary`
 either built from source or provided by a toolchain.

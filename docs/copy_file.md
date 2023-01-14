@@ -54,7 +54,7 @@ for more context.
 copy_file_action(<a href="#copy_file_action-ctx">ctx</a>, <a href="#copy_file_action-src">src</a>, <a href="#copy_file_action-dst">dst</a>, <a href="#copy_file_action-dir_path">dir_path</a>, <a href="#copy_file_action-is_windows">is_windows</a>)
 </pre>
 
-Helper function that creates an action to copy a file from src to dst.
+Factory function that creates an action to copy a file from src to dst.
 
 If src is a TreeArtifact, dir_path must be specified as the path within
 the TreeArtifact to the file to copy.
