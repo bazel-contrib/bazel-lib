@@ -1,0 +1,36 @@
+load("//lib:diff_test.bzl", "diff_test")
+load(":pkg.bzl", "pkg")
+
+pkg(
+    name = "pkg",
+    src = "d",
+    out = "d2",
+)
+
+pkg(
+    name = "pkg2",
+    src = "pkg",
+    out = "d3",
+)
+
+diff_test(
+    name = "copy_test",
+    file1 = ":d",
+    file2 = ":pkg",
+    # Source directories are not support on remote execution.
+    tags = ["no-remote-exec"],
+)
+
+diff_test(
+    name = "hardlink_test",
+    file1 = ":d",
+    file2 = ":pkg2",
+    # Source directories are not support on remote execution.
+    tags = ["no-remote-exec"],
+)
+
+diff_test(
+    name = "sanity_test",
+    file1 = ":pkg",
+    file2 = ":pkg2",
+)

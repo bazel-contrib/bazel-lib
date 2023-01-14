@@ -85,7 +85,7 @@ def _copy_bash(ctx, src, src_path, dst):
     )
 
 def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
-    """Helper function that creates an action to copy a file from src to dst.
+    """Factory function that creates an action to copy a file from src to dst.
 
     If src is a TreeArtifact, dir_path must be specified as the path within
     the TreeArtifact to the file to copy.

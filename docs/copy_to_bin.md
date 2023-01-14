@@ -17,7 +17,7 @@ https://github.com/bazelbuild/rules_nodejs/blob/8b5d27400db51e7027fe95ae413eeabe
 copy_file_to_bin_action(<a href="#copy_file_to_bin_action-ctx">ctx</a>, <a href="#copy_file_to_bin_action-file">file</a>, <a href="#copy_file_to_bin_action-is_windows">is_windows</a>)
 </pre>
 
-Helper function that creates an action to copy a file to the output tree.
+Factory function that creates an action to copy a file to the output tree.
 
 File are copied to the same workspace-relative path. The resulting files is
 returned.
@@ -48,7 +48,7 @@ A File in the output tree.
 copy_files_to_bin_actions(<a href="#copy_files_to_bin_actions-ctx">ctx</a>, <a href="#copy_files_to_bin_actions-files">files</a>, <a href="#copy_files_to_bin_actions-is_windows">is_windows</a>)
 </pre>
 
-Helper function that creates actions to copy files to the output tree.
+Factory function that creates actions to copy files to the output tree.
 
 Files are copied to the same workspace-relative path. The resulting list of
 files is returned.

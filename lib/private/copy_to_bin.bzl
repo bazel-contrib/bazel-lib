@@ -18,7 +18,7 @@ load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":copy_file.bzl", "copy_file_action")
 
 def copy_file_to_bin_action(ctx, file, is_windows = None):
-    """Helper function that creates an action to copy a file to the output tree.
+    """Factory function that creates an action to copy a file to the output tree.
 
     File are copied to the same workspace-relative path. The resulting files is
     returned.
@@ -92,7 +92,7 @@ target to {file_package} using:
     )
 
 def copy_files_to_bin_actions(ctx, files, is_windows = None):
-    """Helper function that creates actions to copy files to the output tree.
+    """Factory function that creates actions to copy files to the output tree.
 
     Files are copied to the same workspace-relative path. The resulting list of
     files is returned.
