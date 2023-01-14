@@ -23,6 +23,7 @@ type fileInfo struct {
 	ShortPath     string `json:"short_path"`
 	Workspace     string `json:"workspace"`
 	WorkspacePath string `json:"workspace_path"`
+	Hardlink      bool   `json:"hardlink"`
 
 	FileInfo fs.FileInfo
 }
@@ -155,6 +156,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 					ShortPath:     path.Join(file.ShortPath),
 					Workspace:     file.Workspace,
 					WorkspacePath: path.Join(file.WorkspacePath),
+					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
 				return calcCopyDir(cfg, copyPaths, srcPaths, f)
@@ -171,6 +173,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 					ShortPath:     path.Join(file.ShortPath, r),
 					Workspace:     file.Workspace,
 					WorkspacePath: path.Join(file.WorkspacePath, r),
+					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
 				return calcCopyPath(cfg, copyPaths, f)
@@ -189,6 +192,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 			ShortPath:     path.Join(file.ShortPath, r),
 			Workspace:     file.Workspace,
 			WorkspacePath: path.Join(file.WorkspacePath, r),
+			Hardlink:      file.Hardlink,
 			FileInfo:      info,
 		}
 		return calcCopyPath(cfg, copyPaths, f)
@@ -323,10 +327,6 @@ func calcCopyPaths(cfg *config) (copyMap, error) {
 
 // From https://opensource.com/article/18/6/copying-files-go
 func copy(src fileInfo, dst string) error {
-	if !src.FileInfo.Mode().IsRegular() {
-		return fmt.Errorf("%s is not a regular file", src.Path)
-	}
-
 	source, err := os.Open(src.Path)
 	if err != nil {
 		return err
@@ -392,16 +392,39 @@ func main() {
 	// Perform copies
 	// TODO: split out into parallel go routines?
 	for to, from := range copyPaths {
-		if cfg.Verbose {
-			fmt.Printf("copying %v => %v\n", from.Path, to)
-		}
 		err := os.MkdirAll(path.Dir(to), os.ModePerm)
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = copy(from, to)
-		if err != nil {
-			log.Fatal(err)
+		if !from.FileInfo.Mode().IsRegular() {
+			log.Fatalf("%s is not a regular file", from.Path)
+		}
+		if from.Hardlink {
+			// hardlink this file
+			if cfg.Verbose {
+				fmt.Printf("hardlink %v => %v\n", from.Path, to)
+			}
+			err = os.Link(from.Path, to)
+			if err != nil {
+				// fallback to copy
+				if cfg.Verbose {
+					fmt.Printf("hardlink failed: %v\n", err)
+					fmt.Printf("copy (fallback) %v => %v\n", from.Path, to)
+				}
+				err = copy(from, to)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+		} else {
+			// copy this file
+			if cfg.Verbose {
+				fmt.Printf("copy %v => %v\n", from.Path, to)
+			}
+			err = copy(from, to)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }
