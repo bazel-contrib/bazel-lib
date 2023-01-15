@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 	"sync"
+
+	"github.com/aspect-build/bazel-lib/tools/common"
 )
 
 type pathSet map[string]bool
@@ -37,110 +37,46 @@ func copyDir(src string, dst string) error {
 		if dirEntry.IsDir() {
 			srcPaths[src] = true
 			return os.MkdirAll(d, os.ModePerm)
-		} else {
-			info, err := dirEntry.Info()
+		}
+
+		info, err := dirEntry.Info()
+		if err != nil {
+			return err
+		}
+
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
+			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
+			linkPath, err := os.Readlink(p)
 			if err != nil {
 				return err
 			}
-
-			if info.Mode()&os.ModeSymlink == os.ModeSymlink {
-				// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
-				linkPath, err := os.Readlink(p)
-				if err != nil {
-					return err
-				}
-				if !path.IsAbs(linkPath) {
-					linkPath = path.Join(path.Dir(p), linkPath)
-				}
-				if srcPaths[linkPath] {
-					// recursive symlink; silently ignore
-					return nil
-				}
-				stat, err := os.Stat(linkPath)
-				if err != nil {
-					return fmt.Errorf("failed to stat file %s pointed to by symlink %s: %w", linkPath, p, err)
-				}
-				if stat.IsDir() {
-					// symlink points to a directory
-					return copyDir(linkPath, d)
-				} else {
-					// symlink points to a regular file
-					copyWaitGroup.Add(1)
-					go copy(linkPath, d, stat)
-					return nil
-				}
+			if !path.IsAbs(linkPath) {
+				linkPath = path.Join(path.Dir(p), linkPath)
 			}
-
-			// a regular file
-			copyWaitGroup.Add(1)
-			go copy(p, d, info)
-			return nil
-		}
-	})
-}
-
-func copy(src string, dst string, info fs.FileInfo) {
-	defer copyWaitGroup.Done()
-	if !info.Mode().IsRegular() {
-		log.Fatalf("%s is not a regular file", src)
-	}
-	if hardlink {
-		// hardlink this file
-		if verbose {
-			fmt.Printf("hardlink %v => %v\n", src, dst)
-		}
-		err := os.Link(src, dst)
-		if err != nil {
-			// fallback to copy
-			if verbose {
-				fmt.Printf("hardlink failed: %v\n", err)
-				fmt.Printf("copy (fallback) %v => %v\n", src, dst)
+			if srcPaths[linkPath] {
+				// recursive symlink; silently ignore
+				return nil
 			}
-			err = copyFile(src, dst)
+			stat, err := os.Stat(linkPath)
 			if err != nil {
-				log.Fatal(err)
+				return fmt.Errorf("failed to stat file %s pointed to by symlink %s: %w", linkPath, p, err)
+			}
+			if stat.IsDir() {
+				// symlink points to a directory
+				return copyDir(linkPath, d)
+			} else {
+				// symlink points to a regular file
+				copyWaitGroup.Add(1)
+				go common.Copy(linkPath, d, stat, hardlink, verbose, &copyWaitGroup)
+				return nil
 			}
 		}
-	} else {
-		// copy this file
-		if verbose {
-			fmt.Printf("copy %v => %v\n", src, dst)
-		}
-		err := copyFile(src, dst)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-}
 
-// From https://opensource.com/article/18/6/copying-files-go
-func copyFile(src string, dst string) error {
-	source, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer source.Close()
-
-	destination, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer destination.Close()
-	_, err = io.Copy(destination, source)
-	return err
-}
-
-func version() string {
-	var versionBuilder strings.Builder
-	if Release != "" && Release != PreStampRelease {
-		versionBuilder.WriteString(Release)
-		if GitStatus != CleanGitStatus {
-			versionBuilder.WriteString(NotCleanVersionSuffix)
-		}
-	} else {
-		versionBuilder.WriteString(NoReleaseVersion)
-	}
-	return versionBuilder.String()
+		// a regular file
+		copyWaitGroup.Add(1)
+		go common.Copy(p, d, info, hardlink, verbose, &copyWaitGroup)
+		return nil
+	})
 }
 
 func main() {
@@ -148,13 +84,13 @@ func main() {
 
 	if len(args) == 1 {
 		if args[0] == "--version" || args[0] == "-v" {
-			fmt.Printf("copy_directory %s\n", version())
+			fmt.Printf("copy_directory %s\n", common.Version())
 			return
 		}
 	}
 
 	if len(args) < 2 {
-		fmt.Println("Usage: copy_directory [src] [dst]")
+		fmt.Println("Usage: copy_directory src dst [--hardlink] [--verbose]")
 		os.Exit(1)
 	}
 

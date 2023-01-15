@@ -3,7 +3,7 @@
 // The GitStatus should be either "clean" or "dirty"
 // Release will be a comma-separated string representation of any tags.
 
-package main
+package common
 
 // BuildTime is a string representation of when this binary was built.
 var BuildTime = "an unknown time"

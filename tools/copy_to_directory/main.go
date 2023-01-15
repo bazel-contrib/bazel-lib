@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/fs"
 	"io/ioutil"
 	"log"
@@ -12,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aspect-build/bazel-lib/tools/common"
 	"github.com/bmatcuk/doublestar/v4"
 	"golang.org/x/exp/maps"
 )
@@ -119,14 +119,22 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 	srcPaths[file.Path] = true
 	// filepath.WalkDir walks the file tree rooted at root, calling fn for each file or directory in
 	// the tree, including root. See https://pkg.go.dev/path/filepath#WalkDir for more info.
-	// TODO: switch to the more efficient https://pkg.go.dev/io/fs#WalkDirFunc variant?
-	return filepath.Walk(file.Path, func(p string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+	return filepath.WalkDir(file.Path, func(p string, dirEntry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if dirEntry.IsDir() {
 			// remember that this directory was visited to prevent infinite recursive symlink loops and
 			// then short-circuit by returning nil since filepath.Walk will visit files contained within
 			// this directory automatically
 			srcPaths[p] = true
 			return nil
+		}
+
+		info, err := dirEntry.Info()
+		if err != nil {
+			return err
 		}
 
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
@@ -324,60 +332,22 @@ func calcCopyPaths(cfg *config) (copyMap, error) {
 	return copyPaths, nil
 }
 
-// From https://opensource.com/article/18/6/copying-files-go
-func copy(src fileInfo, dst string) error {
-	source, err := os.Open(src.Path)
-	if err != nil {
-		return err
-	}
-	defer source.Close()
-
-	destination, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer destination.Close()
-	_, err = io.Copy(destination, source)
-	return err
-}
-
-// https://play.golang.org/p/Qg_uv_inCek
-// contains checks if a string is present in a slice
-func contains(s []string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-
-	return false
-}
-
-func version() string {
-	var versionBuilder strings.Builder
-	if Release != "" && Release != PreStampRelease {
-		versionBuilder.WriteString(Release)
-		if GitStatus != CleanGitStatus {
-			versionBuilder.WriteString(NotCleanVersionSuffix)
-		}
-	} else {
-		versionBuilder.WriteString(NoReleaseVersion)
-	}
-	return versionBuilder.String()
-}
-
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: copy_to_directory [config_file]")
+	args := os.Args[1:]
+
+	if len(args) == 1 {
+		if args[0] == "--version" || args[0] == "-v" {
+			fmt.Printf("copy_to_directory %s\n", common.Version())
+			return
+		}
+	}
+
+	if len(args) != 1 {
+		fmt.Println("Usage: copy_to_directory config_file")
 		os.Exit(1)
 	}
 
-	if contains(os.Args[1:], "--version") || contains(os.Args[1:], "-v") {
-		fmt.Printf("copy_to_directory %s\n", version())
-		return
-	}
-
-	cfg, err := parseConfig(os.Args[1])
+	cfg, err := parseConfig(args[0])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -395,35 +365,6 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if !from.FileInfo.Mode().IsRegular() {
-			log.Fatalf("%s is not a regular file", from.Path)
-		}
-		if from.Hardlink {
-			// hardlink this file
-			if cfg.Verbose {
-				fmt.Printf("hardlink %v => %v\n", from.Path, to)
-			}
-			err = os.Link(from.Path, to)
-			if err != nil {
-				// fallback to copy
-				if cfg.Verbose {
-					fmt.Printf("hardlink failed: %v\n", err)
-					fmt.Printf("copy (fallback) %v => %v\n", from.Path, to)
-				}
-				err = copy(from, to)
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-		} else {
-			// copy this file
-			if cfg.Verbose {
-				fmt.Printf("copy %v => %v\n", from.Path, to)
-			}
-			err = copy(from, to)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
+		common.Copy(from.Path, to, from.FileInfo, from.Hardlink, cfg.Verbose, nil)
 	}
 }
