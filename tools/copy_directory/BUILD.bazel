@@ -1,24 +1,11 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
-# Under --stamp, the Go linker will fill in these placeholders with VCS info
-# see https://github.com/bazelbuild/rules_go/blob/master/go/core.rst#stamping-with-the-workspace-status-script
-_GO_STAMP_X_DEFS = {
-    "BuildTime": "{BUILD_TIMESTAMP}",
-    "GitCommit": "{STABLE_BUILD_SCM_SHA}",
-    "GitStatus": "{STABLE_BUILD_SCM_LOCAL_CHANGES}",
-    "HostName": "{BUILD_HOST}",
-    "Release": "{STABLE_BUILD_SCM_TAG}",
-}
-
 go_library(
     name = "copy_directory_lib",
-    srcs = [
-        "main.go",
-        "stamp.go",
-    ],
+    srcs = ["main.go"],
     importpath = "github.com/aspect-build/bazel-lib/tools/copy_directory",
     visibility = ["//visibility:public"],
-    x_defs = _GO_STAMP_X_DEFS,
+    deps = ["//tools/common"],
 )
 
 go_binary(
