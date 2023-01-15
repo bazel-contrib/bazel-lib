@@ -33,229 +33,229 @@ globbing library used by [gazelle](https://github.com/bazelbuild/bazel-gazelle).
 for more information on supported globbing patterns.
 """
 
+_copy_to_directory_doc = """Copies files and directories to an output directory.
+
+Files and directories can be arranged as needed in the output directory using
+the `root_paths`, `include_srcs_patters`, `exclude_srcs_patters` and `replace_prefixes` attributes.
+
+{filters_transform_order_docstring}
+
+{glob_support_docstring}
+""".format(
+    filters_transform_order_docstring = _filter_transforms_order_docstring,
+    glob_support_docstring = _glob_support_docstring,
+)
+
+_copy_to_directory_attr_doc = {
+    # srcs
+    "srcs": """Files and/or directories or targets that provide `DirectoryPathInfo` to copy into the output directory.""",
+    # out
+    "out": """Path of the output directory, relative to this package.
+
+If not set, the name of the target is used.
+""",
+    # root_paths
+    "root_paths": """List of paths (with glob support) that are roots in the output directory.
+
+If any parent directory of a file being copied matches one of the root paths
+patterns specified, the output directory path will be the path relative to the root path
+instead of the path relative to the file's workspace. If there are multiple
+root paths that match, the longest match wins.
+
+Matching is done on the parent directory of the output file path so a trailing '**' glob patterm
+will match only up to the last path segment of the dirname and will not include the basename.
+Only complete path segments are matched. Partial matches on the last segment of the root path
+are ignored.
+
+Forward slashes (`/`) should be used as path separators.
+
+A `"."` value expands to the target's package path (`ctx.label.package`).
+
+Defaults to `["."]` which results in the output directory path of files in the
+target's package and and sub-packages are relative to the target's package and
+files outside of that retain their full workspace relative paths.
+
+Globs are supported (see rule docstring above).
+""",
+    # include_external_repositories
+    "include_external_repositories": """List of external repository names (with glob support) to include in the output directory.
+
+Files from external repositories are only copied into the output directory if
+the external repository they come from matches one of the external repository patterns
+specified.
+
+When copied from an external repository, the file path in the output directory
+defaults to the file's path within the external repository. The external repository
+name is _not_ included in that path.
+
+For example, the following copies `@external_repo//path/to:file` to
+`path/to/file` within the output directory.
+
+```
+copy_to_directory(
+    name = "dir",
+    include_external_repositories = ["external_*"],
+    srcs = ["@external_repo//path/to:file"],
+)
+```
+
+Files that come from matching external are subject to subsequent filters and
+transformations to determine if they are copied and what their path in the output
+directory will be. The external repository name of the file from an external
+repository is not included in the output directory path and is considered in subsequent
+filters and transformations.
+
+Globs are supported (see rule docstring above).
+""",
+    # include_srcs_packages
+    "include_srcs_packages": """List of Bazel packages (with glob support) to include in output directory.
+
+Files in srcs are only copied to the output directory if
+the Bazel package of the file matches one of the patterns specified.
+
+Forward slashes (`/`) should be used as path separators. A first character of `"."`
+will be replaced by the target's package path.
+
+Defaults to `["**"]` which includes sources from all packages.
+
+Files that have matching Bazel packages are subject to subsequent filters and
+transformations to determine if they are copied and what their path in the output
+directory will be.
+
+Globs are supported (see rule docstring above).
+""",
+    # exclude_srcs_packages
+    "exclude_srcs_packages": """List of Bazel packages (with glob support) to exclude from output directory.
+
+Files in srcs are not copied to the output directory if
+the Bazel package of the file matches one of the patterns specified.
+
+Forward slashes (`/`) should be used as path separators. A first character of `"."`
+will be replaced by the target's package path.
+
+Files that have do not have matching Bazel packages are subject to subsequent
+filters and transformations to determine if they are copied and what their path in the output
+directory will be.
+
+Globs are supported (see rule docstring above).
+""",
+    # include_srcs_patterns
+    "include_srcs_patterns": """List of paths (with glob support) to include in output directory.
+
+Files in srcs are only copied to the output directory if their output
+directory path, after applying `root_paths`, matches one of the patterns specified.
+
+Forward slashes (`/`) should be used as path separators.
+
+Defaults to `["**"]` which includes all sources.
+
+Files that have matching output directory paths are subject to subsequent
+filters and transformations to determine if they are copied and what their path in the output
+directory will be.
+
+Globs are supported (see rule docstring above).
+""",
+    # exclude_srcs_patterns
+    "exclude_srcs_patterns": """List of paths (with glob support) to exclude from output directory.
+
+Files in srcs are not copied to the output directory if their output
+directory path, after applying `root_paths`, matches one of the patterns specified.
+
+Forward slashes (`/`) should be used as path separators.
+
+Files that do not have matching output directory paths are subject to subsequent
+filters and transformations to determine if they are copied and what their path in the output
+directory will be.
+
+Globs are supported (see rule docstring above).
+""",
+    # exclude_prefixes
+    "exclude_prefixes": """List of path prefixes (with glob support) to exclude from output directory.
+
+DEPRECATED: use `exclude_srcs_patterns` instead
+
+Files in srcs are not copied to the output directory if their output
+directory path, after applying `root_paths`, starts with or fully matches one of the
+patterns specified.
+
+Forward slashes (`/`) should be used as path separators.
+
+Files that do not have matching output directory paths are subject to subsequent
+filters and transformations to determine if they are copied and what their path in the output
+directory will be.
+
+Globs are supported (see rule docstring above).
+""",
+    # replace_prefixes
+    "replace_prefixes": """Map of paths prefixes (with glob support) to replace in the output directory path when copying files.
+
+If the output directory path for a file starts with or fully matches a
+a key in the dict then the matching portion of the output directory path is
+replaced with the dict value for that key. The final path segment
+matched can be a partial match of that segment and only the matching portion will
+be replaced. If there are multiple keys that match, the longest match wins.
+
+Forward slashes (`/`) should be used as path separators. 
+
+Replace prefix transformation are the final step in the list of filters and transformations.
+The final output path of a file being copied into the output directory
+is determined at this step.
+
+Globs are supported (see rule docstring above).
+""",
+    # allow_overwrites
+    "allow_overwrites": """If True, allow files to be overwritten if the same output file is copied to twice.
+
+If set, then the order of srcs matters as the last copy of a particular file will win.
+
+This setting has no effect on Windows where overwrites are always allowed.
+""",
+    # verbose
+    "verbose": """If true, prints out verbose logs to stdout""",
+}
+
 _copy_to_directory_attr = {
     "srcs": attr.label_list(
         allow_files = True,
-        doc = """Files and/or directories or targets that provide DirectoryPathInfo to copy
-        into the output directory.""",
+        doc = _copy_to_directory_attr_doc["srcs"],
     ),
     # Cannot declare out as an output here, because there's no API for declaring
     # TreeArtifact outputs.
     "out": attr.string(
-        doc = """Path of the output directory, relative to this package.
-
-        If not set, the name of the target is used.
-        """,
+        doc = _copy_to_directory_attr_doc["out"],
     ),
     "root_paths": attr.string_list(
         default = ["."],
-        doc = """List of paths (with glob support) that are roots in the output directory.
-
-        If any parent directory of a file being copied matches one of the root paths
-        patterns specified, the output directory path will be the path relative to the root path
-        instead of the path relative to the file's workspace. If there are multiple
-        root paths that match, the longest match wins.
-
-        Matching is done on the parent directory of the output file path so a trailing '**' glob patterm
-        will match only up to the last path segment of the dirname and will not include the basename.
-        Only complete path segments are matched. Partial matches on the last segment of the root path
-        are ignored.
-
-        Forward slashes (`/`) should be used as path separators.
-
-        A "." value expands to the target's package path (`ctx.label.package`).
-
-        Defaults to ["."] which results in the output directory path of files in the
-        target's package and and sub-packages are relative to the target's package and
-        files outside of that retain their full workspace relative paths.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["root_paths"],
     ),
     "include_external_repositories": attr.string_list(
-        doc = """List of external repository names (with glob support) to include in the output directory.
-
-        Files from external repositories are only copied into the output directory if
-        the external repository they come from matches one of the external repository patterns
-        specified.
-
-        When copied from an external repository, the file path in the output directory
-        defaults to the file's path within the external repository. The external repository
-        name is _not_ included in that path.
-
-        For example, the following copies `@external_repo//path/to:file` to
-        `path/to/file` within the output directory.
-
-        ```
-        copy_to_directory(
-            name = "dir",
-            include_external_repositories = ["external_*"],
-            srcs = ["@external_repo//path/to:file"],
-        )
-        ```
-
-        Files that come from matching external are subject to subsequent filters and
-        transformations to determine if they are copied and what their path in the output
-        directory will be. The external repository name of the file from an external
-        repository is not included in the output directory path and is considered in subsequent
-        filters and transformations.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["include_external_repositories"],
     ),
     "include_srcs_packages": attr.string_list(
         default = ["**"],
-        doc = """List of Bazel packages (with glob support) to include in output directory.
-
-        Files in srcs are only copied to the output directory if
-        the Bazel package of the file matches one of the patterns specified.
-
-        Forward slashes (`/`) should be used as path separators. A first character of `"."`
-        will be replaced by the target's package path.
-
-        Defaults to `["**"]` which includes sources from all packages.
-
-        Files that have matching Bazel packages are subject to subsequent filters and
-        transformations to determine if they are copied and what their path in the output
-        directory will be.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["include_srcs_packages"],
     ),
     "exclude_srcs_packages": attr.string_list(
-        doc = """List of Bazel packages (with glob support) to exclude from output directory.
-
-        Files in srcs are not copied to the output directory if
-        the Bazel package of the file matches one of the patterns specified.
-
-        Forward slashes (`/`) should be used as path separators. A first character of `"."`
-        will be replaced by the target's package path.
-
-        Files that have do not have matching Bazel packages are subject to subsequent
-        filters and transformations to determine if they are copied and what their path in the output
-        directory will be.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["exclude_srcs_packages"],
     ),
     "include_srcs_patterns": attr.string_list(
         default = ["**"],
-        doc = """List of paths (with glob support) to include in output directory.
-
-        Files in srcs are only copied to the output directory if their output
-        directory path, after applying `root_paths`, matches one of the patterns specified.
-
-        Forward slashes (`/`) should be used as path separators.
-
-        Defaults to ["**"] which includes all sources.
-
-        Files that have matching output directory paths are subject to subsequent
-        filters and transformations to determine if they are copied and what their path in the output
-        directory will be.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["include_srcs_patterns"],
     ),
     "exclude_srcs_patterns": attr.string_list(
-        doc = """List of paths (with glob support) to exclude from output directory.
-
-        Files in srcs are not copied to the output directory if their output
-        directory path, after applying `root_paths`, matches one of the patterns specified.
-
-        Forward slashes (`/`) should be used as path separators.
-
-        Files that do not have matching output directory paths are subject to subsequent
-        filters and transformations to determine if they are copied and what their path in the output
-        directory will be.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["exclude_srcs_patterns"],
     ),
     "exclude_prefixes": attr.string_list(
-        doc = """List of path prefixes (with glob support) to exclude from output directory.
-
-        DEPRECATED: use `exclude_srcs_patterns` instead
-
-        Files in srcs are not copied to the output directory if their output
-        directory path, after applying `root_paths`, starts with or fully matches one of the
-        patterns specified.
-
-        Forward slashes (`/`) should be used as path separators.
-
-        Files that do not have matching output directory paths are subject to subsequent
-        filters and transformations to determine if they are copied and what their path in the output
-        directory will be.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["exclude_prefixes"],
     ),
     "replace_prefixes": attr.string_dict(
-        doc = """Map of paths prefixes (with glob support) to replace in the output directory path when copying files.
-
-        If the output directory path for a file starts with or fully matches a
-        a key in the dict then the matching portion of the output directory path is
-        replaced with the dict value for that key. The final path segment
-        matched can be a partial match of that segment and only the matching portion will
-        be replaced. If there are multiple keys that match, the longest match wins.
-
-        Forward slashes (`/`) should be used as path separators. 
-
-        Replace prefix transformation are the final step in the list of filters and transformations.
-        The final output path of a file being copied into the output directory
-        is determined at this step.
-
-        {glob_support_docstring}
-
-        {filters_transform_order_docstring}
-        """.format(
-            filters_transform_order_docstring = _filter_transforms_order_docstring,
-            glob_support_docstring = _glob_support_docstring,
-        ),
+        doc = _copy_to_directory_attr_doc["replace_prefixes"],
     ),
     "allow_overwrites": attr.bool(
-        doc = """If True, allow files to be overwritten if the same output file is copied to twice.
-
-        If set, then the order of srcs matters as the last copy of a particular file will win.
-
-        This setting has no effect on Windows where overwrites are always allowed.""",
+        doc = _copy_to_directory_attr_doc["allow_overwrites"],
     ),
     "verbose": attr.bool(
-        doc = """If true, prints out verbose logs to stdout""",
+        doc = _copy_to_directory_attr_doc["verbose"],
     ),
     # use '_tool' attribute for development only; do not commit with this attribute active since it
     # propagates a dependency on rules_go which would be breaking for users
@@ -651,7 +651,7 @@ def copy_to_directory_bin_action(
 
         files: List of files to copy into the output directory.
 
-        targets: List of targets that provide DirectoryPathInfo to copy into the output directory.
+        targets: List of targets that provide `DirectoryPathInfo` to copy into the output directory.
 
         root_paths: List of paths that are roots in the output directory.
 
@@ -838,11 +838,11 @@ def copy_to_directory_action(
     Args:
         ctx: The rule context.
 
-        srcs: Files and/or directories or targets that provide DirectoryPathInfo to copy into the output directory.
+        srcs: Files and/or directories or targets that provide `DirectoryPathInfo` to copy into the output directory.
 
         dst: The directory to copy to. Must be a TreeArtifact.
 
-        additional_files: List or depset of additional files to copy that are not in the DefaultInfo or DirectoryPathInfo of srcs
+        additional_files: List or depset of additional files to copy that are not in the `DefaultInfo` or `DirectoryPathInfo` of srcs
 
         root_paths: List of paths that are roots in the output directory.
 
@@ -965,6 +965,8 @@ def copy_to_directory_action(
         _copy_to_dir_bash(ctx, copy_paths, dst, allow_overwrites)
 
 copy_to_directory_lib = struct(
+    doc = _copy_to_directory_doc,
+    attr_doc = _copy_to_directory_attr_doc,
     attrs = _copy_to_directory_attr,
     impl = _copy_to_directory_impl,
     provides = [DefaultInfo],
