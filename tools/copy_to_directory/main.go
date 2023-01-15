@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/aspect-build/bazel-lib/tools/common"
 	"github.com/bmatcuk/doublestar/v4"
@@ -46,6 +47,10 @@ type config struct {
 
 type copyMap map[string]fileInfo
 type pathSet map[string]bool
+
+var copyWaitGroup sync.WaitGroup
+var copySet = copyMap{}
+var mkdirSet = pathSet{}
 
 func parseConfig(configPath string) (*config, error) {
 	f, err := os.Open(configPath)
@@ -112,7 +117,7 @@ func longestGlobMatch(g string, test string) (string, error) {
 	return "", nil
 }
 
-func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo) error {
+func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 	if srcPaths == nil {
 		srcPaths = pathSet{}
 	}
@@ -166,7 +171,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
-				return calcCopyDir(cfg, copyPaths, srcPaths, f)
+				return copyDir(cfg, srcPaths, f)
 			} else {
 				// symlink points to a regular file
 				r, err := filepath.Rel(file.Path, p)
@@ -183,7 +188,7 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
-				return calcCopyPath(cfg, copyPaths, f)
+				return copyPath(cfg, f)
 			}
 		}
 
@@ -202,11 +207,11 @@ func calcCopyDir(cfg *config, copyPaths copyMap, srcPaths pathSet, file fileInfo
 			Hardlink:      file.Hardlink,
 			FileInfo:      info,
 		}
-		return calcCopyPath(cfg, copyPaths, f)
+		return copyPath(cfg, f)
 	})
 }
 
-func calcCopyPath(cfg *config, copyPaths copyMap, file fileInfo) error {
+func copyPath(cfg *config, file fileInfo) error {
 	// Apply filters and transformations in the following order:
 	//
 	// - `include_external_repositories`
@@ -294,42 +299,56 @@ func calcCopyPath(cfg *config, copyPaths copyMap, file fileInfo) error {
 	outputPath = path.Join(cfg.Dst, outputPath)
 
 	// add this file to the copy Paths
-	dup, exists := copyPaths[outputPath]
+	dup, exists := copySet[outputPath]
 	if exists {
-		if dup.ShortPath == file.ShortPath {
-			if file.FileInfo.Size() == dup.FileInfo.Size() && file.RootPath == "" {
-				// this is likely the same file listed twice: the original in the source tree and the copy
-				// in the output tree; when this happens prefer the output tree copy.
-				return nil
-			}
+		if dup.ShortPath == file.ShortPath && file.FileInfo.Size() == dup.FileInfo.Size() {
+			// this is likely the same file listed twice: the original in the source tree and the copy in the output tree
+			return nil
 		} else if !cfg.AllowOverwrites {
 			return fmt.Errorf("duplicate output file '%s' configured from source files '%s' and '%s'; set 'allow_overwrites' to True to allow this overwrites but keep in mind that order matters when this is set", outputPath, dup.Path, file.Path)
 		}
 	}
-	copyPaths[outputPath] = file
+	copySet[outputPath] = file
+
+	outputDir := path.Dir(outputPath)
+	if !mkdirSet[outputDir] {
+		if err = os.MkdirAll(outputDir, os.ModePerm); err != nil {
+			return err
+		}
+		// https://pkg.go.dev/path#Dir
+		for len(outputDir) > 0 && outputDir != "/" && outputDir != "." {
+			mkdirSet[outputDir] = true
+			outputDir = path.Dir(outputDir)
+		}
+	}
+
+	if !cfg.AllowOverwrites {
+		// if we don't allow overwrites then we can start copying as soon as a copy is calculated
+		copyWaitGroup.Add(1)
+		go common.Copy(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, &copyWaitGroup)
+	}
 
 	return nil
 }
 
-func calcCopyPaths(cfg *config) (copyMap, error) {
-	copyPaths := copyMap{}
+func copyPaths(cfg *config) error {
 	for _, file := range cfg.Files {
 		stat, err := os.Stat(file.Path)
 		if err != nil {
-			return nil, fmt.Errorf("failed to stat file %s: %w", file.Path, err)
+			return fmt.Errorf("failed to stat file %s: %w", file.Path, err)
 		}
 		file.FileInfo = stat
 		if file.FileInfo.IsDir() {
-			if err := calcCopyDir(cfg, copyPaths, nil, file); err != nil {
-				return nil, err
+			if err := copyDir(cfg, nil, file); err != nil {
+				return err
 			}
 		} else {
-			if err := calcCopyPath(cfg, copyPaths, file); err != nil {
-				return nil, err
+			if err := copyPath(cfg, file); err != nil {
+				return err
 			}
 		}
 	}
-	return copyPaths, nil
+	return nil
 }
 
 func main() {
@@ -352,19 +371,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Calculate copy paths
-	copyPaths, err := calcCopyPaths(cfg)
-	if err != nil {
+	if err = copyPaths(cfg); err != nil {
 		log.Fatal(err)
 	}
 
-	// Perform copies
-	// TODO: split out into parallel go routines?
-	for to, from := range copyPaths {
-		err := os.MkdirAll(path.Dir(to), os.ModePerm)
-		if err != nil {
-			log.Fatal(err)
+	if cfg.AllowOverwrites {
+		// if we allow overwrites then we must wait until all copy paths are calculated before starting
+		// any copy operations
+		for outputPath, file := range copySet {
+			copyWaitGroup.Add(1)
+			go common.Copy(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, &copyWaitGroup)
 		}
-		common.Copy(from.Path, to, from.FileInfo, from.Hardlink, cfg.Verbose, nil)
 	}
+
+	copyWaitGroup.Wait()
 }
