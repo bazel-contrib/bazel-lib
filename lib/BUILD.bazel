@@ -193,8 +193,8 @@ bzl_library(
     srcs = ["repositories.bzl"],
     deps = [
         ":utils",
-        "//lib/private/docs:coreutils_toolchain",
         "//lib/private/docs:copy_to_directory_toolchain",
+        "//lib/private/docs:coreutils_toolchain",
         "//lib/private/docs:jq_toolchain",
         "//lib/private/docs:local_config_platform",
         "//lib/private/docs:yq_toolchain",

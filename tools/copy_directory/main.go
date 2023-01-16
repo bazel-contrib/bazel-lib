@@ -27,7 +27,7 @@ func copyDir(src string, dst string) error {
 			return err
 		}
 
-		r, err := filepath.Rel(src, p)
+		r, err := common.FileRel(src, p)
 		if err != nil {
 			return err
 		}
