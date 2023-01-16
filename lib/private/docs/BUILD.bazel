@@ -232,3 +232,8 @@ bzl_library(
     name = "copy_to_directory_toolchain",
     srcs = ["//lib/private:copy_to_directory_toolchain.bzl"],
 )
+
+bzl_library(
+    name = "coreutils_toolchain",
+    srcs = ["//lib/private:coreutils_toolchain.bzl"],
+)

@@ -1,0 +1,59 @@
+load("//lib:testing.bzl", "assert_contains")
+load("//lib/tests/jq:diff_test.bzl", "diff_test")
+
+genrule(
+    name = "ls",
+    outs = ["ls.txt"],
+    cmd = "$(COREUTILS_BIN) ls > $@",
+    toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
+)
+
+diff_test(
+    name = "ls_test",
+    file1 = "ls.txt.expected",
+    file2 = ":ls",
+)
+
+
+genrule(
+    name = "sha256sum",
+    outs = ["sha256sum.txt"],
+    srcs = ["test.bin"],
+    cmd = "$(COREUTILS_BIN) sha256sum $(location :test.bin) > $@",
+    toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
+)
+
+assert_contains(
+    name = "test_sha256sum",
+    actual = "sha256sum.txt",
+    expected = """9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  lib/tests/coreutils/test.bin""",
+)
+
+
+genrule(
+    name = "sha512sum",
+    outs = ["sha512sum.txt"],
+    srcs = ["test.bin"],
+    cmd = "$(COREUTILS_BIN) sha512sum $(location :test.bin) > $@",
+    toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
+)
+
+assert_contains(
+    name = "test_sha512sum",
+    actual = "sha512sum.txt",
+    expected = """ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff  lib/tests/coreutils/test.bin""",
+)
+
+genrule(
+    name = "wc",
+    outs = ["wc.txt"],
+    srcs = ["test.bin"],
+    cmd = "$(COREUTILS_BIN) wc $(location :test.bin) > $@",
+    toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
+)
+
+assert_contains(
+    name = "test_wc",
+    actual = "wc.txt",
+    expected = """0 1 4 lib/tests/coreutils/test.bin""",
+)
