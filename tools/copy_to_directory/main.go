@@ -142,6 +142,11 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 			return err
 		}
 
+		r, err := common.FileRel(file.Path, p)
+		if err != nil {
+			return err
+		}
+
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
 			linkPath, err := os.Readlink(p)
@@ -174,10 +179,6 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 				return copyDir(cfg, srcPaths, f)
 			} else {
 				// symlink points to a regular file
-				r, err := filepath.Rel(file.Path, p)
-				if err != nil {
-					return fmt.Errorf("failed to walk directory %s: %w", file.Path, err)
-				}
 				f := fileInfo{
 					Package:       file.Package,
 					Path:          linkPath,
@@ -193,10 +194,6 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 		}
 
 		// a regular file
-		r, err := filepath.Rel(file.Path, p)
-		if err != nil {
-			return fmt.Errorf("failed to walk directory %s: %w", file.Path, err)
-		}
 		f := fileInfo{
 			Package:       file.Package,
 			Path:          p,

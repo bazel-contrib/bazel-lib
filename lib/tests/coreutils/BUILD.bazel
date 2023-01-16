@@ -14,11 +14,10 @@ diff_test(
     file2 = ":ls",
 )
 
-
 genrule(
     name = "sha256sum",
-    outs = ["sha256sum.txt"],
     srcs = ["test.bin"],
+    outs = ["sha256sum.txt"],
     cmd = "$(COREUTILS_BIN) sha256sum $(location :test.bin) > $@",
     toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
 )
@@ -29,11 +28,10 @@ assert_contains(
     expected = """9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  lib/tests/coreutils/test.bin""",
 )
 
-
 genrule(
     name = "sha512sum",
-    outs = ["sha512sum.txt"],
     srcs = ["test.bin"],
+    outs = ["sha512sum.txt"],
     cmd = "$(COREUTILS_BIN) sha512sum $(location :test.bin) > $@",
     toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
 )
@@ -46,8 +44,8 @@ assert_contains(
 
 genrule(
     name = "wc",
-    outs = ["wc.txt"],
     srcs = ["test.bin"],
+    outs = ["wc.txt"],
     cmd = "$(COREUTILS_BIN) wc $(location :test.bin) > $@",
     toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
 )
