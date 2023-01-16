@@ -14,6 +14,7 @@ import (
 
 	"github.com/aspect-build/bazel-lib/tools/common"
 	"github.com/bmatcuk/doublestar/v4"
+	"github.com/yookoala/realpath"
 	"golang.org/x/exp/maps"
 )
 
@@ -26,6 +27,7 @@ type fileInfo struct {
 	WorkspacePath string `json:"workspace_path"`
 	Hardlink      bool   `json:"hardlink"`
 
+	Realpath string
 	FileInfo fs.FileInfo
 }
 
@@ -124,7 +126,11 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 	srcPaths[file.Path] = true
 	// filepath.WalkDir walks the file tree rooted at root, calling fn for each file or directory in
 	// the tree, including root. See https://pkg.go.dev/path/filepath#WalkDir for more info.
-	return filepath.WalkDir(file.Path, func(p string, dirEntry fs.DirEntry, err error) error {
+	walkPath := file.Path
+	if file.Realpath != "" {
+		walkPath = file.Realpath
+	}
+	return filepath.WalkDir(walkPath, func(p string, dirEntry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -142,19 +148,16 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 			return err
 		}
 
-		r, err := common.FileRel(file.Path, p)
+		r, err := common.FileRel(walkPath, p)
 		if err != nil {
 			return err
 		}
 
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
-			linkPath, err := os.Readlink(p)
+			linkPath, err := realpath.Realpath(p)
 			if err != nil {
 				return err
-			}
-			if !path.IsAbs(linkPath) {
-				linkPath = path.Join(path.Dir(p), linkPath)
 			}
 			if srcPaths[linkPath] {
 				// recursive symlink; silently ignore
@@ -330,11 +333,28 @@ func copyPath(cfg *config, file fileInfo) error {
 
 func copyPaths(cfg *config) error {
 	for _, file := range cfg.Files {
-		stat, err := os.Stat(file.Path)
+		info, err := os.Lstat(file.Path)
 		if err != nil {
-			return fmt.Errorf("failed to stat file %s: %w", file.Path, err)
+			return fmt.Errorf("failed to lstat file %s: %w", file.Path, err)
 		}
-		file.FileInfo = stat
+
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
+			// On Windows, filepath.WalkDir doesn't like directory symlinks so we must
+			// call filepath.WalkDir on the realpath
+			realpath, err := realpath.Realpath(file.Path)
+			if err != nil {
+				return err
+			}
+			stat, err := os.Stat(realpath)
+			if err != nil {
+				return fmt.Errorf("failed to stat file %s pointed to by symlink %s: %w", realpath, file.Path, err)
+			}
+			file.Realpath = realpath
+			file.FileInfo = stat
+		} else {
+			file.FileInfo = info
+		}
+
 		if file.FileInfo.IsDir() {
 			if err := copyDir(cfg, nil, file); err != nil {
 				return err

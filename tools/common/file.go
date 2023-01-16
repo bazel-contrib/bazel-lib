@@ -1,6 +1,8 @@
 package common
 
-import "path/filepath"
+import (
+	"path/filepath"
+)
 
 // Same as filepath.Rel except that it normalizes result to forward slashes
 // slashes since filepath.Rel will convert to system slashes
