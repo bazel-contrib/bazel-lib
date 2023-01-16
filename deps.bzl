@@ -22,6 +22,14 @@ def go_dependencies():
         version = "v0.5.8",
     )
     go_repository(
+        name = "com_github_yookoala_realpath",
+        build_file_proto_mode = "disable_global",
+        importpath = "github.com/yookoala/realpath",
+        sum = "h1:7OA9pj4FZd+oZDsyvXWQvjn5oBdcHRTV44PpdMSuImQ=",
+        version = "v1.0.0",
+    )
+
+    go_repository(
         name = "org_golang_x_exp",
         build_file_proto_mode = "disable_global",
         importpath = "golang.org/x/exp",
