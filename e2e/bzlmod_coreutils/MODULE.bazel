@@ -1,0 +1,15 @@
+module(
+    name = "bzlmod_coreutils",
+    compatibility_level = 1,
+    version = "0.0.0",
+)
+
+bazel_dep(name = "aspect_bazel_lib", version = "0.0.0")
+
+local_path_override(
+    module_name = "aspect_bazel_lib",
+    path = "../..",
+)
+
+ext = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "ext")
+use_repo(ext, "coreutils_toolchains")

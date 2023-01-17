@@ -39,6 +39,9 @@ def aspect_bazel_lib_dependencies(override_local_config_platform = False):
     register_copy_directory_toolchains()
     register_copy_to_directory_toolchains()
 
+    # Always register the coreutils toolchain
+    register_coreutils_toolchains()
+
 # Re-export the default versions
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
 DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
