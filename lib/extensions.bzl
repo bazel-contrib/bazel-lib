@@ -9,10 +9,10 @@ load(
 )
 
 def _toolchain_extension(_):
-    register_yq_toolchains(register = False)
-    register_jq_toolchains(register = False)
     register_copy_directory_toolchains(register = False)
     register_copy_to_directory_toolchains(register = False)
+    register_jq_toolchains(register = False)
+    register_yq_toolchains(register = False)
 
 # TODO: some way for users to control repo name/version of the tools installed
 ext = module_extension(
