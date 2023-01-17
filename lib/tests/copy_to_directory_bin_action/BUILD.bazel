@@ -19,7 +19,7 @@ copy_directory(
 lib(
     name = "lib",
     srcs = [
-        "1",
+        "copy_1",
     ],
     # intentionally dup on "1" to make sure it is gracefully handled
     others = [
