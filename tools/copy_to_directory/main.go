@@ -14,7 +14,6 @@ import (
 
 	"github.com/aspect-build/bazel-lib/tools/common"
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/yookoala/realpath"
 	"golang.org/x/exp/maps"
 )
 
@@ -155,7 +154,7 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
-			linkPath, err := realpath.Realpath(p)
+			linkPath, err := common.Realpath(p)
 			if err != nil {
 				return err
 			}
@@ -341,7 +340,7 @@ func copyPaths(cfg *config) error {
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			// On Windows, filepath.WalkDir doesn't like directory symlinks so we must
 			// call filepath.WalkDir on the realpath
-			realpath, err := realpath.Realpath(file.Path)
+			realpath, err := common.Realpath(file.Path)
 			if err != nil {
 				return err
 			}

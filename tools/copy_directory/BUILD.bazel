@@ -5,10 +5,7 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/aspect-build/bazel-lib/tools/copy_directory",
     visibility = ["//visibility:public"],
-    deps = [
-        "//tools/common",
-        "@com_github_yookoala_realpath//:go_default_library",
-    ],
+    deps = ["//tools/common"],
 )
 
 go_binary(

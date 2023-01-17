@@ -13,7 +13,6 @@ def go_dependencies():
         sum = "h1:HTuxyug8GyFbRkrffIpzNCSK4luc0TY3wzXvzIZhEXc=",
         version = "v4.6.0",
     )
-
     go_repository(
         name = "com_github_google_go_cmp",
         build_file_proto_mode = "disable_global",
@@ -21,14 +20,6 @@ def go_dependencies():
         sum = "h1:e6P7q2lk1O+qJJb4BtCQXlK8vWEO8V1ZeuEdJNOqZyg=",
         version = "v0.5.8",
     )
-    go_repository(
-        name = "com_github_yookoala_realpath",
-        build_file_proto_mode = "disable_global",
-        importpath = "github.com/yookoala/realpath",
-        sum = "h1:7OA9pj4FZd+oZDsyvXWQvjn5oBdcHRTV44PpdMSuImQ=",
-        version = "v1.0.0",
-    )
-
     go_repository(
         name = "org_golang_x_exp",
         build_file_proto_mode = "disable_global",
