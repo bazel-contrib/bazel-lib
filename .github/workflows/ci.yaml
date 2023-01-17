@@ -64,6 +64,7 @@ jobs:
           - "."
           - "e2e/bzlmod"
           - "e2e/copy_to_directory"
+          - "e2e/workspace"
         exclude:
           # bzlmod broken at 5.3.2 which the RBE:
           # ```

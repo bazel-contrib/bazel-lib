@@ -1,0 +1,63 @@
+load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+load("@aspect_bazel_lib//lib:yq.bzl", "yq")
+
+# Validate that JQ works and resolves its toolchain
+jq(
+    name = "jq_case_no_sources",
+    srcs = [],
+    filter = ".",
+)
+
+diff_test(
+    name = "jq_test",
+    file1 = "jq_case_no_sources",
+    file2 = "expected_jq",
+)
+
+# Validate that YQ works and resolves its toolchain
+yq(
+    name = "yq_case_no_sources",
+    srcs = [],
+    expression = ".",
+)
+
+diff_test(
+    name = "yq_test",
+    file1 = "yq_case_no_sources",
+    file2 = "expected_yq",
+)
+
+# Validate that copy_directory works and resolves its toolchain
+copy_directory(
+    name = "copy_directory_case",
+    src = "d",
+    out = "d_out",
+    verbose = True,
+)
+
+diff_test(
+    name = "copy_directory_test",
+    file1 = "d",
+    file2 = "copy_directory_case",
+    # Source directories are not support on remote execution.
+    tags = ["no-remote-exec"],
+)
+
+# Validate that copy_to_directory works and resolves its toolchain
+copy_to_directory(
+    name = "copy_to_directory_case",
+    srcs = ["d"],
+    out = "d2_out",
+    replace_prefixes = {"d/": ""},
+)
+
+diff_test(
+    name = "copy_to_directory_test",
+    file1 = "d",
+    file2 = "copy_to_directory_case",
+    # Source directories are not support on remote execution.
+    tags = ["no-remote-exec"],
+)
