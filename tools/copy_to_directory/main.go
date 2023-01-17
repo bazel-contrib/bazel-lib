@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -59,7 +59,7 @@ func parseConfig(configPath string) (*config, error) {
 	}
 	defer f.Close()
 
-	byteValue, err := ioutil.ReadAll(f)
+	byteValue, err := io.ReadAll(f)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -262,10 +262,7 @@ func copyPath(cfg *config, file fileInfo) error {
 		return err
 	}
 	if rootPathMatch != "" {
-		outputPath = outputPath[len(rootPathMatch):]
-		if strings.HasPrefix(outputPath, "/") {
-			outputPath = outputPath[1:]
-		}
+		outputPath = strings.TrimPrefix(filepath.Clean(outputPath[len(rootPathMatch):]), string(filepath.Separator))
 	}
 
 	// apply include_srcs_patterns

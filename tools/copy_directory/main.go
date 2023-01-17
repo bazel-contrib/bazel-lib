@@ -1,25 +1,23 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/fs"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 
 	"github.com/aspect-build/bazel-lib/tools/common"
 )
 
-type pathSet map[string]bool
-
-var srcPaths = pathSet{}
+var srcPaths = make(map[string]struct{})
 var copyWaitGroup sync.WaitGroup
-var hardlink = false
-var verbose = false
+var hasErrors atomic.Bool
 
-func copyDir(src string, dst string) error {
+func copyDir(src string, dst string, hardlink bool, verbose bool, errors chan<- error) error {
 	// filepath.WalkDir walks the file tree rooted at root, calling fn for each file or directory in
 	// the tree, including root. See https://pkg.go.dev/path/filepath#WalkDir for more info.
 	return filepath.WalkDir(src, func(p string, dirEntry fs.DirEntry, err error) error {
@@ -27,16 +25,23 @@ func copyDir(src string, dst string) error {
 			return err
 		}
 
+		// Gracefully stop the walking if an error has been reported.
+		if hasErrors.Load() {
+			return nil
+		}
+
+		copySrc := p
+
 		r, err := filepath.Rel(src, p)
 		if err != nil {
 			return err
 		}
 
-		d := filepath.Join(dst, r)
+		copyDst := filepath.Join(dst, r)
 
 		if dirEntry.IsDir() {
-			srcPaths[src] = true
-			return os.MkdirAll(d, os.ModePerm)
+			srcPaths[src] = struct{}{}
+			return os.MkdirAll(copyDst, os.ModePerm)
 		}
 
 		info, err := dirEntry.Info()
@@ -53,7 +58,7 @@ func copyDir(src string, dst string) error {
 			if !path.IsAbs(linkPath) {
 				linkPath = path.Join(path.Dir(p), linkPath)
 			}
-			if srcPaths[linkPath] {
+			if _, isRecursive := srcPaths[linkPath]; isRecursive {
 				// recursive symlink; silently ignore
 				return nil
 			}
@@ -63,52 +68,62 @@ func copyDir(src string, dst string) error {
 			}
 			if stat.IsDir() {
 				// symlink points to a directory
-				return copyDir(linkPath, d)
+				return copyDir(linkPath, copyDst, hardlink, verbose, errors)
 			} else {
 				// symlink points to a regular file
-				copyWaitGroup.Add(1)
-				go common.Copy(linkPath, d, stat, hardlink, verbose, &copyWaitGroup)
-				return nil
+				copySrc = linkPath
 			}
 		}
 
 		// a regular file
 		copyWaitGroup.Add(1)
-		go common.Copy(p, d, info, hardlink, verbose, &copyWaitGroup)
+		go func() {
+			if err := common.Copy(copySrc, copyDst, info, hardlink, verbose, &copyWaitGroup); err != nil {
+				errors <- err
+			}
+		}()
 		return nil
 	})
 }
 
 func main() {
 	args := os.Args[1:]
-
-	if len(args) == 1 {
-		if args[0] == "--version" || args[0] == "-v" {
-			fmt.Printf("copy_directory %s\n", common.Version())
-			return
-		}
+	if len(args) == 1 && (args[0] == "--version" || args[0] == "-v") {
+		fmt.Printf("copy_directory %s\n", common.Version())
+		return
 	}
 
-	if len(args) < 2 {
+	var hardlink bool
+	var verbose bool
+
+	flag.BoolVar(&hardlink, "hardlink", false, "use hardlinks instead of copying files")
+	flag.BoolVar(&verbose, "verbose", false, "print verbose output")
+	flag.Parse()
+
+	if flag.NArg() < 2 {
 		fmt.Println("Usage: copy_directory src dst [--hardlink] [--verbose]")
 		os.Exit(1)
 	}
 
-	src := args[0]
-	dst := args[1]
+	src := flag.Arg(0)
+	dst := flag.Arg(1)
 
-	if len(args) > 2 {
-		for _, a := range os.Args[2:] {
-			if a == "--hardlink" {
-				hardlink = true
-			} else if a == "--verbose" {
-				verbose = true
-			}
+	errors := make(chan error, 100)
+
+	go func() {
+		if err := copyDir(src, dst, hardlink, verbose, errors); err != nil {
+			errors <- err
 		}
+		copyWaitGroup.Wait()
+		close(errors)
+	}()
+
+	for err := range errors {
+		hasErrors.Store(true)
+		fmt.Fprintln(os.Stderr, err)
 	}
 
-	if err := copyDir(src, dst); err != nil {
-		log.Fatal(err)
+	if hasErrors.Load() {
+		os.Exit(1)
 	}
-	copyWaitGroup.Wait()
 }
