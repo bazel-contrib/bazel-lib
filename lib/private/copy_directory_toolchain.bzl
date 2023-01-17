@@ -6,13 +6,13 @@
 # `tools/copy_directory_mirror_release.sh`. To calculate for a specific release run
 # `tools/copy_directory_mirror_release.sh <release_version>`
 
-COPY_DIRECTORY_VERSION = "1.22.0"
+COPY_DIRECTORY_VERSION = "1.23.0"
 COPY_DIRECTORY_INTEGRITY = {
-    "darwin_amd64": "sha256-zDnAx/e5J61iWmmdYuQ+pABjgh16c9Tl7gmJpPySj8Q=",
-    "darwin_arm64": "sha256-wQKrD6CVyZgyi+PFG192dNkwZpPNa8u9sv9BimBY8NA=",
-    "linux_amd64": "sha256-J72eI31EZ3E5WxnvH/XJ9HYJD674ZSmj0ZngSPHwfhA=",
-    "linux_arm64": "sha256-iAvIQrwhzwLzHRAMs7YNAIpmb9xI8Azr/ji6QFC0QGs=",
-    "windows_amd64": "sha256-e4Qslt/gGFm7zyVcoe//OcAvtrDtxkJhKWaufjayH7E=",
+    "darwin_amd64": "sha256-taNkRTY/Ffha1UlBfz5Jo8SN7waSJb/FXpsM63TInSk=",
+    "darwin_arm64": "sha256-lz7Faf/StTzoPgyeOKblw3BYJF6aqXD/8OKIphtntpk=",
+    "linux_amd64": "sha256-W23mpSxUmXuPywsDae8Vj0NHCxk36QhAfri73qonUTQ=",
+    "linux_arm64": "sha256-9QqumiQ8GF301jEZmSsrnOtH9dnC+N0knqzQuDuQQak=",
+    "windows_amd64": "sha256-MCZBF5V6AJHo1xJ2TjZ0wD6SNjuVZrXKj1uGvn9UUto=",
 }
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
