@@ -8,7 +8,6 @@ go_library(
     deps = [
         "//tools/common",
         "@com_github_bmatcuk_doublestar_v4//:doublestar",
-        "@com_github_yookoala_realpath//:go_default_library",
         "@org_golang_x_exp//maps",
     ],
 )

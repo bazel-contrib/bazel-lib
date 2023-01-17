@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/aspect-build/bazel-lib/tools/common"
-	"github.com/yookoala/realpath"
 )
 
 type pathSet map[string]bool
@@ -46,7 +45,7 @@ func copyDir(src string, dst string) error {
 
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
-			linkPath, err := realpath.Realpath(p)
+			linkPath, err := common.Realpath(p)
 			if err != nil {
 				return err
 			}
