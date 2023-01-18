@@ -39,3 +39,11 @@ diff_test(
     file1 = "case_no_sources",
     file2 = "expected",
 )
+
+# Exercise http module extension
+genrule(
+    name = "bazel_lib_readme",
+    srcs = ["@bazel_lib_srcs//:README.md"],
+    outs = ["bazel_lib_README.md"],
+    cmd = "cp $(execpath @bazel_lib_srcs//:README.md) $@",
+)
