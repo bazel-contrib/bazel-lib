@@ -114,19 +114,26 @@ def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
         ),
     )
 
-def assert_archive_contains(name, archive, expected, type = "zip", **kwargs):
+def assert_archive_contains(name, archive, expected, type = None, **kwargs):
     """Assert that an archive file contains at least the given file entries.
 
     Args:
         name: name of the resulting sh_test target
         archive: Label of the the .tar or .zip file
         expected: Label of a file containing a (partial) file listing
-        type: "tar" or "zip"
+        type: "tar" or "zip". If None, a type will be inferred from the filename.
         **kwargs: additional named arguments for the resulting sh_test
     """
 
+    if not type:
+        if archive.endswith(".whl") or archive.endswith(".zip"):
+            type = "zip"
+        elif archive.endswith(".tar"):
+            type = "tar"
+        else:
+            fail("could not infer type from {}, please set the type attribute explicitly".format(archive))
     if not type in ["tar", "zip"]:
-        fail("type must be 'tar' or 'zip'")
+        fail("type must be 'tar' or 'zip', not " + type)
 
     # Command to list the files in the archive
     command = "zipinfo -1" if type == "zip" else "tar -tf"
