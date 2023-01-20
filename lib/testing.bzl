@@ -136,7 +136,7 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
         fail("type must be 'tar' or 'zip', not " + type)
 
     # Command to list the files in the archive
-    command = "zipinfo -1" if type == "zip" else "tar -tf"
+    command = "unzip -Z1" if type == "zip" else "tar -tf"
 
     # -f $actual: use this file to contain one pattern per line
     # -F: treat each pattern as a plain string, not a regex
