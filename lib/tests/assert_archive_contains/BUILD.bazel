@@ -9,5 +9,9 @@ assert_archive_contains(
 assert_archive_contains(
     name = "check_tar",
     archive = "lib_tests.tar",
-    expected = "expected_tar.txt",
+    expected = [
+        "lib/tests/assert_archive_contains/bazel_runfiles.whl",
+        "lib/tests/assert_archive_contains/expected_wheel.txt",
+        "lib/tests/assert_archive_contains/BUILD.bazel",
+    ],
 )

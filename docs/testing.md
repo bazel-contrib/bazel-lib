@@ -19,7 +19,7 @@ Assert that an archive file contains at least the given file entries.
 | :------------- | :------------- | :------------- |
 | <a id="assert_archive_contains-name"></a>name |  name of the resulting sh_test target   |  none |
 | <a id="assert_archive_contains-archive"></a>archive |  Label of the the .tar or .zip file   |  none |
-| <a id="assert_archive_contains-expected"></a>expected |  Label of a file containing a (partial) file listing   |  none |
+| <a id="assert_archive_contains-expected"></a>expected |  a (partial) file listing, either as a Label of a file containing it, or a list of strings   |  none |
 | <a id="assert_archive_contains-type"></a>type |  "tar" or "zip". If None, a type will be inferred from the filename.   |  <code>None</code> |
 | <a id="assert_archive_contains-kwargs"></a>kwargs |  additional named arguments for the resulting sh_test   |  none |
 

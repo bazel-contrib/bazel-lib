@@ -120,7 +120,7 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
     Args:
         name: name of the resulting sh_test target
         archive: Label of the the .tar or .zip file
-        expected: Label of a file containing a (partial) file listing
+        expected: a (partial) file listing, either as a Label of a file containing it, or a list of strings
         type: "tar" or "zip". If None, a type will be inferred from the filename.
         **kwargs: additional named arguments for the resulting sh_test
     """
@@ -145,6 +145,16 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
     grep = "grep -F -x -v -f $actual"
 
     script_name = "_gen_assert_" + name
+    expected_name = "_expected_" + name
+
+    if types.is_list(expected):
+        write_file(
+            name = expected_name,
+            out = expected_name + ".mf",
+            content = expected,
+        )
+    else:
+        expected_name = expected
 
     write_file(
         name = script_name,
@@ -156,7 +166,7 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
             "# Grep exits 1 if no matches, which is success for this test.",
             "if {} $2; then".format(grep),
             "  echo",
-            "  echo 'ERROR: above line(s) appeared in {} but are not present in the archive' $1".format(expected),
+            "  echo 'ERROR: above line(s) appeared in {} but are not present in the archive' $1".format(expected_name),
             "  exit 1",
             "fi",
         ],
@@ -165,8 +175,8 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
     native.sh_test(
         name = name,
         srcs = [script_name],
-        args = ["$(rootpath %s)" % archive, "$(rootpath %s)" % expected],
-        data = [archive, expected],
+        args = ["$(rootpath %s)" % archive, "$(rootpath %s)" % expected_name],
+        data = [archive, expected_name],
         timeout = "short",
         **kwargs
     )
