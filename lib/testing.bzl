@@ -113,3 +113,53 @@ def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
             file2,
         ),
     )
+
+def assert_archive_contains(name, archive, expected, type = "zip", **kwargs):
+    """Assert that an archive file contains at least the given file entries.
+
+    Args:
+        name: name of the resulting sh_test target
+        archive: Label of the the .tar or .zip file
+        expected: Label of a file containing a (partial) file listing
+        type: "tar" or "zip"
+        **kwargs: additional named arguments for the resulting sh_test
+    """
+
+    if not type in ["tar", "zip"]:
+        fail("type must be 'tar' or 'zip'")
+
+    # Command to list the files in the archive
+    command = "zipinfo -1" if type == "zip" else "tar -tf"
+
+    # -f $actual: use this file to contain one pattern per line
+    # -F: treat each pattern as a plain string, not a regex
+    # -x: match whole lines only
+    # -v: only print lines which don't match
+    grep = "grep -F -x -v -f $actual"
+
+    script_name = "_gen_assert_" + name
+
+    write_file(
+        name = script_name,
+        out = "assert_{}.sh".format(name),
+        content = [
+            "#!/usr/bin/env bash",
+            "actual=$(mktemp)",
+            "{} $1 > $actual".format(command),
+            "# Grep exits 1 if no matches, which is success for this test.",
+            "if {} $2; then".format(grep),
+            "  echo",
+            "  echo 'ERROR: above line(s) appeared in {} but are not present in the archive' $1".format(expected),
+            "  exit 1",
+            "fi",
+        ],
+    )
+
+    native.sh_test(
+        name = name,
+        srcs = [script_name],
+        args = ["$(rootpath %s)" % archive, "$(rootpath %s)" % expected],
+        data = [archive, expected],
+        timeout = "short",
+        **kwargs
+    )
