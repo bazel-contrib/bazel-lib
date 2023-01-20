@@ -1,0 +1,3 @@
+lib/tests/assert_archive_contains/bazel_runfiles.whl
+lib/tests/assert_archive_contains/expected_wheel.txt
+lib/tests/assert_archive_contains/BUILD.bazel
