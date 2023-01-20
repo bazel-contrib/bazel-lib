@@ -1,0 +1,5 @@
+runfiles/__init__.py
+runfiles/runfiles.py
+bazel_runfiles-1.0.2.dist-info/WHEEL
+bazel_runfiles-1.0.2.dist-info/METADATA
+bazel_runfiles-1.0.2.dist-info/RECORD
