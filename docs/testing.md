@@ -2,6 +2,28 @@
 
 Helpers for making test assertions
 
+<a id="assert_archive_contains"></a>
+
+## assert_archive_contains
+
+<pre>
+assert_archive_contains(<a href="#assert_archive_contains-name">name</a>, <a href="#assert_archive_contains-archive">archive</a>, <a href="#assert_archive_contains-expected">expected</a>, <a href="#assert_archive_contains-type">type</a>, <a href="#assert_archive_contains-kwargs">kwargs</a>)
+</pre>
+
+Assert that an archive file contains at least the given file entries.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="assert_archive_contains-name"></a>name |  name of the resulting sh_test target   |  none |
+| <a id="assert_archive_contains-archive"></a>archive |  Label of the the .tar or .zip file   |  none |
+| <a id="assert_archive_contains-expected"></a>expected |  Label of a file containing a (partial) file listing   |  none |
+| <a id="assert_archive_contains-type"></a>type |  "tar" or "zip"   |  <code>"zip"</code> |
+| <a id="assert_archive_contains-kwargs"></a>kwargs |  additional named arguments for the resulting sh_test   |  none |
+
+
 <a id="assert_contains"></a>
 
 ## assert_contains
