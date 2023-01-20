@@ -10,5 +10,4 @@ assert_archive_contains(
     name = "check_tar",
     archive = "lib_tests.tar",
     expected = "expected_tar.txt",
-    type = "tar",
 )
