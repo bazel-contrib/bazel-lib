@@ -1,3 +1,4 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(":release.bzl", "multi_platform_go_binaries", "release")
 
 exports_files([
@@ -23,4 +24,10 @@ release(
         ":copy_directory",
         ":copy_to_directory",
     ],
+)
+
+bzl_library(
+    name = "hashes",
+    srcs = ["hashes.bzl"],
+    visibility = ["//visibility:public"],
 )

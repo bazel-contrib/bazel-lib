@@ -6,15 +6,16 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/aspect-build/bazel-lib/tools/common"
 )
 
 type pathSet map[string]bool
 
+const maxConcureancy = 9000
+
 var srcPaths = pathSet{}
-var copyWaitGroup sync.WaitGroup
+var copyWaitGroup = common.NewWaitingGroup(maxConcureancy)
 var hardlink = false
 var verbose = false
 

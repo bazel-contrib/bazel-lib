@@ -17,6 +17,7 @@ go_library(
         "file.go",
         "stamp.go",
         "version.go",
+        "waiting_group.go",
     ],
     importpath = "github.com/aspect-build/bazel-lib/tools/common",
     visibility = ["//visibility:public"],
