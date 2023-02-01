@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -49,7 +49,6 @@ type config struct {
 type copyMap map[string]fileInfo
 type pathSet map[string]bool
 
-var copyWaitGroup sync.WaitGroup
 var copySet = copyMap{}
 var mkdirSet = pathSet{}
 
@@ -60,7 +59,7 @@ func parseConfig(configPath string) (*config, error) {
 	}
 	defer f.Close()
 
-	byteValue, err := ioutil.ReadAll(f)
+	byteValue, err := io.ReadAll(f)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -118,7 +117,11 @@ func longestGlobMatch(g string, test string) (string, error) {
 	return "", nil
 }
 
-func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
+type walker struct {
+	queue chan<- common.CopyOpts
+}
+
+func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 	if srcPaths == nil {
 		srcPaths = pathSet{}
 	}
@@ -178,7 +181,7 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
-				return copyDir(cfg, srcPaths, f)
+				return w.copyDir(cfg, srcPaths, f)
 			} else {
 				// symlink points to a regular file
 				f := fileInfo{
@@ -191,7 +194,7 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
-				return copyPath(cfg, f)
+				return w.copyPath(cfg, f)
 			}
 		}
 
@@ -206,11 +209,11 @@ func copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 			Hardlink:      file.Hardlink,
 			FileInfo:      info,
 		}
-		return copyPath(cfg, f)
+		return w.copyPath(cfg, f)
 	})
 }
 
-func copyPath(cfg *config, file fileInfo) error {
+func (w *walker) copyPath(cfg *config, file fileInfo) error {
 	// Apply filters and transformations in the following order:
 	//
 	// - `include_external_repositories`
@@ -261,10 +264,7 @@ func copyPath(cfg *config, file fileInfo) error {
 		return err
 	}
 	if rootPathMatch != "" {
-		outputPath = outputPath[len(rootPathMatch):]
-		if strings.HasPrefix(outputPath, "/") {
-			outputPath = outputPath[1:]
-		}
+		outputPath = strings.TrimPrefix(outputPath[len(rootPathMatch):], "/")
 	}
 
 	// apply include_srcs_patterns
@@ -323,14 +323,13 @@ func copyPath(cfg *config, file fileInfo) error {
 
 	if !cfg.AllowOverwrites {
 		// if we don't allow overwrites then we can start copying as soon as a copy is calculated
-		copyWaitGroup.Add(1)
-		go common.Copy(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, &copyWaitGroup)
+		w.queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose)
 	}
 
 	return nil
 }
 
-func copyPaths(cfg *config) error {
+func (w *walker) copyPaths(cfg *config) error {
 	for _, file := range cfg.Files {
 		info, err := os.Lstat(file.Path)
 		if err != nil {
@@ -355,11 +354,11 @@ func copyPaths(cfg *config) error {
 		}
 
 		if file.FileInfo.IsDir() {
-			if err := copyDir(cfg, nil, file); err != nil {
+			if err := w.copyDir(cfg, nil, file); err != nil {
 				return err
 			}
 		} else {
-			if err := copyPath(cfg, file); err != nil {
+			if err := w.copyPath(cfg, file); err != nil {
 				return err
 			}
 		}
@@ -387,7 +386,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err = copyPaths(cfg); err != nil {
+	queue := make(chan common.CopyOpts, 100)
+	var wg sync.WaitGroup
+
+	const numWorkers = 10
+	wg.Add(numWorkers)
+	for i := 0; i < numWorkers; i++ {
+		go common.NewCopyWorker(queue).Run(&wg)
+	}
+
+	walker := &walker{queue}
+	if err = walker.copyPaths(cfg); err != nil {
 		log.Fatal(err)
 	}
 
@@ -395,10 +404,10 @@ func main() {
 		// if we allow overwrites then we must wait until all copy paths are calculated before starting
 		// any copy operations
 		for outputPath, file := range copySet {
-			copyWaitGroup.Add(1)
-			go common.Copy(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, &copyWaitGroup)
+			queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose)
 		}
 	}
 
-	copyWaitGroup.Wait()
+	close(queue)
+	wg.Wait()
 }

@@ -14,11 +14,14 @@ import (
 type pathSet map[string]bool
 
 var srcPaths = pathSet{}
-var copyWaitGroup sync.WaitGroup
 var hardlink = false
 var verbose = false
 
-func copyDir(src string, dst string) error {
+type walker struct {
+	queue chan<- common.CopyOpts
+}
+
+func (w *walker) copyDir(src string, dst string) error {
 	// filepath.WalkDir walks the file tree rooted at root, calling fn for each file or directory in
 	// the tree, including root. See https://pkg.go.dev/path/filepath#WalkDir for more info.
 	return filepath.WalkDir(src, func(p string, dirEntry fs.DirEntry, err error) error {
@@ -59,18 +62,16 @@ func copyDir(src string, dst string) error {
 			}
 			if stat.IsDir() {
 				// symlink points to a directory
-				return copyDir(linkPath, d)
+				return w.copyDir(linkPath, d)
 			} else {
 				// symlink points to a regular file
-				copyWaitGroup.Add(1)
-				go common.Copy(linkPath, d, stat, hardlink, verbose, &copyWaitGroup)
+				w.queue <- common.NewCopyOpts(linkPath, d, stat, hardlink, verbose)
 				return nil
 			}
 		}
 
 		// a regular file
-		copyWaitGroup.Add(1)
-		go common.Copy(p, d, info, hardlink, verbose, &copyWaitGroup)
+		w.queue <- common.NewCopyOpts(p, d, info, hardlink, verbose)
 		return nil
 	})
 }
@@ -103,8 +104,19 @@ func main() {
 		}
 	}
 
-	if err := copyDir(src, dst); err != nil {
+	queue := make(chan common.CopyOpts, 100)
+	var wg sync.WaitGroup
+
+	const numWorkers = 10
+	wg.Add(numWorkers)
+	for i := 0; i < numWorkers; i++ {
+		go common.NewCopyWorker(queue).Run(&wg)
+	}
+
+	walker := &walker{queue}
+	if err := walker.copyDir(src, dst); err != nil {
 		log.Fatal(err)
 	}
-	copyWaitGroup.Wait()
+	close(queue)
+	wg.Wait()
 }
