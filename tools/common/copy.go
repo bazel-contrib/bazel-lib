@@ -9,8 +9,14 @@ import (
 	"sync"
 )
 
+var MaxCopies = 1000
+var limiter = make(chan bool, MaxCopies)
+
 // From https://opensource.com/article/18/6/copying-files-go
 func CopyFile(src string, dst string) error {
+	limiter <- true
+	defer func() { <-limiter }()
+
 	source, err := os.Open(src)
 	if err != nil {
 		return err
