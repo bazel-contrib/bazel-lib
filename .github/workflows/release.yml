@@ -46,6 +46,9 @@ jobs:
         with:
           # Use GH feature to populate the changelog automatically
           generate_release_notes: true
-          files: /tmp/aspect/release/*
+          files: |
+            /tmp/aspect/release/*
+            bazel-lib-*.tar.gz
           body_path: release_notes.txt
           token: ${{ secrets.DEREK_BCR_PAT }}
+          fail_on_unmatched_files: true
