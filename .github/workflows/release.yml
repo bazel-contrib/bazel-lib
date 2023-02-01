@@ -40,7 +40,7 @@ jobs:
             exit 1
           fi
       - name: Prepare workspace snippet
-        run: .github/workflows/workspace_snippet.sh ${{ env.GITHUB_REF_NAME }} > release_notes.txt
+        run: .github/workflows/release_prep.sh ${{ env.GITHUB_REF_NAME }} > release_notes.txt
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
