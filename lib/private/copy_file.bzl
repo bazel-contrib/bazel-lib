@@ -24,7 +24,7 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 `_copy_file` does not.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
@@ -44,7 +44,7 @@ def _copy_cmd(ctx, src, src_path, dst):
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
     cmd_tmpl = "@copy /Y \"{src}\" \"{dst}\" >NUL"
     mnemonic = "CopyFile"
-    progress_message = "Copying file %{input}"
+    progress_message = "Copying file %s" % _progress_path(src)
 
     ctx.actions.write(
         output = bat,
@@ -71,7 +71,7 @@ def _copy_cmd(ctx, src, src_path, dst):
 def _copy_bash(ctx, src, src_path, dst):
     cmd_tmpl = "cp -f \"$1\" \"$2\""
     mnemonic = "CopyFile"
-    progress_message = "Copying file %{input}"
+    progress_message = "Copying file %s" % _progress_path(src)
 
     ctx.actions.run_shell(
         tools = [src],

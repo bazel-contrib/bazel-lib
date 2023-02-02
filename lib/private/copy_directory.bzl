@@ -4,7 +4,7 @@ This rule copies a directory to another location using Bash (on Linux/macOS) or
 cmd.exe (on Windows).
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 def _copy_cmd(ctx, src, dst):
@@ -22,7 +22,7 @@ def _copy_cmd(ctx, src, dst):
     # NB: robocopy return non-zero exit codes on success so we must exit 0 after calling it
     cmd_tmpl = "@robocopy \"{src}\" \"{dst}\" /E >NUL & @exit 0"
     mnemonic = "CopyDirectory"
-    progress_message = "Copying directory %{input}"
+    progress_message = "Copying directory %s" % _progress_path(src)
 
     ctx.actions.write(
         output = bat,
@@ -49,7 +49,7 @@ def _copy_cmd(ctx, src, dst):
 def _copy_bash(ctx, src, dst):
     cmd = "rm -Rf \"$2\" && cp -fR \"$1/\" \"$2\""
     mnemonic = "CopyDirectory"
-    progress_message = "Copying directory %{input}"
+    progress_message = "Copying directory %s" % _progress_path(src)
 
     ctx.actions.run_shell(
         tools = [src],
@@ -145,7 +145,7 @@ def copy_directory_bin_action(
         executable = copy_directory_bin,
         arguments = args,
         mnemonic = "CopyDirectory",
-        progress_message = "Copying directory %{input}",
+        progress_message = "Copying directory %s" % _progress_path(src),
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 

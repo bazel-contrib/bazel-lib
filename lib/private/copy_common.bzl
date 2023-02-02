@@ -57,3 +57,15 @@ COPY_EXECUTION_REQUIREMENTS = {
     "no-sandbox": "1",
     "local": "1",
 }
+
+def progress_path(f):
+    """
+    Convert a file to an appropriate string to display in an action progress message.
+
+    Args:
+        f: a file to show as a path in a progress message
+
+    Returns:
+        The path formatted for use in a progress message
+    """
+    return f.short_path.removeprefix("../")
