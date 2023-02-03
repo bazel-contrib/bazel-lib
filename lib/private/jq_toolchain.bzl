@@ -8,9 +8,16 @@ JQ_PLATFORMS = {
         release_platform = "osx-amd64",
         compatible_with = [
             "@platforms//os:macos",
-            # JQ only ships a universal binary; it should work on
-            # Apple Silicon (amd64) as well.
-            #"@platforms//cpu:x86_64",
+            "@platforms//cpu:x86_64",
+        ],
+    ),
+    "darwin_arm64": struct(
+        # JQ only ships a universal binary; it should work on
+        # Apple Silicon (aarch64) as well.
+        release_platform = "osx-amd64",
+        compatible_with = [
+            "@platforms//os:macos",
+            "@platforms//cpu:aarch64",
         ],
     ),
     "linux_amd64": struct(
