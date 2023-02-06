@@ -1,7 +1,7 @@
 "copy_to_directory implementation"
 
 load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":glob_match.bzl", "glob_match", "is_glob")
@@ -518,7 +518,7 @@ fi
         outputs = [dst_dir],
         command = "\n".join(cmds),
         mnemonic = "CopyToDirectory",
-        progress_message = "Copying files to directory",
+        progress_message = "Copying files to directory %s" % _progress_path(dst_dir),
         use_default_shell_env = True,
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
@@ -586,7 +586,7 @@ if exist "{src}\\*" (
         executable = "cmd.exe",
         arguments = ["/C", bat.path.replace("/", "\\")],
         mnemonic = "CopyToDirectory",
-        progress_message = "Copying files to directory",
+        progress_message = "Copying files to directory %s" % _progress_path(dst_dir),
         use_default_shell_env = True,
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
@@ -838,7 +838,7 @@ def copy_to_directory_bin_action(
         executable = copy_to_directory_bin,
         arguments = [config_file.path],
         mnemonic = "CopyToDirectory",
-        progress_message = "Copying files to directory",
+        progress_message = "Copying files to directory %s" % _progress_path(dst),
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
