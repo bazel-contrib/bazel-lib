@@ -7,7 +7,7 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:utils.bzl", "default_timeout")
 load("//lib:jq.bzl", "jq")
 
-def assert_contains(name, actual, expected, size = None, timeout = None):
+def assert_contains(name, actual, expected, size = None, timeout = None, **kwargs):
     """Generates a test target which fails if the file doesn't contain the string.
 
     Depends on bash, as it creates an sh_test target.
@@ -18,6 +18,7 @@ def assert_contains(name, actual, expected, size = None, timeout = None):
         expected: a string which should appear in the file
         size: the size attribute of the test target
         timeout: the timeout attribute of the test target
+        **kwargs: additional named arguments for the resulting sh_test
     """
 
     test_sh = "_{}_test.sh".format(name)
@@ -39,15 +40,17 @@ def assert_contains(name, actual, expected, size = None, timeout = None):
         size = size,
         timeout = default_timeout(size, timeout),
         data = [actual],
+        **kwargs
     )
 
-def assert_outputs(name, actual, expected):
+def assert_outputs(name, actual, expected, **kwargs):
     """Assert that the default outputs of a target are the expected ones.
 
     Args:
         name: name of the resulting diff_test
         actual: string of the label to check the outputs
         expected: a list of rootpaths of expected outputs, as they would appear in a runfiles manifest
+        **kwargs: additional named arguments for the resulting diff_test
     """
 
     if not types.is_list(expected):
@@ -70,9 +73,10 @@ def assert_outputs(name, actual, expected):
         name = name,
         file1 = "_expected_ " + name,
         file2 = "_actual_" + name,
+        **kwargs
     )
 
-def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
+def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = ".", **kwargs):
     """Assert that the given json files have the same semantic content.
 
     Uses jq to filter each file. The default value of `"."` as the filter
@@ -87,6 +91,7 @@ def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
         file2: another json file
         filter1: a jq filter to apply to file1
         filter2: a jq filter to apply to file2
+        **kwargs: additional named arguments for the resulting diff_test
     """
     name1 = "_{}_jq1".format(name)
     name2 = "_{}_jq2".format(name)
@@ -112,6 +117,7 @@ def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = "."):
             filter2,
             file2,
         ),
+        **kwargs
     )
 
 def assert_archive_contains(name, archive, expected, type = None, **kwargs):
