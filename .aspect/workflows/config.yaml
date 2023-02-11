@@ -2,9 +2,19 @@
 env:
   CC: /bin/false
 workspaces:
-  - .
-  - e2e/bzlmod
-  - e2e/copy_to_directory
+  .:
+    icon: js
+    label: bazel-lib
+  e2e/bzlmod:
+    icon: bazel
+    tasks:
+      buildifier:
+        without: true
+  e2e/copy_to_directory:
+    icon: bazel
+    tasks:
+      buildifier:
+        without: true
 tasks:
-  branch_freshness:
+  buildifier:
   test:
