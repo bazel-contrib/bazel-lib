@@ -40,14 +40,25 @@ The relative path from frm_file to to_file, including the file name
 to_manifest_path(<a href="#to_manifest_path-ctx">ctx</a>, <a href="#to_manifest_path-file">file</a>)
 </pre>
 
-The runfiles manifest entry path for a file
+The rlocation path for a `File`
 
-This is the full runfiles path of a file including its workspace name as
-the first segment. We refert to it as the manifest path as it is the path
-flavor that is used for in the runfiles MANIFEST file.
+The path a built binary can pass to the `Rlocation` function of a runfiles library to find a
+dependency at runtime, either in the runfiles directory (if available) or using the runfiles
+manifest.
 
-We must avoid using non-normalized paths (workspace/../other_workspace/path)
-in order to locate entries by their key.
+This is similar to root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path))
+in that it does not contain configuration prefixes, but differs in that it always starts with the
+name of the repository.
+
+The rlocation path of a `File` in an external repository repo will start with `repo/`, followed by the
+repository-relative path.
+
+Passing this path to a binary and resolving it to a file system path using the runfiles libraries
+is the preferred approach to find dependencies at runtime. Compared to root path, it has the
+advantage that it works on all platforms and even if the runfiles directory is not available.
+
+Based on the $(rlocation) predefined source/output path variable:
+https://bazel.build/reference/be/make-variables#predefined_genrule_variables.
 
 
 **PARAMETERS**
@@ -56,11 +67,11 @@ in order to locate entries by their key.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="to_manifest_path-ctx"></a>ctx |  starlark rule execution context   |  none |
-| <a id="to_manifest_path-file"></a>file |  a File object   |  none |
+| <a id="to_manifest_path-file"></a>file |  a <code>File</code> object   |  none |
 
 **RETURNS**
 
-The runfiles manifest entry path for a file
+The rlocation path for the `File`
 
 
 <a id="to_output_relative_path"></a>
@@ -68,17 +79,91 @@ The runfiles manifest entry path for a file
 ## to_output_relative_path
 
 <pre>
-to_output_relative_path(<a href="#to_output_relative_path-f">f</a>)
+to_output_relative_path(<a href="#to_output_relative_path-file">file</a>)
 </pre>
 
-The relative path from bazel-out/[arch]/bin to the given File object
+    The relative path from bazel-out/[arch]/bin to the given File object
 
 **PARAMETERS**
 
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="to_output_relative_path-f"></a>f |  <p align="center"> - </p>   |  none |
+| <a id="to_output_relative_path-file"></a>file |  a <code>File</code> object   |  none |
+
+**RETURNS**
+
+The output relative path for the `File`
+
+
+<a id="to_repository_relative_path"></a>
+
+## to_repository_relative_path
+
+<pre>
+to_repository_relative_path(<a href="#to_repository_relative_path-file">file</a>)
+</pre>
+
+The repository relative path for a `File`
+
+This is the full runfiles path of a `File` excluding its workspace name.
+
+This differs from  root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path)) and
+rlocation path as it does not include the repository name if the `File` is from an external repository.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="to_repository_relative_path-file"></a>file |  a <code>File</code> object   |  none |
+
+**RETURNS**
+
+The repository relative path for the `File`
+
+
+<a id="to_rlocation_path"></a>
+
+## to_rlocation_path
+
+<pre>
+to_rlocation_path(<a href="#to_rlocation_path-ctx">ctx</a>, <a href="#to_rlocation_path-file">file</a>)
+</pre>
+
+The rlocation path for a `File`
+
+The path a built binary can pass to the `Rlocation` function of a runfiles library to find a
+dependency at runtime, either in the runfiles directory (if available) or using the runfiles
+manifest.
+
+This is similar to root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path))
+in that it does not contain configuration prefixes, but differs in that it always starts with the
+name of the repository.
+
+The rlocation path of a `File` in an external repository repo will start with `repo/`, followed by the
+repository-relative path.
+
+Passing this path to a binary and resolving it to a file system path using the runfiles libraries
+is the preferred approach to find dependencies at runtime. Compared to root path, it has the
+advantage that it works on all platforms and even if the runfiles directory is not available.
+
+Based on the $(rlocation) predefined source/output path variable:
+https://bazel.build/reference/be/make-variables#predefined_genrule_variables.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="to_rlocation_path-ctx"></a>ctx |  starlark rule execution context   |  none |
+| <a id="to_rlocation_path-file"></a>file |  a <code>File</code> object   |  none |
+
+**RETURNS**
+
+The rlocation path for the `File`
 
 
 <a id="to_workspace_path"></a>
@@ -89,11 +174,12 @@ The relative path from bazel-out/[arch]/bin to the given File object
 to_workspace_path(<a href="#to_workspace_path-file">file</a>)
 </pre>
 
-The workspace relative path for a file
+The repository relative path for a `File`
 
-This is the full runfiles path of a file excluding its workspace name.
-This differs from root path and manifest path as it does not include the
-repository name if the file is from an external repository.
+This is the full runfiles path of a `File` excluding its workspace name.
+
+This differs from  root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path)) and
+rlocation path as it does not include the repository name if the `File` is from an external repository.
 
 
 **PARAMETERS**
@@ -101,10 +187,10 @@ repository name if the file is from an external repository.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="to_workspace_path-file"></a>file |  a File object   |  none |
+| <a id="to_workspace_path-file"></a>file |  a <code>File</code> object   |  none |
 
 **RETURNS**
 
-The workspace relative path for a file
+The repository relative path for the `File`
 
 

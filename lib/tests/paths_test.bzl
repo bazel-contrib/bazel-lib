@@ -189,14 +189,22 @@ def _relative_file_test_impl(ctx):
 
     return unittest.end(env)
 
-def _manifest_path_test_impl(ctx):
+def _rlocation_path_test_impl(ctx):
     env = unittest.begin(ctx)
+    asserts.equals(env, "bazel_skylib/LICENSE", paths.to_rlocation_path(ctx, ctx.file.f1))
+    asserts.equals(env, "aspect_bazel_lib/lib/paths.bzl", paths.to_rlocation_path(ctx, ctx.file.f2))
+
+    # deprecated naming
     asserts.equals(env, "bazel_skylib/LICENSE", paths.to_manifest_path(ctx, ctx.file.f1))
     asserts.equals(env, "aspect_bazel_lib/lib/paths.bzl", paths.to_manifest_path(ctx, ctx.file.f2))
     return unittest.end(env)
 
-def _workspace_path_test_impl(ctx):
+def _repository_relative_path_test_impl(ctx):
     env = unittest.begin(ctx)
+    asserts.equals(env, "LICENSE", paths.to_repository_relative_path(ctx.file.f1))
+    asserts.equals(env, "lib/paths.bzl", paths.to_repository_relative_path(ctx.file.f2))
+
+    # deprecated naming
     asserts.equals(env, "LICENSE", paths.to_workspace_path(ctx.file.f1))
     asserts.equals(env, "lib/paths.bzl", paths.to_workspace_path(ctx.file.f2))
     return unittest.end(env)
@@ -221,15 +229,15 @@ _ATTRS = {
 }
 
 relative_file_test = unittest.make(_relative_file_test_impl)
-manifest_path_test = unittest.make(_manifest_path_test_impl, attrs = _ATTRS)
+rlocation_path_test = unittest.make(_rlocation_path_test_impl, attrs = _ATTRS)
 output_relative_path_test = unittest.make(_output_relative_path_test_impl, attrs = _ATTRS)
-workspace_path_test = unittest.make(_workspace_path_test_impl, attrs = _ATTRS)
+repository_relative_path_test = unittest.make(_repository_relative_path_test_impl, attrs = _ATTRS)
 
 def paths_test_suite():
     unittest.suite(
         "paths_tests",
         partial.make(relative_file_test, timeout = "short"),
-        partial.make(manifest_path_test, timeout = "short"),
+        partial.make(rlocation_path_test, timeout = "short"),
         partial.make(output_relative_path_test, timeout = "short"),
-        partial.make(workspace_path_test, timeout = "short"),
+        partial.make(repository_relative_path_test, timeout = "short"),
     )
