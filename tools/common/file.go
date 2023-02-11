@@ -26,7 +26,7 @@ func Realpath(p string) (string, error) {
 		return "", fmt.Errorf("readlink %s failed: %w", p, err)
 	}
 
-	if !path.IsAbs(t) {
+	if !filepath.IsAbs(t) {
 		t = path.Join(path.Dir(p), t)
 	}
 
