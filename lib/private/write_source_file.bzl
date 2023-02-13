@@ -196,7 +196,7 @@ fi"""]
         executable_file = "chmod -x \"$out\""
         if is_macos:
             # -x+X doesn't work on macos so we have to find files and remove the execute bits only from those
-            executable_dir = "find \"$out\" -type file | xargs chmod -x"
+            executable_dir = "find \"$out\" -type f | xargs chmod -x"
         else:
             # Remove execute/search bit recursively from files bit not directories: https://superuser.com/a/434418
             executable_dir = "chmod -R -x+X \"$out\"/*"
