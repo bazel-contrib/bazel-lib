@@ -17,7 +17,7 @@ copy_to_directory(<a href="#copy_to_directory-name">name</a>, <a href="#copy_to_
 Copies files and directories to an output directory.
 
 Files and directories can be arranged as needed in the output directory using
-the `root_paths`, `include_srcs_patters`, `exclude_srcs_patters` and `replace_prefixes` attributes.
+the `root_paths`, `include_srcs_patterns`, `exclude_srcs_patterns` and `replace_prefixes` attributes.
 
 Filters and transformations are applied in the following order:
 
