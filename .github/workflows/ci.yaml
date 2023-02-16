@@ -44,7 +44,7 @@ jobs:
       - id: bazel_5
         run: echo "bazelversion=5.3.2" >> $GITHUB_OUTPUT
     outputs:
-      # Will look like '["6.0.0rc1", "5.3.2"]'
+      # Will look like '["6.0.0", "5.3.2"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
   test:
@@ -95,8 +95,13 @@ jobs:
         working-directory: ${{ matrix.folder }}
         # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
         # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
-        # then use .bazelversion to determine which Bazel version to use
-        run: echo "${{ matrix.bazelversion }}" > .bazelversion
+        # then use .bazelversion to determine which Bazel version to use.
+        # Also delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
+        # against Bazel 6 which has a try-import in the root .bazelrc for local development.
+        run: |
+          BAZEL_VERSION=${{ matrix.bazelversion }}
+          echo "${{ matrix.bazelversion }}" > .bazelversion
+          if [ ${BAZEL_VERSION::1} != "6" ]; then rm -f .aspect/bazelrc/bazel6.bazelrc; fi
 
       - name: Write engflow credentials
         if: ${{ matrix.config == 'rbe' }}
@@ -112,7 +117,13 @@ jobs:
 
       - name: bazel test //...
         working-directory: ${{ matrix.folder }}
-        run: bazel --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc --bazelrc=.bazelrc test --config=${{ matrix.config }} //...
+        run: |
+          BAZEL_VERSION=${{ matrix.bazelversion }}
+          bazel --bazelrc=$GITHUB_WORKSPACE/.aspect/bazelrc/ci.bazelrc \
+            --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc \
+            --bazelrc=$GITHUB_WORKSPACE/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
+            --bazelrc=.bazelrc \
+            test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo

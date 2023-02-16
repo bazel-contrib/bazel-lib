@@ -187,22 +187,12 @@ write_source_files(
     files = {"dist_executable.js": ":dist"},
 )
 
-# Generate a file in nested directories
-genrule(
-    name = "subdir",
-    outs = ["subdir_test"],
-    cmd = ";".join([
-        "mkdir -p $@/a/b/c",
-        "echo 'test' > $@/a/b/c/test.txt",
-    ]),
-)
-
 # Write nested subdirectories to source
 # See e2e/write_source_files_subdir_multiple_runs
 write_source_files(
     name = "write_subdir",
     diff_test = False,
-    files = {"subdir_test": ":subdir"},
+    files = {"subdir_test": ":subdir_test_input"},
 )
 
 # Write nested subdirectories to source
@@ -211,19 +201,7 @@ write_source_files(
     name = "write_subdir_executable",
     diff_test = False,
     executable = True,
-    files = {"subdir_executable_test": ":subdir"},
-)
-
-# Generate some directories including symlinks
-genrule(
-    name = "symlinks",
-    outs = ["symlink_test"],
-    cmd = ";".join([
-        "mkdir -p $@/a $@/b",
-        "echo 'test' > $@/a/test.txt",
-        "pushd $@/b",
-        "ln -s ../a/test.txt",
-    ]),
+    files = {"subdir_executable_test": ":subdir_test_input"},
 )
 
 # Write symlinks to source
@@ -231,7 +209,7 @@ genrule(
 write_source_files(
     name = "write_symlinks",
     diff_test = False,
-    files = {"symlink_test": ":symlinks"},
+    files = {"symlink_test": ":symlinks_input"},
 )
 
 write_source_files(

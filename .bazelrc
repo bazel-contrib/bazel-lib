@@ -1,27 +1,24 @@
 # Bazel settings that apply to this repository.
-# Take care to document any settings that you expect users to apply.
-# Settings that apply only to CI are in .github/workflows/ci.bazelrc.
+# Settings that apply only to CI are in .aspect/bazelrc/ci.bazelrc
 
-# Allow the Bazel server to check directory sources for changes.
-# Avoids warning spam with rules_nodejs feature that models node_modules as directories.
-# See https://github.com/bazelbuild/rules_nodejs/releases/tag/3.6.0.
-startup --host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=1
+# Import Aspect recommended Bazel convenience settings for all projects
+import %workspace%/.aspect/bazelrc/convenience.bazelrc
 
-# In general, the rules in this repository assume that runfiles
-# are enabled as we do not support no runfiles case.
-#
-# If you are developing on Windows, you must either run bazel
-# with administrator privileges or enable developer mode. If
-# you do not you may hit this error on Windows:
-#
-#   Bazel needs to create symlinks to build the runfiles tree.
-#   Creating symlinks on Windows requires one of the following:
-#       1. Bazel is run with administrator privileges.
-#       2. The system version is Windows 10 Creators Update (1703) or later
-#          and developer mode is enabled.
-build --enable_runfiles
+# Import Aspect recommended Bazel correctness settings for all projects
+import %workspace%/.aspect/bazelrc/correctness.bazelrc
 
-common --enable_platform_specific_config
+# Import Aspect recommended Bazel performance settings for all projects
+import %workspace%/.aspect/bazelrc/performance.bazelrc
+
+# Import Aspect recommended Bazel debug settings for all projects
+import %workspace%/.aspect/bazelrc/debug.bazelrc
+
+# Import Aspect recommended Bazel javascript settings for all projects
+import %workspace%/.aspect/bazelrc/javascript.bazelrc
+
+# Import Aspect recommended Bazel 6 settings for all projects;
+# using a try-import here since this repository is also tested against Bazel 5 on CI
+try-import %workspace%/.aspect/bazelrc/bazel6.bazelrc
 
 # For testing our --stamp behavior.
 # Normally users would use a --workspace_status_command with a script that calls `git describe`.
@@ -31,25 +28,8 @@ build --embed_label=v1.2.3
 build:release --workspace_status_command "${PWD}/workspace_status.sh"
 build:release -c opt --stamp
 
-# Turn off legacy external runfiles on all platforms except Windows.
-# This allows our users to turn on this flag as well, which is a performance win.
-# Skylib's diff_test implementation for Windows depends on legacy external
-# runfiles so we cannot disable it fully.
-build:linux --nolegacy_external_runfiles
-build:macos --nolegacy_external_runfiles
-build:freebsd --nolegacy_external_runfiles
-build:openbsd --nolegacy_external_runfiles
-
-# Print error messages on test failure.
-test --test_output=errors
-# Remind us to set quick tests to short
-test --test_verbose_timeout_warnings
-
-# Load any settings specific to the current user.
-# .bazelrc.user should appear in .gitignore so that settings are not shared with team members.
-# This needs to be last statement in this config, as the user configuration should be able to
-# overwrite flags from this file.
-# See https://docs.bazel.build/versions/master/best-practices.html#bazelrc.
-# Note that we use .bazelrc.user so the file appears next to .bazelrc in directory listing,
-# rather than user.bazelrc as suggested in the Bazel docs.
-try-import %workspace%/.bazelrc.user
+# Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
+# This file should appear in `.gitignore` so that settings are not shared with team members. This
+# should be last statement in this config so the user configuration is able to overwrite flags from
+# this file. See https://bazel.build/configure/best-practices#bazelrc-file.
+try-import %workspace%/.aspect/bazelrc/user.bazelrc
