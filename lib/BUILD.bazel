@@ -230,3 +230,9 @@ bzl_library(
     srcs = ["base64.bzl"],
     deps = ["//lib/private/docs:base64"],
 )
+
+bzl_library(
+    name = "bazelrc_presets",
+    srcs = ["bazelrc_presets.bzl"],
+    deps = [":write_source_files"],
+)
