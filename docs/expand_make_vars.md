@@ -11,7 +11,7 @@ expand_template(<a href="#expand_template-name">name</a>, <a href="#expand_templ
 </pre>
 
 Template expansion
-    
+
 This performs a simple search over the template file for the keys in substitutions,
 and replaces them with the corresponding values.
 

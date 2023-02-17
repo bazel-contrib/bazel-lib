@@ -41,24 +41,24 @@ DEFAULT_COREUTILS_VERSION = "0.0.16"
 # The integrity hashes can be automatically fetched for the coreutils releases by running
 # `tools/coreutils_mirror_release.sh`.
 COREUTILS_VERSIONS = {
-  "0.0.16": {
-    "linux_arm64": {
-      "filename": "coreutils-0.0.16-aarch64-unknown-linux-gnu.tar.gz",
-      "sha256": "sha256-6tExkcMMHe7+59M9Mp9UKeq+g0y+juO7oakZfVOtOqw="
+    "0.0.16": {
+        "linux_arm64": {
+            "filename": "coreutils-0.0.16-aarch64-unknown-linux-gnu.tar.gz",
+            "sha256": "sha256-6tExkcMMHe7+59M9Mp9UKeq+g0y+juO7oakZfVOtOqw=",
+        },
+        "darwin_amd64": {
+            "filename": "coreutils-0.0.16-x86_64-apple-darwin.tar.gz",
+            "sha256": "sha256-lQYWAuPOKS6XxwArZdiKIyczwppTVwjF4ml0iKBaB9s=",
+        },
+        "windows_amd64": {
+            "filename": "coreutils-0.0.16-x86_64-pc-windows-msvc.zip",
+            "sha256": "sha256-z5E1onYAKZoaUt2U1cv1t8UHPsJinYktEd6SpE2u07o=",
+        },
+        "linux_amd64": {
+            "filename": "coreutils-0.0.16-x86_64-unknown-linux-gnu.tar.gz",
+            "sha256": "sha256-Slf4qKf19sAWoK2pUVluAitmL3N2uz4eWpV4eibIEW0=",
+        },
     },
-    "darwin_amd64": {
-      "filename": "coreutils-0.0.16-x86_64-apple-darwin.tar.gz",
-      "sha256": "sha256-lQYWAuPOKS6XxwArZdiKIyczwppTVwjF4ml0iKBaB9s="
-    },
-    "windows_amd64": {
-      "filename": "coreutils-0.0.16-x86_64-pc-windows-msvc.zip",
-      "sha256": "sha256-z5E1onYAKZoaUt2U1cv1t8UHPsJinYktEd6SpE2u07o="
-    },
-    "linux_amd64": {
-      "filename": "coreutils-0.0.16-x86_64-unknown-linux-gnu.tar.gz",
-      "sha256": "sha256-Slf4qKf19sAWoK2pUVluAitmL3N2uz4eWpV4eibIEW0="
-    }
-  }
 }
 
 CoreUtilsInfo = provider(
@@ -99,7 +99,7 @@ coreutils_toolchain = rule(
     attrs = {
         "binary": attr.label(
             mandatory = True,
-            allow_single_file = True
+            allow_single_file = True,
         ),
     },
 )
@@ -176,7 +176,7 @@ def _coreutils_platform_repo_impl(rctx):
     filename = COREUTILS_VERSIONS[rctx.attr.version][platform]["filename"]
     url = "https://github.com/uutils/coreutils/releases/download/{}/{}".format(
         rctx.attr.version,
-        filename
+        filename,
     )
     rctx.download_and_extract(
         url = url,

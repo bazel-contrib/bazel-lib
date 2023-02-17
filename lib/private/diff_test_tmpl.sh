@@ -57,4 +57,3 @@ else
     fail "files \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 fi
-

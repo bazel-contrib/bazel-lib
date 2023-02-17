@@ -166,7 +166,6 @@ def _mixed_wrapping_globstar(ctx):
 
 mixed_wrapper_globstar_test = unittest.make(_mixed_wrapping_globstar)
 
-
 def _is_glob(ctx):
     env = unittest.begin(ctx)
 
@@ -218,5 +217,5 @@ def glob_match_test_suite():
 
     unittest.suite(
         "is_glob",
-        partial.make(is_glob_test, timeout = "short")
+        partial.make(is_glob_test, timeout = "short"),
     )

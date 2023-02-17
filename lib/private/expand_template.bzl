@@ -19,7 +19,7 @@ def _expand_template_impl(ctx):
 
 expand_template_lib = struct(
     doc = """Template expansion
-    
+
 This performs a simple search over the template file for the keys in substitutions,
 and replaces them with the corresponding values.
 
