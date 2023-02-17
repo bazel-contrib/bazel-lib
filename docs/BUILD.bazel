@@ -128,4 +128,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:repositories",
 )
 
+stardoc_with_diff_test(
+    name = "bazelrc_presets",
+    bzl_library_target = "//lib:bazelrc_presets",
+)
+
 update_docs()
