@@ -1,3 +1,4 @@
-- name: plugin-aspect-buildkite
-  from: https://static.aspect.build/aspect
-  version: 5.1.2
+# Temporarily disabled as there are issues with CLI plugins on Windows CI: Error: failed to configure plugin system: unable to fetch remote plugin from https://static.aspect.build/aspect: could not move C:\Users\runneradmin\AppData\Local\aspect-cli\plugins\plugin-aspect-buildkite\5.1.2\download3103879743 to C:\Users\runneradmin\AppData\Local\aspect-cli\plugins\plugin-aspect-buildkite\5.1.2\plugin-aspect-buildkite-windows_amd64.exe: rename C:\Users\runneradmin\AppData\Local\aspect-cli\plugins\plugin-aspect-buildkite\5.1.2\download3103879743 C:\Users\runneradmin\AppData\Local\aspect-cli\plugins\plugin-aspect-buildkite\5.1.2\plugin-aspect-buildkite-windows_amd64.exe: The process cannot access the file because it is being used by another process.
+# - name: plugin-aspect-buildkite
+#   from: https://static.aspect.build/aspect
+#   version: 5.1.2
