@@ -47,19 +47,42 @@ jobs:
       # Will look like '["6.0.0", "5.3.2"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
+  matrix-prep-os:
+    # Prepares the 'os' axis of the test matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: linux
+        run: echo "os=ubuntu-latest" >> $GITHUB_OUTPUT
+      - id: macos
+        run: echo "os=macos-latest" >> $GITHUB_OUTPUT
+        # Only run on main branch (or PR branches that contain 'macos') to minimize macOS minutes (billed at 10X)
+        # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
+        if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, 'macos') }}
+      - id: windows
+        run: echo "os=windows-latest" >> $GITHUB_OUTPUT
+        # Only run on main branch (or PR branches that contain 'windows') to minimize Windows minutes (billed at 2X)
+        # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
+        if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, 'windows') }}
+    outputs:
+      # Will look like ["ubuntu-latest", "macos-latest", "windows-latest"]
+      os: ${{ toJSON(steps.*.outputs.os) }}
+
   test:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     needs:
       - matrix-prep-config
       - matrix-prep-bazelversion
+      - matrix-prep-os
 
     strategy:
       fail-fast: false
       matrix:
         config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
+        os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
         folder:
           - "."
           - "e2e/bzlmod"
@@ -76,10 +99,32 @@ jobs:
           - config: rbe
             bazelversion: 5.3.2
             folder: e2e/bzlmod
+          # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
+          - config: rbe
+            os: macos-latest
+          # Don't test MacOS with Bazel 5 to minimize MacOS minutes (billed at 10X)
+          - bazelversion: 5.3.2
+            os: macos-latest
+          # Don't test Windows with RBE to minimize Windows minutes (billed at 2X)
+          - config: rbe
+            os: windows-latest
+          # Don't test Windows with Bazel 5 to minimize Windows minutes (billed at 2X)
+          - bazelversion: 5.3.2
+            os: windows-latest
+          # TODO: fix or disable the following build & test on Windows
+          # //lib/tests/coreutils:test_sha256sum FAILED in 2 out of 2 in 0.2s
+          # //lib/tests/coreutils:test_sha512sum FAILED in 2 out of 2 in 0.2s
+          # //docs:update_0_test FAILED TO BUILD
+          # //docs:update_10_test FAILED TO BUILD
+          # //docs:update_11_test FAILED TO BUILD
+          # //docs:update_12_test FAILED TO BUILD
+          # //docs:update_13_test FAILED TO BUILD
+          - folder: .
+            os: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repository under ${{ github.workspace }} , so your job can access it
       - uses: actions/checkout@v3
 
       - name: Mount bazel caches
@@ -92,6 +137,7 @@ jobs:
           restore-keys: bazel-cache-
 
       - name: Configure Bazel version
+        if: ${{ matrix.os != 'windows-latest' }}
         working-directory: ${{ matrix.folder }}
         # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
         # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
@@ -102,6 +148,21 @@ jobs:
           BAZEL_VERSION=${{ matrix.bazelversion }}
           echo "${{ matrix.bazelversion }}" > .bazelversion
           if [ ${BAZEL_VERSION::1} != "6" ]; then rm -f .aspect/bazelrc/bazel6.bazelrc; fi
+
+      - name: Configure Bazel version (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        working-directory: ${{ matrix.folder }}
+        # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
+        # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
+        # then use .bazelversion to determine which Bazel version to use.
+        # Also delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
+        # against Bazel 6 which has a try-import in the root .bazelrc for local development.
+        run: |
+          echo "${{ matrix.bazelversion }}" > .bazelversion
+          $BAZEL_MAJOR_VERSION = "${{ matrix.bazelversion }}".substring(0, 1)
+          if ($BAZEL_MAJOR_VERSION -ne "6") {
+            rm -Force .aspect/bazelrc/bazel6.bazelrc
+          }
 
       - name: Write engflow credentials
         if: ${{ matrix.config == 'rbe' }}
@@ -116,19 +177,36 @@ jobs:
           ENGFLOW_PRIVATE_KEY: ${{ secrets.ENGFLOW_PRIVATE_KEY }}
 
       - name: bazel test //...
+        if: ${{ matrix.os != 'windows-latest' }}
         working-directory: ${{ matrix.folder }}
         run: |
           BAZEL_VERSION=${{ matrix.bazelversion }}
-          bazel --bazelrc=$GITHUB_WORKSPACE/.aspect/bazelrc/ci.bazelrc \
-            --bazelrc=$GITHUB_WORKSPACE/.github/workflows/ci.bazelrc \
-            --bazelrc=$GITHUB_WORKSPACE/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
+          bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc \
+            --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc \
+            --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
             --bazelrc=.bazelrc \
             test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
 
+      - name: bazel test //... (Windows)
+        # A different run command is needed on Windows to account for differences between bash and Powershell
+        if: ${{ matrix.os == 'windows-latest' }}
+        working-directory: ${{ matrix.folder }}
+        run: |
+          $BAZEL_MAJOR_VERSION = "${{ matrix.bazelversion }}".substring(0, 1)
+          bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc `
+            --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
+            --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
+            --bazelrc=.bazelrc `
+            test --config=${{ matrix.config }} //...
+        env:
+          # Bazelisk will download bazel to here
+          XDG_CACHE_HOME: ~/.cache/bazel-repo
+
       - name: integration tests
-        if: ${{ matrix.folder == '.' }}
+        # Don't run integration tests on Windows since they are bash scripts and Windows runs Powershell
+        if: ${{ matrix.folder == '.' && matrix.os != 'windows-latest' }}
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
         run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && "$0" || kill $PPID' \{\} \;
