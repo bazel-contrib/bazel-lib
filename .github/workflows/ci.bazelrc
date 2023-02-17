@@ -1,22 +1,13 @@
-# Bazel settings to apply on CI only
-# Included with a --bazelrc option in the call to bazel
-build --announce_rc
-test --test_output=errors
+# Bazel options included on CI using the --bazelrc Bazel flag
+
+# CI specific caching options
 build --repository_cache=~/.cache/bazel-repo
 test --test_env=XDG_CACHE_HOME
 
 # When no remote cache, use a local one
 build:local --disk_cache=~/.cache/bazel
 
-# Generic remote cache
-build --remote_local_fallback
-# build --remote_download_toplevel # BREAKS BUILD in Bazel 6.0.0rc1
-build --remote_timeout=3600
-build --remote_upload_local_results
-## Fixes builds hanging on CI that get the TCP connection closed without sending RST packets.
-build --grpc_keepalive_time=30s
-
-# Generic remote build execution
+# Remote build execution
 build:rbe --extra_execution_platforms=@aspect_bazel_lib//platforms:x86_64_linux_remote
 build:rbe --genrule_strategy=remote
 build:rbe --host_platform=@aspect_bazel_lib//platforms:x86_64_linux_remote
