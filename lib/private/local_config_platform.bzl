@@ -32,7 +32,7 @@ exports_files([
 local_config_platform = repository_rule(
     implementation = _impl,
     doc = """Generates a repository in the same shape as the auto-generated @local_config_platform repository with an added bzl_library.
-    
+
     This is useful for rules that want to load `HOST_CONSTRAINTS` from `@local_config_platform//:constraints.bzl` and
     also want to use stardoc for generating documentation.
     """,

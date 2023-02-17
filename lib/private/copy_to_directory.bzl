@@ -195,7 +195,7 @@ replaced with the dict value for that key. The final path segment
 matched can be a partial match of that segment and only the matching portion will
 be replaced. If there are multiple keys that match, the longest match wins.
 
-Forward slashes (`/`) should be used as path separators. 
+Forward slashes (`/`) should be used as path separators.
 
 Replace prefix transformation are the final step in the list of filters and transformations.
 The final output path of a file being copied into the output directory

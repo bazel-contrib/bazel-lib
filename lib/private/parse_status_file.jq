@@ -1,4 +1,4 @@
-[                                           
+[
   split("\n")[]                                     # Convert lines to array
   | capture("(?<key>[^\\s]+)\\s+(?<value>.*)"; "x") # capture {"key": [everything before first whitespace], "value": [remainder of line]}
 ]

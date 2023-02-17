@@ -24,3 +24,15 @@ repos:
     rev: "v2.4.0"
     hooks:
       - id: prettier
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-byte-order-marker
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: end-of-file-fixer
+        exclude: &exclude_pattern "^(docs|e2e|lib/tests)/"
+      - id: mixed-line-ending
+      - id: trailing-whitespace

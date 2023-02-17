@@ -46,7 +46,7 @@ build --incompatible_strict_action_env
 # Propagate tags from a target declaration to the actions' execution requirements.
 # Ensures that tags applied in your BUILD file, like `tags=["no-remote"]`
 # get propagated to actions created by the rule.
-# Without this option, you rely on rules authors to manually check the tags you passed 
+# Without this option, you rely on rules authors to manually check the tags you passed
 # and apply relevant ones to the actions they create.
 # See https://github.com/bazelbuild/bazel/issues/8830 for details.
 # Docs: https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
