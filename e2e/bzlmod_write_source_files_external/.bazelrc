@@ -8,9 +8,6 @@ import %workspace%/.aspect/bazelrc/performance.bazelrc
 import %workspace%/.aspect/bazelrc/debug.bazelrc
 import %workspace%/.aspect/bazelrc/javascript.bazelrc
 
-# Use a try-import for Bazel 6 settings since this repository is also tested against Bazel 5 on CI
-try-import %workspace%/.aspect/bazelrc/bazel6.bazelrc
-
 ### PROJECT SPECIFIC OPTIONS ###
 
 common --enable_bzlmod

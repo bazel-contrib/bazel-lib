@@ -2,14 +2,6 @@
 # Settings that apply only to CI are in .aspect/bazelrc/ci.bazelrc
 
 # Import Aspect bazelrc presets
-import %workspace%/.aspect/bazelrc/convenience.bazelrc
-import %workspace%/.aspect/bazelrc/correctness.bazelrc
-import %workspace%/.aspect/bazelrc/performance.bazelrc
-import %workspace%/.aspect/bazelrc/debug.bazelrc
-import %workspace%/.aspect/bazelrc/javascript.bazelrc
-
-# Use a try-import for Bazel 6 settings since this repository is also tested against Bazel 5 on CI
-try-import %workspace%/.aspect/bazelrc/bazel6.bazelrc
 
 ### PROJECT SPECIFIC OPTIONS ###
 
