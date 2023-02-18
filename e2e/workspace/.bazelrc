@@ -1,0 +1,20 @@
+# Bazel settings that apply to this repository.
+# Settings that apply only to CI are in .aspect/bazelrc/ci.bazelrc
+
+# Import Aspect bazelrc presets
+import %workspace%/.aspect/bazelrc/convenience.bazelrc
+import %workspace%/.aspect/bazelrc/correctness.bazelrc
+import %workspace%/.aspect/bazelrc/performance.bazelrc
+import %workspace%/.aspect/bazelrc/debug.bazelrc
+import %workspace%/.aspect/bazelrc/javascript.bazelrc
+
+# Use a try-import for Bazel 6 settings since this repository is also tested against Bazel 5 on CI
+try-import %workspace%/.aspect/bazelrc/bazel6.bazelrc
+
+### PROJECT SPECIFIC OPTIONS ###
+
+# Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
+# This file should appear in `.gitignore` so that settings are not shared with team members. This
+# should be last statement in this config so the user configuration is able to overwrite flags from
+# this file. See https://bazel.build/configure/best-practices#bazelrc-file.
+try-import %workspace%/.aspect/bazelrc/user.bazelrc
