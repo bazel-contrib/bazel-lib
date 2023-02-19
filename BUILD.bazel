@@ -13,7 +13,7 @@ load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 gazelle_binary(
     name = "gazelle_bin",
     languages = DEFAULT_LANGUAGES + [
-        "@bazel_skylib//gazelle/bzl",
+        "@bazel_skylib_gazelle_plugin//bzl",
     ],
 )
 
