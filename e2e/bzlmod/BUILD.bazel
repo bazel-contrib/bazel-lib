@@ -12,6 +12,7 @@ load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
 load("@aspect_bazel_lib//lib:yq.bzl", "yq")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@aspect_bazel_lib_host//:defs.bzl", "host")
 
 bzl_library(
     name = "defs",
@@ -85,4 +86,10 @@ diff_test(
     file2 = "copy_to_directory_case",
     # Source directories are not support on remote execution.
     tags = ["no-remote-exec"],
+)
+
+genrule(
+    name = "host_bazel_version",
+    outs = ["host_bazel_version.txt"],
+    cmd = "echo '%s' > $@" % host.bazel_version,
 )

@@ -27,7 +27,7 @@ def stardoc_with_diff_test(
         **kwargs
     )
 
-def update_docs(name = "update"):
+def update_docs(name = "update", **kwargs):
     """Stamps an executable run for writing all stardocs declared with stardoc_with_diff_test to the source tree.
 
     This is to be used in tandem with `stardoc_with_diff_test()` to produce a convenient workflow
@@ -45,6 +45,7 @@ def update_docs(name = "update"):
 
     Args:
         name: the name of executable target
+        **kwargs: Other common named parameters such as `tags` or `visibility`
     """
 
     update_files = {}
@@ -60,4 +61,5 @@ def update_docs(name = "update"):
     write_source_files(
         name = name,
         files = update_files,
+        **kwargs
     )

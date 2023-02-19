@@ -30,7 +30,7 @@ This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
 ## update_docs
 
 <pre>
-update_docs(<a href="#update_docs-name">name</a>)
+update_docs(<a href="#update_docs-name">name</a>, <a href="#update_docs-kwargs">kwargs</a>)
 </pre>
 
 Stamps an executable run for writing all stardocs declared with stardoc_with_diff_test to the source tree.
@@ -55,5 +55,6 @@ bazel build //docs/... && bazel test //docs/... && bazel run //docs:update
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="update_docs-name"></a>name |  the name of executable target   |  <code>"update"</code> |
+| <a id="update_docs-kwargs"></a>kwargs |  Other common named parameters such as <code>tags</code> or <code>visibility</code>   |  none |
 
 
