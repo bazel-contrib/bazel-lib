@@ -86,7 +86,7 @@ jobs:
         bzlmodEnabled: [true, false]
         folder:
           - "."
-          - "e2e/bzlmod"
+          - "e2e/coreutils"
           - "e2e/copy_to_directory"
           - "e2e/workspace"
         exclude:
