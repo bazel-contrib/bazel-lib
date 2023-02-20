@@ -94,16 +94,9 @@ jobs:
           - bzlmodEnabled: false
             folder: bzlmod_write_source_files_external
 
-          # bzlmod broken at 5.3.2 which the RBE:
-          # ```
-          # ERROR: /home/runner/work/bazel-lib/bazel-lib/e2e/bzlmod/BUILD.bazel:37:10: While resolving
-          # toolchains for target //:test: com.google.devtools.build.lib.packages.BuildFileNotFoundException:
-          # no such package '@aspect_bazel_lib//platforms': The repository '@aspect_bazel_lib' could not be
-          # resolved: Repository '@aspect_bazel_lib' is not defined
-          # ```
-          - config: rbe
+          # Don't test Bazel 5.3 with bzlmod. (Unrecognized option: --enable_bzlmod)
+          - bzlmodEnabled: true
             bazelversion: 5.3.2
-            folder: e2e/bzlmod
           # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
           - config: rbe
             os: macos-latest
