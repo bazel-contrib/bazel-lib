@@ -83,12 +83,17 @@ jobs:
         config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
+        bzlmodEnabled: [true, false]
         folder:
           - "."
           - "e2e/bzlmod"
           - "e2e/copy_to_directory"
           - "e2e/workspace"
         exclude:
+          # this e2e meant to work under bzlmod
+          - bzlmodEnabled: false
+            folder: bzlmod_write_source_files_external
+
           # bzlmod broken at 5.3.2 which the RBE:
           # ```
           # ERROR: /home/runner/work/bazel-lib/bazel-lib/e2e/bzlmod/BUILD.bazel:37:10: While resolving
@@ -164,6 +169,14 @@ jobs:
             rm -Force .aspect/bazelrc/bazel6.bazelrc
           }
 
+          
+      - name: Set bzlmod flag
+        # Store the --enable_bzlmod flag that we add to the test command below
+        # only when we're running bzlmod in our test matrix.
+        id: set_bzlmod_flag
+        if: matrix.bzlmodEnabled
+        run: echo "bzlmod_flag=--enable_bzlmod" >> $GITHUB_OUTPUT
+        
       - name: Write engflow credentials
         if: ${{ matrix.config == 'rbe' }}
         working-directory: ${{ matrix.folder }}
