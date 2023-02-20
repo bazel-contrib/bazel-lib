@@ -213,6 +213,7 @@ jobs:
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
             --bazelrc=.bazelrc `
+            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} 
             test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
