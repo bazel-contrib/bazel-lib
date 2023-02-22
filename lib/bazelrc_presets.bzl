@@ -15,7 +15,8 @@ ALL_PRESETS = [
 
 def write_aspect_bazelrc_presets(
         name,
-        presets = ALL_PRESETS):
+        presets = ALL_PRESETS,
+        **kwargs):
     """Keeps your vendored copy of Aspect recommended `.bazelrc` presets up-to-date.
 
     This macro uses a [write_source_files](https://docs.aspect.build/rules/aspect_bazel_lib/docs/write_source_files)
@@ -47,6 +48,8 @@ def write_aspect_bazelrc_presets(
             ],
           )
           ```
+
+        **kwargs: Additional arguments to pass to `write_source_files`
     """
 
     files = {}
@@ -56,4 +59,5 @@ def write_aspect_bazelrc_presets(
     write_source_files(
         name = name,
         files = files,
+        **kwargs
     )
