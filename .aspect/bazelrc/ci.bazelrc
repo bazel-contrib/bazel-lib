@@ -29,17 +29,13 @@ build --announce_rc
 # Docs: https://bazel.build/docs/user-manual#show-timestamps
 build --show_timestamps
 
-# Only show progress every 60 seconds on CI.
-# Docs: https://bazel.build/reference/command-line-reference#flag--progress_report_interval
-build --progress_report_interval=60
-
-# Only show progress every 60 seconds on CI.
+# Only show progress every 5 seconds on CI.
 # https://bazel.build/reference/command-line-reference#flag--show_progress_rate_limit
-build --show_progress_rate_limit=60
+build --show_progress_rate_limit=5
 
 # Don't use cursor controls in its screen output.
 # Docs: https://bazel.build/docs/user-manual#curses
-build --curses=no
+build --curses=yes
 
 # Use colors to highlight its output on the screen. Set to `no` if your CI does not display colors.
 # Docs: https://bazel.build/docs/user-manual#color
@@ -47,7 +43,7 @@ build --color=yes
 
 # The terminal width in columns. Configure this to override the default value based on what your CI system renders.
 # Docs: https://github.com/bazelbuild/bazel/blob/1af61b21df99edc2fc66939cdf14449c2661f873/src/main/java/com/google/devtools/build/lib/runtime/UiOptions.java#L151
-build --terminal_columns=80
+build --terminal_columns=143
 
 ######################################
 # Generic remote cache configuration #
