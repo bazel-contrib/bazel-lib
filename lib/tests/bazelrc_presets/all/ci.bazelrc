@@ -33,11 +33,11 @@ build --show_timestamps
 # https://bazel.build/reference/command-line-reference#flag--show_progress_rate_limit
 build --show_progress_rate_limit=5
 
-# Don't use cursor controls in its screen output.
+# Use cursor controls in screen output.
 # Docs: https://bazel.build/docs/user-manual#curses
 build --curses=yes
 
-# Use colors to highlight its output on the screen. Set to `no` if your CI does not display colors.
+# Use colors to highlight output on the screen. Set to `no` if your CI does not display colors.
 # Docs: https://bazel.build/docs/user-manual#color
 build --color=yes
 
