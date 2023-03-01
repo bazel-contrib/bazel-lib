@@ -25,4 +25,4 @@ common --enable_platform_specific_config
 # The dump will be written to `<output_base>/<invocation_id>.heapdump.hprof`.
 # You may need to configure CI to capture this artifact and upload for later use.
 # Docs: https://bazel.build/reference/command-line-reference#flag--heap_dump_on_oom
-build --heap_dump_on_oom
+common --heap_dump_on_oom
