@@ -71,6 +71,16 @@ def _propagate_well_known_tags_test_impl(ctx):
 
     return unittest.end(env)
 
+def _consistent_label_str_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("//foo:bar")))
+    asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@//foo:bar")))
+    asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@aspect_bazel_lib//foo:bar")))
+    asserts.equals(env, "@external_workspace//foo:bar", utils.consistent_label_str(ctx, Label("@external_workspace//foo:bar")))
+
+    return unittest.end(env)
+
 to_label_test = unittest.make(
     _to_label_test_impl,
     attrs = {
@@ -93,9 +103,8 @@ is_external_label_test = unittest.make(
     },
 )
 
-propagate_well_known_tags_test = unittest.make(
-    _propagate_well_known_tags_test_impl,
-)
+propagate_well_known_tags_test = unittest.make(_propagate_well_known_tags_test_impl)
+consistent_label_str_test = unittest.make(_consistent_label_str_impl)
 
 # buildifier: disable=function-docstring
 def file_exists_test():
@@ -122,6 +131,11 @@ def utils_test_suite():
 
     propagate_well_known_tags_test(
         name = "propagate_well_known_tags_tests",
+        timeout = "short",
+    )
+
+    consistent_label_str_test(
+        name = "consistent_label_str_tests",
         timeout = "short",
     )
 
