@@ -2,6 +2,38 @@
 
 Public API
 
+<a id="consistent_label_str"></a>
+
+## consistent_label_str
+
+<pre>
+consistent_label_str(<a href="#consistent_label_str-ctx">ctx</a>, <a href="#consistent_label_str-label">label</a>)
+</pre>
+
+Generate a consistent label string for all Bazel versions.
+
+Starting in Bazel 6, the workspace name is empty for the local workspace and there's no other
+way to determine it. This behavior differs from Bazel 5 where the local workspace name was fully
+qualified in str(label).
+
+This utility function is meant for use in rules and requires the rule context to determine the
+user's workspace name (`ctx.workspace_name`).
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="consistent_label_str-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="consistent_label_str-label"></a>label |  A Label.   |  none |
+
+**RETURNS**
+
+String representation of the label including the repository name if the label is from an
+  external repository. For labels in the user's repository the label will start with `@//`.
+
+
 <a id="default_timeout"></a>
 
 ## default_timeout

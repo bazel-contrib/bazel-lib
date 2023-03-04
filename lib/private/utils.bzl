@@ -67,6 +67,30 @@ def _to_label(param):
         msg = "Expected 'string' or 'Label' but got '{}'".format(param_type)
         fail(msg)
 
+def _consistent_label_str(ctx, label):
+    """Generate a consistent label string for all Bazel versions.
+
+    Starting in Bazel 6, the workspace name is empty for the local workspace and there's no other
+    way to determine it. This behavior differs from Bazel 5 where the local workspace name was fully
+    qualified in str(label).
+
+    This utility function is meant for use in rules and requires the rule context to determine the
+    user's workspace name (`ctx.workspace_name`).
+
+    Args:
+        ctx: The rule context.
+        label: A Label.
+
+    Returns:
+        String representation of the label including the repository name if the label is from an
+        external repository. For labels in the user's repository the label will start with `@//`.
+    """
+    return "@{}//{}:{}".format(
+        "" if label.workspace_name == ctx.workspace_name else label.workspace_name,
+        label.package,
+        label.name,
+    )
+
 def _is_external_label(param):
     """Returns True if the given Label (or stringy version of a label) represents a target outside of the workspace
 
@@ -226,4 +250,5 @@ utils = struct(
     path_to_workspace_root = _path_to_workspace_root,
     propagate_well_known_tags = _propagate_well_known_tags,
     to_label = _to_label,
+    consistent_label_str = _consistent_label_str,
 )

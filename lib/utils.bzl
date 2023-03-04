@@ -11,3 +11,4 @@ maybe_http_archive = utils.maybe_http_archive
 path_to_workspace_root = utils.path_to_workspace_root
 propagate_well_known_tags = utils.propagate_well_known_tags
 to_label = utils.to_label
+consistent_label_str = utils.consistent_label_str
