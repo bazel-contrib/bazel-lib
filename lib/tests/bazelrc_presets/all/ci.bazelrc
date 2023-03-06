@@ -29,9 +29,11 @@ build --announce_rc
 # Docs: https://bazel.build/docs/user-manual#show-timestamps
 build --show_timestamps
 
-# Only show progress every 5 seconds on CI.
+# Only show progress every 60 seconds on CI.
+# We want to find a compromise between printing often enough to show that the build isn't stuck,
+# but not so often that we produce a long log file that requires a lot of scrolling.
 # https://bazel.build/reference/command-line-reference#flag--show_progress_rate_limit
-build --show_progress_rate_limit=5
+build --show_progress_rate_limit=60
 
 # Use cursor controls in screen output.
 # Docs: https://bazel.build/docs/user-manual#curses
