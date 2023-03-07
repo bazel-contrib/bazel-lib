@@ -29,7 +29,7 @@ The value of this flag is a path to a script that prints space-separated key/val
 #!/usr/bin/env bash
 echo STABLE_GIT_COMMIT $(git rev-parse HEAD)
 ```
-> For a more full-featured script, take a look at the [bazel_stamp_vars in Angular]
+> For a more full-featured script, take a look at this [example in Angular]
 
 Make sure you set the executable bit, eg. `chmod +x tools/bazel_stamp_vars.sh`.
 
@@ -45,7 +45,7 @@ You might like to encode your setup using an entry in `.bazelrc` such as:
 build:release --stamp --workspace_status_command=./tools/bazel_stamp_vars.sh
 ```
 
-[bazel_stamp_vars in Angular]: https://github.com/angular/angular/blob/master/tools/bazel_stamp_vars.sh
+[example in Angular]: https://github.com/angular/angular/blob/df274b478e6597cb1a2f31bb9f599281065aa250/dev-infra/release/env-stamp.ts
 
 ## Writing a custom rule which reads stamp variables
 
