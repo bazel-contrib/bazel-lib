@@ -1,5 +1,5 @@
 module(
-    name = "bzlmod_coreutils",
+    name = "coreutils",
     compatibility_level = 1,
     version = "0.0.0",
 )

@@ -1,5 +1,5 @@
 module(
-    name = "workspace",
+    name = "copy_to_directory",
     compatibility_level = 1,
     version = "0.0.0",
 )

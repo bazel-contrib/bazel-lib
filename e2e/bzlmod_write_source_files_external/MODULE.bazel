@@ -1,5 +1,5 @@
 module(
-    name = "e2e_bzlmod_write_source_files_external",
+    name = "bzlmod_write_source_files_external",
     compatibility_level = 1,
     version = "0.0.0",
 )
