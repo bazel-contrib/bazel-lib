@@ -1,8 +1,10 @@
 module(
-    name = "bzlmod_write_source_files_external",
+    name = "copy_to_directory",
     compatibility_level = 1,
     version = "0.0.0",
 )
+
+bazel_dep(name = "bazel_skylib", version = "1.1.1")
 
 bazel_dep(name = "aspect_bazel_lib", version = "0.0.0")
 
@@ -11,7 +13,8 @@ local_path_override(
     path = "../..",
 )
 
-test_ext = use_extension("//:test_extension.bzl", "test_ext")
+ext = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "ext")
 
-use_repo(test_ext, "test")
+ext.host()
 
+use_repo(ext, "aspect_bazel_lib_host")

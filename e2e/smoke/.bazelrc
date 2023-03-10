@@ -4,13 +4,11 @@
 # Import Aspect bazelrc presets
 import %workspace%/.aspect/bazelrc/convenience.bazelrc
 import %workspace%/.aspect/bazelrc/correctness.bazelrc
+import %workspace%/.aspect/bazelrc/performance.bazelrc
 import %workspace%/.aspect/bazelrc/debug.bazelrc
 import %workspace%/.aspect/bazelrc/javascript.bazelrc
-import %workspace%/.aspect/bazelrc/performance.bazelrc
 
 ### PROJECT SPECIFIC OPTIONS ###
-
-common --experimental_enable_bzlmod
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This

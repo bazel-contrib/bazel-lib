@@ -83,22 +83,20 @@ jobs:
         config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
+        bzlmodEnabled: [true, false]
         folder:
           - "."
-          - "e2e/bzlmod"
+          - "e2e/coreutils"
           - "e2e/copy_to_directory"
-          - "e2e/workspace"
+          - "e2e/smoke"
         exclude:
-          # bzlmod broken at 5.3.2 which the RBE:
-          # ```
-          # ERROR: /home/runner/work/bazel-lib/bazel-lib/e2e/bzlmod/BUILD.bazel:37:10: While resolving
-          # toolchains for target //:test: com.google.devtools.build.lib.packages.BuildFileNotFoundException:
-          # no such package '@aspect_bazel_lib//platforms': The repository '@aspect_bazel_lib' could not be
-          # resolved: Repository '@aspect_bazel_lib' is not defined
-          # ```
-          - config: rbe
+          # this e2e meant to work under bzlmod
+          - bzlmodEnabled: false
+            folder: bzlmod_write_source_files_external
+
+          # Don't test Bazel 5.3 with bzlmod. (Unrecognized option: --enable_bzlmod)
+          - bzlmodEnabled: true
             bazelversion: 5.3.2
-            folder: e2e/bzlmod
           # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
           - config: rbe
             os: macos-latest
@@ -164,6 +162,14 @@ jobs:
             rm -Force .aspect/bazelrc/bazel6.bazelrc
           }
 
+          
+      - name: Set bzlmod flag
+        # Store the --enable_bzlmod flag that we add to the test command below
+        # only when we're running bzlmod in our test matrix.
+        id: set_bzlmod_flag
+        if: matrix.bzlmodEnabled
+        run: echo "bzlmod_flag=--enable_bzlmod" >> $GITHUB_OUTPUT
+        
       - name: Write engflow credentials
         if: ${{ matrix.config == 'rbe' }}
         working-directory: ${{ matrix.folder }}
@@ -200,6 +206,7 @@ jobs:
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
             --bazelrc=.bazelrc `
+            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} 
             test --config=${{ matrix.config }} //...
         env:
           # Bazelisk will download bazel to here
