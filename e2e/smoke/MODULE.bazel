@@ -1,5 +1,5 @@
 module(
-    name = "workspace",
+    name = "smoke",
     compatibility_level = 1,
     version = "0.0.0",
 )
