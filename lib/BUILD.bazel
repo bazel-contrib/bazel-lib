@@ -1,6 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
+load("//lib:utils.bzl", "is_bzlmod_enabled")
 
 # Ensure that users building their own rules can dep on our bzl_library targets for their stardoc
 package(default_visibility = ["//visibility:public"])
@@ -16,11 +17,8 @@ exports_files(
 # Macro that creates targets enabling the use of `--stamp` in Starlark rules
 stamp_build_setting(name = "stamp")
 
-# Add a flag indicating that bzlmod is enabled so that we can use select()
-# to skip bzlmod-incompatible targets. Note that Bazel does not currently
-# support declaring a config_setting directly on --enable_bzlmod, so we
-# must use set this flag instead.
-
+# Add a config indicating that bzlmod is enabled so that we can use select()
+# to skip bzlmod-incompatible targets.
 config_setting(
     name = "bzlmod",
     flag_values = {
@@ -30,7 +28,7 @@ config_setting(
 
 bool_flag(
     name = "flag_bzlmod",
-    build_setting_default = False,
+    build_setting_default = True if is_bzlmod_enabled() else False,
 )
 
 toolchain_type(

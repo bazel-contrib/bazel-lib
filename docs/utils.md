@@ -155,6 +155,18 @@ That approach, however, incurs a cost in the user's WORKSPACE.
 True if the Bazel version being used is greater than or equal to 6 (including pre-releases and RCs)
 
 
+<a id="is_bzlmod_enabled"></a>
+
+## is_bzlmod_enabled
+
+<pre>
+is_bzlmod_enabled()
+</pre>
+
+Detect the value of the --enable_bzlmod flag
+
+
+
 <a id="is_external_label"></a>
 
 ## is_external_label
