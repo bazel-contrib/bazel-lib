@@ -202,6 +202,10 @@ def _is_bazel_6_or_greater():
     # native.bazel_version only works in repository rules.
     return "apple_binary" not in dir(native)
 
+def is_bzlmod_enabled():
+    """Detect the value of the --enable_bzlmod flag"""
+    return str(Label("@//:BUILD.bazel")).startswith("@@")
+
 def _maybe_http_archive(**kwargs):
     """Adapts a maybe(http_archive, ...) to look like an http_archive.
 
@@ -245,6 +249,7 @@ utils = struct(
     file_exists = _file_exists,
     glob_directories = _glob_directories,
     is_bazel_6_or_greater = _is_bazel_6_or_greater,
+    is_bzlmod_enabled = is_bzlmod_enabled,
     is_external_label = _is_external_label,
     maybe_http_archive = _maybe_http_archive,
     path_to_workspace_root = _path_to_workspace_root,
