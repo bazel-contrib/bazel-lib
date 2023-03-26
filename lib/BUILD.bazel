@@ -254,3 +254,9 @@ bzl_library(
     srcs = ["bazelrc_presets.bzl"],
     deps = [":write_source_files"],
 )
+
+bzl_library(
+    name = "semver",
+    srcs = ["semver.bzl"],
+    deps = ["//lib/private/docs:semver"],
+)

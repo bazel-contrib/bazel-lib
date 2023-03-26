@@ -133,4 +133,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:bazelrc_presets",
 )
 
+stardoc_with_diff_test(
+    name = "semver",
+    bzl_library_target = "//lib:semver",
+)
+
 update_docs()
