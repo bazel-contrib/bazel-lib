@@ -243,3 +243,8 @@ bzl_library(
     name = "coreutils_toolchain",
     srcs = ["//lib/private:coreutils_toolchain.bzl"],
 )
+
+bzl_library(
+    name = "semver",
+    srcs = ["//lib/private:semver.bzl"],
+)
