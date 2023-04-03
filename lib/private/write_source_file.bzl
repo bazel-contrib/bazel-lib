@@ -371,5 +371,5 @@ def _is_file_missing(label):
     """
     file_abs = "%s/%s" % (label.package, label.name)
     file_rel = file_abs[len(native.package_name()) + 1:]
-    file_glob = native.glob([file_rel], exclude_directories = 0)
+    file_glob = native.glob([file_rel], exclude_directories = 0, allow_empty = True)
     return len(file_glob) == 0
