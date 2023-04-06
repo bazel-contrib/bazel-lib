@@ -50,5 +50,4 @@ jobs:
             /tmp/aspect/release/*
             bazel-lib-*.tar.gz
           body_path: release_notes.txt
-          token: ${{ secrets.DEREK_BCR_PAT }}
           fail_on_unmatched_files: true
