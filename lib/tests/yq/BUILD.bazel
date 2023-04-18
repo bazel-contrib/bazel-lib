@@ -66,7 +66,7 @@ diff_test(
 yq(
     name = "case_convert_json_to_yaml",
     srcs = ["//lib/tests/jq:a_pretty.json"],
-    args = ["-P"],
+    args = ["-p=json"],
     expression = ".",
 )
 
@@ -252,7 +252,7 @@ diff_test(
 yq(
     name = "case_convert_xml_to_yaml",
     srcs = ["sample.xml"],
-    args = ["-p=xml"],
+    args = ["-p=xml --xml-skip-proc-inst"],
     expression = ".",
 )
 
@@ -298,7 +298,7 @@ yq(
         "//lib/tests/jq:a.json",
         "//lib/tests/jq:b.json",
     ],
-    args = ["-P"],
+    args = ["-p=json"],
     expression = ". as $item ireduce ({}; . * $item )",
 )
 

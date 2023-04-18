@@ -114,7 +114,7 @@ Registers yq toolchain and repositories
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="register_yq_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"yq"</code> |
-| <a id="register_yq_toolchains-version"></a>version |  the version of yq to execute (see https://github.com/mikefarah/yq/releases)   |  <code>"4.25.2"</code> |
+| <a id="register_yq_toolchains-version"></a>version |  the version of yq to execute (see https://github.com/mikefarah/yq/releases)   |  <code>"4.33.3"</code> |
 | <a id="register_yq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
 
 
