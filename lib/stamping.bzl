@@ -58,8 +58,9 @@ load("@aspect_bazel_lib//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 In your rule implementation, call the `maybe_stamp` function.
 If it returns `None` then this build doesn't have stamping enabled.
 Otherwise you can use the returned struct to access two files.
-The stable_status file contains the keys which were prefixed with `STABLE_`, see above.
-The volatile_status file contains the rest of the keys.
+
+1. The `stable_status` file contains the keys which were prefixed with `STABLE_`, see above.
+2. The `volatile_status` file contains the rest of the keys.
 
 ```starlark
 def _rule_impl(ctx):
