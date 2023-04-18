@@ -80,7 +80,7 @@ yq(
 yq(
     name = "convert-to-yaml",
     srcs = ["bar.json"],
-    args = ["-P"],
+    args = ["-p=json"],
     outs = ["bar.yaml"],
 )
 ```
