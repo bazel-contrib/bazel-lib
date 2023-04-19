@@ -23,7 +23,7 @@ def write_source_file(
         **kwargs):
     """Write a file or directory to the source tree.
 
-    By default, `diff_test` targets are generated that ensure the source tree file or directory to be written to
+    By default, a `diff_test` target ("{name}_test") is generated that ensure the source tree file or directory to be written to
     is up to date and the rule also checks that the source tree file or directory to be written to exists.
     To disable the exists check and up-to-date test set `diff_test` to `False`.
 
