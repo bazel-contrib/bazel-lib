@@ -27,14 +27,23 @@ Usage examples:
 ```starlark
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
 
-# Remove fields from package.json
+# Create a new file bazel-out/.../no_srcs.json
+jq(
+    name = "no_srcs",
+    srcs = [],
+    filter = ".name = "Alice"",
+)
+
+# Remove fields from package.json.
+# Writes to bazel-out/.../package.json which means you must refer to this as ":no_dev_deps"
+# since Bazel doesn't allow a label for the output file that collides with the input file.
 jq(
     name = "no_dev_deps",
     srcs = ["package.json"],
     filter = "del(.devDependencies)",
 )
 
-# Merge bar.json on top of foo.json
+# Merge bar.json on top of foo.json, producing foobar.json
 jq(
     name = "merged",
     srcs = ["foo.json", "bar.json"],
@@ -108,7 +117,7 @@ jq(
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="jq-name"></a>name |  Name of the rule   |  none |
-| <a id="jq-srcs"></a>srcs |  List of input files   |  none |
+| <a id="jq-srcs"></a>srcs |  List of input files. May be empty.   |  none |
 | <a id="jq-filter"></a>filter |  Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters). Subject to stamp variable replacements, see [Stamping](./stamping.md). When stamping is enabled, a variable named "STAMP" will be available in the filter.<br><br>Be careful to write the filter so that it handles unstamped builds, as in the example above.   |  <code>None</code> |
 | <a id="jq-filter_file"></a>filter_file |  File containing filter expression (alternative to <code>filter</code>)   |  <code>None</code> |
 | <a id="jq-args"></a>args |  Additional args to pass to jq   |  <code>[]</code> |
