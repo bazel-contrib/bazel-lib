@@ -3,16 +3,16 @@
 # https://github.com/aspect-build/bazel-lib/releases
 #
 # The integrity hashes can be automatically fetched for the latest copy_directory release by running
-# `tools/copy_directory_mirror_release.sh`. To calculate for a specific release run
-# `tools/copy_directory_mirror_release.sh <release_version>`
+# `tools/copy_directory/mirror_release.sh`. To calculate for a specific release run
+# `tools/copy_directory/mirror_release.sh <release_version>`
 
-COPY_DIRECTORY_VERSION = "1.24.1"
+COPY_DIRECTORY_VERSION = "1.31.0"
 COPY_DIRECTORY_INTEGRITY = {
-    "darwin_amd64": "sha256-ZY4K6g2GBoMghXawS0N00cFwJu+xk/IvZIssjwHrqDw=",
-    "darwin_arm64": "sha256-MR1mYnSDIdnuLgDhaUrePtf99hFExFzoKRCLyzKKQVQ=",
-    "linux_amd64": "sha256-SCEMzcA7CRFFJ6qLx4UjJ68Csr37acqzozNFYBu12KE=",
-    "linux_arm64": "sha256-ALRLEDEaxXUyAxBu173nDz72ou61H2WrmJxPXG7/j5o=",
-    "windows_amd64": "sha256-LIhTYXLhMl3B1ffYOwF+xHGy2dzZ+yCwVby0zgzoSe4=",
+    "darwin_amd64": "sha256-woit3x+tLBneR1uB2vgdBgoysLVjFKOIg0JQUvY31RE=",
+    "darwin_arm64": "sha256-lo40uEgpR47iR76xOuGJ8MTlo9OgGQaxlHSEFVYpBbs=",
+    "linux_amd64": "sha256-DsaFECaxpEzLbv3SfEXcKYpuRk+90FaSYSQuCLEE5i8=",
+    "linux_arm64": "sha256-IH5pYBe42O9iDZm9MdECvnp9e9PpOf6cEab71U0ktXY=",
+    "windows_amd64": "sha256-AWcKeRtEs2djr9Mh3ha5wW0kTq5JNPOBIJbcIKk+BGA=",
 }
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
