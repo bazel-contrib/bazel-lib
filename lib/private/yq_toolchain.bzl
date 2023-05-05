@@ -48,7 +48,9 @@ YQ_PLATFORMS = {
     ),
 }
 
-DEFAULT_YQ_VERSION = "4.33.3"
+# Note: this is not the latest release, because it has significant breaking changes.
+# See https://github.com/aspect-build/bazel-lib/pull/421
+DEFAULT_YQ_VERSION = "4.25.2"
 
 # https://github.com/mikefarah/yq/releases
 #
