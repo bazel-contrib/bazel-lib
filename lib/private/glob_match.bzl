@@ -47,6 +47,17 @@ def _split_expr(expr):
 
     return result
 
+def _validate_glob(expr):
+    expr_len = len(expr)
+    for i in range(expr_len):
+        if expr[i] == "*" and i < expr_len - 1 and expr[i + 1] == "*":
+            if i > 0 and expr[i - 1] != "/":
+                msg = "glob_match: `**` globstar in expression `{}` must be at the start of the expression or preceeded by `/`".format(expr)
+                fail(msg)
+            if i < expr_len - 2 and expr[i + 2] != "/":
+                msg = "glob_match: `**` globstar in expression `{}` must be at the end of the expression or followed by `/`".format(expr)
+                fail(msg)
+
 def is_glob(expr):
     """Determine if the passed string is a globa expression
 
@@ -57,11 +68,7 @@ def is_glob(expr):
         True if the passed string is a globa expression
     """
 
-    for s in GLOB_SYMBOLS:
-        if -1 != expr.find(s):
-            return True
-
-    return False
+    return expr.find("*") != -1 or expr.find("?") != -1
 
 def glob_match(expr, path, match_path_separator = False):
     """Test if the passed path matches the glob expression.
@@ -84,9 +91,6 @@ def glob_match(expr, path, match_path_separator = False):
     if expr == "":
         fail("glob_match: invalid empty glob expression")
 
-    if expr.find("***") != -1:
-        fail("glob_match: invalid *** pattern found in glob expression")
-
     if expr == "**":
         # matches everything
         return True
@@ -94,6 +98,8 @@ def glob_match(expr, path, match_path_separator = False):
     if not is_glob(expr):
         # the expression is not a glob (does bot have any glob symbols) so the only match is an exact match
         return expr == path
+
+    _validate_glob(expr)
 
     expr_parts = _split_expr(expr)
 
