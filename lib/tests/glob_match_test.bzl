@@ -58,6 +58,18 @@ def _star(ctx):
 
 star_test = unittest.make(_star)
 
+def _trailing_star(ctx):
+    return _glob_match_test(
+        ctx,
+        "x/*",
+        matches = ["x/y", "x/y.z"],
+        non_matches = ["x", "x/y/z"],
+        mps_matches = ["x/y/z"],
+        mps_non_matches = ["x"],
+    )
+
+trailing_star_test = unittest.make(_trailing_star)
+
 def _globstar(ctx):
     return _glob_match_test(ctx, "**", ["@eslint/plugin-foo", "express"], [])
 
@@ -109,6 +121,18 @@ def _mixed_wrapped_qmark(ctx):
 
 mixed_wrapped_qmark_test = unittest.make(_mixed_wrapped_qmark)
 
+def _leading_star_test(ctx):
+    return _glob_match_test(
+        ctx,
+        "*/foo.*",
+        matches = ["fum/foo.x", "a/foo.bcd"],
+        non_matches = ["foo.x", "a/b/foo.x", "a/foo"],
+        mps_matches = ["fum/foo.x", "a/b/foo.x", "a/foo.bcd"],
+        mps_non_matches = ["foo.x", "a/foo"],
+    )
+
+leading_star_test = unittest.make(_leading_star_test)
+
 def _ending_star(ctx):
     return _glob_match_test(ctx, "eslint-*", ["eslint-plugin-foo"], ["@eslint/plugin-foo", "express", "eslint", "-eslint"])
 
@@ -140,8 +164,8 @@ def _mixed_trailing_globstar(ctx):
     return _glob_match_test(
         ctx,
         "foo*/**",
-        matches = ["foo/fum/bar", "foostar/fum/bar"],
-        non_matches = ["fo/fum/bar", "fostar/fum/bar", "foo", "foostar"],
+        matches = ["foo/fum/bar", "foostar/fum/bar", "foo/a", "foob/c"],
+        non_matches = ["fo/fum/bar", "fostar/fum/bar", "foo", "foostar", "afoo", "b/foo/c"],
     )
 
 mixed_trailing_globstar_test = unittest.make(_mixed_trailing_globstar)
@@ -156,6 +180,16 @@ def _mixed_leading_globstar(ctx):
 
 mixed_leading_globstar_test = unittest.make(_mixed_leading_globstar)
 
+def _mixed_leading_globstar2(ctx):
+    return _glob_match_test(
+        ctx,
+        "**/*foo",
+        matches = ["fum/bar/foo", "fum/bar/starfoo"],
+        non_matches = ["fum/bar/foox", "fum/bar/foo/y"],
+    )
+
+mixed_leading_globstar2_test = unittest.make(_mixed_leading_globstar2)
+
 def _mixed_wrapping_globstar(ctx):
     return _glob_match_test(
         ctx,
@@ -165,6 +199,26 @@ def _mixed_wrapping_globstar(ctx):
     )
 
 mixed_wrapper_globstar_test = unittest.make(_mixed_wrapping_globstar)
+
+def _all_of_ext(ctx):
+    return _glob_match_test(
+        ctx,
+        "**/*.tf",
+        matches = ["a/b.tf", "ab/cd/e.tf"],
+        non_matches = ["a/b.tfg", "a/tf", "a/b.tf/g"],
+    )
+
+all_of_ext_test = unittest.make(_all_of_ext)
+
+def _all_of_name(ctx):
+    return _glob_match_test(
+        ctx,
+        "**/foo",
+        matches = ["a/b/c/foo", "foo/foo", "a/foo/foo"],
+        non_matches = ["foox", "foo/x"],
+    )
+
+all_of_name_test = unittest.make(_all_of_name)
 
 def _is_glob(ctx):
     env = unittest.begin(ctx)
@@ -201,17 +255,22 @@ def glob_match_test_suite():
         "glob_match",
         partial.make(basic_test, timeout = "short"),
         partial.make(star_test, timeout = "short"),
+        partial.make(trailing_star_test, timeout = "short"),
         partial.make(globstar_test, timeout = "short"),
         partial.make(qmark_test, timeout = "short"),
         partial.make(qmark_qmark_test, timeout = "short"),
         partial.make(wrapped_qmark_test, timeout = "short"),
         partial.make(mixed_wrapped_qmark_test, timeout = "short"),
+        partial.make(leading_star_test, timeout = "short"),
         partial.make(ending_star_test, timeout = "short"),
         partial.make(wrapping_star_test, timeout = "short"),
         partial.make(wrapped_star_test, timeout = "short"),
+        partial.make(all_of_ext_test, timeout = "short"),
+        partial.make(all_of_name_test, timeout = "short"),
         partial.make(starting_star_test, timeout = "short"),
         partial.make(mixed_trailing_globstar_test, timeout = "short"),
         partial.make(mixed_leading_globstar_test, timeout = "short"),
+        partial.make(mixed_leading_globstar2_test, timeout = "short"),
         partial.make(mixed_wrapper_globstar_test, timeout = "short"),
     )
 
