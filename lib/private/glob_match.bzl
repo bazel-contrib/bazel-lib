@@ -1,5 +1,5 @@
 """
-Basic glob match implementation for starlark.
+Basic glob match implementation for starlark based on the golang [doublestar](https://github.com/bmatcuk/doublestar/blob/465a339d8daa03b8620e49b8ae541f71651426ad/match.go#L74) library.
 
 This was originally developed by @jbedard for use in rules_js
 (https://github.com/aspect-build/rules_js/blob/6ca32d5199ddc0bf19bd704f591030dc1468ca5f/npm/private/pkg_glob.bzl)
@@ -9,43 +9,8 @@ implementation and tests were used as a reference implementation:
     https://github.com/pnpm/pnpm/blob/v7.4.0-2/packages/matcher/test/index.ts
 """
 
-GLOB_SYMBOLS = ["**", "*", "?"]
-
 # "forever" (2^30) for ~ while(true) loops
 _FOREVER = range(1073741824)
-
-def _split_expr(expr):
-    result = []
-
-    # Splits an expression on the tokens in GLOB_SYMBOLS but keeps the tokens symb in the result.
-    # Tokens are matched in order so a token such as `**` should come before `*`.
-    expr_len = len(expr)
-    accumulator = 0
-    i = 0
-    for _ in _FOREVER:
-        if i >= expr_len:
-            break
-
-        found_symb = None
-        for symb in GLOB_SYMBOLS:
-            if expr.startswith(symb, i):
-                found_symb = symb
-                break
-
-        if found_symb:
-            if accumulator != i:
-                result.append(expr[accumulator:i])
-
-            result.append(found_symb)
-            i = i + len(found_symb)
-            accumulator = i
-        else:
-            i = i + 1
-
-    if accumulator != i:
-        result.append(expr[accumulator:])
-
-    return result
 
 def _validate_glob(expr):
     expr_len = len(expr)
@@ -88,6 +53,9 @@ def glob_match(expr, path, match_path_separator = False):
         True if the path matches the glob expression
     """
 
+    # See https://github.com/bmatcuk/doublestar/blob/465a339d8daa03b8620e49b8ae541f71651426ad/match.go#L74
+    # for reference implementation.
+
     if expr == "":
         fail("glob_match: invalid empty glob expression")
 
@@ -101,80 +69,117 @@ def glob_match(expr, path, match_path_separator = False):
 
     _validate_glob(expr)
 
-    expr_parts = _split_expr(expr)
+    # Cursor of the latest '**' expression within the path
+    doublestar_expr_backtrack = -1
+    doublestar_path_backtrack = -1
 
-    for i, expr_part in enumerate(expr_parts):
-        if expr_part == "**":
-            if i > 0 and not expr_parts[i - 1].endswith("/"):
-                msg = "glob_match: `**` globstar in expression `{}` must be at the start of the expression or preceeded by `/`".format(expr)
-                fail(msg)
-            if i != len(expr_parts) - 1 and not expr_parts[i + 1].startswith("/"):
-                msg = "glob_match: `**` globstar in expression `{}` must be at the end of the expression or followed by `/`".format(expr)
-                fail(msg)
+    # Cursor of the latest '*' expression within the path
+    star_expr_backtrack = -1
+    star_path_backtrack = -1
 
-    # Locations a * was terminated that can be rolled back to.
-    branches = []
+    # Current indexes into path and expression
     expr_i = 0
+    expr_len = len(expr)
     path_i = 0
+    path_len = len(path)
+
+    start_of_segment = True
 
     for _ in _FOREVER:
-        subpath = path[path_i:] if path_i < len(path) else None
-        subexpr = expr_parts[expr_i] if expr_i < len(expr_parts) else None
+        if path_i >= path_len:
+            break
 
-        # The next part of the expression.
-        next_subexpr = expr_parts[expr_i + 1] if expr_i + 1 < len(expr_parts) else None
-
-        at_slash = subpath != None and subpath.startswith("/")
-
-        # Reached the end of the expression and path.
-        if path_i >= len(path) and expr_i >= len(expr_parts):
-            return True
-
-        # Reached the end of the path on a final empty "*" or "**" expression
-        if path_i >= len(path) and expr_i == len(expr_parts) - 1 and (subexpr == "*" or subexpr == "**"):
-            return True
-
-        if (subexpr == "*" and subpath != None and (match_path_separator or not at_slash)) or (subexpr == "**" and subpath != None):
-            # A wildcard or globstar in the expression and something to consume.
-            if next_subexpr == None and (match_path_separator or subpath.find("/") == -1):
-                # This wildcard is the last and matches everything beyond here.
-                return True
-
-            # If the next part of the expression matches the current subpath
-            # then advance past the wildcard and consume that next expression.
-            if next_subexpr != None and subpath.startswith(next_subexpr):
-                # Persist the alternative of using the wildcard instead of advancing.
-                branches.append([expr_i, path_i + 1])
+        # Potentially advance the expression
+        if expr_i < expr_len:
+            # star
+            if expr[expr_i] == "*":
+                # Advance past the *
                 expr_i = expr_i + 1
-            else:
-                # Otherwise consume the next character.
+
+                # doublestar
+                if expr_i < expr_len and expr[expr_i] == "*":
+                    # Assert unsupported ** expressions were prevented by _validate_glob()
+                    if not start_of_segment or (expr_i + 1 < expr_len and expr[expr_i + 1] != "/"):
+                        fail("glob_match: invalid '**' should be prevented by _validate_glob()")
+
+                    # Advance past the **
+                    expr_i = expr_i + 1
+
+                    # Trailing /** matches everything
+                    if expr_i >= expr_len:
+                        return True
+
+                    # Advance past the **/
+                    expr_i = expr_i + 1
+
+                    # Start the doublestar cursor
+                    doublestar_expr_backtrack = expr_i
+                    doublestar_path_backtrack = path_i
+                    star_expr_backtrack = -1
+                    star_path_backtrack = -1
+                    continue
+                else:
+                    # Start the star expression cursor
+                    start_of_segment = False
+                    star_expr_backtrack = expr_i
+                    star_path_backtrack = path_i
+                    continue
+
+            elif expr[expr_i] == "?":
+                start_of_segment = False
+                if match_path_separator or path[path_i] != "/":
+                    expr_i = expr_i + 1
+                    path_i = path_i + 1
+                    continue
+                else:
+                    break
+
+            elif path_i < path_len and expr[expr_i] == path[path_i]:
+                start_of_segment = path[path_i] == "/"
+                expr_i = expr_i + 1
+                path_i = path_i + 1
+                continue
+
+        # Did not advance the expression or path.
+        # Advance any star expression if possible.
+        if star_expr_backtrack >= 0 and (match_path_separator or path[star_path_backtrack] != "/"):
+            star_path_backtrack = star_path_backtrack + 1
+            expr_i = star_expr_backtrack
+            path_i = star_path_backtrack
+            start_of_segment = False
+            continue
+
+        # Advance any double star expression if possible.
+        if doublestar_expr_backtrack >= 0:
+            super_continue = False
+
+            # ** backtrack, advance path_i past next separator
+            path_i = doublestar_path_backtrack
+            for _ in _FOREVER:
+                if path_i >= path_len:
+                    break
+
+                path_current = path[path_i]
                 path_i = path_i + 1
 
-        elif subexpr == "*" and subpath != None and next_subexpr != None and subpath.startswith(next_subexpr):
-            # A wildcard that has hit a path separator but we can branch
-            # Persist the alternative of using the wildcard instead of advancing.
-            branches.append([expr_i, path_i + 1])
-            expr_i = expr_i + 1
+                if path_current == "/":
+                    doublestar_path_backtrack = path_i
+                    expr_i = doublestar_expr_backtrack
+                    start_of_segment = True
+                    super_continue = True
+                    break
 
-        elif subexpr == "?" and subpath != None and (match_path_separator or not at_slash):
-            # The string matches a ? wildcard at the current location in the path.
-            expr_i = expr_i + 1
-            path_i = path_i + 1
+            # Succesfully consumed a path segment
+            if super_continue:
+                continue
 
-        elif subexpr and subpath != None and subpath.startswith(subexpr):
-            # The string matches the current location in the path.
-            expr_i = expr_i + 1
-            path_i = path_i + len(subexpr)
+        # Failed to advance the path or expression
+        return False
 
-        elif len(branches) > 0:
-            # The string does not match, backup to the previous branch.
-            [restored_pattern_i, restored_path_i] = branches.pop()
+    # Exited the loop without reaching the end
+    if path_i < path_len:
+        return False
 
-            path_i = restored_path_i
-            expr_i = restored_pattern_i
-
-        else:
-            # The string does not match, with no branches to rollback to, there is no match.
-            return False
-
-    fail("glob_match: reached the end of the (in)finite loop")
+    # Reached the end of the path, check if the expression ended or is on a final wildcard
+    trailing = expr[expr_i:]
+    return trailing == "" or trailing == "*" or trailing == "**"

@@ -75,6 +75,11 @@ def _globstar(ctx):
 
 globstar_test = unittest.make(_globstar)
 
+def _globstar_slash(ctx):
+    return _glob_match_test(ctx, "**/*", ["@eslint/plugin-foo", "express"], [])
+
+globstar_slash_test = unittest.make(_globstar_slash)
+
 def _qmark(ctx):
     return _glob_match_test(
         ctx,
@@ -164,7 +169,7 @@ def _mixed_trailing_globstar(ctx):
     return _glob_match_test(
         ctx,
         "foo*/**",
-        matches = ["foo/fum/bar", "foostar/fum/bar", "foo/a", "foob/c"],
+        matches = ["foo/fum/bar", "foostar/fum/bar", "foo/a", "foob/c", "foo/", "fooa/"],
         non_matches = ["fo/fum/bar", "fostar/fum/bar", "foo", "foostar", "afoo", "b/foo/c"],
     )
 
@@ -174,8 +179,8 @@ def _mixed_leading_globstar(ctx):
     return _glob_match_test(
         ctx,
         "**/foo*",
-        matches = ["fum/bar/foo", "fum/bar/foostar"],
-        non_matches = ["fum/bar/fo", "fum/bar/fostar", "foo", "foostar"],
+        matches = ["fum/bar/foo", "fum/bar/foostar", "foo", "foostar", "as/foo"],
+        non_matches = ["fum/bar/fo", "fum/bar/fostar"],
     )
 
 mixed_leading_globstar_test = unittest.make(_mixed_leading_globstar)
@@ -184,7 +189,7 @@ def _mixed_leading_globstar2(ctx):
     return _glob_match_test(
         ctx,
         "**/*foo",
-        matches = ["fum/bar/foo", "fum/bar/starfoo"],
+        matches = ["fum/bar/foo", "fum/bar/starfoo", "foo", "xfoo"],
         non_matches = ["fum/bar/foox", "fum/bar/foo/y"],
     )
 
@@ -194,7 +199,7 @@ def _mixed_wrapping_globstar(ctx):
     return _glob_match_test(
         ctx,
         "**/foo*/**",
-        matches = ["fum/bar/foo/fum/bar", "fum/bar/foostar/fum/bar"],
+        matches = ["fum/bar/foo/fum/bar", "fum/bar/foostar/fum/bar", "foo/a", "foob/c", "foo/"],
         non_matches = ["fum/bar/fo/fum/bar", "fum/bar/fostar/fum/bar", "foo", "foostar"],
     )
 
@@ -204,8 +209,8 @@ def _all_of_ext(ctx):
     return _glob_match_test(
         ctx,
         "**/*.tf",
-        matches = ["a/b.tf", "ab/cd/e.tf"],
-        non_matches = ["a/b.tfg", "a/tf", "a/b.tf/g"],
+        matches = ["a.tf", "a/b.tf", "ab/cd/e.tf"],
+        non_matches = ["a/b.tfg", "a/tf", "a/b.tf/g"],  #TODO: "a/.tf", ".tf"
     )
 
 all_of_ext_test = unittest.make(_all_of_ext)
@@ -214,7 +219,7 @@ def _all_of_name(ctx):
     return _glob_match_test(
         ctx,
         "**/foo",
-        matches = ["a/b/c/foo", "foo/foo", "a/foo/foo"],
+        matches = ["a/b/c/foo", "foo/foo", "a/foo/foo", "foo"],
         non_matches = ["foox", "foo/x"],
     )
 
@@ -257,6 +262,7 @@ def glob_match_test_suite():
         partial.make(star_test, timeout = "short"),
         partial.make(trailing_star_test, timeout = "short"),
         partial.make(globstar_test, timeout = "short"),
+        partial.make(globstar_slash_test, timeout = "short"),
         partial.make(qmark_test, timeout = "short"),
         partial.make(qmark_qmark_test, timeout = "short"),
         partial.make(wrapped_qmark_test, timeout = "short"),
