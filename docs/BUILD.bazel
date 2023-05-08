@@ -133,4 +133,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:bazelrc_presets",
 )
 
+stardoc_with_diff_test(
+    name = "string",
+    bzl_library_target = "//lib:string",
+)
+
 update_docs()

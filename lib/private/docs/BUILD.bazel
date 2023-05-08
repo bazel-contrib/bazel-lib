@@ -227,6 +227,9 @@ bzl_library(
 bzl_library(
     name = "base64",
     srcs = ["//lib/private:base64.bzl"],
+    deps = [
+        ":string"
+    ]
 )
 
 bzl_library(
@@ -242,4 +245,10 @@ bzl_library(
 bzl_library(
     name = "coreutils_toolchain",
     srcs = ["//lib/private:coreutils_toolchain.bzl"],
+)
+
+
+bzl_library(
+    name = "string",
+    srcs = ["//lib/private:string.bzl"],
 )
