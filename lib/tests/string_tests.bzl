@@ -45,8 +45,12 @@ def _hex_test_impl(ctx):
     asserts.equals(env, hex(1111), "0x457")
     asserts.equals(env, hex(97), "0x61")
     asserts.equals(env, hex(1000000000000), "0xe8d4a51000")
-    asserts.equals(env, hex(0), "0x0")
     asserts.equals(env, hex(1), "0x1")
+    # https://en.wikipedia.org/wiki/Signed_zero
+    asserts.equals(env, hex(0), "0x0")
+    asserts.equals(env, hex(-0), "0x0")
+    asserts.equals(env, hex(-1234), "-0x4d2")
+    asserts.equals(env, hex(-99999999), "-0x5f5e0ff")
 
     return unittest.end(env)
 

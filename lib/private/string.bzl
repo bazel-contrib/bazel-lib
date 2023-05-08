@@ -567,8 +567,10 @@ def hex(number):
     Returns:
         hexdecimal representation of the number argument 
     """
-    r = number
+
     hex_string = ""
+    is_signed = number < 0
+    r = number * -1 if is_signed else number
     for _ in range(1000000):
         if r > 0:
             rem = r % 16
@@ -577,6 +579,8 @@ def hex(number):
         else:
             break
     
-    hex_string = hex_string if hex_string else "0"
-    return "{}0x{}".format("-" if number < 0 else "", hex_string)
+    if not hex_string:
+        hex_string = "0"
+
+    return "{}0x{}".format("-" if is_signed else "", hex_string)
 
