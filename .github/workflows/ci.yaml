@@ -42,9 +42,9 @@ jobs:
       - id: bazel_6
         run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
       - id: bazel_5
-        run: echo "bazelversion=5.3.2" >> $GITHUB_OUTPUT
+        run: echo "bazelversion=5.4.0" >> $GITHUB_OUTPUT
     outputs:
-      # Will look like '["6.0.0", "5.3.2"]'
+      # Will look like '["6.0.0", "5.4.0"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
   matrix-prep-os:
@@ -96,18 +96,18 @@ jobs:
 
           # Don't test Bazel 5.3 with bzlmod. (Unrecognized option: --enable_bzlmod)
           - bzlmodEnabled: true
-            bazelversion: 5.3.2
+            bazelversion: 5.4.0
           # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
           - config: rbe
             os: macos-latest
           # Don't test MacOS with Bazel 5 to minimize MacOS minutes (billed at 10X)
-          - bazelversion: 5.3.2
+          - bazelversion: 5.4.0
             os: macos-latest
           # Don't test Windows with RBE to minimize Windows minutes (billed at 2X)
           - config: rbe
             os: windows-latest
           # Don't test Windows with Bazel 5 to minimize Windows minutes (billed at 2X)
-          - bazelversion: 5.3.2
+          - bazelversion: 5.4.0
             os: windows-latest
           # TODO: fix or disable the following build & test on Windows
           # //lib/tests/coreutils:test_sha256sum FAILED in 2 out of 2 in 0.2s
