@@ -1,0 +1,21 @@
+load("//lib:testing.bzl", "assert_contains")
+
+# Special characters within expected string: https://github.com/aspect-build/rules_js/issues/1045
+
+assert_contains(
+    name = "regexy-args-1",
+    actual = ":case1.txt",
+    expected = "--arg1='/{{[{]?(.*?)[}]?}}/'",
+)
+
+assert_contains(
+    name = "regexy-args-2",
+    actual = ":case1.txt",
+    expected = "--arg2='/{%(.*?)%}/'",
+)
+
+assert_contains(
+    name = "backtick",
+    actual = ":case1.txt",
+    expected = "`ff`",
+)
