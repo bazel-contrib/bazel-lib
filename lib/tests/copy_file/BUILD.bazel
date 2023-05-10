@@ -49,3 +49,28 @@ copy_file(
     src = "file1",
     out = "file1_copy_b",
 )
+
+diff_test(
+    name = "copy_same_file_a_test",
+    file1 = ":file1",
+    file2 = ":file1_copy_a",
+)
+
+diff_test(
+    name = "copy_same_file_b_test",
+    file1 = ":file1",
+    file2 = ":file1_copy_b",
+)
+
+# Case: can copy a hidden file
+copy_file(
+    name = "copy_hidden_file2",
+    src = ".file2",
+    out = "file2_copy",
+)
+
+diff_test(
+    name = "copy_hidden_file_b_test",
+    file1 = ":.file2",
+    file2 = ":copy_hidden_file2",
+)

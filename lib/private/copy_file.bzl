@@ -42,7 +42,7 @@ def _copy_cmd(ctx, src, src_path, dst):
 
     # Flags are documented at
     # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
-    cmd_tmpl = "@copy /Y \"{src}\" \"{dst}\" >NUL"
+    cmd_tmpl = "@xcopy /Y \"{src}\" \"{dst}\" >NUL"
     mnemonic = "CopyFile"
     progress_message = "Copying file %s" % _progress_path(src)
 
