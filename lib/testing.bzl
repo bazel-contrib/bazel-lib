@@ -22,6 +22,13 @@ def assert_contains(name, actual, expected, size = None, timeout = None, **kwarg
     """
 
     test_sh = "_{}_test.sh".format(name)
+    expected_file = "_{}_expected.txt".format(name)
+
+    write_file(
+        name = "_%s_expected" % name,
+        out = expected_file,
+        content = [expected],
+    )
 
     write_file(
         name = "_" + name,
@@ -29,17 +36,17 @@ def assert_contains(name, actual, expected, size = None, timeout = None, **kwarg
         content = [
             "#!/usr/bin/env bash",
             "set -o errexit",
-            "grep --fixed-strings '{}' $1".format(expected),
+            "grep --fixed-strings -f $1 $2",
         ],
     )
 
     native.sh_test(
         name = name,
         srcs = [test_sh],
-        args = ["$(rootpath %s)" % actual],
+        args = ["$(rootpath %s)" % expected_file, "$(rootpath %s)" % actual],
         size = size,
         timeout = default_timeout(size, timeout),
-        data = [actual],
+        data = [actual, expected_file],
         **kwargs
     )
 
