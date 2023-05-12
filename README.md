@@ -1,4 +1,4 @@
-# Aspect's Bazel helpers library
+# Aspect's Bazel helpers library foobar
 
 Base Starlark libraries and basic Bazel rules which are useful for constructing rulesets and BUILD files.
 
