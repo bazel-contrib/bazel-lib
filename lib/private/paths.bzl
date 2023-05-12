@@ -80,30 +80,31 @@ def _to_output_relative_path(file):
 def _to_rlocation_path(ctx, file):
     """The rlocation path for a `File`
 
-    The path a built binary can pass to the `Rlocation` function of a runfiles library to find a
-    dependency at runtime, either in the runfiles directory (if available) or using the runfiles
-    manifest.
+    This produces the same value as the `rlocationpath` predefined source/output path variable.
 
-    This is similar to root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path))
-    in that it does not contain configuration prefixes, but differs in that it always starts with the
-    name of the repository.
+    From https://bazel.build/reference/be/make-variables#predefined_genrule_variables:
 
-    The rlocation path of a `File` in an external repository repo will start with `repo/`, followed by the
-    repository-relative path.
+    > `rlocationpath`: The path a built binary can pass to the `Rlocation` function of a runfiles
+    > library to find a dependency at runtime, either in the runfiles directory (if available)
+    > or using the runfiles manifest.
 
-    Passing this path to a binary and resolving it to a file system path using the runfiles libraries
-    is the preferred approach to find dependencies at runtime. Compared to root path, it has the
-    advantage that it works on all platforms and even if the runfiles directory is not available.
+    > This is similar to root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path))
+    > in that it does not contain configuration prefixes, but differs in that it always starts with the
+    > name of the repository.
 
-    Based on the $(rlocation) predefined source/output path variable:
-    https://bazel.build/reference/be/make-variables#predefined_genrule_variables.
+    > The rlocation path of a `File` in an external repository repo will start with `repo/`, followed by the
+    > repository-relative path.
+
+    > Passing this path to a binary and resolving it to a file system path using the runfiles libraries
+    > is the preferred approach to find dependencies at runtime. Compared to root path, it has the
+    > advantage that it works on all platforms and even if the runfiles directory is not available.
 
     Args:
         ctx: starlark rule execution context
         file: a `File` object
 
     Returns:
-        The rlocation path for the `File`
+        The rlocationpath for the `File`
     """
     if file.short_path.startswith("../"):
         return file.short_path[3:]
