@@ -3,7 +3,8 @@ env:
   CC: /bin/false
 workspaces:
   - .
-  - e2e/bzlmod
+  - e2e/smoke
+  - e2e/coreutils
   - e2e/copy_to_directory
 tasks:
   branch_freshness:
