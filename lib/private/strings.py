@@ -1,4 +1,4 @@
-# python utility to seed the starlark constants in base64.bzl
+# python utility to seed the starlark constants in strings.bzl
 
 print("")
 print("CHAR_TO_INT = {")

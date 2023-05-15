@@ -1,7 +1,8 @@
 """unit tests for base64"""
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:base64.bzl", "INT_TO_CHAR", "decode", "encode")
+load("//lib/private:base64.bzl", "decode", "encode")
+load("//lib/private:strings.bzl", "INT_TO_CHAR")
 
 def _base64_test_impl(ctx):
     env = unittest.begin(ctx)

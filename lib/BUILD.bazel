@@ -252,3 +252,9 @@ bzl_library(
     srcs = ["bazelrc_presets.bzl"],
     deps = [":write_source_files"],
 )
+
+bzl_library(
+    name = "strings",
+    srcs = ["strings.bzl"],
+    deps = ["//lib/private/docs:strings"],
+)
