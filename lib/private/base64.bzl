@@ -6,7 +6,7 @@ Implementation based on https://gist.github.com/trondhumbor/ce57c0c2816bb45a8fbb
 the subset of python available in Starlark.
 """
 
-load(":string.bzl", "ord", "chr")
+load(":strings.bzl", "ord", "chr")
 
 def decode(data):
     """Decode a Base64 encoded string.

@@ -1,7 +1,7 @@
 """unit tests for string"""
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:string.bzl", "ord", "chr", "hex")
+load("//lib/private:strings.bzl", "ord", "chr", "hex")
 
 def _ord_test_impl(ctx):
     env = unittest.begin(ctx)
@@ -56,9 +56,9 @@ def _hex_test_impl(ctx):
 
 hex_test = unittest.make(_hex_test_impl)
 
-def string_test_suite():
+def strings_test_suite():
     unittest.suite(
-        "string_tests",
+        "strings_tests",
         ord_test,
         chr_test,
         hex_test

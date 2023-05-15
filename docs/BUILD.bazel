@@ -134,8 +134,8 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
-    name = "string",
-    bzl_library_target = "//lib:string",
+    name = "strings",
+    bzl_library_target = "//lib:strings",
 )
 
 update_docs()
