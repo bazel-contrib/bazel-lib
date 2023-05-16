@@ -102,6 +102,7 @@ bzl_library(
     deps = [
         ":expand_locations",
         "@bazel_skylib//lib:dicts",
+        "//lib:stamping"
     ],
 )
 
@@ -247,6 +248,11 @@ bzl_library(
     srcs = ["//lib/private:coreutils_toolchain.bzl"],
 )
 
+bzl_library(
+    name = "expand_template_toolchain",
+    srcs = ["//lib/private:expand_template_toolchain.bzl"],
+    deps = ["//lib:stamping"]
+)
 
 bzl_library(
     name = "strings",

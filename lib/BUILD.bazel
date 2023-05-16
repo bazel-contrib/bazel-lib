@@ -51,6 +51,10 @@ toolchain_type(
     name = "coreutils_toolchain_type",
 )
 
+toolchain_type(
+    name = "expand_template_toolchain_type",
+)
+
 bzl_library(
     name = "docs",
     srcs = ["docs.bzl"],
@@ -62,8 +66,19 @@ bzl_library(
     srcs = ["expand_make_vars.bzl"],
     deps = [
         "//lib/private/docs:expand_locations",
-        "//lib/private/docs:expand_template",
         "//lib/private/docs:expand_variables",
+        ":expand_template",
+    ],
+)
+
+
+bzl_library(
+    name = "expand_template",
+    srcs = ["expand_template.bzl"],
+    deps = [
+        "//lib/private/docs:expand_locations",
+        "//lib/private/docs:expand_variables",
+        "//lib/private/docs:expand_template",
     ],
 )
 
@@ -216,6 +231,7 @@ bzl_library(
         "//lib/private/docs:copy_directory_toolchain",
         "//lib/private/docs:copy_to_directory_toolchain",
         "//lib/private/docs:coreutils_toolchain",
+        "//lib/private/docs:expand_template_toolchain",
         "//lib/private/docs:jq_toolchain",
         "//lib/private/docs:local_config_platform",
         "//lib/private/docs:yq_toolchain",
