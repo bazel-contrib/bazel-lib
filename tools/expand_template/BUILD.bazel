@@ -1,5 +1,4 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-load("//lib/private:expand_template_toolchain.bzl", "expand_template_toolchain")
 
 go_library(
     name = "expand_template_lib",
