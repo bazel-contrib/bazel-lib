@@ -12,8 +12,8 @@ else
 fi
 
 # Extract the checksums and output a starlark map entry
-echo "expand_template_VERSION = \"$version\""
-echo "expand_template_INTEGRITY = {"
+echo "EXPAND_TEMPLATE_VERSION = \"$version\""
+echo "EXPAND_TEMPLATE_INTEGRITY = {"
 platforms=(darwin_{amd64,arm64} linux_{amd64,arm64} windows_amd64)
 for release in ${platforms[@]}; do
     integrity="https://github.com/aspect-build/bazel-lib/releases/download/v$version/expand_template-$release"

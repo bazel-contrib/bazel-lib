@@ -17,7 +17,6 @@ def _toolchain_extension(mctx):
     register_jq_toolchains(register = False)
     register_yq_toolchains(register = False)
     register_coreutils_toolchains(register = False)
-    register_coreutils_toolchains(register = False)
     register_expand_template_toolchains(register = False)
     
     create_host_repo = False
