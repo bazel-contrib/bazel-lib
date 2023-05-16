@@ -15,6 +15,7 @@ try-import %workspace%/.aspect/bazelrc/bazel6.bazelrc
 
 # For testing our --stamp behavior.
 # Normally users would use a --workspace_status_command with a script that calls `git describe`.
+build --embed_label=v1.2.3
 # Mock versioning command to test the --stamp behavior
 build --workspace_status_command="echo BUILD_SCM_VERSION 1.2.3"
 
