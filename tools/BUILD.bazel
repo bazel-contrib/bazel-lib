@@ -16,11 +16,18 @@ multi_platform_go_binaries(
     tags = ["manual"],
 )
 
+multi_platform_go_binaries(
+    name = "expand_template",
+    embed = ["//tools/expand_template:expand_template_lib"],
+    tags = ["manual"],
+)
+
 release(
     name = "release",
     tags = ["manual"],
     targets = [
         ":copy_directory",
         ":copy_to_directory",
+        ":expand_template"
     ],
 )
