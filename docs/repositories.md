@@ -78,6 +78,25 @@ Registers coreutils toolchain and repositories
 | <a id="register_coreutils_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
 
 
+<a id="register_expand_template_toolchains"></a>
+
+## register_expand_template_toolchains
+
+<pre>
+register_expand_template_toolchains(<a href="#register_expand_template_toolchains-name">name</a>, <a href="#register_expand_template_toolchains-register">register</a>)
+</pre>
+
+Registers expand_template toolchain and repositories
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="register_expand_template_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"expand_template"</code> |
+| <a id="register_expand_template_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+
+
 <a id="register_jq_toolchains"></a>
 
 ## register_jq_toolchains

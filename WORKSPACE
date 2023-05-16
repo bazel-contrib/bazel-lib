@@ -12,6 +12,10 @@ bazel_lib_internal_deps()
 
 load("//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
+
+register_toolchains("//tools/expand_template:local_expand_template_toolchain")
+
+
 aspect_bazel_lib_dependencies(override_local_config_platform = True)
 
 # For running our own unit tests

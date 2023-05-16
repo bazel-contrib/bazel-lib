@@ -1,0 +1,6 @@
+WORKSPACE: aspect_bazel_lib
+VERSION: v0.0.0
+TMPL_PATH: lib/tests/expand_template/a.tmpl
+WORKSPACE: aspect_bazel_lib
+VERSION: v0.0.0
+TMPL_PATH: lib/tests/expand_template/a.tmpl

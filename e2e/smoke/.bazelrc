@@ -9,6 +9,8 @@ import %workspace%/.aspect/bazelrc/debug.bazelrc
 import %workspace%/.aspect/bazelrc/javascript.bazelrc
 
 ### PROJECT SPECIFIC OPTIONS ###
+# for testing expand_template
+build --workspace_status_command="echo BUILD_SCM_VERSION 1.2.3"
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
