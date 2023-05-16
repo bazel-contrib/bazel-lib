@@ -66,8 +66,19 @@ bzl_library(
     srcs = ["expand_make_vars.bzl"],
     deps = [
         "//lib/private/docs:expand_locations",
-        "//lib/private/docs:expand_template",
         "//lib/private/docs:expand_variables",
+        ":expand_template",
+    ],
+)
+
+
+bzl_library(
+    name = "expand_template",
+    srcs = ["expand_template.bzl"],
+    deps = [
+        "//lib/private/docs:expand_locations",
+        "//lib/private/docs:expand_variables",
+        "//lib/private/docs:expand_template",
     ],
 )
 
