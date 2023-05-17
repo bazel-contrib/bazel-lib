@@ -18,9 +18,6 @@ def stardoc_with_diff_test(
     """
 
     target_compatible_with = kwargs.pop("target_compatible_with", select({
-        # stardoc doesn't work under bzlmod:
-        # https://github.com/bazelbuild/bazel/issues/14140
-        "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
         # stardoc produces different line endings on Windows
         # which makes the diff_test fail
         "@platforms//os:windows": ["@platforms//:incompatible"],
