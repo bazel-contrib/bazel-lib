@@ -8,6 +8,10 @@ def _is_linux(rctx):
     """Returns true if the host operating system is Linux"""
     return rctx.os.name.lower().startswith("linux")
 
+def _is_freebsd(rctx):
+    """Returns true if the host operating system is FreeBSD"""
+    return rctx.os.name.lower().startswith("freebsd")
+
 def _is_windows(rctx):
     """Returns true if the host operating system is Windows"""
     return rctx.os.name.lower().find("windows") != -1
@@ -19,12 +23,14 @@ def _os(rctx):
         rctx: rctx
 
     Returns:
-        The string "windows", "linux" or "darwin" that describes the host os
+        The string "windows", "linux", "freebsd" or "darwin" that describes the host os
     """
     if _is_darwin(rctx):
         return "darwin"
     if _is_linux(rctx):
         return "linux"
+    if _is_freebsd(rctx):
+        return "freebsd"
     if _is_windows(rctx):
         return "windows"
     fail("unrecognized os")

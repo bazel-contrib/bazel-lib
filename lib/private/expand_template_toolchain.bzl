@@ -29,6 +29,12 @@ EXPAND_TEMPLATE_PLATFORMS = {
             "@platforms//cpu:aarch64",
         ],
     ),
+    "freebsd_amd64": struct(
+        compatible_with = [
+            "@platforms//os:freebsd",
+            "@platforms//cpu:x86_64",
+        ],
+    ),
     "linux_amd64": struct(
         compatible_with = [
             "@platforms//os:linux",
