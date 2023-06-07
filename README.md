@@ -1,5 +1,7 @@
 # Aspect's Bazel helpers library
 
+foobar
+
 Base Starlark libraries and basic Bazel rules which are useful for constructing rulesets and BUILD files.
 
 This module depends on [bazel-skylib](https://github.com/bazelbuild/bazel-skylib).
