@@ -1,4 +1,5 @@
 ---
+queue: bazel-lib
 env:
   CC: /bin/false
 workspaces:
