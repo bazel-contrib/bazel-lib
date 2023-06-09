@@ -41,10 +41,12 @@ jobs:
       - uses: actions/checkout@v3
       - id: bazel_6
         run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
+      - id: bazel_7
+        run: echo "bazelversion=7.0.0-pre.20230530.3" >> $GITHUB_OUTPUT
       - id: bazel_5
-        run: echo "bazelversion=5.4.0" >> $GITHUB_OUTPUT
+        run: echo "bazelversion=5.4.1" >> $GITHUB_OUTPUT
     outputs:
-      # Will look like '["6.0.0", "5.4.0"]'
+      # Will look like '["<version from .bazelversion>", "7.0.0-pre.*", "5.4.1"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
   matrix-prep-os:
@@ -102,6 +104,9 @@ jobs:
             os: macos-latest
           # Don't test MacOS with Bazel 5 to minimize MacOS minutes (billed at 10X)
           - bazelversion: 5.4.0
+            os: macos-latest
+          # Don't test MacOS with Bazel 7 to minimize MacOS minutes (billed at 10X)
+          - bazelversion: 7.0.0-pre.20230530.3
             os: macos-latest
           # Don't test Windows with RBE to minimize Windows minutes (billed at 2X)
           - config: rbe
