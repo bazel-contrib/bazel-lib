@@ -1,6 +1,7 @@
 load("@aspect_bazel_lib_host//:defs.bzl", "host")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("//lib:write_source_files.bzl", "write_source_files")
 load("//lib:yq.bzl", "yq")
 load("//lib:diff_test.bzl", "diff_test")
@@ -31,6 +32,15 @@ gazelle(
         "-prune",
     ],
     command = "update-repos",
+)
+
+buildifier(
+    name = "buildifier.check",
+    exclude_patterns = [
+        "./.git/*",
+    ],
+    lint_mode = "warn",
+    mode = "diff",
 )
 
 bzl_library(
