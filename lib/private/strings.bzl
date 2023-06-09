@@ -530,7 +530,7 @@ def ord(c):
 
     Args:
         c: character whose codepoint to be returned.
-        
+
     Returns:
         codepoint of `c` argument.
     """
@@ -561,11 +561,11 @@ def _to_char(n):
 def hex(number):
     """Format integer to hexdecimal representation
 
-    Args: 
+    Args:
         number: number to format
 
     Returns:
-        hexdecimal representation of the number argument 
+        hexdecimal representation of the number argument
     """
 
     hex_string = ""
@@ -578,9 +578,8 @@ def hex(number):
             r //= 16
         else:
             break
-    
+
     if not hex_string:
         hex_string = "0"
 
     return "{}0x{}".format("-" if is_signed else "", hex_string)
-

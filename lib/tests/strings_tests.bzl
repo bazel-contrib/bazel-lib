@@ -1,7 +1,7 @@
 """unit tests for string"""
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:strings.bzl", "ord", "chr", "hex")
+load("//lib/private:strings.bzl", "chr", "hex", "ord")
 
 def _ord_test_impl(ctx):
     env = unittest.begin(ctx)
@@ -20,7 +20,6 @@ def _ord_test_impl(ctx):
 
 ord_test = unittest.make(_ord_test_impl)
 
-
 def _chr_test_impl(ctx):
     env = unittest.begin(ctx)
 
@@ -38,7 +37,6 @@ def _chr_test_impl(ctx):
 
 chr_test = unittest.make(_chr_test_impl)
 
-
 def _hex_test_impl(ctx):
     env = unittest.begin(ctx)
 
@@ -46,6 +44,7 @@ def _hex_test_impl(ctx):
     asserts.equals(env, hex(97), "0x61")
     asserts.equals(env, hex(1000000000000), "0xe8d4a51000")
     asserts.equals(env, hex(1), "0x1")
+
     # https://en.wikipedia.org/wiki/Signed_zero
     asserts.equals(env, hex(0), "0x0")
     asserts.equals(env, hex(-0), "0x0")
@@ -61,5 +60,5 @@ def strings_test_suite():
         "strings_tests",
         ord_test,
         chr_test,
-        hex_test
+        hex_test,
     )
