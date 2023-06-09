@@ -38,16 +38,12 @@ hex(<a href="#hex-number">number</a>)
 
 Format integer to hexdecimal representation
 
-Args: 
-    number: number to format
-
-
 **PARAMETERS**
 
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="hex-number"></a>number |  <p align="center"> - </p>   |  none |
+| <a id="hex-number"></a>number |  number to format   |  none |
 
 **RETURNS**
 

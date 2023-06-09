@@ -166,7 +166,6 @@ def register_copy_to_directory_toolchains(name = "copy_to_directory", register =
         user_repository_name = name,
     )
 
-
 def register_expand_template_toolchains(name = "expand_template", register = True):
     """Registers expand_template toolchain and repositories
 

@@ -28,6 +28,6 @@ release(
     targets = [
         ":copy_directory",
         ":copy_to_directory",
-        ":expand_template"
+        ":expand_template",
     ],
 )

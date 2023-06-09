@@ -101,8 +101,8 @@ bzl_library(
     srcs = ["//lib/private:expand_template.bzl"],
     deps = [
         ":expand_locations",
+        "//lib:stamping",
         "@bazel_skylib//lib:dicts",
-        "//lib:stamping"
     ],
 )
 
@@ -229,8 +229,8 @@ bzl_library(
     name = "base64",
     srcs = ["//lib/private:base64.bzl"],
     deps = [
-        ":strings"
-    ]
+        ":strings",
+    ],
 )
 
 bzl_library(
@@ -251,7 +251,7 @@ bzl_library(
 bzl_library(
     name = "expand_template_toolchain",
     srcs = ["//lib/private:expand_template_toolchain.bzl"],
-    deps = ["//lib:stamping"]
+    deps = ["//lib:stamping"],
 )
 
 bzl_library(

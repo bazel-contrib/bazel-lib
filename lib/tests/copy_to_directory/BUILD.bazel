@@ -196,8 +196,8 @@ copy_to_directory(
         ":d",
         ":e/e1",
         ":e/e2",
+        "//lib/tests/copy_to_directory/f/f2",
         "//lib/tests/copy_to_directory/f/f2:f1",
-        "//lib/tests/copy_to_directory/f/f2:f2",
         "@external_test_repo//:test_c",
         "@external_test_repo//:test_d",
     ] + make_directory_paths(

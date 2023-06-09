@@ -10,21 +10,20 @@ genrule(
 
 hashes(
     name = "hash",
-    src = "test.bin"
+    src = "test.bin",
 )
 
 filegroup(
     name = "md5",
+    srcs = [":hash"],
     output_group = "md5",
-    srcs = [":hash"]
 )
 
 filegroup(
     name = "sha1",
+    srcs = [":hash"],
     output_group = "sha1",
-    srcs = [":hash"]
 )
-
 
 # This tests that the "in" file to write_source_files can be a
 # label to an external repository target when bzlmod is enabled.
@@ -34,7 +33,6 @@ write_source_files(
         "ls.txt.expected": ":ls.txt",
         "sha256.txt": ":hash",
         "sha1.txt": ":sha1",
-        "md5.txt": ":md5"
+        "md5.txt": ":md5",
     },
 )
-

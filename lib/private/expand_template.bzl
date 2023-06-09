@@ -1,9 +1,9 @@
 "expand_template rule"
+
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load(":expand_locations.bzl", _expand_locations = "expand_locations")
 load(":expand_variables.bzl", _expand_variables = "expand_variables")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
-
 
 def _expand_substitutions(ctx, substitutions):
     result = {}
@@ -23,7 +23,7 @@ def _expand_template_impl(ctx):
         substitutions_out = ctx.actions.declare_file("{}_substitutions.json".format(ctx.label.name))
         ctx.actions.write(
             output = substitutions_out,
-            content = json.encode(substitutions)
+            content = json.encode(substitutions),
         )
 
         inputs = [
@@ -90,7 +90,7 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
 
             There are overlayed on top of substitutions when stamping is enabled
             for the target.
-            
+
             Substitutions can contain $(execpath :target) and $(rootpath :target)
             expansions, $(MAKEVAR) expansions and {{STAMP_VAR}} expansions when
             stamping is enabled for the target.
@@ -98,7 +98,7 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
         ),
         "substitutions": attr.string_dict(
             doc = """Mapping of strings to substitutions.
-            
+
             Substitutions can contain $(execpath :target) and $(rootpath :target)
             expansions, $(MAKEVAR) expansions and {{STAMP_VAR}} expansions when
             stamping is enabled for the target.
@@ -109,7 +109,7 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
             mandatory = True,
             allow_single_file = True,
         ),
-    },  **STAMP_ATTRS),
+    }, **STAMP_ATTRS),
 )
 
 expand_template = rule(
