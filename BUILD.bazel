@@ -41,6 +41,7 @@ buildifier(
     ],
     lint_mode = "warn",
     mode = "diff",
+    tags = ["manual"],  # tag as manual so windows ci does not build it by default
 )
 
 bzl_library(
