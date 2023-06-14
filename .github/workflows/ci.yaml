@@ -98,12 +98,12 @@ jobs:
 
           # Don't test Bazel 5.3 with bzlmod. (Unrecognized option: --enable_bzlmod)
           - bzlmodEnabled: true
-            bazelversion: 5.4.0
+            bazelversion: 5.4.1
           # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
           - config: rbe
             os: macos-latest
           # Don't test MacOS with Bazel 5 to minimize MacOS minutes (billed at 10X)
-          - bazelversion: 5.4.0
+          - bazelversion: 5.4.1
             os: macos-latest
           # Don't test MacOS with Bazel 7 to minimize MacOS minutes (billed at 10X)
           - bazelversion: 7.0.0-pre.20230530.3
@@ -112,7 +112,7 @@ jobs:
           - config: rbe
             os: windows-latest
           # Don't test Windows with Bazel 5 to minimize Windows minutes (billed at 2X)
-          - bazelversion: 5.4.0
+          - bazelversion: 5.4.1
             os: windows-latest
           # Don't test Windows with Bazel 7 to minimize Windows minutes (billed at 2X)
           - bazelversion: 7.0.0-pre.20230530.3
