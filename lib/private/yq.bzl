@@ -1,6 +1,8 @@
 """Implementation for yq rule"""
 
-_yq_attrs = {
+load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
+
+_yq_attrs = dict({
     "srcs": attr.label_list(
         allow_files = [".yaml", ".json", ".xml"],
         mandatory = True,
@@ -9,7 +11,11 @@ _yq_attrs = {
     "expression": attr.string(mandatory = False),
     "args": attr.string_list(),
     "outs": attr.output_list(mandatory = True),
-}
+    "_parse_status_file_expression": attr.label(
+        allow_single_file = True,
+        default = Label("//lib/private:parse_status_file.yq"),
+    ),
+}, **STAMP_ATTRS)
 
 def is_split_operation(args):
     for arg in args:
@@ -38,6 +44,31 @@ def _yq_impl(ctx):
     if len(ctx.attr.srcs) == 0 and "-n" not in args and "--null-input" not in args:
         args = args + ["--null-input"]
 
+    stamp = maybe_stamp(ctx)
+    stamp_yaml = ctx.actions.declare_file("_%s_stamp.yaml" % ctx.label.name)
+    if stamp:
+        # create an action that gives a YAML representation of the stamp keys
+        ctx.actions.run_shell(
+            tools = [yq_bin],
+            inputs = [stamp.stable_status_file, stamp.volatile_status_file, ctx.file._parse_status_file_expression],
+            outputs = [stamp_yaml],
+            command = "{yq} --from-file {expression} {stable} {volatile} > {out}".format(
+                yq = yq_bin.path,
+                expression = ctx.file._parse_status_file_expression.path,
+                stable = stamp.stable_status_file.path,
+                volatile = stamp.volatile_status_file.path,
+                out = stamp_yaml.path,
+            ),
+            mnemonic = "ConvertStatusToYaml",
+        )
+    else:
+        # create an empty stamp file as placeholder
+        ctx.actions.write(
+            output = stamp_yaml,
+            content = "{}",
+        )
+    inputs.append(stamp_yaml)
+
     # For split operations, yq outputs files in the same directory so we
     # must cd to the correct output dir before executing it
     bin_dir = "/".join([ctx.bin_dir.path, ctx.label.package]) if ctx.label.package else ctx.bin_dir.path
@@ -58,6 +89,7 @@ def _yq_impl(ctx):
         inputs = inputs,
         outputs = outs,
         command = cmd,
+        env = {"STAMP": escape_bin_dir + stamp_yaml.path},
         mnemonic = "Yq",
     )
 

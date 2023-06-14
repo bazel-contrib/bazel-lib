@@ -95,13 +95,30 @@ def yq(name, srcs, expression = ".", args = [], outs = None, **kwargs):
     )
     ```
 
+    ```starlark
+    # With --stamp, causes properties to be replaced by version control info.
+    yq(
+        name = "stamped",
+        srcs = ["package.yaml"],
+        expression = "|".join([
+            "load(strenv(STAMP)) as $stamp",
+            # Provide a default using the "alternative operator" in case $stamp is empty dict.
+            ".version = ($stamp.BUILD_EMBED_LABEL // "<unstamped>")",
+        ]),
+    )
+    ```
+
     yq is capable of parsing and outputting to other formats. See their [docs](https://mikefarah.gitbook.io/yq) for more examples.
 
     Args:
         name: Name of the rule
         srcs: List of input file labels
         expression: yq expression (https://mikefarah.gitbook.io/yq/commands/evaluate). Defaults to the identity
-            expression "."
+            expression ".". Subject to stamp variable replacements, see [Stamping](./stamping.md).
+            When stamping is enabled, an environment variable named "STAMP" will be available in the expression.
+
+            Be careful to write the filter so that it handles unstamped builds, as in the example above.
+
         args: Additional args to pass to yq. Note that you do not need to pass _eval_ or _eval-all_ as this
             is handled automatically based on the number `srcs`. Passing the output format or the parse format
             is optional as these can be guessed based on the file extensions in `srcs` and `outs`.

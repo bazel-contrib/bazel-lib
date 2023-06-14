@@ -1,5 +1,6 @@
 load("//lib/private:diff_test.bzl", "diff_test")
 load("//lib:yq.bzl", "yq")
+load("//lib:testing.bzl", "assert_contains")
 
 exports_files(
     [
@@ -306,6 +307,38 @@ diff_test(
     name = "case_merge_expression_json_test",
     file1 = "a_b_merged.yaml",
     file2 = ":case_merge_expression_json",
+)
+
+# Expression that uses a stamp variable
+[
+    yq(
+        name = ("" if stamp else "un") + "stamped",
+        srcs = ["a.yaml"],
+        expression = "|".join([
+            "load(strenv(STAMP)) as $stamp",
+            # Provide a default using the "alternative operator"
+            ".foo = ($stamp.BUILD_EMBED_LABEL // \"<unstamped>\")",
+            ".value = ($stamp.BUILD_TIMESTAMP // 1 | @yamld)",
+        ]),
+        stamp = stamp,
+    )
+    for stamp in [
+        0,
+        1,
+    ]
+]
+
+assert_contains(
+    name = "check_stamped",
+    actual = "stamped.yaml",
+    # v1.2.3 comes from the --embed_label flag in .bazelrc
+    expected = """foo: v1.2.3""",
+)
+
+assert_contains(
+    name = "check_unstamped",
+    actual = "unstamped.yaml",
+    expected = """foo: <unstamped>""",
 )
 
 # Call yq within a genrule

@@ -217,6 +217,7 @@ bzl_library(
 bzl_library(
     name = "yq",
     srcs = ["//lib/private:yq.bzl"],
+    deps = ["//lib:stamping"],
 )
 
 bzl_library(
