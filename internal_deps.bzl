@@ -62,6 +62,12 @@ def bazel_lib_internal_deps():
         ],
     )
 
+    # git_repository(
+    #     name = "buildifier_prebuilt",
+    #     remote = "https://github.com/jbedard/buildifier-prebuilt.git",
+    #     commit = "d5326303d222c00f395f31f63ba6df532fd94404",
+    # )
+
     # Register toolchains for tests
     register_jq_toolchains()
     register_yq_toolchains()
