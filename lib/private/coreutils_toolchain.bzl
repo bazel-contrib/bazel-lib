@@ -36,7 +36,7 @@ COREUTILS_PLATFORMS = {
 
 DEFAULT_COREUTILS_VERSION = "0.0.16"
 
-# https://github.com/mikefarah/coreutils/releases
+# https://github.com/uutils/coreutils/releases
 #
 # The integrity hashes can be automatically fetched for the coreutils releases by running
 # `tools/coreutils_mirror_release.sh`.
