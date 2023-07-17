@@ -7,7 +7,7 @@ module(
 )
 
 # Lower-bound versions of our dependencies
-bazel_dep(name = "bazel_skylib", version = "1.4.1")
+bazel_dep(name = "bazel_skylib", version = "1.4.2")
 bazel_dep(name = "platforms", version = "0.0.4")
 
 # 0.5.4 is the first version with bzlmod support
