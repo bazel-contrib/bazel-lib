@@ -139,7 +139,8 @@ def _file_exists(path):
 def _default_timeout(size, timeout):
     """Provide a sane default for *_test timeout attribute.
 
-    The [test-encyclopedia](https://bazel.build/reference/test-encyclopedia) says
+    The [test-encyclopedia](https://bazel.build/reference/test-encyclopedia) says:
+
     > Tests may return arbitrarily fast regardless of timeout.
     > A test is not penalized for an overgenerous timeout, although a warning may be issued:
     > you should generally set your timeout as tight as you can without incurring any flakiness.
@@ -147,7 +148,9 @@ def _default_timeout(size, timeout):
     However Bazel's default for timeout is medium, which is dumb given this guidance.
 
     It also says:
+    
     > Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
+    
     Therefore if size is specified, we should allow timeout to take its implied default.
     If neither is set, then we can fix Bazel's wrong default here to avoid warnings under
     `--test_verbose_timeout_warnings`.
