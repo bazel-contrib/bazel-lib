@@ -148,9 +148,9 @@ def _default_timeout(size, timeout):
     However Bazel's default for timeout is medium, which is dumb given this guidance.
 
     It also says:
-    
+
     > Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
-    
+
     Therefore if size is specified, we should allow timeout to take its implied default.
     If neither is set, then we can fix Bazel's wrong default here to avoid warnings under
     `--test_verbose_timeout_warnings`.
