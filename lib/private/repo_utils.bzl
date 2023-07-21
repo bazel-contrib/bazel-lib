@@ -40,6 +40,11 @@ def _get_env_var(rctx, name, default):
     Returns:
         The environment variable value or the default if it is not set
     """
+
+    # On Windows, the HOME environment variable is named differently.
+    # See https://pureinfotech.com/list-environment-variables-windows-10/
+    if name == "HOME" and _is_windows(rctx):
+        name = "HOMEPATH"
     if name in rctx.os.environ:
         return rctx.os.environ[name]
     return default
