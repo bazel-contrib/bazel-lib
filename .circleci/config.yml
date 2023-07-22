@@ -1,22 +1,35 @@
 version: 2.1
 
+parameters:
+  perform_delivery:
+    type: boolean
+    default: false
+  delivery_commit:
+    type: string
+    default: ""
+    description: The commit to checkout and run the delivery from
+  delivery_targets:
+    type: string
+    default: ""
+    description: Ignore the target(s) that are listed in the delivery manifest
+      and instead deliver these targets. Comma-separated list of labels.
+
 # enable CircleCI's dynamic configuration feature
 setup: true
+
 orbs:
   continuation: circleci/continuation@0.3.1
-jobs:
-  setup:
-    executor: continuation/default
-    resource_class: aspect-build/default
-    steps:
-      - checkout
-      - run:
-          name: Generate config
-          command: |
-            rosetta steps > generated_config.yml
-      - continuation/continue:
-          configuration_path: generated_config.yml
+  slack: circleci/slack@4.12.1
+  # CCI doesn't allow us to use a relative path in the monorepo, so we have to refer to an
+  # already-published orb in their registry.
+  # Run `bazel run --stamp //rosetta/cci-orb:publish` to produce a new version.
+  bazel: aspect-build/workflows@dev:5.6.0-rc9
+
 workflows:
-  setup:
+  bazel-setup:
     jobs:
-      - setup
+      - bazel/setup:
+          aspect-config: .aspect/workflows/config.yaml
+          resource_class: aspect-build/bazel-lib
+          context:
+            - slack
