@@ -23,6 +23,10 @@ build --workspace_status_command="echo BUILD_SCM_VERSION 1.2.3"
 build:release --workspace_status_command "${PWD}/workspace_status.sh"
 build:release -c opt --stamp
 
+# Don't try and auto detect the cc toolchain
+build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build --incompatible_enable_cc_toolchain_resolution
+
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
 # should be last statement in this config so the user configuration is able to overwrite flags from
