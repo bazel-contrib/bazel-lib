@@ -130,7 +130,7 @@ Returns the name of the host operating system
 
 **RETURNS**
 
-The string "windows", "linux" or "darwin" that describes the host os
+The string "windows", "linux", "freebsd" or "darwin" that describes the host os
 
 
 <a id="repo_utils.platform"></a>

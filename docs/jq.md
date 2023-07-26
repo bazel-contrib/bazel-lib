@@ -110,6 +110,19 @@ jq(
 )
 ```
 
+You could also use it directly from a `genrule` by referencing the toolchain, and the `JQ_BIN`
+"Make variable" it exposes:
+
+```
+genrule(
+    name = "case_genrule",
+    srcs = ["a.json"],
+    outs = ["genrule_output.json"],
+    cmd = "$(JQ_BIN) '.' $(location a.json) > $@",
+    toolchains = ["@jq_toolchains//:resolved_toolchain"],
+)
+```
+
 
 **PARAMETERS**
 
