@@ -55,10 +55,10 @@ def bazel_lib_internal_deps():
 
     http_archive(
         name = "buildifier_prebuilt",
-        sha256 = "e46c16180bc49487bfd0f1ffa7345364718c57334fa0b5b67cb5f27eba10f309",
-        strip_prefix = "buildifier-prebuilt-6.1.0",
+        sha256 = "29a50ea545810dc077c408d520eb83e9de3eecfe6395e89cb07149d903fc31e5",
+        strip_prefix = "buildifier-prebuilt-6.1.2",
         urls = [
-            "https://github.com/keith/buildifier-prebuilt/archive/6.1.0.tar.gz",
+            "https://github.com/keith/buildifier-prebuilt/archive/6.1.2.tar.gz",
         ],
     )
 

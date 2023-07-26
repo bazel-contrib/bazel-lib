@@ -28,4 +28,4 @@ register_toolchains(
 # Development-only dependencies
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.4.1", dev_dependency = True)
-bazel_dep(name = "buildifier_prebuilt", version = "6.1.0", dev_dependency = True)
+bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
