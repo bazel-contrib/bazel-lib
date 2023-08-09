@@ -58,7 +58,7 @@ def update_docs(name = "update", **kwargs):
 
     update_files = {}
     for r in native.existing_rules().values():
-        if r["kind"] == "stardoc":
+        if r["generator_function"] == "stardoc_with_diff_test" and r["generator_name"] == r["name"]:
             for tag in r["tags"]:
                 if tag.startswith("package:"):
                     stardoc_name = r["name"]
