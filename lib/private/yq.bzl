@@ -4,7 +4,7 @@ load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 _yq_attrs = dict({
     "srcs": attr.label_list(
-        allow_files = [".yaml", ".json", ".xml"],
+        allow_files = True,
         mandatory = True,
         allow_empty = True,
     ),
