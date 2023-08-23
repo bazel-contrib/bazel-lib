@@ -34,7 +34,7 @@ def write_source_file(
 
             This is typically a file or directory output of another target. If `in_file` is a directory then entire directory contents are copied.
 
-        out_file: The file or directory to write to in the source tree. Must be within the same bazel package as the target.
+        out_file: The file or directory to write to in the source tree. Must be within the same containing Bazel package as this target.
 
         executable: Whether source tree file or files within the source tree directory written should be made executable.
 
