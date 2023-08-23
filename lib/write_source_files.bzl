@@ -102,7 +102,7 @@ def write_source_files(
         files: A dict where the keys are files or directories in the source tree to write to and the values are labels
             pointing to the desired content, typically file or directory outputs of other targets.
 
-            Source tree files and directories must be within the same bazel package as the target.
+            Destination files and directories nominated in the dict's keys must be within the same containing Bazel package as this target.
 
         executable: Whether source tree files written should be made executable.
 
