@@ -20,6 +20,10 @@ JQ_PLATFORMS = {
             "@platforms//cpu:aarch64",
         ],
     ),
+    # There is currently no linux-arm64 JQ toolchain, as there is no upstream binary.
+    # The alternative is to either build JQ manually from source, or use YQ which has the same functionality as JQ,
+    # and bazel-lib provides an linux-arm64 toolchain for.
+    # See https://github.com/aspect-build/bazel-lib/issues/268
     "linux_amd64": struct(
         release_platform = "linux64",
         compatible_with = [
