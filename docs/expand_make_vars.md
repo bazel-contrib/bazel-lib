@@ -94,6 +94,11 @@ expand_variables(<a href="#expand_variables-ctx">ctx</a>, <a href="#expand_varia
 
 Expand make variables and substitute like genrule does.
 
+Bazel [pre-defined variables](https://bazel.build/reference/be/make-variables#predefined_variables)
+are expanded however only `$@`, `$(@D)` and `$(RULEDIR)` of
+[pre-defined genrule variables](https://bazel.build/reference/be/make-variables#predefined_genrule_variables)
+are supported.
+
 This function is the same as ctx.expand_make_variables with the additional
 genrule-like substitutions of:
 

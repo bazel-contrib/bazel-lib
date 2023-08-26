@@ -1,0 +1,62 @@
+"tests for run_binary"
+
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:run_binary.bzl", "run_binary")
+
+sh_binary(
+    name = "expansions_sh",
+    srcs = [":expansions.sh"],
+)
+
+write_file(
+    name = "gen_src_1",
+    out = "src_1",
+    content = ["src1"],
+)
+
+# target-under-test
+run_binary(
+    name = "expansions",
+    srcs = [
+        ":gen_src_1",
+    ],
+    outs = ["expansions_out"],
+    args = [
+        "$@",
+        "$(@D)",
+        "$(rootpath :gen_src_1)",
+        "$(rootpaths :gen_src_1)",
+        "$(execpath :gen_src_1)",
+        "$(execpaths :gen_src_1)",
+        "$(rlocationpath :gen_src_1)",
+        "$(rlocationpaths :gen_src_1)",
+        "$(location :gen_src_1)",
+        "$(locations :gen_src_1)",
+        # Bazel built-in pre-defined variables
+        # https://bazel.build/reference/be/make-variables#predefined_variables
+        "$(COMPILATION_MODE)",
+        "$(BINDIR)",
+        "$(GENDIR)",
+        "$(TARGET_CPU)",
+        # Additional variables handled by aspect_bazel_lib expand_variables
+        # used by run_binary
+        # https://docs.aspect.build/rules/aspect_bazel_lib/docs/expand_expansions#expand_variables
+        "$(BUILD_FILE_PATH)",
+        "$(VERSION_FILE)",
+        "$(INFO_FILE)",
+        "$(TARGET)",
+        "$(WORKSPACE)",
+    ],
+    execution_requirements = {
+        "no-cache": "1",
+    },
+    progress_message = "doing some work to make %{output}",
+    tool = ":expansions_sh",
+)
+
+write_source_file(
+    name = "write_expansions_golden",
+    in_file = "expansions_out",
+    out_file = "expansions_golden",
+)
