@@ -9,7 +9,6 @@ build:local --disk_cache=~/.cache/bazel
 
 # Remote build execution
 build:rbe --extra_execution_platforms=@aspect_bazel_lib//platforms:x86_64_linux_remote
-build:rbe --genrule_strategy=remote
 build:rbe --host_platform=@aspect_bazel_lib//platforms:x86_64_linux_remote
 build:rbe --jobs=32
 
