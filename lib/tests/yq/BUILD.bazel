@@ -417,4 +417,3 @@ diff_test(
     file1 = "genrule_output.yaml",
     file2 = "a.yaml",
 )
-
