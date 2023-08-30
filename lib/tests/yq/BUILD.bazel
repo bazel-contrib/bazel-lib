@@ -1,12 +1,25 @@
 load("//lib/private:diff_test.bzl", "diff_test")
 load("//lib:yq.bzl", "yq")
 load("//lib:testing.bzl", "assert_contains")
+load("//lib:copy_file.bzl", "copy_file")
 
 exports_files(
     [
         "a.yaml",
     ],
     visibility = ["//visibility:public"],
+)
+
+copy_file(
+    name = "yaml_otherextension",
+    src = "a.yaml",
+    out = "a.whatever",
+)
+
+copy_file(
+    name = "json_otherextension",
+    src = "//lib/tests/jq:a_pretty.json",
+    out = "a.dealerschoice",
 )
 
 # Identity (dot) expression produces identical yaml
@@ -22,6 +35,18 @@ diff_test(
     file2 = ":case_dot_expression",
 )
 
+yq(
+    name = "case_dot_expression_otherextension",
+    srcs = ["a.whatever"],
+    expression = ".",
+)
+
+diff_test(
+    name = "case_dot_expression_otherextension_test",
+    file1 = "a.whatever",
+    file2 = ":case_dot_expression_otherextension",
+)
+
 # No expression same as dot expression
 yq(
     name = "case_no_expression",
@@ -31,6 +56,17 @@ yq(
 diff_test(
     name = "case_no_expression_test",
     file1 = "a.yaml",
+    file2 = ":case_no_expression",
+)
+
+yq(
+    name = "case_no_expression_otherextension",
+    srcs = ["a.whatever"],
+)
+
+diff_test(
+    name = "case_no_expression_otherextension_test",
+    file1 = "a.whatever",
     file2 = ":case_no_expression",
 )
 
@@ -44,6 +80,19 @@ yq(
 
 diff_test(
     name = "case_json_output_no_out_test",
+    file1 = "//lib/tests/jq:a_pretty.json",
+    file2 = "case_json_output_no_out.json",
+)
+
+yq(
+    name = "case_json_output_no_out_otherextension",
+    srcs = ["a.whatever"],
+    args = ["-o=json"],
+    expression = ".",
+)
+
+diff_test(
+    name = "case_json_output_no_out_otherextension_test",
     file1 = "//lib/tests/jq:a_pretty.json",
     file2 = "case_json_output_no_out.json",
 )
@@ -73,6 +122,19 @@ yq(
 
 diff_test(
     name = "case_convert_json_to_yaml_test",
+    file1 = "a.yaml",
+    file2 = ":case_convert_json_to_yaml",
+)
+
+yq(
+    name = "case_convert_json_to_yaml_otherextension",
+    srcs = ["a.dealerschoice"],
+    args = ["-P"],
+    expression = ".",
+)
+
+diff_test(
+    name = "case_convert_json_to_yaml_otherextension_test",
     file1 = "a.yaml",
     file2 = ":case_convert_json_to_yaml",
 )
