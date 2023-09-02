@@ -5,34 +5,35 @@ load(":repo_utils.bzl", "repo_utils")
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
 JQ_PLATFORMS = {
     "darwin_amd64": struct(
-        release_platform = "osx-amd64",
+        release_platform = "macos-amd64",
         compatible_with = [
             "@platforms//os:macos",
             "@platforms//cpu:x86_64",
         ],
     ),
     "darwin_arm64": struct(
-        # JQ only ships a universal binary; it should work on
-        # Apple Silicon (aarch64) as well.
-        release_platform = "osx-amd64",
+        release_platform = "macos-arm64",
         compatible_with = [
             "@platforms//os:macos",
             "@platforms//cpu:aarch64",
         ],
     ),
-    # There is currently no linux-arm64 JQ toolchain, as there is no upstream binary.
-    # The alternative is to either build JQ manually from source, or use YQ which has the same functionality as JQ,
-    # and bazel-lib provides an linux-arm64 toolchain for.
-    # See https://github.com/aspect-build/bazel-lib/issues/268
     "linux_amd64": struct(
-        release_platform = "linux64",
+        release_platform = "linux-amd64",
         compatible_with = [
             "@platforms//os:linux",
             "@platforms//cpu:x86_64",
         ],
     ),
+    "linux_arm64": struct(
+        release_platform = "linux-arm64",
+        compatible_with = [
+            "@platforms//os:linux",
+            "@platforms//cpu:aarch64",
+        ],
+    ),
     "windows_amd64": struct(
-        release_platform = "win64",
+        release_platform = "windows-amd64",
         compatible_with = [
             "@platforms//os:windows",
             "@platforms//cpu:x86_64",
@@ -40,22 +41,19 @@ JQ_PLATFORMS = {
     ),
 }
 
-DEFAULT_JQ_VERSION = "1.6"
+DEFAULT_JQ_VERSION = "1.7rc2"
 
 # https://github.com/stedolan/jq/releases
 #
 # The integrity hashes can be computed with
 # shasum -b -a 384 [downloaded file] | awk '{ print $1 }' | xxd -r -p | base64
 JQ_VERSIONS = {
-    "1.6": {
-        "linux64": "sha384-+K6tuwxrC/P4WBYRJ7YXcpeLS7GesbbnUhq4r9w7k0lCUC1KlhyXXf0sFQgOg0dI",
-        "osx-amd64": "sha384-ZLZljM9OyKCJbJbv7s1SRYSeMbVxfRc6kFNUlk9U/IL10Xm2xr4cxx3SZKv93QFO",
-        "win64": "sha384-O4qdyhb+0zU1XAuUKc1Mil5hlbSbCUcPQOGRtkJUqryv7X0IeKcMCIuZw97q9WGr",
-    },
-    "1.5": {
-        "linux64": "sha384-/Su0ihtb867nCQTzQlTHjve+KpwfzsPws5ILj6hl7k33Qw+FwnyxAVITDh/pOOYw",
-        "osx-amd64": "sha384-X3VGwLkqaLafis82SySkqFPGIiJMdWdzcHPWLJ0q87XF+MGVc/e2n65a1yMBW6Nf",
-        "win64": "sha384-NtaejeSFoKaXxxT1nPqxdOWRmIZAFF8wFTKjqs/4W0qYMYLohmO73AGKKR2XIg84",
+    "1.7rc2": {
+        "linux-arm64": "sha384-xK6gxQ07ry07Ge19GpBK2SDszt/h5YRm59eLKj7vluq0JRYgllpD7lHjLg/vqi9f",
+        "linux-amd64": "sha384-i6oB+bkF9q/293nkSRlPQbWVxKXsO+TXLeRSmM1cvvqz0Sxn4A9p2bu1HRcRzNkU",
+        "macos-amd64": "sha384-3UaIkqj7+x3v7II/QKbSZhtgPIULKNCAor0QxH4k91uZZAo3ofqanPAH/EC916VQ",
+        "macos-arm64": "sha384-SA82GSEbHEhTZT3g1C3aydtgERSV8do8xCIRQI6wM9uO5jJpT3GfS+u8eXED4oN6",
+        "windows-amd64": "sha384-2Yc6/edUU1Joy8Gyx0PV0so+oJg3Z/mNaBd14yMHH+ZMHRT4iTJokEM/3k8fygv7",
     },
 }
 
