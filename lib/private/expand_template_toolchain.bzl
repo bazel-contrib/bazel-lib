@@ -6,13 +6,13 @@
 # `tools/expand_template/mirror_release.sh`. To calculate for a specific release run
 # `tools/expand_template/mirror_release.sh <release_version>`
 
-EXPAND_TEMPLATE_VERSION = "1.31.3"
+EXPAND_TEMPLATE_VERSION = "1.34.4"
 EXPAND_TEMPLATE_INTEGRITY = {
-    "darwin_amd64": "sha256-2QaptqytZw9YQeV8cDA8MagRp998VTGs65btCdbVA0w=",
-    "darwin_arm64": "sha256-5W65OozVW+qSDRKqcXLjalh/hN/50EX8Z63V6MX/Wwc=",
-    "linux_amd64": "sha256-hc4+R/U1nq/3VXFerYimWyHFcxocVmt3gwGNvDL94sY=",
-    "linux_arm64": "sha256-DCm5ns8geCWGg1kpCMAE7RsoZt0OWp4vml7rpT0dYBs=",
-    "windows_amd64": "sha256-GDHRDOIptZAXHFmC1OOWDQl+3blwhi47RJBciLym4U8=",
+    "darwin_amd64": "sha256-dq7Awfc0SAzz2ViRnRMX4SpVw+09nxBZxTOVu+DrAzM=",
+    "darwin_arm64": "sha256-vgV43WN/dYqcXxCL0yDeLod/eDFA+dWe02LO/HJREVs=",
+    "linux_amd64": "sha256-xmmrCq/I79QDJYj6sObvCMnNC90Onwr/ewsQ+a8vEl8=",
+    "linux_arm64": "sha256-sHXkrjF0kuyJqdME/Pviy7EUA28sGEnEv976Rs+3tX0=",
+    "windows_amd64": "sha256-UgUkTo0gLN/dIkdZUdcRonNv2/Ul9LrdZ6Tv5c6SmPg=",
 }
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl

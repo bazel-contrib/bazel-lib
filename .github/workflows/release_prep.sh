@@ -33,7 +33,7 @@ bazel_dep(name = "aspect_bazel_lib", version = "${TAG:1}")
 
 ## Using WORKSPACE
 
-Paste this snippet into your `WORKSPACE` file:
+Paste this snippet into your \`WORKSPACE\` file:
 
 \`\`\`starlark
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
