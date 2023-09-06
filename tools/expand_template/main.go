@@ -68,9 +68,9 @@ func main() {
 		content = strings.ReplaceAll(content, key, value)
 	}
 
-	var mode os.FileMode = 0x666
+	var mode os.FileMode = 0666
 	if executable {
-		mode = 0o777
+		mode = 0777
 	}
 	err = os.WriteFile(args[1], []byte(content), mode)
 	if err != nil {
