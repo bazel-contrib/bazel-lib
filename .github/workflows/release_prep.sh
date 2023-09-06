@@ -5,8 +5,6 @@ set -o errexit -o nounset -o pipefail
 # Configuration for 'git archive'
 # see https://git-scm.com/docs/git-archive/2.40.0#ATTRIBUTES
 cat >.git/info/attributes <<EOF
-# Substitution for the VERSION placeholder at the top of this file
-MODULE.bazel export-subst
 # Omit folders that users don't need, making the distribution artifact smaller
 lib/tests export-ignore
 EOF
