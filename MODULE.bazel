@@ -1,11 +1,8 @@
 "aspect-build/bazel-lib"
 
-# replaced by export-subst during 'git archive'
-VERSION = "$Format:%(describe:tags=true)$"
-
 module(
     name = "aspect_bazel_lib",
-    version = VERSION.replace("v", "", 1) if not VERSION.startswith("$Format") else "0.0.0",
+    version = "0.0.0",
     compatibility_level = 1,
 )
 
