@@ -104,7 +104,7 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
             # This 'as' syntax results in $stamp being null in unstamped builds.
             "$ARGS.named.STAMP as $stamp",
             # Provide a default using the "alternative operator" in case $stamp is null.
-            ".version = ($stamp.BUILD_EMBED_LABEL // \"<unstamped>\")",
+            ".version = ($stamp[0].BUILD_EMBED_LABEL // \"<unstamped>\")",
         ]),
     )
     ```
