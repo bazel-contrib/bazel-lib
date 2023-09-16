@@ -38,7 +38,7 @@ jobs:
     # Prepares the 'bazelversion' axis of the test matrix
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: bazel_6
         run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
       - id: bazel_7
@@ -53,7 +53,7 @@ jobs:
     # Prepares the 'os' axis of the test matrix
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: linux
         run: echo "os=ubuntu-latest" >> $GITHUB_OUTPUT
       - id: macos
@@ -131,7 +131,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under ${{ github.workspace }} , so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Mount bazel caches
         uses: actions/cache@v3
