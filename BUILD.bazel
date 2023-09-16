@@ -103,3 +103,10 @@ assert_contains(
     actual = ".bazelversion",
     expected = str(host.bazel_version),
 )
+
+bzl_library(
+    name = "deps",
+    srcs = ["deps.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["@bazel_gazelle//:deps"],
+)

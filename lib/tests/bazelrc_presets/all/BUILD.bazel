@@ -1,3 +1,14 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(":write_aspect_bazelrc_presets.bzl", "write_aspect_bazelrc_presets")
 
 write_aspect_bazelrc_presets(name = "update_aspect_bazelrc_presets")
+
+bzl_library(
+    name = "write_aspect_bazelrc_presets",
+    srcs = ["write_aspect_bazelrc_presets.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@aspect_bazel_lib//lib:bazelrc_presets",
+        "@aspect_bazel_lib_host//:defs",
+    ],
+)
