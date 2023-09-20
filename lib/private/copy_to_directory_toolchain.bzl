@@ -6,14 +6,7 @@
 # `tools/copy_to_directory/mirror_release.sh`. To calculate for a specific release run
 # `tools/copy_to_directory/mirror_release.sh <release_version>`
 
-COPY_TO_DIRECTORY_VERSION = "1.31.0"
-COPY_TO_DIRECTORY_INTEGRITY = {
-    "darwin_amd64": "sha256-L/vJ/RR+PIyX2yDdlqbnPQP3/3bWo6nncA6RIqGRVVQ=",
-    "darwin_arm64": "sha256-7qHbUZXWFgiDOgInegAGEaPOu0up1gtMurXw/uHy9ys=",
-    "linux_amd64": "sha256-lDFF2xCzHdDSbNlCSgZ+LkXhvceOZE8ghu5aahARcsw=",
-    "linux_arm64": "sha256-eGOZbQl0G0Fn74pjPOWVUwZwe0HkhZqoVen9XWQCuAg=",
-    "windows_amd64": "sha256-ctNXsZzsFb01cGMvYBEOpbtmOMezsorYWocKl34kqtY=",
-}
+load("//tools:versions.bzl", "COPY_TO_DIRECTORY_INTEGRITY", "COPY_TO_DIRECTORY_VERSION")
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
 COPY_TO_DIRECTORY_PLATFORMS = {

@@ -244,11 +244,13 @@ bzl_library(
 bzl_library(
     name = "copy_directory_toolchain",
     srcs = ["//lib/private:copy_directory_toolchain.bzl"],
+    deps = ["//tools:versions"],
 )
 
 bzl_library(
     name = "copy_to_directory_toolchain",
     srcs = ["//lib/private:copy_to_directory_toolchain.bzl"],
+    deps = ["//tools:versions"],
 )
 
 bzl_library(
@@ -259,7 +261,10 @@ bzl_library(
 bzl_library(
     name = "expand_template_toolchain",
     srcs = ["//lib/private:expand_template_toolchain.bzl"],
-    deps = ["//lib:stamping"],
+    deps = [
+        "//lib:stamping",
+        "//tools:versions",
+    ],
 )
 
 bzl_library(

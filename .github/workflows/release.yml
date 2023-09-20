@@ -26,7 +26,14 @@ jobs:
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
-        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+        run: |
+          bazel  --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+          if ! bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //tools:release_versions_checkin_test --config=release ;  then
+            echo "Release is aborted to due to wrong version information."
+            echo "Please run the following command and retag with a new commit."
+            echo ""
+            echo "bazel run //tools:release_versions_checkin --config=release --action_env=VERSION_OVERRIDE=${{ env.GITHUB_REF_NAME }}"
+          fi
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then

@@ -1,9 +1,59 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(":release.bzl", "multi_platform_go_binaries", "release")
+load(":source_toolchain.bzl", "source_toolchain")
+
+# buildifier: disable=bzl-visibility
+load("//lib/private:expand_template_toolchain.bzl", "expand_template_toolchain")
+
+# buildifier: disable=bzl-visibility
+load("//lib/private:copy_to_directory_toolchain.bzl", "copy_to_directory_toolchain")
+
+# buildifier: disable=bzl-visibility
+load("//lib/private:copy_directory_toolchain.bzl", "copy_directory_toolchain")
 
 exports_files([
     "create_release.sh",
+    "create_version.sh",
 ])
+
+bzl_library(
+    name = "versions",
+    srcs = [":versions.bzl"],
+    visibility = ["//lib/private/docs:__pkg__"],
+)
+
+bool_flag(
+    name = "use_source_toolchains",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "prefer_source_toolchains",
+    flag_values = {":use_source_toolchains": "1"},
+    visibility = ["//visibility:public"],
+)
+
+source_toolchain(
+    name = "expand_template_toolchain",
+    binary = "//tools/expand_template",
+    toolchain_rule = expand_template_toolchain,
+    toolchain_type = "@aspect_bazel_lib//lib:expand_template_toolchain_type",
+)
+
+source_toolchain(
+    name = "copy_to_directory_toolchain",
+    binary = "//tools/copy_to_directory",
+    toolchain_rule = copy_to_directory_toolchain,
+    toolchain_type = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
+)
+
+source_toolchain(
+    name = "copy_directory_toolchain",
+    binary = "//tools/copy_directory",
+    toolchain_rule = copy_directory_toolchain,
+    toolchain_type = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
+)
 
 multi_platform_go_binaries(
     name = "copy_to_directory",

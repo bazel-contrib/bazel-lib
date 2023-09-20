@@ -6,14 +6,7 @@
 # `tools/expand_template/mirror_release.sh`. To calculate for a specific release run
 # `tools/expand_template/mirror_release.sh <release_version>`
 
-EXPAND_TEMPLATE_VERSION = "1.34.4"
-EXPAND_TEMPLATE_INTEGRITY = {
-    "darwin_amd64": "sha256-dq7Awfc0SAzz2ViRnRMX4SpVw+09nxBZxTOVu+DrAzM=",
-    "darwin_arm64": "sha256-vgV43WN/dYqcXxCL0yDeLod/eDFA+dWe02LO/HJREVs=",
-    "linux_amd64": "sha256-xmmrCq/I79QDJYj6sObvCMnNC90Onwr/ewsQ+a8vEl8=",
-    "linux_arm64": "sha256-sHXkrjF0kuyJqdME/Pviy7EUA28sGEnEv976Rs+3tX0=",
-    "windows_amd64": "sha256-UgUkTo0gLN/dIkdZUdcRonNv2/Ul9LrdZ6Tv5c6SmPg=",
-}
+load("//tools:versions.bzl", "EXPAND_TEMPLATE_INTEGRITY", "EXPAND_TEMPLATE_VERSION")
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
 EXPAND_TEMPLATE_PLATFORMS = {
