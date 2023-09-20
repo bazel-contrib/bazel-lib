@@ -57,14 +57,7 @@ def _jq_impl(ctx):
         )
         inputs.append(stamp_json)
 
-        # jq says of --argfile:
-        # > Do not use. Use --slurpfile instead.
-        # > (This option is like --slurpfile, but when the file has just one text,
-        # > then that is used, else an array of texts is used as in --slurpfile.)
-        # However there's no indication that it's deprecated. Maybe it's a style convention.
-        # For our purposes, "$STAMP.BUILD_TIMESTAMP" looks a lot more sensible in a BUILD file
-        # than "$STAMP[0].BUILD_TIMESTAMP".
-        args = args + ["--argfile", "STAMP", stamp_json.path]
+        args = args + ["--slurpfile", "STAMP", stamp_json.path]
 
     cmd = "{jq} {args} {filter} {sources} > {out}".format(
         jq = jq_bin.path,

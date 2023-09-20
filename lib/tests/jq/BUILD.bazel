@@ -105,8 +105,8 @@ diff_test(
             # Don't directly reference $STAMP as it's only set when stamping
             "$ARGS.named.STAMP as $stamp",
             # Provide a default using the "alternative operator"
-            ".foo = ($stamp.BUILD_EMBED_LABEL // \"<unstamped>\")",
-            ".value = ($stamp.BUILD_TIMESTAMP // 1 | tonumber)",
+            ".foo = ($stamp[0].BUILD_EMBED_LABEL // \"<unstamped>\")",
+            ".value = ($stamp[0].BUILD_TIMESTAMP // 1 | tonumber)",
         ]),
         stamp = stamp,
     )
