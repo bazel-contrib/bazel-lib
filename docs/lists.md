@@ -13,7 +13,7 @@ every(<a href="#every-f">f</a>, <a href="#every-arr">arr</a>)
 Check if every item of `arr` passes function `f`.
 
 Example:
-  every(lambda i: i.endswith(".js"), ["app.js", "lib.js"]) // True
+  `every(lambda i: i.endswith(".js"), ["app.js", "lib.js"]) // True`
 
 
 **PARAMETERS**
@@ -21,8 +21,8 @@ Example:
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="every-f"></a>f |  function to execute on every item,   |  none |
-| <a id="every-arr"></a>arr |  list to iterate over,   |  none |
+| <a id="every-f"></a>f |  Function to execute on every item   |  none |
+| <a id="every-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 
@@ -40,7 +40,7 @@ filter(<a href="#filter-f">f</a>, <a href="#filter-arr">arr</a>)
 Filter a list `arr` by applying a function `f` to each item.
 
 Example:
-  filter(lambda i: i.endswith(".js"), ["app.ts", "app.js", "lib.ts", "lib.js"]) // ["app.js", "lib.js"]
+  `filter(lambda i: i.endswith(".js"), ["app.ts", "app.js", "lib.ts", "lib.js"]) // ["app.js", "lib.js"]`
 
 
 **PARAMETERS**
@@ -48,8 +48,8 @@ Example:
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="filter-f"></a>f |  function to execute on every item,   |  none |
-| <a id="filter-arr"></a>arr |  list to iterate over,   |  none |
+| <a id="filter-f"></a>f |  Function to execute on every item   |  none |
+| <a id="filter-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 
@@ -76,8 +76,8 @@ In this case `(-1, None)` is returned.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="find-f"></a>f |  function to execute on every item,   |  none |
-| <a id="find-arr"></a>arr |  list to iterate over,   |  none |
+| <a id="find-f"></a>f |  Function to execute on every item   |  none |
+| <a id="find-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 
@@ -92,10 +92,10 @@ Tuple (index, item)
 map(<a href="#map-f">f</a>, <a href="#map-arr">arr</a>)
 </pre>
 
-Apply a function `f` with each item of `arr` and return a list with all items where said funtion returns truthy.
+Apply a function `f` with each item of `arr` and return a new list.
 
 Example:
-  map(lambda i: i*2, [1, 2, 3]) // [2, 4, 6]
+  `map(lambda i: i*2, [1, 2, 3]) // [2, 4, 6]`
 
 
 **PARAMETERS**
@@ -103,8 +103,8 @@ Example:
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="map-f"></a>f |  function to execute on every item.   |  none |
-| <a id="map-arr"></a>arr |  list to iterate over.   |  none |
+| <a id="map-f"></a>f |  Function to execute on every item   |  none |
+| <a id="map-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 
@@ -126,8 +126,8 @@ Check if exactly one item in list `arr` passes the given function `f`.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="once-f"></a>f |  function to execute on every item,   |  none |
-| <a id="once-arr"></a>arr |  list to iterate over,   |  none |
+| <a id="once-f"></a>f |  Function to execute on every item   |  none |
+| <a id="once-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 
@@ -153,8 +153,8 @@ If no item has passed `f`, the function will _fail_.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="pick-f"></a>f |  function to execute on every item,   |  none |
-| <a id="pick-arr"></a>arr |  list to iterate over,   |  none |
+| <a id="pick-f"></a>f |  Function to execute on every item   |  none |
+| <a id="pick-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 
@@ -172,7 +172,7 @@ some(<a href="#some-f">f</a>, <a href="#some-arr">arr</a>)
 Check if at least one item of `arr` passes function `f`.
 
 Example:
-  some(lambda i: i.endswith(".js"), ["app.js", "lib.ts"]) // True
+  `some(lambda i: i.endswith(".js"), ["app.js", "lib.ts"]) // True`
 
 
 **PARAMETERS**
@@ -180,8 +180,8 @@ Example:
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="some-f"></a>f |  function to execute on every item,   |  none |
-| <a id="some-arr"></a>arr |  list to iterate over,   |  none |
+| <a id="some-f"></a>f |  Function to execute on every item   |  none |
+| <a id="some-arr"></a>arr |  List to iterate over   |  none |
 
 **RETURNS**
 

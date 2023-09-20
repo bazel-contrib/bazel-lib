@@ -4,11 +4,11 @@ def every(f, arr):
     """Check if every item of `arr` passes function `f`.
 
     Example:
-      every(lambda i: i.endswith(".js"), ["app.js", "lib.js"]) // True
+      `every(lambda i: i.endswith(".js"), ["app.js", "lib.js"]) // True`
 
     Args:
-      f: function to execute on every item,
-      arr: list to iterate over,
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       True or False
@@ -19,11 +19,11 @@ def filter(f, arr):
     """Filter a list `arr` by applying a function `f` to each item.
 
     Example:
-      filter(lambda i: i.endswith(".js"), ["app.ts", "app.js", "lib.ts", "lib.js"]) // ["app.js", "lib.js"]
+      `filter(lambda i: i.endswith(".js"), ["app.ts", "app.js", "lib.ts", "lib.js"]) // ["app.js", "lib.js"]`
 
     Args:
-      f: function to execute on every item,
-      arr: list to iterate over,
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       A new list containing items that passed the filter function.
@@ -42,8 +42,8 @@ def find(f, arr):
     In this case `(-1, None)` is returned.
 
     Args:
-      f: function to execute on every item,
-      arr: list to iterate over,
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       Tuple (index, item)
@@ -56,14 +56,14 @@ def find(f, arr):
     return (-1, None)
 
 def map(f, arr):
-    """Apply a function `f` with each item of `arr` and return a list with all items where said funtion returns truthy.
+    """Apply a function `f` with each item of `arr` and return a new list.
 
     Example:
-      map(lambda i: i*2, [1, 2, 3]) // [2, 4, 6]
+      `map(lambda i: i*2, [1, 2, 3]) // [2, 4, 6]`
 
     Args:
-      f: function to execute on every item.
-      arr: list to iterate over.
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       A new list with all mapped items.
@@ -74,8 +74,8 @@ def once(f, arr):
     """Check if exactly one item in list `arr` passes the given function `f`.
 
     Args:
-      f: function to execute on every item,
-      arr: list to iterate over,
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       True or False
@@ -89,8 +89,8 @@ def pick(f, arr):
     If no item has passed `f`, the function will _fail_.
 
     Args:
-      f: function to execute on every item,
-      arr: list to iterate over,
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       item
@@ -104,13 +104,16 @@ def some(f, arr):
     """Check if at least one item of `arr` passes function `f`.
 
     Example:
-      some(lambda i: i.endswith(".js"), ["app.js", "lib.ts"]) // True
+      `some(lambda i: i.endswith(".js"), ["app.js", "lib.ts"]) // True`
 
     Args:
-      f: function to execute on every item,
-      arr: list to iterate over,
+      f: Function to execute on every item
+      arr: List to iterate over
 
     Returns:
       True or False
     """
-    return len(filter(f, arr)) > 0
+    for a in arr:
+        if f(a):
+            return True
+    return False
