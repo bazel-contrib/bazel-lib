@@ -58,3 +58,19 @@ assert_contains(
     actual = ":a_tmpl_stamp",
     expected = "WORKSPACE:",
 )
+
+expand_template(
+    name = "inline_template",
+    out = "inline.txt",
+    substitutions = {"line2": "line3"},
+    template = [
+        "line1",
+        "line2",
+    ],
+)
+
+assert_contains(
+    name = "inline_template_test",
+    actual = ":inline.txt",
+    expected = "line3",
+)
