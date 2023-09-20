@@ -71,6 +71,7 @@ def _diff_test_impl(ctx):
             "{fail_msg}": ctx.attr.failure_message,
             "{file1}": file1_path,
             "{file2}": file2_path,
+            "{build_file_path}": ctx.build_file_path,
         },
         is_executable = True,
     )

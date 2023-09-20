@@ -43,8 +43,6 @@ diff_test(
     name = "copy_directory_test",
     file1 = "d",
     file2 = "copy_directory_case",
-    # Source directories are not support on remote execution.
-    tags = ["no-remote-exec"],
 )
 
 # Validate that copy_to_directory works and resolves its toolchain
@@ -59,8 +57,6 @@ diff_test(
     name = "copy_to_directory_test",
     file1 = "d",
     file2 = "copy_to_directory_case",
-    # Source directories are not support on remote execution.
-    tags = ["no-remote-exec"],
 )
 
 # Validate that expand_template works and resolves its toolchain
