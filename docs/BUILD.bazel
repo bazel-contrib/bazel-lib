@@ -54,6 +54,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "lists",
+    bzl_library_target = "//lib:lists",
+)
+
+stardoc_with_diff_test(
     name = "utils",
     bzl_library_target = "//lib:utils",
 )

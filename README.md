@@ -55,6 +55,7 @@ For example to use commit `abc123`:
 - [expand_make_vars](docs/expand_make_vars.md) Perform make variable and location substitions in strings and templates.
 - [paths](docs/paths.md) Useful path resolution methods.
 - [transitions](docs/transitions.md) Transition sources to a provided platform.
+- [lists](docs/lists.md) Functional-style helpers for working with list data structures.
 - [utils](docs/utils.md) Various utils for labels and globs.
 - [params_file](docs/params_file.md) Generate encoded params file from a list of arguments.
 - [repo_utils](docs/repo_utils.md) Useful methods for repository rule implementations.

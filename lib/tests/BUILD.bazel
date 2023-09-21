@@ -10,6 +10,7 @@ load(":paths_test.bzl", "paths_test_suite")
 load(":glob_match_test.bzl", "glob_match_test_suite")
 load(":base64_tests.bzl", "base64_test_suite")
 load(":strings_tests.bzl", "strings_test_suite")
+load(":lists_test.bzl", "lists_test_suite")
 
 config_setting(
     name = "experimental_allow_unresolved_symlinks",
@@ -28,6 +29,8 @@ glob_match_test_suite()
 base64_test_suite()
 
 strings_test_suite()
+
+lists_test_suite()
 
 write_file(
     name = "gen_template",
