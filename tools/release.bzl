@@ -3,6 +3,9 @@
 
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
 load(":hashes.bzl", "hashes")
+load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib:expand_template.bzl", "expand_template")
+load("//lib:utils.bzl", "to_label")
 
 PLATFORMS = [
     struct(os = "darwin", arch = "amd64", ext = "", gc_linkopts = ["-s", "-w"]),
@@ -65,6 +68,43 @@ def release(name, targets, **kwargs):
         targets: a list of filegroups passed to the artifact copier.
         **kwargs: extra arguments.
     """
+
+    expand_template(
+        name = "{}_versions_stamped".format(name),
+        out = "create_versions_stamped.sh",
+        is_executable = True,
+        substitutions = {
+            "{{VERSION}}": "{{STABLE_BUILD_SCM_TAG}}",
+            "{{HAS_LOCAL_CHANGES}}": "{{STABLE_BUILD_SCM_LOCAL_CHANGES}}",
+        },
+        template = "//tools:create_versions.sh",
+        stamp = 1,
+        **kwargs
+    )
+
+    native.genrule(
+        name = "{}_versions".format(name),
+        srcs = targets,
+        outs = ["versions_generated.bzl"],
+        executable = True,
+        cmd = " && ".join([
+            """echo '"AUTO GENERATED. DO NOT EDIT"\n' >> $@""",
+        ] + [
+            "./$(location :create_versions_stamped.sh) {} $(locations {}) >> $@".format(to_label(target).name, target)
+            for target in targets
+        ]),
+        tools = [":create_versions_stamped.sh"],
+        **kwargs
+    )
+
+    write_source_files(
+        name = "{}_versions_checkin".format(name),
+        files = {
+            "versions.bzl": ":versions_generated.bzl",
+        },
+        **kwargs
+    )
+
     native.genrule(
         name = name,
         srcs = targets,

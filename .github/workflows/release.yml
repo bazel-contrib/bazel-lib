@@ -27,6 +27,11 @@ jobs:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
         run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+      - name: Check Versions
+        env:
+          # Bazelisk will download bazel to here
+          XDG_CACHE_HOME: ~/.cache/bazel-repo
+        run: ./scripts/check_versions.sh ${{ env.GITHUB_REF_NAME }}
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then

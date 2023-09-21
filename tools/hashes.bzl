@@ -8,7 +8,7 @@ Based on https://github.com/bazelbuild/examples/blob/main/rules/implicit_output/
 
 def _hash(ctx, algo, file):
     coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"]
-    out = ctx.actions.declare_file("{}.{}".format(file.path, algo))
+    out = ctx.actions.declare_file("{}.{}".format(file.basename, algo), sibling = file)
     ctx.actions.run_shell(
         outputs = [out],
         inputs = [file],
