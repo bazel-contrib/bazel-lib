@@ -20,6 +20,8 @@ function has_local_changes {
 echo "STABLE_BUILD_SCM_SHA $(git rev-parse HEAD)"
 echo "STABLE_BUILD_SCM_LOCAL_CHANGES $(has_local_changes)"
 
-if [ "$(git tag | wc -l)" -gt 0 ]; then
+if [ -n "${STABLE_BUILD_SCM_TAG_OVERRIDE:-}" ]; then
+    echo "STABLE_BUILD_SCM_TAG $STABLE_BUILD_SCM_TAG_OVERRIDE"
+elif [ "$(git tag | wc -l)" -gt 0 ]; then
     echo "STABLE_BUILD_SCM_TAG $(git describe --tags)"
 fi

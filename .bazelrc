@@ -24,8 +24,9 @@ build --@aspect_bazel_lib//tools:use_source_toolchains
 build --extra_toolchains=//tools:all
 
 # For releasing, use --workspace_status_command and stamp
-build:release --workspace_status_command "${PWD}/workspace_status.sh"
-build:release -c opt --stamp
+common:release --workspace_status_command "${PWD}/workspace_status.sh"
+common:release -c opt
+common:release --stamp
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This

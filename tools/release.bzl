@@ -68,35 +68,39 @@ def release(name, targets, **kwargs):
         targets: a list of filegroups passed to the artifact copier.
         **kwargs: extra arguments.
     """
+
+    expand_template(
+        name = "{}_versions_stamped".format(name),
+        out = "create_versions_stamped.sh",
+        is_executable = True,
+        substitutions = {
+            "{{VERSION}}": "{{STABLE_BUILD_SCM_TAG}}",
+            "{{HAS_LOCAL_CHANGES}}": "{{STABLE_BUILD_SCM_LOCAL_CHANGES}}",
+        },
+        template = "//tools:create_versions.sh",
+        stamp = 1,
+        **kwargs
+    )
+
     native.genrule(
         name = "{}_versions".format(name),
         srcs = targets,
         outs = ["versions_generated.bzl"],
         executable = True,
         cmd = " && ".join([
-            ''''echo '"AUTO GENERATED. DO NOT EDIT"\n' >> $@''',
+            """echo '"AUTO GENERATED. DO NOT EDIT"\n' >> $@""",
         ] + [
-            "./$(location //tools:create_versions.sh) {} $(locations {}) >> $@".format(to_label(target).name, target)
+            "./$(location :create_versions_stamped.sh) {} $(locations {}) >> $@".format(to_label(target).name, target)
             for target in targets
         ]),
-        tools = ["//tools:create_versions.sh"],
-        **kwargs
-    )
-
-    expand_template(
-        name = "{}_versions_stamped".format(name),
-        out = "versions_generated_stamped.bzl",
-        substitutions = {
-            "{{VERSION}}": "{{STABLE_BUILD_SCM_TAG}}",
-        },
-        template = ":versions_generated.bzl",
+        tools = [":create_versions_stamped.sh"],
         **kwargs
     )
 
     write_source_files(
         name = "{}_versions_checkin".format(name),
         files = {
-            "versions.bzl": ":versions_generated_stamped.bzl",
+            "versions.bzl": ":versions_generated.bzl",
         },
         **kwargs
     )

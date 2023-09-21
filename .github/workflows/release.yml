@@ -32,7 +32,7 @@ jobs:
             echo "Release is aborted to due to wrong version information."
             echo "Please run the following command and retag with a new commit."
             echo ""
-            echo "bazel run //tools:release_versions_checkin --config=release --action_env=VERSION_OVERRIDE=${{ env.GITHUB_REF_NAME }}"
+            echo "./scripts/generate_versions.sh ${{ env.GITHUB_REF_NAME }}"
           fi
       - name: Build release artifacts
         run: |
