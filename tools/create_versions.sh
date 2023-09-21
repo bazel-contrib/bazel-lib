@@ -38,5 +38,5 @@ EOF
 done
 
 
-echo "}"
+echo -n "}"
 echo ""
