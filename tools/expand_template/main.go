@@ -8,19 +8,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aspect-build/bazel-lib/tools/common"
 	"golang.org/x/exp/maps"
 )
 
 func main() {
 	args := os.Args[1:]
-
-	if len(args) == 1 {
-		if args[0] == "--version" || args[0] == "-v" {
-			fmt.Printf("expand_template %s\n", common.Version())
-			return
-		}
-	}
 
 	if len(args) != 6 {
 		fmt.Println("Usage: expand_template <template> <out> <substitutions_json> <volatile_status_file> <stable_status_file> <executable>")

@@ -373,13 +373,6 @@ func (w *walker) copyPaths(cfg *config) error {
 func main() {
 	args := os.Args[1:]
 
-	if len(args) == 1 {
-		if args[0] == "--version" || args[0] == "-v" {
-			fmt.Printf("copy_to_directory %s\n", common.Version())
-			return
-		}
-	}
-
 	if len(args) != 1 && len(args) != 2 {
 		fmt.Println("Usage: copy_to_directory config_file [workspace_name]")
 		os.Exit(1)
@@ -393,7 +386,7 @@ func main() {
 		wksp = &args[1]
 	}
 
- 	cfg, err := parseConfig(configFile, wksp)
+	cfg, err := parseConfig(configFile, wksp)
 	if err != nil {
 		log.Fatal(err)
 	}
