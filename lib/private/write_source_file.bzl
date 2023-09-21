@@ -372,4 +372,11 @@ def _is_file_missing(label):
     file_abs = "%s/%s" % (label.package, label.name)
     file_rel = file_abs[len(native.package_name()) + 1:]
     file_glob = native.glob([file_rel], exclude_directories = 0, allow_empty = True)
-    return len(file_glob) == 0
+
+    # Check for subpackages in case the expected output contains BUILD files,
+    # the above files glob will return empty.
+    subpackage_glob = []
+    if hasattr(native, "subpackages"):
+        subpackage_glob = native.subpackages(include = [file_rel], allow_empty = True)
+
+    return len(file_glob) == 0 and len(subpackage_glob) == 0

@@ -1,0 +1,33 @@
+load("//lib:write_source_files.bzl", "write_source_file")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+
+write_file(
+    name = "write_build",
+    out = "BUILD",
+    content = [
+        "# Marker for a package",
+        "",
+    ],
+)
+
+write_file(
+    name = "write_other",
+    out = "other.txt",
+    content = ["Another file"],
+)
+
+copy_to_directory(
+    name = "dir",
+    srcs = [
+        ":BUILD",
+        ":other.txt",
+    ],
+)
+
+# This will cause an analysis failure if "expected_out" is considered missing.
+write_source_file(
+    name = "build_files_in_outs",
+    in_file = ":dir",
+    out_file = ":expected_out",
+)
