@@ -78,6 +78,8 @@ bzl_library(
         "//lib/private/docs:expand_locations",
         "//lib/private/docs:expand_template",
         "//lib/private/docs:expand_variables",
+        "@bazel_skylib//lib:types",
+        "@bazel_skylib//rules:write_file",
     ],
 )
 
