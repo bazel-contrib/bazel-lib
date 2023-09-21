@@ -117,22 +117,12 @@ write_source_file(
     name = "e_dir_test",
     in_file = ":e_dir-desired",
     out_file = "e_dir",
-    # The diff_test that is contained within this macro takes `out_file` which is a source directory
-    # as an input but source directories are not supported on remote execution so we must tag that
-    # rule with "no-remote-exec".
-    # ERROR: cannot compare a directory "lib/tests/write_source_files/e_dir-desired" against a file "lib/tests/write_source_files/e_dir"
-    tags = ["no-remote-exec"],
 )
 
 write_source_file(
     name = "es_dir_test",
     in_file = ":es_dir-desired",
     out_file = "es_dir",
-    # The diff_test that is contained within this macro takes `out_file` which is a source directory
-    # as an input but source directories are not supported on remote execution so we must tag that
-    # rule with "no-remote-exec".
-    # ERROR: cannot compare a directory "lib/tests/write_source_files/es_dir-desired" against a file "lib/tests/write_source_files/es_dir"
-    tags = ["no-remote-exec"],
 )
 
 write_source_file_test(
@@ -160,10 +150,6 @@ write_source_files(
         "f2.js": ":f-desired",
         "g2.js": ":g-desired",
     },
-    # The diff_test that is contained within this macro takes output directories `es_dir` and
-    # `es2dir` which are source directories as inputs but source directories are not supported on
-    # remote execution so we must tag that rule with "no-remote-exec".
-    tags = ["no-remote-exec"],
 )
 
 genrule(

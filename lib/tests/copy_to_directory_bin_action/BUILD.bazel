@@ -53,8 +53,6 @@ diff_test(
     name = "test",
     file1 = ":pkg",
     file2 = ":expected_pkg",
-    # Source directories are not support on remote execution.
-    tags = ["no-remote-exec"],
 )
 
 bzl_library(
