@@ -26,14 +26,12 @@ jobs:
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
-        run: |
-          bazel  --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
-          if ! bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //tools:release_versions_checkin_test --config=release ;  then
-            echo "Release is aborted to due to wrong version information."
-            echo "Please run the following command and retag with a new commit."
-            echo ""
-            echo "./scripts/generate_versions.sh ${{ env.GITHUB_REF_NAME }}"
-          fi
+        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+      - name: Check Versions
+        env:
+          # Bazelisk will download bazel to here
+          XDG_CACHE_HOME: ~/.cache/bazel-repo
+        run: ./scripts/check_versions.sh ${{ env.GITHUB_REF_NAME }}
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then
