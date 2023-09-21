@@ -70,6 +70,33 @@ jobs:
       # Will look like ["ubuntu-latest", "macos-latest", "windows-latest"]
       os: ${{ toJSON(steps.*.outputs.os) }}
 
+  matrix-prep-folder:
+    # Prepares the 'os' axis of the test matrix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            versions:
+              - 'tools/versions.bzl'
+      - id: root
+        run: echo "folder=." >> $GITHUB_OUTPUT
+      # skip e2e if tools/versions.bzl file changed. should only happen when cutting releases.
+      - id: e2e/coreutils
+        if: steps.changes.outputs.versions == 'false'
+        run: echo "folder=e2e/coreutils" >> $GITHUB_OUTPUT
+      - id: e2e/copy_to_directory
+        if: steps.changes.outputs.versions == 'false'
+        run: echo "folder=e2e/copy_to_directory" >> $GITHUB_OUTPUT
+      - id: e2e/smoke
+        if: steps.changes.outputs.versions == 'false'
+        run: echo "folder=e2e/smoke" >> $GITHUB_OUTPUT
+    outputs:
+      # Will look like ["e2e/coreutils", "e2e/copy_to_directory"]
+      folder: ${{ toJSON(steps.*.outputs.folder) }}
+
   test:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
@@ -85,12 +112,8 @@ jobs:
         config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
+        folder: ${{ fromJSON(needs.matrix-prep-folder.outputs.folder) }}
         bzlmodEnabled: [true, false]
-        folder:
-          - "."
-          - "e2e/coreutils"
-          - "e2e/copy_to_directory"
-          - "e2e/smoke"
         exclude:
           # this e2e meant to work under bzlmod
           - bzlmodEnabled: false
