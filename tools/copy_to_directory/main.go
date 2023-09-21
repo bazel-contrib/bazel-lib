@@ -44,6 +44,7 @@ type config struct {
 	Verbose                     bool              `json:"verbose"`
 
 	ReplacePrefixesKeys []string
+	TargetWorkspace     *string
 }
 
 type copyMap map[string]fileInfo
@@ -52,7 +53,7 @@ type pathSet map[string]bool
 var copySet = copyMap{}
 var mkdirSet = pathSet{}
 
-func parseConfig(configPath string) (*config, error) {
+func parseConfig(configPath string, wkspName *string) (*config, error) {
 	f, err := os.Open(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open config file: %w", err)
@@ -70,6 +71,7 @@ func parseConfig(configPath string) (*config, error) {
 	}
 
 	cfg.ReplacePrefixesKeys = maps.Keys(cfg.ReplacePrefixes)
+	cfg.TargetWorkspace = wkspName
 
 	return &cfg, nil
 }
@@ -230,7 +232,9 @@ func (w *walker) copyPath(cfg *config, file fileInfo) error {
 	outputRoot := path.Dir(outputPath)
 
 	// apply include_external_repositories (if the file is from an external repository)
-	if file.Workspace != "" {
+	// automatically include files from the same workspace as this target, even if
+	// that is an external workspace with respect to `__main__`
+	if file.Workspace != "" && (cfg.TargetWorkspace == nil || file.Workspace != *cfg.TargetWorkspace) {
 		match, err := anyGlobsMatch(cfg.IncludeExternalRepositories, file.Workspace)
 		if err != nil {
 			return err
@@ -376,12 +380,20 @@ func main() {
 		}
 	}
 
-	if len(args) != 1 {
-		fmt.Println("Usage: copy_to_directory config_file")
+	if len(args) != 1 && len(args) != 2 {
+		fmt.Println("Usage: copy_to_directory config_file [workspace_name]")
 		os.Exit(1)
 	}
 
-	cfg, err := parseConfig(args[0])
+	configFile := args[0]
+
+	// Read workspace arg if present.
+	var wksp *string = nil
+	if len(args) >= 2 {
+		wksp = &args[1]
+	}
+
+ 	cfg, err := parseConfig(configFile, wksp)
 	if err != nil {
 		log.Fatal(err)
 	}
