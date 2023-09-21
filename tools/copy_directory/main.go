@@ -79,13 +79,6 @@ func (w *walker) copyDir(src string, dst string) error {
 func main() {
 	args := os.Args[1:]
 
-	if len(args) == 1 {
-		if args[0] == "--version" || args[0] == "-v" {
-			fmt.Printf("copy_directory %s\n", common.Version())
-			return
-		}
-	}
-
 	if len(args) < 2 {
 		fmt.Println("Usage: copy_directory src dst [--hardlink] [--verbose]")
 		os.Exit(1)
