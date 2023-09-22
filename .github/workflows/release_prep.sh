@@ -8,7 +8,7 @@ cat >.git/info/attributes <<EOF
 # Omit folders that users don't need, making the distribution artifact smaller
 lib/tests export-ignore
 
-# Substitution for the _VERSION_PRIVATE placeholder at the top of this file
+# Substitution for the _VERSION_PRIVATE placeholder
 tools/version.bzl export-subst
 EOF
 

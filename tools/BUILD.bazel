@@ -46,7 +46,11 @@ multi_platform_go_binaries(
 
 release(
     name = "release",
-    tags = ["manual"],
+    tags = [
+        "local",
+        "manual",
+        "no-remote",
+    ],
     targets = [
         ":copy_directory",
         ":copy_to_directory",
@@ -59,7 +63,5 @@ write_source_files(
     files = {
         "integrity.bzl": ":release_versions",
     },
-    tags = [
-        "no-remote",
-    ] + (["manual"] if not is_bazel_6_or_greater() else []),
+    tags = (["manual"] if not is_bazel_6_or_greater() else []),
 )
