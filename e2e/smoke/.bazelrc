@@ -1,0 +1,2 @@
+# for testing expand_template
+build --workspace_status_command="echo BUILD_SCM_VERSION 1.2.3"
