@@ -1,5 +1,5 @@
 module(
-    name = "bzlmod_write_source_files_external",
+    name = "write_source_files",
     version = "0.0.0",
     compatibility_level = 1,
 )

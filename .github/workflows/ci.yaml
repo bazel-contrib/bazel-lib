@@ -92,10 +92,6 @@ jobs:
           - "e2e/copy_to_directory"
           - "e2e/smoke"
         exclude:
-          # this e2e meant to work under bzlmod
-          - bzlmodEnabled: false
-            folder: bzlmod_write_source_files_external
-
           # Don't test Bazel 5.3 with bzlmod. (Unrecognized option: --enable_bzlmod)
           - bzlmodEnabled: true
             bazelversion: 5.4.1
