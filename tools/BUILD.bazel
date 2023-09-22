@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib:utils.bzl", "is_bazel_6_or_greater")
 load(":release.bzl", "multi_platform_go_binaries", "release")
 
 exports_files([
@@ -58,4 +59,5 @@ write_source_files(
     files = {
         "sri.bzl": ":release_versions",
     },
+    tags = ["manual"] if not is_bazel_6_or_greater() else [],
 )
