@@ -2,6 +2,7 @@
 with a path nested within that directory
 """
 
+load("//lib:lists.bzl", "map")
 load("//lib:utils.bzl", _to_label = "to_label")
 
 DirectoryPathInfo = provider(
@@ -116,8 +117,7 @@ def make_directory_paths(name, dict, **kwargs):
     pairs = []
     for directory, val in dict.items():
         if type(val) == "list":
-            for path in val:
-                pairs.append((directory, path))
+            pairs.extend(map(lambda path: (directory, path), val))
         elif type(val) == "string":
             pairs.append((directory, val))
         else:

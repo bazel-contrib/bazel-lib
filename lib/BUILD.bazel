@@ -113,7 +113,10 @@ bzl_library(
 bzl_library(
     name = "directory_path",
     srcs = ["directory_path.bzl"],
-    deps = ["//lib/private/docs:directory_path"],
+    deps = [
+        "//lib/private/docs:directory_path",
+        "//lib/private/docs:lists",
+    ],
 )
 
 bzl_library(
@@ -181,7 +184,10 @@ bzl_library(
 bzl_library(
     name = "yq",
     srcs = ["yq.bzl"],
-    deps = ["//lib/private/docs:yq"],
+    deps = [
+        "//lib/private/docs:lists",
+        "//lib/private/docs:yq",
+    ],
 )
 
 bzl_library(

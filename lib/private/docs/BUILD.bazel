@@ -164,7 +164,10 @@ bzl_library(
 bzl_library(
     name = "directory_path",
     srcs = ["//lib/private:directory_path.bzl"],
-    deps = ["//lib:utils"],
+    deps = [
+        "//lib:lists",
+        "//lib:utils",
+    ],
 )
 
 bzl_library(
@@ -179,6 +182,9 @@ bzl_library(
         "//lib:utils",
         "//lib/private:diff_test.bzl",
         "//lib/private:directory_path.bzl",
+    ],
+    deps = [
+        "//lib:lists",
     ],
 )
 
@@ -224,7 +230,10 @@ bzl_library(
 bzl_library(
     name = "yq",
     srcs = ["//lib/private:yq.bzl"],
-    deps = ["//lib:stamping"],
+    deps = [
+        "//lib:lists",
+        "//lib:stamping",
+    ],
 )
 
 bzl_library(
