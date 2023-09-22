@@ -6,7 +6,8 @@
 # `tools/expand_template/mirror_release.sh`. To calculate for a specific release run
 # `tools/expand_template/mirror_release.sh <release_version>`
 
-load("//tools:versions.bzl", "EXPAND_TEMPLATE_INTEGRITY", "EXPAND_TEMPLATE_VERSION")
+load("//tools:sri.bzl", "EXPAND_TEMPLATE_INTEGRITY")
+load("//tools:version.bzl", "VERSION")
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
 EXPAND_TEMPLATE_PLATFORMS = {
@@ -158,7 +159,7 @@ def _expand_template_platform_repo_impl(rctx):
 
     # https://github.com/aspect-build/bazel-lib/releases/download/v1.19.0/expand_template-linux_amd64
     url = "https://github.com/aspect-build/bazel-lib/releases/download/v{0}/expand_template-{1}{2}".format(
-        EXPAND_TEMPLATE_VERSION,
+        VERSION,
         release_platform,
         ".exe" if is_windows else "",
     )

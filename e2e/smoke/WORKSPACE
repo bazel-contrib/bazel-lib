@@ -10,3 +10,24 @@ aspect_bazel_lib_dependencies()
 register_jq_toolchains()
 
 register_yq_toolchains()
+
+############################################
+# rules_go is needed to consume tools from sources
+
+load("@aspect_bazel_lib//:internal_deps.bzl", "bazel_lib_internal_deps")
+
+bazel_lib_internal_deps()
+
+load("@aspect_bazel_lib//:deps.bzl", "go_dependencies")
+
+go_dependencies()
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.18.3")
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+
+gazelle_dependencies()

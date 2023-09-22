@@ -19,10 +19,6 @@ build --embed_label=v1.2.3
 # Mock versioning command to test the --stamp behavior
 build --workspace_status_command="echo BUILD_SCM_VERSION 1.2.3"
 
-# For testing always use toolchains from source
-build --@aspect_bazel_lib//tools:use_source_toolchains
-build --extra_toolchains=//tools:all
-
 # For releasing, use --workspace_status_command and stamp
 common:release --workspace_status_command "${PWD}/workspace_status.sh"
 common:release -c opt

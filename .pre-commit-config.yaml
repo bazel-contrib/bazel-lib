@@ -38,11 +38,3 @@ repos:
         exclude: &exclude_pattern "^(docs|e2e|lib/tests)/"
       - id: mixed-line-ending
       - id: trailing-whitespace
-
-  - repo: local
-    hooks:
-      - id: check-versions
-        name: Check Versions
-        entry: ./scripts/check_versions.sh
-        language: script
-        stages: [pre-push]

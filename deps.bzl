@@ -24,8 +24,8 @@ def go_dependencies():
         name = "org_golang_x_exp",
         build_file_proto_mode = "disable_global",
         importpath = "golang.org/x/exp",
-        sum = "h1:m9O6OTJ627iFnN2JIWfdqlZCzneRO6EEBsHXI25P8ws=",
-        version = "v0.0.0-20221230185412-738e83a70c30",
+        sum = "h1:MGwJjxBy0HJshjDNfLsYO8xppfqWlA5ZT9OhtUUhTNw=",
+        version = "v0.0.0-20230713183714-613f0c0eb8a1",
     )
     go_repository(
         name = "org_golang_x_mod",

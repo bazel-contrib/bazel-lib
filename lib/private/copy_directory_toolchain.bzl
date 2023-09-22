@@ -6,7 +6,8 @@
 # `tools/copy_directory/mirror_release.sh`. To calculate for a specific release run
 # `tools/copy_directory/mirror_release.sh <release_version>`
 
-load("//tools:versions.bzl", "COPY_DIRECTORY_INTEGRITY", "COPY_DIRECTORY_VERSION")
+load("//tools:sri.bzl", "COPY_DIRECTORY_INTEGRITY")
+load("//tools:version.bzl", "VERSION")
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
 COPY_DIRECTORY_PLATFORMS = {
@@ -158,7 +159,7 @@ def _copy_directory_platform_repo_impl(rctx):
 
     # https://github.com/aspect-build/bazel-lib/releases/download/v1.19.0/copy_directory-linux_amd64
     url = "https://github.com/aspect-build/bazel-lib/releases/download/v{0}/copy_directory-{1}{2}".format(
-        COPY_DIRECTORY_VERSION,
+        VERSION,
         release_platform,
         ".exe" if is_windows else "",
     )
