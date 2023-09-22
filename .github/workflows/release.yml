@@ -22,11 +22,12 @@ jobs:
             ~/.cache/bazel-repo
           key: bazel-cache-${{ hashFiles('**/BUILD.bazel', '**/*.bzl', 'WORKSPACE') }}
           restore-keys: bazel-cache-
-      - name: bazel test //...
+      - name: bazel test //... (release)
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
-        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+        # Warning: DO NOT drop --config=release as it ensures that tools/integrity.bzl is up-to-date with release config.
+        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //... --config=release
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then

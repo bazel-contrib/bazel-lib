@@ -6,7 +6,7 @@
 # `tools/copy_directory/mirror_release.sh`. To calculate for a specific release run
 # `tools/copy_directory/mirror_release.sh <release_version>`
 
-load("//tools:sri.bzl", "COPY_DIRECTORY_INTEGRITY")
+load("//tools:integrity.bzl", "COPY_DIRECTORY_INTEGRITY")
 load("//tools:version.bzl", "VERSION")
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl

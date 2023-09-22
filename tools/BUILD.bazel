@@ -10,7 +10,7 @@ exports_files([
 
 bzl_library(
     name = "sri",
-    srcs = [":sri.bzl"],
+    srcs = [":integrity.bzl"],
     visibility = ["//lib/private/docs:__pkg__"],
 )
 
@@ -57,7 +57,7 @@ release(
 write_source_files(
     name = "releases_versions_check_in",
     files = {
-        "sri.bzl": ":release_versions",
+        "integrity.bzl": ":release_versions",
     },
     tags = ["manual"] if not is_bazel_6_or_greater() else [],
 )

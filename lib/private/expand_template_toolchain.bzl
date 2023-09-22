@@ -6,7 +6,7 @@
 # `tools/expand_template/mirror_release.sh`. To calculate for a specific release run
 # `tools/expand_template/mirror_release.sh <release_version>`
 
-load("//tools:sri.bzl", "EXPAND_TEMPLATE_INTEGRITY")
+load("//tools:integrity.bzl", "EXPAND_TEMPLATE_INTEGRITY")
 load("//tools:version.bzl", "VERSION")
 
 # Platform names follow the platform naming convention in @aspect_bazel_lib//:lib/private/repo_utils.bzl
