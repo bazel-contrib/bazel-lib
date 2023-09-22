@@ -59,5 +59,7 @@ write_source_files(
     files = {
         "integrity.bzl": ":release_versions",
     },
-    tags = ["manual"] if not is_bazel_6_or_greater() else [],
+    tags = [
+        "no-remote",
+    ] + (["manual"] if not is_bazel_6_or_greater() else []),
 )
