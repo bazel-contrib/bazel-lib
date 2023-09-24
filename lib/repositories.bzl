@@ -7,7 +7,9 @@ load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_
 load("//lib/private:copy_directory_toolchain.bzl", "COPY_DIRECTORY_PLATFORMS", "copy_directory_platform_repo", "copy_directory_toolchains_repo")
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
 load("//lib/private:local_config_platform.bzl", "local_config_platform")
+load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
 load("//lib:utils.bzl", "is_bazel_6_or_greater", http_archive = "maybe_http_archive")
+load("//tools:version.bzl", "VERSION")
 
 # buildifier: disable=unnamed-macro
 def aspect_bazel_lib_dependencies(override_local_config_platform = False):
@@ -132,6 +134,18 @@ def register_copy_directory_toolchains(name = "copy_directory", register = True)
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
+    if VERSION == "0.0.0":
+        source_toolchains_repo(
+            name = "%s_toolchains" % name,
+            toolchain_type = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
+            toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:copy_directory_toolchain.bzl",
+            toolchain_rule = "copy_directory_toolchain",
+            binary = "@aspect_bazel_lib//tools/copy_directory",
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:toolchain" % name)
+        return
+
     for [platform, meta] in COPY_DIRECTORY_PLATFORMS.items():
         copy_directory_platform_repo(
             name = "%s_%s" % (name, platform),
@@ -153,6 +167,18 @@ def register_copy_to_directory_toolchains(name = "copy_to_directory", register =
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
+    if VERSION == "0.0.0":
+        source_toolchains_repo(
+            name = "%s_toolchains" % name,
+            toolchain_type = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
+            toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:copy_to_directory_toolchain.bzl",
+            toolchain_rule = "copy_to_directory_toolchain",
+            binary = "@aspect_bazel_lib//tools/copy_to_directory",
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:toolchain" % name)
+        return
+
     for [platform, meta] in COPY_TO_DIRECTORY_PLATFORMS.items():
         copy_to_directory_platform_repo(
             name = "%s_%s" % (name, platform),
@@ -174,6 +200,18 @@ def register_expand_template_toolchains(name = "expand_template", register = Tru
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
+    if VERSION == "0.0.0":
+        source_toolchains_repo(
+            name = "%s_toolchains" % name,
+            toolchain_type = "@aspect_bazel_lib//lib:expand_template_toolchain_type",
+            toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:expand_template_toolchain.bzl",
+            toolchain_rule = "expand_template_toolchain",
+            binary = "@aspect_bazel_lib//tools/expand_template",
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:toolchain" % name)
+        return
+
     for [platform, meta] in EXPAND_TEMPLATE_PLATFORMS.items():
         expand_template_platform_repo(
             name = "%s_%s" % (name, platform),

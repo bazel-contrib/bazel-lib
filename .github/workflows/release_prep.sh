@@ -7,6 +7,9 @@ set -o errexit -o nounset -o pipefail
 cat >.git/info/attributes <<EOF
 # Omit folders that users don't need, making the distribution artifact smaller
 lib/tests export-ignore
+
+# Substitution for the _VERSION_PRIVATE placeholder
+tools/version.bzl export-subst
 EOF
 
 # Set by GH actions, see

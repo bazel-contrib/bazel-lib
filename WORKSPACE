@@ -29,6 +29,9 @@ load("//lib:host_repo.bzl", "host_repo")
 
 host_repo(name = "aspect_bazel_lib_host")
 
+############################################
+# rules_go
+
 load("//:deps.bzl", "go_dependencies")
 
 # gazelle:repository_macro deps.bzl%go_dependencies
@@ -36,14 +39,16 @@ load("//:deps.bzl", "go_dependencies")
 # https://github.com/bazelbuild/bazel-gazelle/issues/1217#issuecomment-1152236735
 go_dependencies()
 
-############################################
-# Gazelle, for generating bzl_library targets
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 go_rules_dependencies()
 
 go_register_toolchains(version = "1.18.3")
+
+############################################
+# Gazelle, for generating bzl_library targets
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
 

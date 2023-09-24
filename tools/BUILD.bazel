@@ -1,16 +1,7 @@
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib:utils.bzl", "is_bazel_6_or_greater")
 load(":release.bzl", "multi_platform_go_binaries", "release")
-load(":source_toolchain.bzl", "source_toolchain")
-
-# buildifier: disable=bzl-visibility
-load("//lib/private:expand_template_toolchain.bzl", "expand_template_toolchain")
-
-# buildifier: disable=bzl-visibility
-load("//lib/private:copy_to_directory_toolchain.bzl", "copy_to_directory_toolchain")
-
-# buildifier: disable=bzl-visibility
-load("//lib/private:copy_directory_toolchain.bzl", "copy_directory_toolchain")
 
 exports_files([
     "create_release.sh",
@@ -18,41 +9,21 @@ exports_files([
 ])
 
 bzl_library(
-    name = "versions",
-    srcs = [":versions.bzl"],
+    name = "sri",
+    srcs = [":integrity.bzl"],
     visibility = ["//lib/private/docs:__pkg__"],
 )
 
-bool_flag(
-    name = "use_source_toolchains",
-    build_setting_default = False,
+bzl_library(
+    name = "version",
+    srcs = [":version.bzl"],
+    visibility = ["//lib/private/docs:__pkg__"],
 )
 
-config_setting(
-    name = "prefer_source_toolchains",
-    flag_values = {":use_source_toolchains": "1"},
+bzl_library(
+    name = "hashes",
+    srcs = ["hashes.bzl"],
     visibility = ["//visibility:public"],
-)
-
-source_toolchain(
-    name = "expand_template_toolchain",
-    binary = "//tools/expand_template",
-    toolchain_rule = expand_template_toolchain,
-    toolchain_type = "@aspect_bazel_lib//lib:expand_template_toolchain_type",
-)
-
-source_toolchain(
-    name = "copy_to_directory_toolchain",
-    binary = "//tools/copy_to_directory",
-    toolchain_rule = copy_to_directory_toolchain,
-    toolchain_type = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
-)
-
-source_toolchain(
-    name = "copy_directory_toolchain",
-    binary = "//tools/copy_directory",
-    toolchain_rule = copy_directory_toolchain,
-    toolchain_type = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
 )
 
 multi_platform_go_binaries(
@@ -75,7 +46,11 @@ multi_platform_go_binaries(
 
 release(
     name = "release",
-    tags = ["manual"],
+    tags = [
+        "local",
+        "manual",
+        "no-remote",
+    ],
     targets = [
         ":copy_directory",
         ":copy_to_directory",
@@ -83,8 +58,10 @@ release(
     ],
 )
 
-bzl_library(
-    name = "hashes",
-    srcs = ["hashes.bzl"],
-    visibility = ["//visibility:public"],
+write_source_files(
+    name = "releases_versions_check_in",
+    files = {
+        "integrity.bzl": ":release_versions",
+    },
+    tags = (["manual"] if not is_bazel_6_or_greater() else []),
 )

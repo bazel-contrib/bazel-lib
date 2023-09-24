@@ -6,8 +6,6 @@
 # but we don't want to run the other hooks on commit messages
 default_stages: [commit]
 
-default_install_hook_types: ["pre-commit", "pre-push"]
-
 repos:
   # Check formatting and lint for starlark code
   - repo: https://github.com/keith/pre-commit-buildifier
@@ -38,11 +36,3 @@ repos:
         exclude: &exclude_pattern "^(docs|e2e|lib/tests)/"
       - id: mixed-line-ending
       - id: trailing-whitespace
-
-  - repo: local
-    hooks:
-      - id: check-versions
-        name: Check Versions
-        entry: ./scripts/check_versions.sh
-        language: script
-        stages: [pre-push]

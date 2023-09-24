@@ -3,8 +3,6 @@
 
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
 load(":hashes.bzl", "hashes")
-load("//lib:write_source_files.bzl", "write_source_files")
-load("//lib:expand_template.bzl", "expand_template")
 load("//lib:utils.bzl", "to_label")
 
 PLATFORMS = [
@@ -15,6 +13,36 @@ PLATFORMS = [
     struct(os = "linux", arch = "arm64", ext = "", gc_linkopts = ["-s", "-w"]),
     struct(os = "windows", arch = "amd64", ext = ".exe", gc_linkopts = []),
 ]
+
+def _compilation_mode_transition_impl(settings, attr):
+    # buildifier: disable=unused-variable
+    _ignore = (settings, attr)
+    return {"//command_line_option:compilation_mode": "opt"}
+
+compilation_mode_transition = transition(
+    implementation = _compilation_mode_transition_impl,
+    inputs = [],
+    outputs = ["//command_line_option:compilation_mode"],
+)
+
+def _compilation_mode_transition_rule_impl(ctx):
+    runfiles = ctx.runfiles().merge_all([target[DefaultInfo].default_runfiles for target in ctx.attr.targets])
+
+    return DefaultInfo(
+        files = depset(ctx.files.targets),
+        runfiles = runfiles,
+    )
+
+compilation_mode_transition_rule = rule(
+    implementation = _compilation_mode_transition_rule_impl,
+    attrs = {
+        "targets": attr.label_list(),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
+    },
+    cfg = compilation_mode_transition,
+)
 
 def multi_platform_go_binaries(name, embed, prefix = "", **kwargs):
     """The multi_platform_go_binaries macro creates a go_binary for each platform.
@@ -51,9 +79,10 @@ def multi_platform_go_binaries(name, embed, prefix = "", **kwargs):
         )
         targets.extend([target_label, hashes_label])
 
-    native.filegroup(
+    # binaries should always be compiled in opt mode as it affects the hashes.
+    compilation_mode_transition_rule(
         name = name,
-        srcs = targets,
+        targets = targets,
         **kwargs
     )
 
@@ -69,39 +98,18 @@ def release(name, targets, **kwargs):
         **kwargs: extra arguments.
     """
 
-    expand_template(
-        name = "{}_versions_stamped".format(name),
-        out = "create_versions_stamped.sh",
-        is_executable = True,
-        substitutions = {
-            "{{VERSION}}": "{{STABLE_BUILD_SCM_TAG}}",
-            "{{HAS_LOCAL_CHANGES}}": "{{STABLE_BUILD_SCM_LOCAL_CHANGES}}",
-        },
-        template = "//tools:create_versions.sh",
-        stamp = 1,
-        **kwargs
-    )
-
     native.genrule(
         name = "{}_versions".format(name),
         srcs = targets,
-        outs = ["versions_generated.bzl"],
+        outs = ["{}_versions_generated.bzl".format(name)],
         executable = True,
         cmd = " && ".join([
             """echo '"AUTO GENERATED. DO NOT EDIT"\n' >> $@""",
         ] + [
-            "./$(location :create_versions_stamped.sh) {} $(locations {}) >> $@".format(to_label(target).name, target)
+            "./$(location :create_versions.sh) {} $(locations {}) >> $@".format(to_label(target).name, target)
             for target in targets
         ]),
-        tools = [":create_versions_stamped.sh"],
-        **kwargs
-    )
-
-    write_source_files(
-        name = "{}_versions_checkin".format(name),
-        files = {
-            "versions.bzl": ":versions_generated.bzl",
-        },
+        tools = [":create_versions.sh"],
         **kwargs
     )
 
