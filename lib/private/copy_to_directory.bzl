@@ -6,6 +6,7 @@ load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":glob_match.bzl", "glob_match", "is_glob")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
+load(":lists.bzl", "filter", "map")
 
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:
 
@@ -637,6 +638,24 @@ def _expand_src_packages_patterns(patterns, package):
             result.append(pattern)
     return result
 
+def _create_struct_from_file(f):
+    return struct(
+        file = f,
+        path = f.path,
+        root_path = f.root.path,
+        short_path = f.short_path,
+        workspace_path = paths.to_workspace_path(f),
+    )
+
+def _create_struct_from_target(t):
+    return struct(
+        file = t[DirectoryPathInfo].directory,
+        path = "/".join([t[DirectoryPathInfo].directory.path, t[DirectoryPathInfo].path]),
+        root_path = t[DirectoryPathInfo].directory.root.path,
+        short_path = "/".join([t[DirectoryPathInfo].directory.short_path, t[DirectoryPathInfo].path]),
+        workspace_path = "/".join([paths.to_workspace_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
+    )
+
 def copy_to_directory_bin_action(
         ctx,
         name,
@@ -758,24 +777,8 @@ def copy_to_directory_bin_action(
             fail(msg)
 
     files_and_targets = []
-    for f in files:
-        files_and_targets.append(struct(
-            file = f,
-            path = f.path,
-            root_path = f.root.path,
-            short_path = f.short_path,
-            workspace_path = paths.to_workspace_path(f),
-        ))
-    for t in targets:
-        if not DirectoryPathInfo in t:
-            continue
-        files_and_targets.append(struct(
-            file = t[DirectoryPathInfo].directory,
-            path = "/".join([t[DirectoryPathInfo].directory.path, t[DirectoryPathInfo].path]),
-            root_path = t[DirectoryPathInfo].directory.root.path,
-            short_path = "/".join([t[DirectoryPathInfo].directory.short_path, t[DirectoryPathInfo].path]),
-            workspace_path = "/".join([paths.to_workspace_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
-        ))
+    files_and_targets.extend(map(_create_struct_from_file, files))
+    files_and_targets.extend(map(_create_struct_from_target, filter(lambda t: DirectoryPathInfo in t, targets)))
 
     file_infos = []
     file_inputs = []
