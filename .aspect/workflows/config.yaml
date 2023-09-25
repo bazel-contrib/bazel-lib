@@ -7,6 +7,10 @@ workspaces:
   - e2e/smoke
   - e2e/coreutils
   - e2e/copy_to_directory
+bazel:
+  flags:
+    - --remote_download_minimal
+    - --nobuild_runfile_links
 tasks:
   branch_freshness:
   test:
