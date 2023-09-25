@@ -205,6 +205,7 @@ removed from sources files.
 - `off`: all files are copied
 - `on`: hardlinks are used for all files (not recommended)
     """,
+    "preserve_mtime": """If True, the last modified time of copied files is preserved.""",
     # verbose
     "verbose": """If true, prints out verbose logs to stdout""",
 }
@@ -251,6 +252,10 @@ _copy_to_directory_attr = {
         default = "auto",
         doc = _copy_to_directory_attr_doc["hardlink"],
     ),
+    "preserve_mtime": attr.bool(
+        default = False,
+        doc = _copy_to_directory_attr_doc["preserve_mtime"],
+    ),
     "verbose": attr.bool(
         doc = _copy_to_directory_attr_doc["verbose"],
     ),
@@ -285,6 +290,7 @@ def _copy_to_directory_impl(ctx):
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
         hardlink = ctx.attr.hardlink,
+        preserve_mtime = ctx.attr.preserve_mtime,
         verbose = ctx.attr.verbose,
     )
 
@@ -324,6 +330,7 @@ def copy_to_directory_bin_action(
         replace_prefixes = {},
         allow_overwrites = False,
         hardlink = "auto",
+        preserve_mtime = False,
         verbose = False):
     """Factory function to copy files to a directory using a tool binary.
 
@@ -381,6 +388,8 @@ def copy_to_directory_bin_action(
         hardlink: Controls when to use hardlinks to files instead of making copies.
 
             See copy_to_directory rule documentation for more details.
+
+        preserve_mtime: If true, preserve the modified time from the source.
 
         verbose: If true, prints out verbose logs to stdout
     """
@@ -472,6 +481,7 @@ def copy_to_directory_bin_action(
         "include_srcs_patterns": include_srcs_patterns,
         "replace_prefixes": replace_prefixes,
         "root_paths": root_paths,
+        "preserve_mtime": preserve_mtime,
         "verbose": verbose,
     }
 

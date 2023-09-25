@@ -12,7 +12,8 @@ def copy_directory_bin_action(
         dst,
         copy_directory_bin,
         hardlink = "auto",
-        verbose = False):
+        verbose = False,
+        preserve_mtime = False):
     """Factory function that creates an action to copy a directory from src to dst using a tool binary.
 
     The tool binary will typically be the `@aspect_bazel_lib//tools/copy_directory` `go_binary`
@@ -35,6 +36,8 @@ def copy_directory_bin_action(
             See copy_directory rule documentation for more details.
 
         verbose: If true, prints out verbose logs to stdout
+
+        preserve_mtime: If true, preserve the modified time from the source.
     """
     args = [
         src.path,
@@ -47,6 +50,9 @@ def copy_directory_bin_action(
         args.append("--hardlink")
     elif hardlink == "auto" and not src.is_source:
         args.append("--hardlink")
+
+    if preserve_mtime:
+        args.append("--preserve-mtime")
 
     ctx.actions.run(
         inputs = [src],
@@ -71,6 +77,7 @@ def _copy_directory_impl(ctx):
         copy_directory_bin = copy_directory_bin,
         hardlink = ctx.attr.hardlink,
         verbose = ctx.attr.verbose,
+        preserve_mtime = ctx.attr.preserve_mtime,
     )
 
     return [
@@ -93,6 +100,10 @@ _copy_directory = rule(
             default = "auto",
         ),
         "verbose": attr.bool(),
+        "preserve_mtime": attr.bool(
+            doc = "If True, the last modified time of copied files is preserved.",
+            default = False,
+        ),
         # use '_tool' attribute for development only; do not commit with this attribute active since it
         # propagates a dependency on rules_go which would be breaking for users
         # "_tool": attr.label(
