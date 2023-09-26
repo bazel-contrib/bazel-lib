@@ -263,15 +263,15 @@ _COMMON_RULE_ATTRIBUTES = [
 ]
 
 _COMMON_TEST_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
-        "args",
-        "env",
-        "env_inherit",
-        "size",
-        "timeout",
-        "flaky",
-        "shard_count",
-        "local",
-    ]
+    "args",
+    "env",
+    "env_inherit",
+    "size",
+    "timeout",
+    "flaky",
+    "shard_count",
+    "local",
+]
 
 _COMMON_BINARY_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
     "args",
