@@ -277,7 +277,7 @@ https://bazel.build/reference/be/common-definitions#common-attributes-binary
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  <code>{}</code> |
+| <a id="propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -303,7 +303,7 @@ https://bazel.build/reference/be/common-definitions#common-attributes
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="propagate_common_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  <code>{}</code> |
+| <a id="propagate_common_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -330,7 +330,7 @@ https://bazel.build/reference/be/common-definitions#common-attributes-tests
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="propagate_common_test_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  <code>{}</code> |
+| <a id="propagate_common_test_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
