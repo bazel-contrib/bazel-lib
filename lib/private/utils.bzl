@@ -262,6 +262,23 @@ _COMMON_RULE_ATTRIBUTES = [
     "visibility",
 ]
 
+_COMMON_TEST_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
+        "args",
+        "env",
+        "env_inherit",
+        "size",
+        "timeout",
+        "flaky",
+        "shard_count",
+        "local",
+    ]
+
+_COMMON_BINARY_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
+    "args",
+    "env",
+    "output_licenses",
+]
+
 def _propagate_common_rule_attributes(attrs = {}):
     """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all rules
 
@@ -295,21 +312,10 @@ def _propagate_common_test_rule_attributes(attrs = {}):
         The dict of parameters, containing only common test attributes
     """
 
-    COMMON_TEST_RULE_ATTRIBUTES = [
-        "args",
-        "env",
-        "env_inherit",
-        "size",
-        "timeout",
-        "flaky",
-        "shard_count",
-        "local",
-    ]
-
     return {
         k: attrs[k]
         for k in attrs
-        if k in _COMMON_RULE_ATTRIBUTES or k in COMMON_TEST_RULE_ATTRIBUTES
+        if k in _COMMON_TEST_RULE_ATTRIBUTES
     }
 
 def _propagate_common_binary_rule_attributes(attrs = {}):
@@ -326,16 +332,10 @@ def _propagate_common_binary_rule_attributes(attrs = {}):
         The dict of parameters, containing only common binary attributes
     """
 
-    COMMON_BINARY_RULE_ATTRIBUTES = [
-        "args",
-        "env",
-        "output_licenses",
-    ]
-
     return {
         k: attrs[k]
         for k in attrs
-        if k in _COMMON_RULE_ATTRIBUTES or k in COMMON_BINARY_RULE_ATTRIBUTES
+        if k in _COMMON_RULE_ATTRIBUTES or k in _COMMON_BINARY_RULE_ATTRIBUTES
     }
 
 utils = struct(
