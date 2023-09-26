@@ -257,6 +257,86 @@ path_to_workspace_root()
 Path to the workspace root
 
 
+<a id="propagate_common_binary_rule_attributes"></a>
+
+## propagate_common_binary_rule_attributes
+
+<pre>
+propagate_common_binary_rule_attributes(<a href="#propagate_common_binary_rule_attributes-attrs">attrs</a>)
+</pre>
+
+Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all binary rules
+
+These are listed in Bazel's documentation:
+https://bazel.build/reference/be/common-definitions#common-attributes
+https://bazel.build/reference/be/common-definitions#common-attributes-binary
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  <code>{}</code> |
+
+**RETURNS**
+
+The dict of parameters, containing only common binary attributes
+
+
+<a id="propagate_common_rule_attributes"></a>
+
+## propagate_common_rule_attributes
+
+<pre>
+propagate_common_rule_attributes(<a href="#propagate_common_rule_attributes-attrs">attrs</a>)
+</pre>
+
+Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all rules
+
+These are listed in Bazel's documentation:
+https://bazel.build/reference/be/common-definitions#common-attributes
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_common_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  <code>{}</code> |
+
+**RETURNS**
+
+The dict of parameters, containing only common attributes
+
+
+<a id="propagate_common_test_rule_attributes"></a>
+
+## propagate_common_test_rule_attributes
+
+<pre>
+propagate_common_test_rule_attributes(<a href="#propagate_common_test_rule_attributes-attrs">attrs</a>)
+</pre>
+
+Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all test rules
+
+These are listed in Bazel's documentation:
+https://bazel.build/reference/be/common-definitions#common-attributes
+https://bazel.build/reference/be/common-definitions#common-attributes-tests
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_common_test_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  <code>{}</code> |
+
+**RETURNS**
+
+The dict of parameters, containing only common test attributes
+
+
 <a id="propagate_well_known_tags"></a>
 
 ## propagate_well_known_tags
