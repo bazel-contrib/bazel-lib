@@ -247,6 +247,97 @@ def _maybe_http_archive(**kwargs):
     """
     maybe(_http_archive, **kwargs)
 
+_COMMON_RULE_ATTRIBUTES = [
+    "compatible_with",
+    "deprecation",
+    "distribs",
+    "exec_compatible_with",
+    "exec_properties",
+    "features",
+    "restricted_to",
+    "tags",
+    "target_compatible_with",
+    "testonly",
+    "toolchains",
+    "visibility",
+]
+
+_COMMON_TEST_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
+    "args",
+    "env",
+    "env_inherit",
+    "size",
+    "timeout",
+    "flaky",
+    "shard_count",
+    "local",
+]
+
+_COMMON_BINARY_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
+    "args",
+    "env",
+    "output_licenses",
+]
+
+def _propagate_common_rule_attributes(attrs):
+    """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all rules
+
+    These are listed in Bazel's documentation:
+    https://bazel.build/reference/be/common-definitions#common-attributes
+
+    Args:
+        attrs: Dict of parameters to filter
+
+    Returns:
+        The dict of parameters, containing only common attributes
+    """
+
+    return {
+        k: attrs[k]
+        for k in attrs
+        if k in _COMMON_RULE_ATTRIBUTES
+    }
+
+def _propagate_common_test_rule_attributes(attrs):
+    """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all test rules
+
+    These are listed in Bazel's documentation:
+    https://bazel.build/reference/be/common-definitions#common-attributes
+    https://bazel.build/reference/be/common-definitions#common-attributes-tests
+
+    Args:
+        attrs: Dict of parameters to filter
+
+    Returns:
+        The dict of parameters, containing only common test attributes
+    """
+
+    return {
+        k: attrs[k]
+        for k in attrs
+        if k in _COMMON_TEST_RULE_ATTRIBUTES
+    }
+
+def _propagate_common_binary_rule_attributes(attrs):
+    """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all binary rules
+
+    These are listed in Bazel's documentation:
+    https://bazel.build/reference/be/common-definitions#common-attributes
+    https://bazel.build/reference/be/common-definitions#common-attributes-binary
+
+    Args:
+        attrs: Dict of parameters to filter
+
+    Returns:
+        The dict of parameters, containing only common binary attributes
+    """
+
+    return {
+        k: attrs[k]
+        for k in attrs
+        if k in _COMMON_RULE_ATTRIBUTES or k in _COMMON_BINARY_RULE_ATTRIBUTES
+    }
+
 utils = struct(
     default_timeout = _default_timeout,
     file_exists = _file_exists,
@@ -257,6 +348,9 @@ utils = struct(
     maybe_http_archive = _maybe_http_archive,
     path_to_workspace_root = _path_to_workspace_root,
     propagate_well_known_tags = _propagate_well_known_tags,
+    propagate_common_rule_attributes = _propagate_common_rule_attributes,
+    propagate_common_test_rule_attributes = _propagate_common_test_rule_attributes,
+    propagate_common_binary_rule_attributes = _propagate_common_binary_rule_attributes,
     to_label = _to_label,
     consistent_label_str = _consistent_label_str,
 )

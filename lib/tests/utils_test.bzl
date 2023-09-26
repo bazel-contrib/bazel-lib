@@ -71,6 +71,63 @@ def _propagate_well_known_tags_test_impl(ctx):
 
     return unittest.end(env)
 
+def _propagate_common_rule_attributes_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, {
+        "features": ["dbg"],
+        "testonly": True,
+        "visibility": ["//visibility:private"],
+    }, utils.propagate_common_rule_attributes({
+        "features": ["dbg"],
+        "testonly": True,
+        "visibility": ["//visibility:private"],
+        "platform": ["//:myplatform"],
+        "env": {"PATH": "/usr/bin:/bin"},
+        "size": "small",
+    }))
+
+    return unittest.end(env)
+
+def _propagate_common_test_rule_attributes_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, {
+        "features": ["dbg"],
+        "testonly": True,
+        "visibility": ["//visibility:private"],
+        "env": {"PATH": "/usr/bin:/bin"},
+        "size": "small",
+    }, utils.propagate_common_test_rule_attributes({
+        "features": ["dbg"],
+        "testonly": True,
+        "visibility": ["//visibility:private"],
+        "platform": ["//:myplatform"],
+        "env": {"PATH": "/usr/bin:/bin"},
+        "size": "small",
+    }))
+
+    return unittest.end(env)
+
+def _propagate_common_binary_rule_attributes_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, {
+        "features": ["dbg"],
+        "testonly": True,
+        "visibility": ["//visibility:private"],
+        "env": {"PATH": "/usr/bin:/bin"},
+    }, utils.propagate_common_binary_rule_attributes({
+        "features": ["dbg"],
+        "testonly": True,
+        "visibility": ["//visibility:private"],
+        "platform": ["//:myplatform"],
+        "env": {"PATH": "/usr/bin:/bin"},
+        "size": "small",
+    }))
+
+    return unittest.end(env)
+
 def _consistent_label_str_impl(ctx):
     env = unittest.begin(ctx)
 
@@ -104,6 +161,9 @@ is_external_label_test = unittest.make(
 )
 
 propagate_well_known_tags_test = unittest.make(_propagate_well_known_tags_test_impl)
+propagate_common_rule_attributes_test = unittest.make(_propagate_common_rule_attributes_test_impl)
+propagate_common_test_rule_attributes_test = unittest.make(_propagate_common_test_rule_attributes_test_impl)
+propagate_common_binary_rule_attributes_test = unittest.make(_propagate_common_binary_rule_attributes_test_impl)
 consistent_label_str_test = unittest.make(_consistent_label_str_impl)
 
 # buildifier: disable=function-docstring
@@ -131,6 +191,21 @@ def utils_test_suite():
 
     propagate_well_known_tags_test(
         name = "propagate_well_known_tags_tests",
+        timeout = "short",
+    )
+
+    propagate_common_rule_attributes_test(
+        name = "propagate_common_rule_attribute_tests",
+        timeout = "short",
+    )
+
+    propagate_common_test_rule_attributes_test(
+        name = "propagate_common_test_rule_attribute_tests",
+        timeout = "short",
+    )
+
+    propagate_common_binary_rule_attributes_test(
+        name = "propagate_common_binary_rule_attribute_tests",
         timeout = "short",
     )
 
