@@ -3,6 +3,7 @@
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":diff_test.bzl", _diff_test = "diff_test")
 load(":fail_with_message_test.bzl", "fail_with_message_test")
+load(":lists.bzl", "map")
 load(":utils.bzl", "utils")
 
 WriteSourceFileInfo = provider(
@@ -177,9 +178,7 @@ def _write_source_file_sh(ctx, paths):
         ctx.label.name + "_update.sh",
     )
 
-    additional_update_scripts = []
-    for target in ctx.attr.additional_update_targets:
-        additional_update_scripts.append(target[WriteSourceFileInfo].executable)
+    additional_update_scripts = map(lambda t: t[WriteSourceFileInfo].executable, ctx.attr.additional_update_targets)
 
     contents = ["""#!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
