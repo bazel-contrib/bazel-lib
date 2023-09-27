@@ -26,8 +26,7 @@ jobs:
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
-        # Warning: DO NOT drop --config=release as it ensures that tools/integrity.bzl is up-to-date with release config.
-        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //... --config=release
+        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -35,7 +34,7 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/aspect/release
-          bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc run --config=release //tools:release -- /tmp/aspect/release
+          bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc run //tools:release -- /tmp/aspect/release
           if /tmp/aspect/release/copy_to_directory-linux_amd64 version | grep '(with local changes)'; then
             >&2 echo "ERROR: the release contained changes in the git state and the release will not be produced"
             exit 1
