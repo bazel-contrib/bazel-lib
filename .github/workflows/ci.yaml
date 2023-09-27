@@ -173,10 +173,6 @@ jobs:
         if: matrix.bzlmodEnabled
         run: echo "bzlmod_flag=--enable_bzlmod" >> $GITHUB_OUTPUT
 
-      - name: Make dev dependencies available (bzlmod)
-        if: matrix.bzlmodEnabled
-        run: sed -i${{ matrix.os == 'macos-latest' && ' ""' || '' }} 's/dev_dependency = True/dev_dependency = False/g' MODULE.bazel
-
       - name: Write rbe credentials
         if: ${{ matrix.config == 'rbe' }}
         working-directory: ${{ matrix.folder }}
