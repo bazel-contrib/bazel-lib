@@ -1,6 +1,6 @@
 """Implementation for yq rule"""
 
-load("//lib:lists.bzl", "map", "some")
+load("//lib:lists.bzl", "some")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 _yq_attrs = dict({
@@ -21,11 +21,8 @@ _yq_attrs = dict({
 def is_split_operation(args):
     return some(lambda arg: arg.startswith("-s") or arg.startswith("--split-exp"), args)
 
-def _map_to(value, arr):
-    return map(lambda _: value, arr)
-
 def _escape_path(path):
-    return "/".join(_map_to("..", path.split("/"))) + "/"
+    return "/".join(["../" * len(path.split("/"))])
 
 def _yq_impl(ctx):
     yq_bin = ctx.toolchains["@aspect_bazel_lib//lib:yq_toolchain_type"].yqinfo.bin
