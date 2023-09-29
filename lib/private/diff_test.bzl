@@ -21,8 +21,8 @@ The rule uses a Bash command (diff) on Linux/macOS/non-Windows, and a cmd.exe
 command (fc.exe) on Windows (no Bash is required).
 """
 
-load(":directory_path.bzl", "DirectoryPathInfo")
 load("//lib:utils.bzl", "default_timeout")
+load(":directory_path.bzl", "DirectoryPathInfo")
 
 def _runfiles_path(f):
     if f.root.path:

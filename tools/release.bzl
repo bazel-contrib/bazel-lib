@@ -2,8 +2,8 @@
 """
 
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
-load(":hashes.bzl", "hashes")
 load("//lib:utils.bzl", "to_label")
+load(":hashes.bzl", "hashes")
 
 PLATFORMS = [
     struct(os = "darwin", arch = "amd64", ext = "", gc_linkopts = ["-s", "-w"]),

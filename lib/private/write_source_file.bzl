@@ -1,7 +1,7 @@
 "write_source_file implementation"
 
-load(":directory_path.bzl", "DirectoryPathInfo")
 load(":diff_test.bzl", _diff_test = "diff_test")
+load(":directory_path.bzl", "DirectoryPathInfo")
 load(":fail_with_message_test.bzl", "fail_with_message_test")
 load(":utils.bzl", "utils")
 

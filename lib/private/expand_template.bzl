@@ -1,9 +1,9 @@
 "expand_template rule"
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 load(":expand_locations.bzl", _expand_locations = "expand_locations")
 load(":expand_variables.bzl", _expand_variables = "expand_variables")
-load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 def _expand_substitutions(ctx, output, substitutions):
     result = {}

@@ -1,13 +1,13 @@
 load("@aspect_bazel_lib_host//:defs.bzl", "host")
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
-load("//lib:write_source_files.bzl", "write_source_files")
-load("//lib:yq.bzl", "yq")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:testing.bzl", "assert_contains")
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib:yq.bzl", "yq")
 
 # gazelle:prefix github.com/aspect-build/bazel-lib
 

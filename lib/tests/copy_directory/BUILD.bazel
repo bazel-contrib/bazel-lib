@@ -1,8 +1,8 @@
 "Tests for copy_directory"
 
-load("//lib:diff_test.bzl", "diff_test")
 load("//lib:copy_directory.bzl", "copy_directory")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:diff_test.bzl", "diff_test")
 
 genrule(
     name = "a_file",

@@ -1,11 +1,11 @@
 "Helpers for making test assertions"
 
-load("//lib:params_file.bzl", "params_file")
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//lib:utils.bzl", "default_timeout")
 load("//lib:jq.bzl", "jq")
+load("//lib:params_file.bzl", "params_file")
+load("//lib:utils.bzl", "default_timeout")
 
 def assert_contains(name, actual, expected, size = None, timeout = None, **kwargs):
     """Generates a test target which fails if the file doesn't contain the string.

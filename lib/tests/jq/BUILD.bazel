@@ -1,6 +1,6 @@
-load("//lib/tests/jq:diff_test.bzl", "diff_test")
 load("//lib:jq.bzl", "jq")
 load("//lib:testing.bzl", "assert_contains")
+load("//lib/tests/jq:diff_test.bzl", "diff_test")
 
 exports_files([
     "a_pretty.json",

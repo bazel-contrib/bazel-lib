@@ -1,7 +1,7 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//lib:transitions.bzl", "platform_transition_binary", "platform_transition_filegroup")
-load("//lib:diff_test.bzl", "diff_test")
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("//lib:diff_test.bzl", "diff_test")
+load("//lib:transitions.bzl", "platform_transition_binary", "platform_transition_filegroup")
 
 platform(
     name = "armv7_linux",

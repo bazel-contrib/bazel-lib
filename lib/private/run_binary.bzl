@@ -15,9 +15,9 @@
 """run_binary implementation"""
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
-load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
 def _run_binary_impl(ctx):
     tool_as_list = [ctx.attr.tool]

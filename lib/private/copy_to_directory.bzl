@@ -2,9 +2,9 @@
 
 load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
-load(":paths.bzl", "paths")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":glob_match.bzl", "glob_match", "is_glob")
+load(":paths.bzl", "paths")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:

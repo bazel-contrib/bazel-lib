@@ -1,8 +1,8 @@
 """Tests for write_source_files"""
 # Inspired by https://github.com/cgrindel/bazel-starlib/blob/main/updatesrc/private/updatesrc_update_test.bzl
 
-load("//lib/private:write_source_file.bzl", _write_source_file = "write_source_file")
 load("//lib/private:directory_path.bzl", "DirectoryPathInfo")
+load("//lib/private:write_source_file.bzl", _write_source_file = "write_source_file")
 
 def _write_source_file_test_impl_sh(ctx, in_file_path, out_file_path):
     test = ctx.actions.declare_file(

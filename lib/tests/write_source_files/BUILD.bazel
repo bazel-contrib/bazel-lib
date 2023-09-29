@@ -1,11 +1,11 @@
-load("//lib/tests/write_source_files:write_source_file_test.bzl", "write_source_file_test")
-load("//lib/tests:generate_outputs.bzl", "generate_outputs")
-load("//lib:write_source_files.bzl", "write_source_files")
-load("//lib/private:write_source_file.bzl", "write_source_file")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:directory_path.bzl", "directory_path")
 load("//lib:output_files.bzl", "output_files")
 load("//lib:testing.bzl", "assert_outputs")
+load("//lib:write_source_files.bzl", "write_source_files")
+load("//lib/private:write_source_file.bzl", "write_source_file")
+load("//lib/tests:generate_outputs.bzl", "generate_outputs")
+load("//lib/tests/write_source_files:write_source_file_test.bzl", "write_source_file_test")
 
 genrule(
     name = "a-desired",
