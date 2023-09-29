@@ -20,7 +20,7 @@ setup: true
 orbs:
   continuation: circleci/continuation@1.0.0
   slack: circleci/slack@4.12.5
-  bazel: aspect-build/workflows@dev:5.8.0-rc9
+  bazel: aspect-build/workflows@dev:5.8.0-rc11
 
 workflows:
   bazel-setup:
