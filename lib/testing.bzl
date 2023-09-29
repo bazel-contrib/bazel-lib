@@ -193,3 +193,58 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
         timeout = "short",
         **kwargs
     )
+
+def assert_directory_contains(name, directory, expected, **kwargs):
+    """Assert that a directory contains at least the given file entries.
+
+    Args:
+        name: name of the resulting sh_test target
+        directory: Label of the directory artifact
+        expected: a (partial) file listing, either as a Label of a file containing it, or a list of strings
+        **kwargs: additional named arguments for the resulting sh_test
+    """
+
+    # -f $actual: use this file to contain one pattern per line
+    # -F: treat each pattern as a plain string, not a regex
+    # -x: match whole lines only
+    # -v: only print lines which don't match
+    grep = "grep -F -x -v -f $actual"
+
+    script_name = "_gen_assert_" + name
+    expected_name = "_expected_" + name
+
+    if types.is_list(expected):
+        write_file(
+            name = expected_name,
+            out = expected_name + ".mf",
+            content = expected,
+        )
+    else:
+        expected_name = expected
+
+    write_file(
+        name = script_name,
+        out = "assert_{}.sh".format(name),
+        content = [
+            "#!/usr/bin/env bash",
+            "actual=$(mktemp)",
+            "pushd $1 > /dev/null",
+            "find . -type l,f | cut -b 3- > $actual",
+            "popd > /dev/null",
+            "# Grep exits 1 if no matches, which is success for this test.",
+            "if {} $2; then".format(grep),
+            "  echo",
+            "  echo 'ERROR: above line(s) appeared in {} but are not present in the directory' $1".format(expected_name),
+            "  exit 1",
+            "fi",
+        ],
+    )
+
+    native.sh_test(
+        name = name,
+        srcs = [script_name],
+        args = ["$(rootpath %s)" % directory, "$(rootpath %s)" % expected_name],
+        data = [directory, expected_name],
+        timeout = "short",
+        **kwargs
+    )

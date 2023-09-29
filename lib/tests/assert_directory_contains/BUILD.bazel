@@ -1,0 +1,19 @@
+load("//lib:copy_directory.bzl", "copy_directory")
+load("//lib:testing.bzl", "assert_directory_contains")
+
+copy_directory(
+    name = "a",
+    src = "dir_a",
+    out = "a",
+)
+
+assert_directory_contains(
+    name = "check_a",
+    directory = ":a",
+    expected = [
+        "a",
+        "a2",
+        "b/b",
+        "b/b2",
+    ],
+)
