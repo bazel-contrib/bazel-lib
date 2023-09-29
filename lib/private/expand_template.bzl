@@ -5,21 +5,27 @@ load(":expand_locations.bzl", _expand_locations = "expand_locations")
 load(":expand_variables.bzl", _expand_variables = "expand_variables")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 
-def _expand_substitutions(ctx, substitutions):
+def _expand_substitutions(ctx, output, substitutions):
     result = {}
     for k, v in substitutions.items():
         result[k] = " ".join([
-            _expand_variables(ctx, e, outs = [ctx.outputs.out], attribute_name = "substitutions")
+            _expand_variables(ctx, e, outs = [output], attribute_name = "substitutions")
             for e in _expand_locations(ctx, v, ctx.attr.data).split(" ")
         ])
     return result
 
 def _expand_template_impl(ctx):
-    substitutions = _expand_substitutions(ctx, ctx.attr.substitutions)
+    output = ctx.outputs.out
+    if not output:
+        if not ctx.file.template or not ctx.file.template.is_source:
+            fail("Template must be a source file if out is not specified")
+        output = ctx.actions.declare_file(ctx.file.template.basename, sibling = ctx.file.template)
+
+    substitutions = _expand_substitutions(ctx, output, ctx.attr.substitutions)
     expand_template_info = ctx.toolchains["@aspect_bazel_lib//lib:expand_template_toolchain_type"].expand_template_info
     stamp = maybe_stamp(ctx)
     if stamp:
-        substitutions = dicts.add(substitutions, _expand_substitutions(ctx, ctx.attr.stamp_substitutions))
+        substitutions = dicts.add(substitutions, _expand_substitutions(ctx, output, ctx.attr.stamp_substitutions))
         substitutions_out = ctx.actions.declare_file("{}_substitutions.json".format(ctx.label.name))
         ctx.actions.write(
             output = substitutions_out,
@@ -35,7 +41,7 @@ def _expand_template_impl(ctx):
 
         args = ctx.actions.args()
         args.add(ctx.file.template)
-        args.add(ctx.outputs.out)
+        args.add(output)
         args.add(substitutions_out)
         args.add(stamp.volatile_status_file)
         args.add(stamp.stable_status_file)
@@ -43,19 +49,19 @@ def _expand_template_impl(ctx):
 
         ctx.actions.run(
             arguments = [args],
-            outputs = [ctx.outputs.out],
+            outputs = [output],
             inputs = inputs,
             executable = expand_template_info.bin,
         )
     else:
         ctx.actions.expand_template(
             template = ctx.file.template,
-            output = ctx.outputs.out,
+            output = output,
             substitutions = substitutions,
             is_executable = ctx.attr.is_executable,
         )
 
-    all_outs = [ctx.outputs.out]
+    all_outs = [output]
     runfiles = ctx.runfiles(files = all_outs)
     return [DefaultInfo(files = depset(all_outs), runfiles = runfiles)]
 
@@ -82,8 +88,14 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
             doc = "Whether to mark the output file as executable.",
         ),
         "out": attr.output(
-            doc = "Where to write the expanded file.",
-            mandatory = True,
+            doc = """Where to write the expanded file.
+
+            If unset, the template must be a source file and the output file
+            will be named the same as the template file and outputted to the same
+            workspace-relative path. In this case there will be no pre-declared
+            label for the output file. It can be referenced by the target label
+            instead. This pattern is similar to `copy_to_bin` but with substitutions on
+            the copy.""",
         ),
         "stamp_substitutions": attr.string_dict(
             doc = """Mapping of strings to substitutions.
