@@ -22,7 +22,7 @@ def is_split_operation(args):
     return some(lambda arg: arg.startswith("-s") or arg.startswith("--split-exp"), args)
 
 def _escape_path(path):
-    return "/".join(["../" * len(path.split("/"))])
+    return "../" * len(path.split("/"))
 
 def _yq_impl(ctx):
     yq_bin = ctx.toolchains["@aspect_bazel_lib//lib:yq_toolchain_type"].yqinfo.bin
