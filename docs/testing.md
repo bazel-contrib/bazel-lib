@@ -50,6 +50,27 @@ Depends on bash, as it creates an sh_test target.
 | <a id="assert_contains-kwargs"></a>kwargs |  additional named arguments for the resulting sh_test   |  none |
 
 
+<a id="assert_directory_contains"></a>
+
+## assert_directory_contains
+
+<pre>
+assert_directory_contains(<a href="#assert_directory_contains-name">name</a>, <a href="#assert_directory_contains-directory">directory</a>, <a href="#assert_directory_contains-expected">expected</a>, <a href="#assert_directory_contains-kwargs">kwargs</a>)
+</pre>
+
+Assert that a directory contains at least the given file entries.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="assert_directory_contains-name"></a>name |  name of the resulting sh_test target   |  none |
+| <a id="assert_directory_contains-directory"></a>directory |  Label of the directory artifact   |  none |
+| <a id="assert_directory_contains-expected"></a>expected |  a (partial) file listing, either as a Label of a file containing it, or a list of strings   |  none |
+| <a id="assert_directory_contains-kwargs"></a>kwargs |  additional named arguments for the resulting sh_test   |  none |
+
+
 <a id="assert_json_matches"></a>
 
 ## assert_json_matches
