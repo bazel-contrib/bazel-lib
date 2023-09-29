@@ -220,5 +220,5 @@ jobs:
         run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && "$0" || kill $PPID' \{\} \;
 
       - name: verify bcr patches
-        if: matrix.bzlmodEnabled
+        if: matrix.bzlmodEnabled && matrix.os == 'ubuntu-latest'
         run: patch --dry-run -p1 < .bcr/patches/*.patch
