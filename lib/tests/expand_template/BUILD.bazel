@@ -74,3 +74,19 @@ assert_contains(
     actual = ":inline.txt",
     expected = "line3",
 )
+
+# When `out` is not specified, the output file is the same name as the template
+# and does not have a predefined label. This allows for creating an output
+# file of the same name and location as the template that is then referenced
+# by the `expand_template` target name instead of the output file name
+expand_template(
+    name = "index_html_out",
+    substitutions = {"index.ts": "index.js"},
+    template = "index.html",
+)
+
+assert_contains(
+    name = "index_html_out_test",
+    actual = ":index_html_out",
+    expected = "index.js",
+)
