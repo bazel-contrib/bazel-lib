@@ -1,7 +1,7 @@
-load("//lib/private:diff_test.bzl", "diff_test")
-load("//lib:yq.bzl", "yq")
-load("//lib:testing.bzl", "assert_contains")
 load("//lib:copy_file.bzl", "copy_file")
+load("//lib:testing.bzl", "assert_contains")
+load("//lib:yq.bzl", "yq")
+load("//lib/private:diff_test.bzl", "diff_test")
 
 exports_files(
     [

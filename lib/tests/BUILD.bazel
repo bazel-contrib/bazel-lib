@@ -4,13 +4,13 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:expand_make_vars.bzl", "expand_template")
 load("//lib:testing.bzl", "assert_contains")
-load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
-load(":utils_test.bzl", "utils_test_suite")
-load(":paths_test.bzl", "paths_test_suite")
-load(":glob_match_test.bzl", "glob_match_test_suite")
 load(":base64_tests.bzl", "base64_test_suite")
-load(":strings_tests.bzl", "strings_test_suite")
+load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
+load(":glob_match_test.bzl", "glob_match_test_suite")
 load(":lists_test.bzl", "lists_test_suite")
+load(":paths_test.bzl", "paths_test_suite")
+load(":strings_tests.bzl", "strings_test_suite")
+load(":utils_test.bzl", "utils_test_suite")
 
 config_setting(
     name = "experimental_allow_unresolved_symlinks",

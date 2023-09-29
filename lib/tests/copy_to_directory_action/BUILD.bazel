@@ -1,7 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("//lib:diff_test.bzl", "diff_test")
-load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib:diff_test.bzl", "diff_test")
 load(":lib.bzl", "lib")
 load(":pkg.bzl", "pkg")
 
