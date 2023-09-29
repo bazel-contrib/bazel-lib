@@ -55,6 +55,10 @@ toolchain_type(
     name = "expand_template_toolchain_type",
 )
 
+toolchain_type(
+    name = "tar_toolchain_type",
+)
+
 bzl_library(
     name = "docs",
     srcs = ["docs.bzl"],
