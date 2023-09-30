@@ -51,3 +51,18 @@ assert_tar_listing(
         "-rwxr-xr-x  0 0      0           7 Dec 31  1969 usr/bin/ls",
     ],
 )
+
+# Case 3: compression
+tar(
+    name = "c",
+    srcs = ["a"],
+    out = "c.tgz",
+    compress = "gzip",
+)
+
+assert_archive_contains(
+    name = "check_c",
+    archive = "c.tgz",
+    expected = ["lib/tests/tar/a"],
+    type = "tar",
+)
