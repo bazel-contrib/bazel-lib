@@ -108,7 +108,11 @@ bzl_library(
 bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
-    deps = ["//lib/private/docs:tar"],
+    deps = [
+        "//lib/private/docs:tar",
+        "@bazel_skylib//lib:types",
+        "@bazel_skylib//rules:write_file",
+    ],
 )
 
 bzl_library(
