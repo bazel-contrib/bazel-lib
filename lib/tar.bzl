@@ -17,15 +17,14 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib/private:tar.bzl", _tar_lib = "tar_lib")
 
 tar_rule = rule(
+    doc = "Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rather than load this directly.",
     implementation = _tar_lib.implementation,
     attrs = _tar_lib.attrs,
     toolchains = ["@aspect_bazel_lib//lib:tar_toolchain_type"],
 )
 
-# FIXME: needs docs
-# buildifier: disable=function-docstring
 def tar(name, mtree = None, **kwargs):
-    """Wrapper macro around `tar_rule`.
+    """Wrapper macro around [`tar_rule`](#tar_rule).
 
     Allows the mtree to be supplied as an array literal of lines, in addition to a separate file, e.g.
 
@@ -41,7 +40,7 @@ def tar(name, mtree = None, **kwargs):
 
     Args:
         name: name of resulting `tar_rule`
-        mtree: either an array of specification lines, or a label of a file that contains the lines.`
+        mtree: either an array of specification lines, or a label of a file that contains the lines.
         **kwargs: additional named parameters to pass to `tar_rule`
     """
     if types.is_list(mtree):

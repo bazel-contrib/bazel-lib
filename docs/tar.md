@@ -22,7 +22,7 @@ We also provide full control for tar'ring binaries including their runfiles.
 tar_rule(<a href="#tar_rule-name">name</a>, <a href="#tar_rule-compress">compress</a>, <a href="#tar_rule-mtree">mtree</a>, <a href="#tar_rule-out">out</a>, <a href="#tar_rule-srcs">srcs</a>)
 </pre>
 
-
+Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rather than load this directly.
 
 **ATTRIBUTES**
 
@@ -44,7 +44,7 @@ tar_rule(<a href="#tar_rule-name">name</a>, <a href="#tar_rule-compress">compres
 tar(<a href="#tar-name">name</a>, <a href="#tar-mtree">mtree</a>, <a href="#tar-kwargs">kwargs</a>)
 </pre>
 
-Wrapper macro around `tar_rule`.
+Wrapper macro around [`tar_rule`](#tar_rule).
 
 Allows the mtree to be supplied as an array literal of lines, in addition to a separate file, e.g.
 
@@ -65,7 +65,7 @@ https://man.freebsd.org/cgi/man.cgi?mtree(8)
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="tar-name"></a>name |  name of resulting <code>tar_rule</code>   |  none |
-| <a id="tar-mtree"></a>mtree |  either an array of specification lines, or a label of a file that contains the lines.<code>   |  <code>None</code> |
+| <a id="tar-mtree"></a>mtree |  either an array of specification lines, or a label of a file that contains the lines.   |  <code>None</code> |
 | <a id="tar-kwargs"></a>kwargs |  additional named parameters to pass to <code>tar_rule</code>   |  none |
 
 
