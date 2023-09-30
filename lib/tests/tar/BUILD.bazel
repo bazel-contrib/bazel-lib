@@ -9,6 +9,7 @@ write_file(
     content = ["hello a"],
 )
 
+# Show that you can run any `tar` command you like using a genrule.
 genrule(
     name = "tar_a",
     srcs = ["a"],
@@ -23,47 +24,32 @@ assert_archive_contains(
     expected = ["lib/tests/tar/a"],
 )
 
+# Demonstrate using an mtree formatted specification file.
 # Example from https://man.freebsd.org/cgi/man.cgi?query=bsdtar&sektion=1&format=html#end
 write_file(
     name = "input_mtree",
     out = "input.mtree",
     content = [
         "usr/bin uid=0 gid=0 mode=0755 type=dir",
-        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content=lib/tests/tar/a.tar",
+        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content={}/a".format(package_name()),
         "",
     ],
 )
 
+# We expect the resulting `tar -tvf` to be the following:
 _MTREE_EXPECTED = [
     "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
-    "-rwxr-xr-x  0 0      0        2048 Dec 31  1969 usr/bin/ls",
+    "-rwxr-xr-x  0 0      0           7 Dec 31  1969 usr/bin/ls",
 ]
 
-genrule(
-    name = "tar_b",
-    srcs = [
-        "input.mtree",
-        "tar_a",
-    ],
-    outs = ["b.tar"],
-    cmd = "$(BSDTAR_BIN)  --cd $(BINDIR) --create --file $@ @$(rootpath input.mtree)",
-    toolchains = ["@bsd_tar//:resolved_toolchain"],
-)
-
-assert_tar_listing(
-    name = "test_b",
-    actual = "b.tar",
-    expected = _MTREE_EXPECTED,
-)
-
 tar(
-    name = "c",
-    srcs = ["a.tar"],
+    name = "b",
+    srcs = ["a"],
     mtree = ":input_mtree",
 )
 
 assert_tar_listing(
-    name = "test_c",
-    actual = "c.tar",
+    name = "test_b",
+    actual = "b",
     expected = _MTREE_EXPECTED,
 )

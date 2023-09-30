@@ -1,9 +1,12 @@
 "Make shorter assertions"
 
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_contains")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
+# buildifier: disable=function-docstring
 def assert_tar_listing(name, actual, expected):
     actual_listing = "_{}_listing".format(name)
+    expected_listing = "_{}_expected".format(name)
 
     native.genrule(
         name = actual_listing,
@@ -13,8 +16,14 @@ def assert_tar_listing(name, actual, expected):
         toolchains = ["@bsd_tar//:resolved_toolchain"],
     )
 
-    assert_contains(
+    write_file(
+        name = expected_listing,
+        out = "_{}.expected".format(name),
+        content = expected + [""],
+    )
+
+    diff_test(
         name = name,
-        actual = actual_listing,
-        expected = "\n".join(expected + [""]),
+        file1 = actual_listing,
+        file2 = expected_listing,
     )
