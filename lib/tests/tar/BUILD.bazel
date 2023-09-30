@@ -9,7 +9,7 @@ write_file(
     content = ["hello a"],
 )
 
-# Show that you can run any `tar` command you like using a genrule.
+# Case 1: Show that you can run any `tar` command you like, using a genrule.
 genrule(
     name = "tar_a",
     srcs = ["a"],
@@ -24,32 +24,30 @@ assert_archive_contains(
     expected = ["lib/tests/tar/a"],
 )
 
-# Demonstrate using an mtree formatted specification file.
-# Example from https://man.freebsd.org/cgi/man.cgi?query=bsdtar&sektion=1&format=html#end
-write_file(
-    name = "input_mtree",
-    out = "input.mtree",
-    content = [
-        "usr/bin uid=0 gid=0 mode=0755 type=dir",
-        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content={}/a".format(package_name()),
-        "",
-    ],
-)
-
-# We expect the resulting `tar -tvf` to be the following:
-_MTREE_EXPECTED = [
-    "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
-    "-rwxr-xr-x  0 0      0           7 Dec 31  1969 usr/bin/ls",
-]
-
+# Case 2: demonstrate using an mtree formatted specification file.
+# Copied from the output of `man tar`:
+#    An input file in	mtree(5) format	 can  be  used	to  create  an	output
+#    archive with  arbitrary ownership, permissions, or names that	differ
+#    from existing data on disk:
+#      $ cat input.mtree
+#      #mtree
+#      usr/bin uid=0 gid=0 mode=0755 type=dir
+#      usr/bin/ls	uid=0 gid=0 mode=0755 type=file	content=myls
+#      $ tar -cvf	output.tar @input.mtree
 tar(
     name = "b",
     srcs = ["a"],
-    mtree = ":input_mtree",
+    mtree = [
+        "usr/bin uid=0 gid=0 mode=0755 type=dir",
+        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content={}/a".format(package_name()),
+    ],
 )
 
 assert_tar_listing(
     name = "test_b",
     actual = "b",
-    expected = _MTREE_EXPECTED,
+    expected = [
+        "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
+        "-rwxr-xr-x  0 0      0           7 Dec 31  1969 usr/bin/ls",
+    ],
 )
