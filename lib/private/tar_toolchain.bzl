@@ -1,6 +1,6 @@
 "Provide access to a BSD tar"
 
-load("//lib:repo_utils.bzl", "repo_utils")
+load(":repo_utils.bzl", "repo_utils")
 
 TarInfo = provider(
     doc = "Provide info for executing BSD tar",
@@ -22,14 +22,14 @@ def _tar_toolchain_impl(ctx):
     #     files = depset([binary]),
     #     runfiles = ctx.runfiles(files = [binary]),
     # )
-    tar_info = TarInfo(
+    tarinfo = TarInfo(
         command = command,
     )
 
     # Export all the providers inside our ToolchainInfo
     # so the resolved_toolchain rule can grab and re-export them.
     toolchain_info = platform_common.ToolchainInfo(
-        tar_info = tar_info,
+        tarinfo = tarinfo,
         template_variables = template_variables,
         # default = default_info,
     )
@@ -76,7 +76,7 @@ def _resolved_toolchain_impl(ctx):
     return [
         toolchain_info,
         # toolchain_info.default,
-        toolchain_info.tar_info,
+        toolchain_info.tarinfo,
         toolchain_info.template_variables,
     ]
 

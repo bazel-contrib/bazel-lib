@@ -1,5 +1,7 @@
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains", "assert_contains")
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load(":asserts.bzl", "assert_tar_listing")
 
 write_file(
     name = "gen_a",
@@ -32,6 +34,11 @@ write_file(
     ],
 )
 
+_MTREE_EXPECTED = [
+    "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
+    "-rwxr-xr-x  0 0      0        2048 Dec 31  1969 usr/bin/ls",
+]
+
 genrule(
     name = "tar_b",
     srcs = [
@@ -39,24 +46,24 @@ genrule(
         "tar_a",
     ],
     outs = ["b.tar"],
-    cmd = "$(BSDTAR_BIN) --cd $(BINDIR) --create --file $@ @$(rootpath input.mtree)",
+    cmd = "$(BSDTAR_BIN)  --cd $(BINDIR) --create --file $@ @$(rootpath input.mtree)",
     toolchains = ["@bsd_tar//:resolved_toolchain"],
 )
 
-genrule(
-    name = "list_b",
-    srcs = ["b.tar"],
-    outs = ["b.listing"],
-    cmd = "$(BSDTAR_BIN) -tvf $(execpath b.tar) >$@",
-    toolchains = ["@bsd_tar//:resolved_toolchain"],
-)
-
-assert_contains(
+assert_tar_listing(
     name = "test_b",
-    actual = "b.listing",
-    expected = "\n".join([
-        "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
-        "-rwxr-xr-x  0 0      0        2048 Dec 31  1969 usr/bin/ls",
-        "",
-    ]),
+    actual = "b.tar",
+    expected = _MTREE_EXPECTED,
+)
+
+tar(
+    name = "c",
+    srcs = ["a.tar"],
+    mtree = ":input_mtree",
+)
+
+assert_tar_listing(
+    name = "test_c",
+    actual = "c.tar",
+    expected = _MTREE_EXPECTED,
 )
