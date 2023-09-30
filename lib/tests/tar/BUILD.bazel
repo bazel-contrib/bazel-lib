@@ -66,3 +66,33 @@ assert_archive_contains(
     expected = ["lib/tests/tar/a"],
     type = "tar",
 )
+
+# Case 4: permit arbitrary flags
+write_file(
+    name = "fixture2",
+    out = ".git",
+    content = ["it's a folder"],
+)
+
+tar(
+    name = "tar4",
+    srcs = [
+        ".git",
+        "a",
+    ],
+    out = "4.tar",
+    args = [
+        "--dereference",
+        "--exclude-vcs",
+        "--uname=some-user",
+        "--gname=some-group",
+    ],
+)
+
+assert_tar_listing(
+    name = "test4",
+    actual = "tar4",
+    expected = [
+        "-r-xr-xr-x  0 some-user some-group  7 Sep 29 16:27 lib/tests/tar/a",
+    ],
+)
