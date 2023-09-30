@@ -1,0 +1,62 @@
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains", "assert_contains")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+
+write_file(
+    name = "gen_a",
+    out = "a",
+    content = ["hello a"],
+)
+
+genrule(
+    name = "tar_a",
+    srcs = ["a"],
+    outs = ["a.tar"],
+    cmd = "$(BSDTAR_BIN) -C $(BINDIR) --create --dereference --file $@ $(rootpath a)",
+    toolchains = ["@bsd_tar//:resolved_toolchain"],
+)
+
+assert_archive_contains(
+    name = "check_a",
+    archive = "a.tar",
+    expected = ["lib/tests/tar/a"],
+)
+
+# Example from https://man.freebsd.org/cgi/man.cgi?query=bsdtar&sektion=1&format=html#end
+write_file(
+    name = "input_mtree",
+    out = "input.mtree",
+    content = [
+        "usr/bin uid=0 gid=0 mode=0755 type=dir",
+        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content=lib/tests/tar/a.tar",
+        "",
+    ],
+)
+
+genrule(
+    name = "tar_b",
+    srcs = [
+        "input.mtree",
+        "tar_a",
+    ],
+    outs = ["b.tar"],
+    cmd = "$(BSDTAR_BIN) --cd $(BINDIR) --create --file $@ @$(rootpath input.mtree)",
+    toolchains = ["@bsd_tar//:resolved_toolchain"],
+)
+
+genrule(
+    name = "list_b",
+    srcs = ["b.tar"],
+    outs = ["b.listing"],
+    cmd = "$(BSDTAR_BIN) -tvf $(execpath b.tar) >$@",
+    toolchains = ["@bsd_tar//:resolved_toolchain"],
+)
+
+assert_contains(
+    name = "test_b",
+    actual = "b.listing",
+    expected = "\n".join([
+        "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
+        "-rwxr-xr-x  0 0      0        2048 Dec 31  1969 usr/bin/ls",
+        "",
+    ]),
+)
