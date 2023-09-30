@@ -4,23 +4,23 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing")
 
 write_file(
-    name = "gen_a",
+    name = "fixture1",
     out = "a",
     content = ["hello a"],
 )
 
 # Case 1: Show that you can run any `tar` command you like, using a genrule.
 genrule(
-    name = "tar_a",
+    name = "tar1",
     srcs = ["a"],
-    outs = ["a.tar"],
+    outs = ["1.tar"],
     cmd = "$(BSDTAR_BIN) -C $(BINDIR) --create --dereference --file $@ $(rootpath a)",
     toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 
 assert_archive_contains(
-    name = "check_a",
-    archive = "a.tar",
+    name = "test1",
+    archive = "1.tar",
     expected = ["lib/tests/tar/a"],
 )
 
@@ -35,7 +35,7 @@ assert_archive_contains(
 #      usr/bin/ls	uid=0 gid=0 mode=0755 type=file	content=myls
 #      $ tar -cvf	output.tar @input.mtree
 tar(
-    name = "b",
+    name = "tar2",
     srcs = ["a"],
     mtree = [
         "usr/bin uid=0 gid=0 mode=0755 type=dir",
@@ -44,8 +44,8 @@ tar(
 )
 
 assert_tar_listing(
-    name = "test_b",
-    actual = "b",
+    name = "test2",
+    actual = "tar2",
     expected = [
         "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
         "-rwxr-xr-x  0 0      0           7 Dec 31  1969 usr/bin/ls",
@@ -54,15 +54,15 @@ assert_tar_listing(
 
 # Case 3: compression
 tar(
-    name = "c",
+    name = "tar3",
     srcs = ["a"],
-    out = "c.tgz",
+    out = "3.tgz",
     compress = "gzip",
 )
 
 assert_archive_contains(
-    name = "check_c",
-    archive = "c.tgz",
+    name = "test3",
+    archive = "3.tgz",
     expected = ["lib/tests/tar/a"],
     type = "tar",
 )
