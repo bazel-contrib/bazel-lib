@@ -24,7 +24,7 @@ assert_archive_contains(
     expected = ["lib/tests/tar/a"],
 )
 
-# Case 2: demonstrate using an mtree formatted specification file.
+# Case 2: demonstrate using a custom mtree formatted specification.
 # Copied from the output of `man tar`:
 #    An input file in	mtree(5) format	 can  be  used	to  create  an	output
 #    archive with  arbitrary ownership, permissions, or names that	differ

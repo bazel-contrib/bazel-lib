@@ -1,9 +1,45 @@
 "Implementation of tar rule"
 _tar_attrs = {
-    "args": attr.string_list(doc = "Additional flags permitted by BSD tar --create"),
-    "srcs": attr.label_list(doc = "Files that are placed into the tar", mandatory = True, allow_files = True),
-    "mtree": attr.label(doc = "An mtree specification file", allow_single_file = True),
-    "out": attr.output(doc = "Resulting tar file to write"),
+    "args": attr.string_list(
+        doc = "Additional flags permitted by BSD tar; see the man page.",
+    ),
+    "srcs": attr.label_list(
+        doc = "Files and directories that are placed into the tar",
+        mandatory = True,
+        allow_files = True,
+    ),
+    "mode": attr.string(
+        doc = """The first option to tar is a mode indicator from the following list:
+       -c      Create a	new archive containing the specified items.  The  long
+	       option form is --create.
+       -r      Like  -c,  but  new  entries are	appended to the	archive.  Note
+	       that this only works on uncompressed archives stored in regular
+	       files.  The -f option is	required.  The	long  option  form  is
+	       --append.
+       -t      List  archive  contents	to  stdout.   The  long	option form is
+	       --list.
+       -u      Like -r,	but new	entries	are added only if they have a  modifi-
+	       cation  date newer than the corresponding entry in the archive.
+	       Note that this only works on uncompressed  archives  stored  in
+	       regular	files.	 The  -f option	is required.  The long form is
+	       --update.
+       -x      Extract to disk from the	archive.  If a file with the same name
+	       appears more than once in the archive, each copy	 will  be  ex-
+	       tracted,	 with  later  copies  overwriting  (replacing) earlier
+	       copies.	The long option	form is	--extract.
+        """,
+        values = ["create", "append", "list", "update", "extract"],
+        default = "create",
+    ),
+    "mtree": attr.label(
+        doc = "An mtree specification file",
+        allow_single_file = True,
+        # Mandatory since it's the only way to set constant timestamps
+        mandatory = True,
+    ),
+    "out": attr.output(
+        doc = "Resulting tar file to write. If absent, `[name].tar` is written.",
+    ),
     "compress": attr.string(
         doc = "Compress the archive file with a supported algorithm.",
         values = ["bzip2", "compress", "gzip", "lrzip", "lz4", "lzma", "lzop", "xz", "zstd"],
@@ -35,10 +71,10 @@ def _add_compress_options(compress, args):
     if compress == "zstd":
         args.add("--zstd")
 
-def _short_path(file):
-    return file.short_path
-
 def _tar_impl(ctx):
+    if ctx.attr.mode != "create":
+        fail("Only the 'create' mode is currently supported.")
+
     tar_bin = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo.binary
 
     inputs = ctx.files.srcs[:]
@@ -52,11 +88,8 @@ def _tar_impl(ctx):
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
     args.add_all(["--file", out.path])
 
-    if ctx.attr.mtree:
-        args.add("@" + ctx.file.mtree.short_path)
-        inputs.append(ctx.file.mtree)
-    else:
-        args.add_all(ctx.files.srcs, map_each = _short_path)
+    args.add("@" + ctx.file.mtree.short_path)
+    inputs.append(ctx.file.mtree)
 
     ctx.actions.run(
         executable = tar_bin,
