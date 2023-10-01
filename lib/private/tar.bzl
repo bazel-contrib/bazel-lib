@@ -72,15 +72,12 @@ def _add_compress_options(compress, args):
         args.add("--zstd")
 
 def _tar_impl(ctx):
+    inputs = ctx.files.srcs[:]
+    args = ctx.actions.args()
     if ctx.attr.mode != "create":
         fail("Only the 'create' mode is currently supported.")
+    args.add("--" + mode)
 
-    tar_bin = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo.binary
-
-    inputs = ctx.files.srcs[:]
-
-    args = ctx.actions.args()
-    args.add("--create")
     args.add_all(ctx.attr.args)
     _add_compress_options(ctx.attr.compress, args)
     args.add_all(["--cd", ctx.bin_dir.path])
@@ -92,7 +89,7 @@ def _tar_impl(ctx):
     inputs.append(ctx.file.mtree)
 
     ctx.actions.run(
-        executable = tar_bin,
+        executable = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo.binary,
         inputs = inputs,
         outputs = [out],
         arguments = [args],
