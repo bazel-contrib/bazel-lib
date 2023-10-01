@@ -8,7 +8,7 @@ load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS",
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:local_config_platform.bzl", "local_config_platform")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
-load("//lib/private:tar_toolchain.bzl", "tar_toolchains_repo", "bsdtar_binary_repo", "BSDTAR_PLATFORMS")
+load("//lib/private:tar_toolchain.bzl", "BSDTAR_PLATFORMS", "bsdtar_binary_repo", "tar_toolchains_repo")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 load("//tools:version.bzl", "VERSION")
 
