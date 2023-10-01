@@ -33,7 +33,7 @@ def _short_path(file):
     return file.short_path
 
 def _tar_impl(ctx):
-    tar_bin = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo.command
+    tar_bin = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo.binary
 
     inputs = ctx.files.srcs[:]
 
