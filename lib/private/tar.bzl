@@ -76,16 +76,16 @@ def _tar_impl(ctx):
     args = ctx.actions.args()
     if ctx.attr.mode != "create":
         fail("Only the 'create' mode is currently supported.")
-    args.add("--" + mode)
+    args.add("--" + ctx.attr.mode)
 
     args.add_all(ctx.attr.args)
     _add_compress_options(ctx.attr.compress, args)
-    args.add_all(["--cd", ctx.bin_dir.path])
+    args.add_all(["-s", "#{}##".format(ctx.bin_dir.path)])
 
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
     args.add_all(["--file", out.path])
 
-    args.add("@" + ctx.file.mtree.short_path)
+    args.add("@" + ctx.file.mtree.path)
     inputs.append(ctx.file.mtree)
 
     ctx.actions.run(
@@ -98,20 +98,21 @@ def _tar_impl(ctx):
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
-def _mtree_line(path, uid = "0", gid = "0", time = "1672560000", mode = "0755", type_ = "file"):
+def _mtree_line(file, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     return " ".join([
-        path,
+        file.short_path,
         "uid=" + uid,
         "gid=" + gid,
         "time=" + time,
         "mode=" + mode,
-        "type=" + type_,
+        "type=" + ("dir" if file.is_directory else "file"),
+        "content=" + file.path,
     ])
 
 def _mtree_impl(ctx):
     specification = []
     for s in ctx.files.srcs:
-        specification.append(_mtree_line(s.short_path))
+        specification.append(_mtree_line(s))
     ctx.actions.write(ctx.outputs.out, "\n".join(specification + [""]))
     return DefaultInfo(files = depset([ctx.outputs.out]), runfiles = ctx.runfiles([ctx.outputs.out]))
 
