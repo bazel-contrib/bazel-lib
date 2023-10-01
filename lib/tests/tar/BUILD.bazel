@@ -81,18 +81,14 @@ tar(
         "a",
     ],
     out = "4.tar",
-    args = [
-        "--dereference",
-        "--exclude-vcs",
-        "--uname=some-user",
-        "--gname=some-group",
-    ],
+    # Due to this argument, .git should not appear in the resulting tar
+    args = ["--exclude-vcs"],
 )
 
 assert_tar_listing(
     name = "test4",
     actual = "tar4",
     expected = [
-        "-r-xr-xr-x  0 some-user some-group  7 Sep 29 16:27 lib/tests/tar/a",
+        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 lib/tests/tar/a",
     ],
 )
