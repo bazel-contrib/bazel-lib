@@ -17,7 +17,7 @@ genrule(
         "src_file",
     ],
     outs = ["1.tar"],
-    cmd = "$(BSDTAR_BIN) --create --dereference --file $@ -s '#$(BINDIR)##' $(execpath :fixture1) $(execpath src_file)",
+    cmd = "LD_LIBRARY_PATH=$(BSDTAR_LIB) $(BSDTAR_BIN) --create --dereference --file $@ -s '#$(BINDIR)##' $(execpath :fixture1) $(execpath src_file)",
     toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 
