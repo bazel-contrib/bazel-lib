@@ -88,12 +88,16 @@ def _tar_impl(ctx):
     args.add("@" + ctx.file.mtree.path)
     inputs.append(ctx.file.mtree)
 
+    tarinfo = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo
+    inputs.extend(tarinfo.files)
+
     ctx.actions.run(
-        executable = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo.binary,
+        executable = tarinfo.binary,
         inputs = inputs,
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
+        env = {"LD_LIBRARY_PATH": tarinfo.include_path} if tarinfo.include_path else {},
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
