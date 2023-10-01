@@ -12,16 +12,22 @@ write_file(
 # Case 1: Show that you can run any `tar` command you like, using a genrule.
 genrule(
     name = "tar1",
-    srcs = ["a"],
+    srcs = [
+        ":fixture1",
+        "src_file",
+    ],
     outs = ["1.tar"],
-    cmd = "$(BSDTAR_BIN) -C $(BINDIR) --create --dereference --file $@ $(rootpath a)",
+    cmd = "$(BSDTAR_BIN) --create --dereference --file $@ -s '#$(BINDIR)##' $(execpath :fixture1) $(execpath src_file)",
     toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 
 assert_archive_contains(
     name = "test1",
     archive = "1.tar",
-    expected = ["lib/tests/tar/a"],
+    expected = [
+        "lib/tests/tar/a",
+        "lib/tests/tar/src_file",
+    ],
 )
 
 # Case 2: demonstrate using a custom mtree formatted specification.
@@ -36,10 +42,10 @@ assert_archive_contains(
 #      $ tar -cvf	output.tar @input.mtree
 tar(
     name = "tar2",
-    srcs = ["a"],
+    srcs = ["src_file"],
     mtree = [
         "usr/bin uid=0 gid=0 mode=0755 type=dir",
-        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content={}/a".format(package_name()),
+        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content={}/src_file".format(package_name()),
     ],
 )
 
@@ -48,7 +54,7 @@ assert_tar_listing(
     actual = "tar2",
     expected = [
         "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
-        "-rwxr-xr-x  0 0      0           7 Dec 31  1969 usr/bin/ls",
+        "-rwxr-xr-x  0 0      0          21 Dec 31  1969 usr/bin/ls",
     ],
 )
 
@@ -79,6 +85,7 @@ tar(
     srcs = [
         ".git",
         "a",
+        "src_file",
     ],
     out = "4.tar",
     # Due to this argument, .git should not appear in the resulting tar
@@ -90,5 +97,6 @@ assert_tar_listing(
     actual = "tar4",
     expected = [
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 lib/tests/tar/a",
+        "-rwxr-xr-x  0 0      0          21 Jan  1  2023 lib/tests/tar/src_file",
     ],
 )
