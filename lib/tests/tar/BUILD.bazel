@@ -15,7 +15,7 @@ genrule(
     srcs = ["a"],
     outs = ["a.tar"],
     cmd = "$(BSDTAR_BIN) -C $(BINDIR) --create --dereference --file $@ $(rootpath a)",
-    toolchains = ["@bsd_tar//:resolved_toolchain"],
+    toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 
 assert_archive_contains(

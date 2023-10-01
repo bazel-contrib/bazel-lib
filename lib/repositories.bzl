@@ -8,7 +8,7 @@ load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS",
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:local_config_platform.bzl", "local_config_platform")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
-load("//lib/private:tar_toolchain.bzl", "tar_toolchains_repo")
+load("//lib/private:tar_toolchain.bzl", "tar_toolchains_repo", "bsdtar_binary_repo", "BSDTAR_PLATFORMS")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 load("//tools:version.bzl", "VERSION")
 
@@ -106,10 +106,24 @@ def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register =
     )
 
 def register_tar_toolchains(name = "bsd_tar", register = True):
-    if register:
-        native.register_toolchains("@%s//:tar_toolchain" % name)
+    """Registers bsdtar toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    for [platform, meta] in BSDTAR_PLATFORMS.items():
+        bsdtar_binary_repo(
+            name = "%s_%s" % (name, platform),
+            platform = platform,
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
     tar_toolchains_repo(
-        name = name,
+        name = "%s_toolchains" % name,
+        user_repository_name = name,
     )
 
 def register_coreutils_toolchains(name = "coreutils", version = DEFAULT_COREUTILS_VERSION, register = True):
