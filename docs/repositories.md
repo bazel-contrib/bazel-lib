@@ -125,15 +125,15 @@ Registers jq toolchain and repositories
 register_tar_toolchains(<a href="#register_tar_toolchains-name">name</a>, <a href="#register_tar_toolchains-register">register</a>)
 </pre>
 
-
+Registers bsdtar toolchain and repositories
 
 **PARAMETERS**
 
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_tar_toolchains-name"></a>name |  <p align="center"> - </p>   |  <code>"bsd_tar"</code> |
-| <a id="register_tar_toolchains-register"></a>register |  <p align="center"> - </p>   |  <code>True</code> |
+| <a id="register_tar_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"bsd_tar"</code> |
+| <a id="register_tar_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
 
 
 <a id="register_yq_toolchains"></a>
