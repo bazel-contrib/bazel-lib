@@ -3,10 +3,6 @@
 load(":repo_utils.bzl", "repo_utils")
 
 BSDTAR_PLATFORMS = {
-    "host": struct(
-        # loaded by the macro
-        compatible_with = "HOST_CONSTRAINTS"
-    ),
     "linux_amd64": struct(
         compatible_with = [
             "@platforms//os:linux",
@@ -27,21 +23,25 @@ BSDTAR_PLATFORMS = {
             "@platforms//cpu:x86_64",
         ],
     ),
+    # WARNING: host toolchain should always come last to make it a fallback toolchain.
+    "host": struct(
+        # loaded by the macro
+        compatible_with = "HOST_CONSTRAINTS",
+    ),
 }
 
 LIBARCHIVE_TOOLS_URLS = {
     "linux_amd64": struct(
         url = "https://launchpadlibrarian.net/595393330/libarchive-tools_3.6.0-1ubuntu1_amd64.deb",
         integrity = "939d1a0e676d8abb9bf6696eb731e2cb1f851d7d101b294c2b613ab8d4e739bb",
-        type = "deb"
+        type = "deb",
     ),
     "linux_arm64": struct(
         url = "https://launchpadlibrarian.net/595395427/libarchive-tools_3.6.0-1ubuntu1_arm64.deb",
         integrity = "73c04624e680f23c90bc5067ef8b454ca02e0c3b6b3fecc1cc78a7750bacc11b",
-        type = "deb"
-    )
+        type = "deb",
+    ),
 }
-    
 
 def _find_usable_system_tar(rctx, tar_name):
     tar = rctx.which(tar_name)
@@ -58,26 +58,23 @@ def _find_usable_system_tar(rctx, tar_name):
 
     fail("tar isn't a BSD tar. TODO: fetch one for windows/linux")
 
-
 def _bsdtar_binary_repo(rctx):
     tar_name = "tar.exe" if repo_utils.is_windows(rctx) else "tar"
-    
+
     if rctx.attr.platform == "host":
         tar = _find_usable_system_tar(rctx, tar_name)
         output = rctx.path(tar_name)
-        # TODO: find a way to make it RBE friendly.
-        r = rctx.symlink(tar, output)
-        # if r.return_code != 0:
-        #     fail("failed to copy tar executable.\nstderr: \n{}\nstdout: {}".format(r.stderr, r.stdout))
-        
+        rctx.symlink(tar, output)
+
     else:
         metadata = LIBARCHIVE_TOOLS_URLS[rctx.attr.platform]
+
         # TODO: windows.
         rctx.download_and_extract(
-            url =  metadata.url,
+            url = metadata.url,
             output = "deb",
             type = metadata.type,
-            sha256 = metadata.integrity
+            sha256 = metadata.integrity,
         )
         rctx.extract(
             "deb/data.tar.zst",
@@ -91,8 +88,8 @@ def _bsdtar_binary_repo(rctx):
 load("@aspect_bazel_lib//lib/private:tar_toolchain.bzl", "tar_toolchain")
 
 tar_toolchain(
-    name = "bsdtar_toolchain", 
-    binary = "{bin}", 
+    name = "bsdtar_toolchain",
+    binary = "{bin}",
     visibility = ["//visibility:public"]
 )
 """.format(bin = tar_name))
@@ -104,14 +101,12 @@ bsdtar_binary_repo = repository_rule(
     },
 )
 
-
 TarInfo = provider(
     doc = "Provide info for executing BSD tar",
     fields = {
         "binary": "bsdtar executable",
     },
 )
-
 
 def _tar_toolchain_impl(ctx):
     binary = ctx.executable.binary
@@ -147,7 +142,7 @@ tar_toolchain = rule(
             doc = "a command to find on the system path",
             allow_single_file = True,
             executable = True,
-            cfg = "exec"
+            cfg = "exec",
         ),
     },
 )
@@ -198,7 +193,6 @@ toolchain(
             user_repository_name = rctx.attr.user_repository_name,
             compatible_with = meta.compatible_with,
         )
-
 
     rctx.file("BUILD.bazel", build_content)
 
