@@ -111,10 +111,11 @@ def _mtree_line(file, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
 
 def _mtree_impl(ctx):
     specification = []
+    out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".spec")
     for s in ctx.files.srcs:
         specification.append(_mtree_line(s))
-    ctx.actions.write(ctx.outputs.out, "\n".join(specification + [""]))
-    return DefaultInfo(files = depset([ctx.outputs.out]), runfiles = ctx.runfiles([ctx.outputs.out]))
+    ctx.actions.write(out, "\n".join(specification + [""]))
+    return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
 tar_lib = struct(
     attrs = _tar_attrs,

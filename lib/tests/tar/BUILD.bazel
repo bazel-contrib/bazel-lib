@@ -1,4 +1,4 @@
-load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing")
@@ -75,7 +75,7 @@ assert_archive_contains(
 
 # Case 4: permit arbitrary flags
 write_file(
-    name = "fixture2",
+    name = "fixture4",
     out = ".git",
     content = ["it's a folder"],
 )
@@ -98,5 +98,46 @@ assert_tar_listing(
     expected = [
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 lib/tests/tar/a",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 lib/tests/tar/src_file",
+    ],
+)
+
+# Case 5: strip_prefix
+_SRCS5 = [
+    ":fixture1",
+    "src_file",
+]
+
+mtree_spec(
+    name = "mtree5",
+    srcs = _SRCS5,
+)
+
+# This is a very simple way to mutate the mtree specification, just using regex.
+# In theory, this can be used for arbitrary replacements like using mode=644 or something,
+# but we'll probably have to add a richer API to the mtree_spec rule to make this more ergonomic.
+genrule(
+    name = "strip_prefix",
+    srcs = ["mtree5"],
+    outs = ["mtree5.stripped"],
+    # Modify lines starting with the package name, e.g.
+    # lib/tests/tar/a uid=0 gid=0 time=1672560000 mode=0755 type=file content=bazel-out/darwin_arm64-opt/bin/lib/tests/tar/a
+    # ->
+    # a uid=0 gid=0 time=1672560000 mode=0755 type=file content=bazel-out/darwin_arm64-opt/bin/lib/tests/tar/a
+    cmd = "sed s#^{}/## <$< >$@".format(package_name()),
+)
+
+tar(
+    name = "tar5",
+    srcs = _SRCS5,
+    out = "5.tar",
+    mtree = "strip_prefix",
+)
+
+assert_tar_listing(
+    name = "test5",
+    actual = "tar5",
+    expected = [
+        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 a",
+        "-rwxr-xr-x  0 0      0          21 Jan  1  2023 src_file",
     ],
 )
