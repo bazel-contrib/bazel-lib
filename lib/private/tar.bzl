@@ -87,9 +87,6 @@ def _tar_impl(ctx):
     # Compression args
     _add_compress_options(ctx.attr.compress, args)
 
-    # Strip bazel-out/[platform]/bin from resulting paths
-    args.add_all(["-s", "#{}##".format(ctx.bin_dir.path)])
-
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
     args.add_all(["--file", out.path])
 
