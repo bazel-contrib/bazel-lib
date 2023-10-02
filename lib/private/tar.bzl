@@ -9,26 +9,22 @@ _tar_attrs = {
         allow_files = True,
     ),
     "mode": attr.string(
-        doc = """The first option to tar is a mode indicator from the following list:
-       -c      Create a	new archive containing the specified items.  The  long
-	       option form is --create.
-       -r      Like  -c,  but  new  entries are	appended to the	archive.  Note
-	       that this only works on uncompressed archives stored in regular
-	       files.  The -f option is	required.  The	long  option  form  is
-	       --append.
-       -t      List  archive  contents	to  stdout.   The  long	option form is
-	       --list.
-       -u      Like -r,	but new	entries	are added only if they have a  modifi-
-	       cation  date newer than the corresponding entry in the archive.
-	       Note that this only works on uncompressed  archives  stored  in
-	       regular	files.	 The  -f option	is required.  The long form is
-	       --update.
-       -x      Extract to disk from the	archive.  If a file with the same name
-	       appears more than once in the archive, each copy	 will  be  ex-
-	       tracted,	 with  later  copies  overwriting  (replacing) earlier
-	       copies.	The long option	form is	--extract.
+        doc = """A mode indicator from the following list, copied from the tar manpage:
+
+       - create: Create a new archive containing the specified items.
+       - append: Like `create`, but new entries are appended to the archive.
+            Note that this only works on uncompressed archives stored in regular files.
+            The -f option is required.
+       - list: List  archive contents to stdout.
+       - update: Like `append`, but new entries are added only if they have a
+            modification date newer than the corresponding entry in the archive.
+	       Note that this only works on uncompressed archives stored in
+	       regular files. The -f option	is required.
+       - extract: Extract to disk from the archive. If a file with the same name
+	       appears more than once in the archive, each copy	 will  be  extracted,
+           with  later  copies  overwriting  (replacing) earlier copies.
         """,
-        values = ["create", "append", "list", "update", "extract"],
+        values = ["create"],  # TODO: support other modes: ["append", "list", "update", "extract"]
         default = "create",
     ),
     "mtree": attr.label(
@@ -77,8 +73,6 @@ def _tar_impl(ctx):
     args = ctx.actions.args()
 
     # Set mode
-    if ctx.attr.mode != "create":
-        fail("Only the 'create' mode is currently supported.")
     args.add("--" + ctx.attr.mode)
 
     # User-provided args first
