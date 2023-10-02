@@ -72,14 +72,22 @@ def _add_compress_options(compress, args):
         args.add("--zstd")
 
 def _tar_impl(ctx):
-    inputs = ctx.files.srcs[:]
+    tarinfo = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo
+    inputs = ctx.files.srcs + tarinfo.files
     args = ctx.actions.args()
+
+    # Set mode
     if ctx.attr.mode != "create":
         fail("Only the 'create' mode is currently supported.")
     args.add("--" + ctx.attr.mode)
 
+    # User-provided args first
     args.add_all(ctx.attr.args)
+
+    # Compression args
     _add_compress_options(ctx.attr.compress, args)
+
+    # Strip bazel-out/[platform]/bin from resulting paths
     args.add_all(["-s", "#{}##".format(ctx.bin_dir.path)])
 
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
@@ -87,9 +95,6 @@ def _tar_impl(ctx):
 
     args.add("@" + ctx.file.mtree.path)
     inputs.append(ctx.file.mtree)
-
-    tarinfo = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo
-    inputs.extend(tarinfo.files)
 
     ctx.actions.run(
         executable = tarinfo.binary,
