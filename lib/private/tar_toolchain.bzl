@@ -12,7 +12,7 @@ BSDTAR_PLATFORMS = {
     "linux_arm64": struct(
         compatible_with = [
             "@platforms//os:linux",
-            "@platforms//cpu:x86_64",
+            "@platforms//cpu:aarch64",
         ],
     ),
     # TODO(alexeagle): download from libarchive github releases.
