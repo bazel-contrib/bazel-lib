@@ -34,6 +34,15 @@ BSDTAR_PLATFORMS = {
 # Ubuntu Jammy will fail on ubuntu 20.02 with
 # bsdtar: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found
 # bsdtar: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found
+LIBNETTLE_URLS = {
+    "linux_amd64": struct(
+        urls = [
+            "http://security.ubuntu.com/ubuntu/pool/main/n/nettle/libnettle7_3.5.1+really3.5.1-2ubuntu0.2_amd64.deb",
+        ],
+        type = "deb",
+        integrity = "3496aed83407fde71e0dc5988b28e8fd7f07a2f27fcf3e0f214c7cd86667eecd",
+    ),
+}
 LIBARCHIVE13_URLS = {
     # https://packages.ubuntu.com/focal/amd64/libarchive13/download
     "linux_amd64": struct(
@@ -110,8 +119,15 @@ package(default_visibility = ["//visibility:public"])
     # Other platforms, we have more work to do.
     libarchive_tools = LIBARCHIVE_TOOLS_URLS[rctx.attr.platform]
     libarchive13 = LIBARCHIVE13_URLS[rctx.attr.platform]
+    libnettle = LIBNETTLE_URLS[rctx.attr.platform]
 
     # TODO: windows.
+    rctx.download_and_extract(
+        url = libnettle.urls,
+        output = "libnettle",
+        type = libnettle.type,
+        sha256 = libnettle.integrity,
+    )
     rctx.download_and_extract(
         url = libarchive13.urls,
         output = "libarchive13",
@@ -124,12 +140,8 @@ package(default_visibility = ["//visibility:public"])
         type = libarchive_tools.type,
         sha256 = libarchive_tools.integrity,
     )
-    rctx.extract(
-        "libarchive13/data.tar.xz",
-    )
-    rctx.extract(
-        "libarchive-tools/data.tar.xz",
-    )
+    for lib in ["libarchive13", "libnettle", "libarchive-tools"]:
+        rctx.extract(lib + "/data.tar.xz")
 
     rctx.file("BUILD.bazel", build_header + """\
 filegroup(
