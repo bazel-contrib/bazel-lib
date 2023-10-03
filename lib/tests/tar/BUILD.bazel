@@ -44,8 +44,8 @@ tar(
     name = "tar2",
     srcs = ["src_file"],
     mtree = [
-        "usr/bin uid=0 gid=0 mode=0755 type=dir",
-        "usr/bin/ls uid=0 gid=0 mode=0755 time=0 type=file content={}/src_file".format(package_name()),
+        "usr/bin uid=0 gid=0 mode=0755 time=1696361863 type=dir",
+        "usr/bin/ls uid=0 gid=0 mode=0755 time=1696361863 type=file content={}/src_file".format(package_name()),
     ],
 )
 
@@ -53,8 +53,8 @@ assert_tar_listing(
     name = "test2",
     actual = "tar2",
     expected = [
-        "drwxr-xr-x  0 0      0           0 Dec 31  1969 usr/bin/",
-        "-rwxr-xr-x  0 0      0          21 Dec 31  1969 usr/bin/ls",
+        "drwxr-xr-x  0 0      0           0 Oct  3 19:37 usr/bin/",
+        "-rwxr-xr-x  0 0      0          21 Oct  3 19:37 usr/bin/ls",
     ],
 )
 
