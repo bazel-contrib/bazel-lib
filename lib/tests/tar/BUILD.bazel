@@ -11,7 +11,7 @@ write_file(
 
 # Case 1: Show that you can run any `tar` command you like, using a genrule.
 genrule(
-    name = "tar1",
+    name = "tar_genrule",
     srcs = [
         ":fixture1",
         "src_file",
@@ -22,7 +22,7 @@ genrule(
 )
 
 assert_archive_contains(
-    name = "test1",
+    name = "test_genrule",
     archive = "1.tar",
     expected = [
         "lib/tests/tar/a",
@@ -41,33 +41,33 @@ assert_archive_contains(
 #      usr/bin/ls	uid=0 gid=0 mode=0755 type=file	content=myls
 #      $ tar -cvf	output.tar @input.mtree
 tar(
-    name = "tar2",
+    name = "tar_custom_mtree",
     srcs = ["src_file"],
     mtree = [
-        "usr/bin uid=0 gid=0 mode=0755 time=1696361863 type=dir",
-        "usr/bin/ls uid=0 gid=0 mode=0755 time=1696361863 type=file content={}/src_file".format(package_name()),
+        "usr/bin uid=0 gid=0 mode=0755 time=1672560000 type=dir",
+        "usr/bin/ls uid=0 gid=0 mode=0755 time=1672560000 type=file content={}/src_file".format(package_name()),
     ],
 )
 
 assert_tar_listing(
-    name = "test2",
-    actual = "tar2",
+    name = "test_custom_mtree",
+    actual = "tar_custom_mtree",
     expected = [
-        "drwxr-xr-x  0 0      0           0 Oct  3 19:37 usr/bin/",
-        "-rwxr-xr-x  0 0      0          21 Oct  3 19:37 usr/bin/ls",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 usr/bin/",
+        "-rwxr-xr-x  0 0      0          21 Jan  1  2023 usr/bin/ls",
     ],
 )
 
 # Case 3: compression
 tar(
-    name = "tar3",
+    name = "tar_compress",
     srcs = ["a"],
     out = "3.tgz",
     compress = "gzip",
 )
 
 assert_archive_contains(
-    name = "test3",
+    name = "test_compress",
     archive = "3.tgz",
     expected = ["lib/tests/tar/a"],
     type = "tar",
@@ -81,7 +81,7 @@ write_file(
 )
 
 tar(
-    name = "tar4",
+    name = "tar_flags",
     srcs = [
         ".git",
         "a",
@@ -93,8 +93,8 @@ tar(
 )
 
 assert_tar_listing(
-    name = "test4",
-    actual = "tar4",
+    name = "test_flags",
+    actual = "tar_flags",
     expected = [
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 lib/tests/tar/a",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 lib/tests/tar/src_file",
@@ -127,15 +127,15 @@ genrule(
 )
 
 tar(
-    name = "tar5",
+    name = "tar_strip_prefix",
     srcs = _SRCS5,
     out = "5.tar",
     mtree = "strip_prefix",
 )
 
 assert_tar_listing(
-    name = "test5",
-    actual = "tar5",
+    name = "test_strip_prefix",
+    actual = "tar_strip_prefix",
     expected = [
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 a",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 src_file",
