@@ -122,6 +122,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "tar",
+    srcs = [
+        "//lib/private:tar.bzl",
+    ],
+)
+
+bzl_library(
     name = "utils",
     srcs = [
         "//lib/private:utils.bzl",
@@ -208,6 +215,12 @@ bzl_library(
 bzl_library(
     name = "jq_toolchain",
     srcs = ["//lib/private:jq_toolchain.bzl"],
+    deps = [":repo_utils"],
+)
+
+bzl_library(
+    name = "tar_toolchain",
+    srcs = ["//lib/private:tar_toolchain.bzl"],
     deps = [":repo_utils"],
 )
 

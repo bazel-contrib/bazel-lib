@@ -9,6 +9,7 @@ load(
     "DEFAULT_EXPAND_TEMPLATE_REPOSITORY",
     "DEFAULT_JQ_REPOSITORY",
     "DEFAULT_JQ_VERSION",
+    "DEFAULT_TAR_REPOSITORY",
     "DEFAULT_YQ_REPOSITORY",
     "DEFAULT_YQ_VERSION",
     "register_copy_directory_toolchains",
@@ -16,6 +17,7 @@ load(
     "register_coreutils_toolchains",
     "register_expand_template_toolchains",
     "register_jq_toolchains",
+    "register_tar_toolchains",
     "register_yq_toolchains",
 )
 load("//lib/private:extension_utils.bzl", "extension_utils")
@@ -27,6 +29,7 @@ def _toolchain_extension(mctx):
     register_jq_toolchains(register = False)
     register_yq_toolchains(register = False)
     register_coreutils_toolchains(register = False)
+    register_tar_toolchains(register = False)
     register_expand_template_toolchains(register = False)
 
     create_host_repo = False
@@ -103,6 +106,15 @@ def _toolchains_extension_impl(mctx):
 
     extension_utils.toolchain_repos_bfs(
         mctx = mctx,
+        get_tag_fn = lambda tags: tags.tar,
+        toolchain_name = "tar",
+        default_repository = DEFAULT_TAR_REPOSITORY,
+        toolchain_repos_fn = lambda name, version: register_tar_toolchains(name = name, register = False),
+        get_version_fn = lambda attr: None,
+    )
+
+    extension_utils.toolchain_repos_bfs(
+        mctx = mctx,
         get_tag_fn = lambda tags: tags.expand_template,
         toolchain_name = "expand_template",
         toolchain_repos_fn = lambda name, version: register_expand_template_toolchains(name = name, register = False),
@@ -117,6 +129,7 @@ toolchains = module_extension(
         "jq": tag_class(attrs = {"name": attr.string(default = DEFAULT_JQ_REPOSITORY), "version": attr.string(default = DEFAULT_JQ_VERSION)}),
         "yq": tag_class(attrs = {"name": attr.string(default = DEFAULT_YQ_REPOSITORY), "version": attr.string(default = DEFAULT_YQ_VERSION)}),
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),
+        "tar": tag_class(attrs = {"name": attr.string(default = DEFAULT_TAR_REPOSITORY)}),
         "expand_template": tag_class(attrs = {"name": attr.string(default = DEFAULT_EXPAND_TEMPLATE_REPOSITORY)}),
     },
 )

@@ -8,6 +8,7 @@ load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS",
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:local_config_platform.bzl", "local_config_platform")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
+load("//lib/private:tar_toolchain.bzl", "BSDTAR_PLATFORMS", "bsdtar_binary_repo", "tar_toolchains_repo")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 load("//tools:version.bzl", "VERSION")
 
@@ -45,8 +46,9 @@ def aspect_bazel_lib_dependencies(override_local_config_platform = False):
     # Always register the expand_template toolchain
     register_expand_template_toolchains()
 
-    # Always register the coreutils toolchain
+    # Always register the coreutils toolchain and the tar toolchain
     register_coreutils_toolchains()
+    register_tar_toolchains()
 
 # Re-export the default versions
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
@@ -103,6 +105,29 @@ def register_yq_toolchains(name = DEFAULT_YQ_REPOSITORY, version = DEFAULT_YQ_VE
     yq_host_alias_repo(name = name)
 
     yq_toolchains_repo(
+        name = "%s_toolchains" % name,
+        user_repository_name = name,
+    )
+
+DEFAULT_TAR_REPOSITORY = "bsd_tar"
+
+def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
+    """Registers bsdtar toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    for [platform, meta] in BSDTAR_PLATFORMS.items():
+        bsdtar_binary_repo(
+            name = "%s_%s" % (name, platform),
+            platform = platform,
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
+    tar_toolchains_repo(
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
