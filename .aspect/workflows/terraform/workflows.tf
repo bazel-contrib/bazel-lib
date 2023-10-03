@@ -6,7 +6,7 @@ data "google_compute_image" "runner_image" {
   # https://github.com/aspect-build/workflows-images for example packer scripts and BUILD targets
   # for building GCP images for Workflows.
   project = "aspect-workflows-images"
-  name    = "aspect-workflows-debian-11-minimal-1-3-0"
+  name    = "aspect-workflows-debian-11-minimal-1-5-0"
 }
 
 module "aspect_workflows" {
