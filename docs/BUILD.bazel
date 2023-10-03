@@ -59,6 +59,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "tar",
+    bzl_library_target = "//lib:tar",
+)
+
+stardoc_with_diff_test(
     name = "utils",
     bzl_library_target = "//lib:utils",
 )
