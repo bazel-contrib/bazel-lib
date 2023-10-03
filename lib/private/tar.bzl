@@ -90,7 +90,6 @@ def _tar_impl(ctx):
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
         inputs = depset(direct = inputs, transitive = [bsdtar.default.files]),
-        input_manifests = bsdtar.tarinfo.input_manifests,
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
