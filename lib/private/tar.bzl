@@ -68,7 +68,7 @@ def _add_compress_options(compress, args):
         args.add("--zstd")
 
 def _tar_impl(ctx):
-    tarinfo = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo
+    bsdtar = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"]
     inputs = ctx.files.srcs[:]
     args = ctx.actions.args()
 
@@ -88,8 +88,9 @@ def _tar_impl(ctx):
     inputs.append(ctx.file.mtree)
 
     ctx.actions.run(
-        executable = tarinfo.binary,
-        inputs = inputs,
+        executable = bsdtar.tarinfo.binary,
+        inputs = depset(direct = inputs, transitive = [bsdtar.default.files]),
+        input_manifests = bsdtar.tarinfo.input_manifests,
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",

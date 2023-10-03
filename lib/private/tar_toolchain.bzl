@@ -171,9 +171,7 @@ package(default_visibility = ["//visibility:public"])
 
     rctx.file("bsdtar.sh", """#!/usr/bin/env bash
 {RLOCATION}
-export LD_LIBRARY_PATH=$(dirname $(rlocation {name}/{libs}/libarchive.so.13))
-
-exec $(rlocation {name}/usr/bin/bsdtar) $@
+LD_LIBRARY_PATH=$(dirname $(rlocation {name}/{libs}/libarchive.so.13)) exec $(rlocation {name}/usr/bin/bsdtar) $@
 """.format(name = rctx.name, libs = libarchive13.libs, RLOCATION = BASH_RLOCATION_FUNCTION))
 
     rctx.file("BUILD.bazel", build_header + """\
@@ -211,6 +209,7 @@ TarInfo = provider(
     doc = "Provide info for executing BSD tar",
     fields = {
         "binary": "bsdtar executable",
+        "input_manifests": "input manifests returned by ctx.resolve_tools",
     },
 )
 
@@ -223,14 +222,14 @@ def _tar_toolchain_impl(ctx):
         "BSDTAR_BIN": binary.path,
     })
 
-    runfiles = ctx.runfiles(files = [binary])
-    runfiles = runfiles.merge_all([ctx.attr.binary[DefaultInfo].default_runfiles])
+    (tar_inputs, tar_manifest) = ctx.resolve_tools(tools = [ctx.attr.binary])
+
     default_info = DefaultInfo(
-        files = depset([binary]),
-        runfiles = runfiles,
+        files = depset(ctx.files.binary, transitive = [tar_inputs]),
     )
     tarinfo = TarInfo(
         binary = binary,
+        input_manifests = tar_manifest,
     )
 
     # Export all the providers inside our ToolchainInfo
@@ -248,6 +247,7 @@ tar_toolchain = rule(
     attrs = {
         "binary": attr.label(
             doc = "a command to find on the system path",
+            allow_files = True,
             executable = True,
             cfg = "exec",
         ),
