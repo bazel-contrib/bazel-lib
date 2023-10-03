@@ -140,7 +140,20 @@ package(default_visibility = ["//visibility:public"])
         type = libarchive_tools.type,
         sha256 = libarchive_tools.integrity,
     )
-    for lib in ["libarchive13", "libnettle", "libarchive-tools"]:
+    rctx.download_and_extract(
+        url = "http://security.ubuntu.com/ubuntu/pool/main/libx/libxml2/libxml2_2.9.10+dfsg-5ubuntu0.20.04.6_amd64.deb",
+        output = "libxml2",
+        type = "deb",
+        sha256 = "a8cbd10a0d74ff8ec43a7e6c09ad07629f20efea9972799d9ff7f63c4e82bfcf",
+    )
+    rctx.download_and_extract(
+        url = "http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2.1_amd64.deb",
+        output = "libicu66",
+        type = "deb",
+        sha256 = "00d0de456134668f41bd9ea308a076bc0a6a805180445af8a37209d433f41efe",
+    )
+
+    for lib in ["libarchive13", "libnettle", "libarchive-tools", "libxml2", "libicu66"]:
         rctx.extract(lib + "/data.tar.xz")
 
     rctx.file("BUILD.bazel", build_header + """\
@@ -152,11 +165,11 @@ filegroup(
 tar_toolchain(
     name = "bsdtar_toolchain",
     binary = "usr/bin/bsdtar",
-    include_path = "{include_path}",
+    include_path = "./external/bsd_tar_linux_amd64/{libs}",
     data = [":libs"],
     visibility = ["//visibility:public"],
 )
-""".format(libs = libarchive13.libs, include_path = rctx.path(libarchive13.libs)))
+""".format(libs = libarchive13.libs))
 
 bsdtar_binary_repo = repository_rule(
     implementation = _bsdtar_binary_repo,
