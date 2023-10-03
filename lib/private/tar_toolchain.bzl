@@ -2,6 +2,19 @@
 
 load(":repo_utils.bzl", "repo_utils")
 
+BASH_RLOCATION_FUNCTION = r"""
+# --- begin runfiles.bash initialization v3 ---
+# Copy-pasted from the Bazel Bash runfiles library v3.
+set -uo pipefail; set +e; f=bazel_tools/tools/bash/runfiles/runfiles.bash
+source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
+  source "$(grep -sm1 "^$f " "${RUNFILES_MANIFEST_FILE:-/dev/null}" | cut -f2- -d' ')" 2>/dev/null || \
+  source "$0.runfiles/$f" 2>/dev/null || \
+  source "$(grep -sm1 "^$f " "$0.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+  source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+  { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
+# --- end runfiles.bash initialization v3 ---
+"""
+
 BSDTAR_PLATFORMS = {
     "linux_amd64": struct(
         compatible_with = [
@@ -156,20 +169,36 @@ package(default_visibility = ["//visibility:public"])
     for lib in ["libarchive13", "libnettle", "libarchive-tools", "libxml2", "libicu66"]:
         rctx.extract(lib + "/data.tar.xz")
 
+    rctx.file("bsdtar.sh", """#!/usr/bin/env bash
+{RLOCATION}
+export LD_LIBRARY_PATH=$(dirname $(rlocation {name}/{libs}/libarchive.so.13))
+
+exec $(rlocation {name}/usr/bin/bsdtar) $@
+""".format(name = rctx.name, libs = libarchive13.libs, RLOCATION = BASH_RLOCATION_FUNCTION))
+
     rctx.file("BUILD.bazel", build_header + """\
 filegroup(
     name = "libs",
     srcs = glob(["{libs}/*.so.*"])
 )
 
-tar_toolchain(
-    name = "bsdtar_toolchain",
-    binary = "usr/bin/bsdtar",
-    include_path = "./external/bsd_tar_linux_amd64/{libs}",
-    data = [":libs"],
+sh_binary(
+    name = "bsdtar",
+    srcs = ["bsdtar.sh"],
+    data = [
+        "usr/bin/bsdtar",
+        ":libs",
+    ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
     visibility = ["//visibility:public"],
 )
-""".format(libs = libarchive13.libs))
+
+tar_toolchain(
+    name = "bsdtar_toolchain",
+    binary = ":bsdtar",
+    visibility = ["//visibility:public"],
+)
+""".format(libs = libarchive13.libs, name = rctx.name))
 
 bsdtar_binary_repo = repository_rule(
     implementation = _bsdtar_binary_repo,
@@ -182,8 +211,6 @@ TarInfo = provider(
     doc = "Provide info for executing BSD tar",
     fields = {
         "binary": "bsdtar executable",
-        "include_path": "directory of dynamic-linked libraries needed on LD_LIBRARY_PATH",
-        "files": "files which must be included as inputs to any actions running the binary",
     },
 )
 
@@ -194,17 +221,16 @@ def _tar_toolchain_impl(ctx):
     # See https://docs.bazel.build/versions/main/be/make-variables.html#custom_variables
     template_variables = platform_common.TemplateVariableInfo({
         "BSDTAR_BIN": binary.path,
-        "BSDTAR_LIB": ctx.attr.include_path,
     })
 
+    runfiles = ctx.runfiles(files = [binary])
+    runfiles = runfiles.merge_all([ctx.attr.binary[DefaultInfo].default_runfiles])
     default_info = DefaultInfo(
         files = depset([binary]),
-        runfiles = ctx.runfiles(files = [binary]),
+        runfiles = runfiles,
     )
     tarinfo = TarInfo(
         binary = binary,
-        include_path = ctx.attr.include_path,
-        files = ctx.files.data,
     )
 
     # Export all the providers inside our ToolchainInfo
@@ -222,14 +248,9 @@ tar_toolchain = rule(
     attrs = {
         "binary": attr.label(
             doc = "a command to find on the system path",
-            allow_single_file = True,
             executable = True,
             cfg = "exec",
         ),
-        "include_path": attr.string(
-            doc = "folder include on LD_LIBRARY_PATH when running tar",
-        ),
-        "data": attr.label_list(doc = "Files needed in actions that run tar", allow_files = True),
     },
 )
 

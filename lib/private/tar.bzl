@@ -69,7 +69,7 @@ def _add_compress_options(compress, args):
 
 def _tar_impl(ctx):
     tarinfo = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"].tarinfo
-    inputs = ctx.files.srcs + tarinfo.files
+    inputs = ctx.files.srcs[:]
     args = ctx.actions.args()
 
     # Set mode
@@ -93,7 +93,6 @@ def _tar_impl(ctx):
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
-        env = {"LD_LIBRARY_PATH": tarinfo.include_path} if tarinfo.include_path else {},
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
