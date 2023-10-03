@@ -1,16 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-
   "extends": [
-    "config:base",
-    ":preserveSemverRanges",
-    ":rebaseStalePrs",
-    "schedule:weekly",
-    "group:recommended",
+    ":dependencyDashboard",
+    ":semanticPrefixFixDepsChoreOthers",
     "group:monorepos",
+    "group:recommended",
+    "replacements:all",
     "workarounds:all"
   ],
-
-  "labels": ["deps"],
-  "dependencyDashboard": true
+  "packageRules": [
+    {
+      "matchFiles": ["MODULE.bazel"],
+      "enabled": false
+    }
+  ],
+  "labels": ["deps"]
 }
