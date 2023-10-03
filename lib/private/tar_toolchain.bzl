@@ -22,6 +22,7 @@ BSDTAR_PLATFORMS = {
             "@platforms//cpu:x86_64",
         ],
     ),
+    # TODO(alexeagle): download from somewhere
     "linux_arm64": struct(
         compatible_with = [
             "@platforms//os:linux",
@@ -43,57 +44,40 @@ BSDTAR_PLATFORMS = {
     ),
 }
 
-# note, using Ubuntu Focal packages as it works with older glibc versions.
-# Ubuntu Jammy will fail on ubuntu 20.02 with
+# note, using Ubuntu Focal packages as they link with older glibc versions.
+# Ubuntu Jammy packages will fail on ubuntu 20.02 with
 # bsdtar: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found
 # bsdtar: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found
-LIBNETTLE_URLS = {
-    "linux_amd64": struct(
-        urls = [
-            "http://security.ubuntu.com/ubuntu/pool/main/n/nettle/libnettle7_3.5.1+really3.5.1-2ubuntu0.2_amd64.deb",
-        ],
-        type = "deb",
-        integrity = "3496aed83407fde71e0dc5988b28e8fd7f07a2f27fcf3e0f214c7cd86667eecd",
-    ),
-}
-LIBARCHIVE13_URLS = {
-    # https://packages.ubuntu.com/focal/amd64/libarchive13/download
-    "linux_amd64": struct(
-        urls = [
-            "http://security.ubuntu.com/ubuntu/pool/main/liba/libarchive/libarchive13_3.4.0-2ubuntu1.2_amd64.deb",
-        ],
-        integrity = "8ba7507f61bb3ea8da488702ec0badcbfb726d36ea6886e3421ac59082aaf2d1",
-        type = "deb",
-        libs = "usr/lib/x86_64-linux-gnu",
-    ),
-    # http://ports.ubuntu.com/pool/main/liba/libarchive/
-    "linux_arm64": struct(
-        urls = [
-            "http://ports.ubuntu.com/pool/main/liba/libarchive/libarchive13_3.4.0-2ubuntu1_arm64.deb",
-        ],
-        integrity = "aa5e31d05a9d6bde8093137bd1c82b5a20a5f470bd5109642014f895c20f323a",
-        type = "deb",
-        libs = "usr/lib/aarch64-linux-gnu",
-    ),
-}
-LIBARCHIVE_TOOLS_URLS = {
+#
+# TODO: this is only a partial listing of the transitive deps of libarchive-tools
+# so we expect a bunch of compress modes are broken, for example.
+LINUX_AMD64_DEPS = [
     # https://packages.ubuntu.com/focal/amd64/libarchive-tools/download
-    "linux_amd64": struct(
-        urls = [
-            "http://security.ubuntu.com/ubuntu/pool/universe/liba/libarchive/libarchive-tools_3.4.0-2ubuntu1.2_amd64.deb",
-        ],
-        integrity = "12a19878d34b407e6f4893d3b26b7758a26c5534a066d76184c8b764b2df1652",
-        type = "deb",
+    (
+        "12a19878d34b407e6f4893d3b26b7758a26c5534a066d76184c8b764b2df1652",
+        "http://security.ubuntu.com/ubuntu/pool/universe/liba/libarchive/libarchive-tools_3.4.0-2ubuntu1.2_amd64.deb",
     ),
-    # http://ports.ubuntu.com/pool/main/liba/libarchive/
-    "linux_arm64": struct(
-        urls = [
-            "http://ports.ubuntu.com/pool/main/liba/libarchive/libarchive-tools_3.2.1-2~ubuntu16.04.1_arm64.deb",
-        ],
-        integrity = "6d089f878507b536d8ca51b1ad80a80706a1dd7dbbcce7600800d3f9f98be2ab",
-        type = "deb",
+    # https://packages.ubuntu.com/focal/amd64/libarchive13/download
+    (
+        "8ba7507f61bb3ea8da488702ec0badcbfb726d36ea6886e3421ac59082aaf2d1",
+        "http://security.ubuntu.com/ubuntu/pool/main/liba/libarchive/libarchive13_3.4.0-2ubuntu1.2_amd64.deb",
     ),
-}
+    # https://packages.ubuntu.com/focal/amd64/libnettle7/download
+    (
+        "3496aed83407fde71e0dc5988b28e8fd7f07a2f27fcf3e0f214c7cd86667eecd",
+        "http://security.ubuntu.com/ubuntu/pool/main/n/nettle/libnettle7_3.5.1+really3.5.1-2ubuntu0.2_amd64.deb",
+    ),
+    # https://packages.ubuntu.com/focal/amd64/libxml2/download
+    (
+        "a8cbd10a0d74ff8ec43a7e6c09ad07629f20efea9972799d9ff7f63c4e82bfcf",
+        "http://security.ubuntu.com/ubuntu/pool/main/libx/libxml2/libxml2_2.9.10+dfsg-5ubuntu0.20.04.6_amd64.deb",
+    ),
+    # https://packages.ubuntu.com/focal/amd64/libicu66/download
+    (
+        "00d0de456134668f41bd9ea308a076bc0a6a805180445af8a37209d433f41efe",
+        "http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2.1_amd64.deb",
+    ),
+]
 
 def _find_usable_system_tar(rctx, tar_name):
     tar = rctx.which(tar_name)
@@ -130,49 +114,23 @@ package(default_visibility = ["//visibility:public"])
         return
 
     # Other platforms, we have more work to do.
-    libarchive_tools = LIBARCHIVE_TOOLS_URLS[rctx.attr.platform]
-    libarchive13 = LIBARCHIVE13_URLS[rctx.attr.platform]
-    libnettle = LIBNETTLE_URLS[rctx.attr.platform]
+    libs_dir = "usr/lib/x86_64-linux-gnu" if rctx.attr.platform.endswith("amd64") else "usr/lib/aarch64-linux-gnu"
 
-    # TODO: windows.
-    rctx.download_and_extract(
-        url = libnettle.urls,
-        output = "libnettle",
-        type = libnettle.type,
-        sha256 = libnettle.integrity,
-    )
-    rctx.download_and_extract(
-        url = libarchive13.urls,
-        output = "libarchive13",
-        type = libarchive13.type,
-        sha256 = libarchive13.integrity,
-    )
-    rctx.download_and_extract(
-        url = libarchive_tools.urls,
-        output = "libarchive-tools",
-        type = libarchive_tools.type,
-        sha256 = libarchive_tools.integrity,
-    )
-    rctx.download_and_extract(
-        url = "http://security.ubuntu.com/ubuntu/pool/main/libx/libxml2/libxml2_2.9.10+dfsg-5ubuntu0.20.04.6_amd64.deb",
-        output = "libxml2",
-        type = "deb",
-        sha256 = "a8cbd10a0d74ff8ec43a7e6c09ad07629f20efea9972799d9ff7f63c4e82bfcf",
-    )
-    rctx.download_and_extract(
-        url = "http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2.1_amd64.deb",
-        output = "libicu66",
-        type = "deb",
-        sha256 = "00d0de456134668f41bd9ea308a076bc0a6a805180445af8a37209d433f41efe",
-    )
-
-    for lib in ["libarchive13", "libnettle", "libarchive-tools", "libxml2", "libicu66"]:
-        rctx.extract(lib + "/data.tar.xz")
+    # TODO: windows, linux-arm64, etc
+    if rctx.attr.platform != "linux_amd64":
+        fail("platform {} not supported yet".format(rctx.attr.platform))
+    for lib in LINUX_AMD64_DEPS:
+        rctx.download_and_extract(
+            url = lib[1],
+            type = "deb",
+            sha256 = lib[0],
+        )
+        rctx.extract("data.tar.xz")
 
     rctx.file("bsdtar.sh", """#!/usr/bin/env bash
 {RLOCATION}
 LD_LIBRARY_PATH=$(dirname $(rlocation {name}/{libs}/libarchive.so.13)) exec $(rlocation {name}/usr/bin/bsdtar) $@
-""".format(name = rctx.name, libs = libarchive13.libs, RLOCATION = BASH_RLOCATION_FUNCTION))
+""".format(name = rctx.name, libs = libs_dir, RLOCATION = BASH_RLOCATION_FUNCTION))
 
     rctx.file("BUILD.bazel", build_header + """\
 filegroup(
@@ -196,7 +154,7 @@ tar_toolchain(
     binary = ":bsdtar",
     visibility = ["//visibility:public"],
 )
-""".format(libs = libarchive13.libs, name = rctx.name))
+""".format(libs = libs_dir, name = rctx.name))
 
 bsdtar_binary_repo = repository_rule(
     implementation = _bsdtar_binary_repo,
