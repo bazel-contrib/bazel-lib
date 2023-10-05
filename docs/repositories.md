@@ -7,17 +7,11 @@ Macros for loading dependencies and registering toolchains
 ## aspect_bazel_lib_dependencies
 
 <pre>
-aspect_bazel_lib_dependencies(<a href="#aspect_bazel_lib_dependencies-override_local_config_platform">override_local_config_platform</a>)
+aspect_bazel_lib_dependencies()
 </pre>
 
 Load dependencies required by aspect rules
 
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="aspect_bazel_lib_dependencies-override_local_config_platform"></a>override_local_config_platform |  override the @local_config_platform repository with one that adds stardoc support for loading constraints.bzl.<br><br>Should be set in repositories that load @aspect_bazel_lib copy actions and also generate stardoc.   |  <code>False</code> |
 
 
 <a id="register_copy_directory_toolchains"></a>

@@ -61,7 +61,7 @@ def assert_outputs(name, actual, expected, **kwargs):
     """
 
     if not types.is_list(expected):
-        fail("expected should be a list of strings")
+        fail("expected should be a list of strings, not " + type(expected))
 
     params_file(
         name = "_actual_" + name,

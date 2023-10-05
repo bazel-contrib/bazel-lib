@@ -1,5 +1,3 @@
-# These loads are in the docs/ package rather than anything users depend on
-# so that the dependency on stardoc doesn't leak to them.
 load("//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 
 stardoc_with_diff_test(

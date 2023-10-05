@@ -8,24 +8,6 @@ exports_files([
     "create_version.sh",
 ])
 
-bzl_library(
-    name = "sri",
-    srcs = [":integrity.bzl"],
-    visibility = ["//lib/private/docs:__pkg__"],
-)
-
-bzl_library(
-    name = "version",
-    srcs = [":version.bzl"],
-    visibility = ["//lib/private/docs:__pkg__"],
-)
-
-bzl_library(
-    name = "hashes",
-    srcs = ["hashes.bzl"],
-    visibility = ["//visibility:public"],
-)
-
 multi_platform_go_binaries(
     name = "copy_to_directory",
     embed = ["//tools/copy_to_directory:copy_to_directory_lib"],
@@ -64,4 +46,22 @@ write_source_files(
         "integrity.bzl": ":release_versions",
     },
     tags = (["manual"] if not is_bazel_6_or_greater() else []),
+)
+
+bzl_library(
+    name = "hashes",
+    srcs = ["hashes.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
+    name = "integrity",
+    srcs = ["integrity.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
+    name = "version",
+    srcs = ["version.bzl"],
+    visibility = ["//visibility:public"],
 )
