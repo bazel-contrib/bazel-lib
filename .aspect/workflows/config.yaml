@@ -4,13 +4,20 @@ env:
   CC: /bin/false
 workspaces:
   - .
-  - e2e/smoke
-  - e2e/coreutils
-  - e2e/copy_to_directory
+  - e2e/smoke:
+      gazelle:
+        without: true
+  - e2e/coreutils:
+      gazelle:
+        without: true
+  - e2e/copy_to_directory:
+      gazelle:
+        without: true
 bazel:
   flags:
     - --remote_download_minimal
     - --nobuild_runfile_links
 tasks:
   branch_freshness:
+  gazelle:
   test:
