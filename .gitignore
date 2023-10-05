@@ -1,3 +1,4 @@
 bazel-*
 **/.terraform/*
 test-out/
+.DS_Store
