@@ -42,7 +42,7 @@ for more context.
 ## copy_directory_action
 
 <pre>
-copy_directory_action(<a href="#copy_directory_action-ctx">ctx</a>, <a href="#copy_directory_action-src">src</a>, <a href="#copy_directory_action-dst">dst</a>, <a href="#copy_directory_action-is_windows">is_windows</a>)
+copy_directory_action(<a href="#copy_directory_action-ctx">ctx</a>, <a href="#copy_directory_action-src">src</a>, <a href="#copy_directory_action-dst">dst</a>)
 </pre>
 
 Legacy factory function that creates an action to copy a directory from src to dst.
@@ -65,7 +65,6 @@ other rule implementations.
 | <a id="copy_directory_action-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_directory_action-src"></a>src |  The directory to make a copy of. Can be a source directory or TreeArtifact.   |  none |
 | <a id="copy_directory_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
-| <a id="copy_directory_action-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 
 <a id="copy_directory_bin_action"></a>

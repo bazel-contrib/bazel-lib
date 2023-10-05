@@ -14,7 +14,7 @@ https://github.com/bazelbuild/rules_nodejs/blob/8b5d27400db51e7027fe95ae413eeabe
 ## copy_file_to_bin_action
 
 <pre>
-copy_file_to_bin_action(<a href="#copy_file_to_bin_action-ctx">ctx</a>, <a href="#copy_file_to_bin_action-file">file</a>, <a href="#copy_file_to_bin_action-is_windows">is_windows</a>)
+copy_file_to_bin_action(<a href="#copy_file_to_bin_action-ctx">ctx</a>, <a href="#copy_file_to_bin_action-file">file</a>)
 </pre>
 
 Factory function that creates an action to copy a file to the output tree.
@@ -33,7 +33,6 @@ without a copy action.
 | :------------- | :------------- | :------------- |
 | <a id="copy_file_to_bin_action-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_file_to_bin_action-file"></a>file |  The file to copy.   |  none |
-| <a id="copy_file_to_bin_action-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 **RETURNS**
 
@@ -45,7 +44,7 @@ A File in the output tree.
 ## copy_files_to_bin_actions
 
 <pre>
-copy_files_to_bin_actions(<a href="#copy_files_to_bin_actions-ctx">ctx</a>, <a href="#copy_files_to_bin_actions-files">files</a>, <a href="#copy_files_to_bin_actions-is_windows">is_windows</a>)
+copy_files_to_bin_actions(<a href="#copy_files_to_bin_actions-ctx">ctx</a>, <a href="#copy_files_to_bin_actions-files">files</a>)
 </pre>
 
 Factory function that creates actions to copy files to the output tree.
@@ -64,7 +63,6 @@ directly to the result without a copy action.
 | :------------- | :------------- | :------------- |
 | <a id="copy_files_to_bin_actions-ctx"></a>ctx |  The rule context.   |  none |
 | <a id="copy_files_to_bin_actions-files"></a>files |  List of File objects.   |  none |
-| <a id="copy_files_to_bin_actions-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 **RETURNS**
 

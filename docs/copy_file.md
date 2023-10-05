@@ -51,7 +51,7 @@ for more context.
 ## copy_file_action
 
 <pre>
-copy_file_action(<a href="#copy_file_action-ctx">ctx</a>, <a href="#copy_file_action-src">src</a>, <a href="#copy_file_action-dst">dst</a>, <a href="#copy_file_action-dir_path">dir_path</a>, <a href="#copy_file_action-is_windows">is_windows</a>)
+copy_file_action(<a href="#copy_file_action-ctx">ctx</a>, <a href="#copy_file_action-src">src</a>, <a href="#copy_file_action-dst">dst</a>, <a href="#copy_file_action-dir_path">dir_path</a>)
 </pre>
 
 Factory function that creates an action to copy a file from src to dst.
@@ -72,6 +72,5 @@ other rule implementations.
 | <a id="copy_file_action-src"></a>src |  The source file to copy or TreeArtifact to copy a single file out of.   |  none |
 | <a id="copy_file_action-dst"></a>dst |  The destination file.   |  none |
 | <a id="copy_file_action-dir_path"></a>dir_path |  If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.   |  <code>None</code> |
-| <a id="copy_file_action-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
 
 
