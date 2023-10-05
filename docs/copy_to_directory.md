@@ -67,50 +67,6 @@ for more information on supported globbing patterns.
 | <a id="copy_to_directory-verbose"></a>verbose |  If true, prints out verbose logs to stdout   | Boolean | optional | False |
 
 
-<a id="copy_to_directory_action"></a>
-
-## copy_to_directory_action
-
-<pre>
-copy_to_directory_action(<a href="#copy_to_directory_action-ctx">ctx</a>, <a href="#copy_to_directory_action-srcs">srcs</a>, <a href="#copy_to_directory_action-dst">dst</a>, <a href="#copy_to_directory_action-additional_files">additional_files</a>, <a href="#copy_to_directory_action-root_paths">root_paths</a>,
-                         <a href="#copy_to_directory_action-include_external_repositories">include_external_repositories</a>, <a href="#copy_to_directory_action-include_srcs_packages">include_srcs_packages</a>, <a href="#copy_to_directory_action-exclude_srcs_packages">exclude_srcs_packages</a>,
-                         <a href="#copy_to_directory_action-include_srcs_patterns">include_srcs_patterns</a>, <a href="#copy_to_directory_action-exclude_srcs_patterns">exclude_srcs_patterns</a>, <a href="#copy_to_directory_action-exclude_prefixes">exclude_prefixes</a>,
-                         <a href="#copy_to_directory_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_action-is_windows">is_windows</a>)
-</pre>
-
-Legacy factory function to copy files to a directory.
-
-This helper calculates copy paths in Starlark during analysis and performs the copies in a
-bash/bat script. For improved analysis and runtime performance, it is recommended the switch
-to `copy_to_directory_bin_action` which calculates copy paths and performs copies with a tool
-binary, typically the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary` either built
-from source or provided by a toolchain.
-
-This helper is used by copy_to_directory. It is exposed as a public API so it can be used within
-other rule implementations where additional_files can also be passed in.
-
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="copy_to_directory_action-ctx"></a>ctx |  The rule context.   |  none |
-| <a id="copy_to_directory_action-srcs"></a>srcs |  Files and/or directories or targets that provide <code>DirectoryPathInfo</code> to copy into the output directory.   |  none |
-| <a id="copy_to_directory_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
-| <a id="copy_to_directory_action-additional_files"></a>additional_files |  List or depset of additional files to copy that are not in the <code>DefaultInfo</code> or <code>DirectoryPathInfo</code> of srcs   |  <code>[]</code> |
-| <a id="copy_to_directory_action-root_paths"></a>root_paths |  List of paths that are roots in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["."]</code> |
-| <a id="copy_to_directory_action-include_external_repositories"></a>include_external_repositories |  List of external repository names to include in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>[]</code> |
-| <a id="copy_to_directory_action-include_srcs_packages"></a>include_srcs_packages |  List of Bazel packages to include in output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["**"]</code> |
-| <a id="copy_to_directory_action-exclude_srcs_packages"></a>exclude_srcs_packages |  List of Bazel packages (with glob support) to exclude from output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>[]</code> |
-| <a id="copy_to_directory_action-include_srcs_patterns"></a>include_srcs_patterns |  List of paths (with glob support) to include in output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>["**"]</code> |
-| <a id="copy_to_directory_action-exclude_srcs_patterns"></a>exclude_srcs_patterns |  List of paths (with glob support) to exclude from output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>[]</code> |
-| <a id="copy_to_directory_action-exclude_prefixes"></a>exclude_prefixes |  List of path prefixes to exclude from output directory.<br><br>See copy_to_directory rule documentation for more details.   |  <code>[]</code> |
-| <a id="copy_to_directory_action-replace_prefixes"></a>replace_prefixes |  Map of paths prefixes to replace in the output directory path when copying files.<br><br>See copy_to_directory rule documentation for more details.   |  <code>{}</code> |
-| <a id="copy_to_directory_action-allow_overwrites"></a>allow_overwrites |  If True, allow files to be overwritten if the same output file is copied to twice.<br><br>See copy_to_directory rule documentation for more details.   |  <code>False</code> |
-| <a id="copy_to_directory_action-is_windows"></a>is_windows |  Deprecated and unused   |  <code>None</code> |
-
-
 <a id="copy_to_directory_bin_action"></a>
 
 ## copy_to_directory_bin_action
