@@ -21,6 +21,13 @@ gazelle_binary(
 gazelle(
     name = "gazelle",
     gazelle = "gazelle_bin",
+    mode = "fix",
+)
+
+gazelle(
+    name = "gazelle.check",
+    gazelle = "gazelle_bin",
+    mode = "diff",
 )
 
 gazelle(
