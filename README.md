@@ -52,7 +52,8 @@ For example to use commit `abc123`:
 
 ## Writing rules
 
-- [expand_make_vars](docs/expand_make_vars.md) Perform make variable and location substitions in strings and templates.
+- [expand_make_vars](docs/expand_make_vars.md) Perform make variable and location substitions in strings..
+- [expand_template](docs/expand_template.md) Substitute templates with make variables, location resolves, stamp variables, and arbitrary strings.
 - [paths](docs/paths.md) Useful path resolution methods.
 - [transitions](docs/transitions.md) Transition sources to a provided platform.
 - [lists](docs/lists.md) Functional-style helpers for working with list data structures.

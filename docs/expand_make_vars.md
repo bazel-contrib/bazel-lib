@@ -49,26 +49,6 @@ The deprecated `$(location)` and `$(locations)` expansions returns either the ex
 The expanded path or the original path
 
 
-<a id="expand_template"></a>
-
-## expand_template
-
-<pre>
-expand_template(<a href="#expand_template-name">name</a>, <a href="#expand_template-template">template</a>, <a href="#expand_template-kwargs">kwargs</a>)
-</pre>
-
-Wrapper macro for `expand_template_rule`.
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="expand_template-name"></a>name |  name of resulting rule   |  none |
-| <a id="expand_template-template"></a>template |  the label of a template file, or a list of strings which are lines representing the content of the template.   |  none |
-| <a id="expand_template-kwargs"></a>kwargs |  other named parameters to <code>expand_template_rule</code>.   |  none |
-
-
 <a id="expand_variables"></a>
 
 ## expand_variables
