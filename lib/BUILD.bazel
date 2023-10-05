@@ -84,18 +84,10 @@ toolchain_type(
 )
 
 bzl_library(
-    name = "docs",
-    srcs = ["docs.bzl"],
-    deps = ["//lib/private/docs"],
-)
-
-bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
     deps = [
         ":expand_template",
-        "//lib/private/docs:expand_locations",
-        "//lib/private/docs:expand_variables",
     ],
 )
 
@@ -103,9 +95,7 @@ bzl_library(
     name = "expand_template",
     srcs = ["expand_template.bzl"],
     deps = [
-        "//lib/private/docs:expand_locations",
-        "//lib/private/docs:expand_template",
-        "//lib/private/docs:expand_variables",
+        "//lib/private:expand_template",
         "@bazel_skylib//lib:types",
         "@bazel_skylib//rules:write_file",
     ],
@@ -114,19 +104,19 @@ bzl_library(
 bzl_library(
     name = "params_file",
     srcs = ["params_file.bzl"],
-    deps = ["//lib/private/docs:params_file"],
+    deps = ["//lib/private:params_file"],
 )
 
 bzl_library(
     name = "paths",
     srcs = ["paths.bzl"],
-    deps = ["//lib/private/docs:paths"],
+    deps = ["//lib/private:paths"],
 )
 
 bzl_library(
     name = "utils",
     srcs = ["utils.bzl"],
-    deps = ["//lib/private/docs:utils"],
+    deps = ["//lib/private:utils"],
 )
 
 bzl_library(
@@ -134,44 +124,51 @@ bzl_library(
     srcs = ["jq.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "//lib/private/docs:jq",
+        "//lib/private:jq",
     ],
 )
 
 bzl_library(
     name = "directory_path",
     srcs = ["directory_path.bzl"],
-    deps = ["//lib/private/docs:directory_path"],
+    deps = ["//lib/private:directory_path"],
 )
 
 bzl_library(
     name = "output_files",
     srcs = ["output_files.bzl"],
-    deps = ["//lib/private/docs:output_files"],
+    deps = ["//lib/private:output_files"],
 )
 
 bzl_library(
     name = "copy_file",
     srcs = ["copy_file.bzl"],
-    deps = ["//lib/private/docs:copy_file"],
+    deps = ["//lib/private:copy_file"],
 )
 
 bzl_library(
     name = "copy_directory",
     srcs = ["copy_directory.bzl"],
-    deps = ["//lib/private/docs:copy_directory"],
+    deps = ["//lib/private:copy_directory"],
 )
 
 bzl_library(
     name = "copy_to_directory",
     srcs = ["copy_to_directory.bzl"],
-    deps = ["//lib/private/docs:copy_to_directory"],
+    deps = ["//lib/private:copy_to_directory"],
 )
 
 bzl_library(
     name = "copy_to_bin",
     srcs = ["copy_to_bin.bzl"],
-    deps = ["//lib/private/docs:copy_to_bin"],
+    deps = ["//lib/private:copy_to_bin"],
+)
+
+#keep
+bzl_library(
+    name = "diff_test",
+    srcs = ["diff_test.bzl"],
+    deps = ["//lib/private:diff_test"],
 )
 
 bzl_library(
@@ -180,49 +177,43 @@ bzl_library(
     deps = [
         ":diff_test",
         ":utils",
-        "//lib/private/docs:fail_with_message_test",
-        "//lib/private/docs:write_source_file",
+        # "//lib/private:fail_with_message_test",
+        "//lib/private:write_source_file",
     ],
-)
-
-bzl_library(
-    name = "diff_test",
-    srcs = ["diff_test.bzl"],
-    deps = ["//lib/private/docs:diff_test"],
 )
 
 bzl_library(
     name = "run_binary",
     srcs = ["run_binary.bzl"],
-    deps = ["//lib/private/docs:run_binary"],
+    deps = ["//lib/private:run_binary"],
 )
 
 bzl_library(
     name = "repo_utils",
     srcs = ["repo_utils.bzl"],
     deps = [
-        "//lib/private/docs:patch",
-        "//lib/private/docs:repo_utils",
+        "//lib/private:patch",
+        "//lib/private:repo_utils",
     ],
 )
 
 bzl_library(
     name = "yq",
     srcs = ["yq.bzl"],
-    deps = ["//lib/private/docs:yq"],
+    deps = ["//lib/private:yq"],
 )
 
 bzl_library(
     name = "glob_match",
     srcs = ["glob_match.bzl"],
-    deps = ["//lib/private/docs:glob_match"],
+    deps = ["//lib/private:glob_match"],
 )
 
 bzl_library(
     name = "host_repo",
     srcs = ["host_repo.bzl"],
     deps = [
-        "//lib/private/docs:host_repo",
+        "//lib/private:host_repo",
         "@bazel_skylib//lib:versions",
     ],
 )
@@ -230,7 +221,7 @@ bzl_library(
 bzl_library(
     name = "stamping",
     srcs = ["stamping.bzl"],
-    deps = ["//lib/private/docs:stamping"],
+    deps = ["//lib/private:stamping"],
 )
 
 bzl_library(
@@ -257,15 +248,15 @@ bzl_library(
     srcs = ["repositories.bzl"],
     deps = [
         ":utils",
-        "//lib/private/docs:copy_directory_toolchain",
-        "//lib/private/docs:copy_to_directory_toolchain",
-        "//lib/private/docs:coreutils_toolchain",
-        "//lib/private/docs:expand_template_toolchain",
-        "//lib/private/docs:jq_toolchain",
-        "//lib/private/docs:local_config_platform",
-        "//lib/private/docs:source_toolchains_repo",
-        "//lib/private/docs:tar_toolchain",
-        "//lib/private/docs:yq_toolchain",
+        "//lib/private:copy_directory_toolchain",
+        "//lib/private:copy_to_directory_toolchain",
+        "//lib/private:coreutils_toolchain",
+        "//lib/private:expand_template_toolchain",
+        "//lib/private:jq_toolchain",
+        "//lib/private:local_config_platform",
+        "//lib/private:source_toolchains_repo",
+        "//lib/private:tar_toolchain",
+        "//lib/private:yq_toolchain",
     ],
 )
 
@@ -280,13 +271,13 @@ bzl_library(
 bzl_library(
     name = "platform_utils",
     srcs = ["platform_utils.bzl"],
-    deps = ["//lib/private/docs:platform_utils"],
+    deps = ["//lib/private:platform_utils"],
 )
 
 bzl_library(
     name = "base64",
     srcs = ["base64.bzl"],
-    deps = ["//lib/private/docs:base64"],
+    deps = ["//lib/private:base64"],
 )
 
 bzl_library(
@@ -298,13 +289,19 @@ bzl_library(
 bzl_library(
     name = "strings",
     srcs = ["strings.bzl"],
-    deps = ["//lib/private/docs:strings"],
+    deps = ["//lib/private:strings"],
 )
 
 bzl_library(
     name = "lists",
     srcs = ["lists.bzl"],
-    deps = ["//lib/private/docs:lists"],
+    deps = ["//lib/private:lists"],
+)
+
+bzl_library(
+    name = "docs",
+    srcs = ["docs.bzl"],
+    deps = ["//lib/private:docs"],
 )
 
 bzl_library(
