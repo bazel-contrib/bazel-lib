@@ -84,7 +84,7 @@ def _copy_bash(ctx, src, src_path, dst):
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
-def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
+def copy_file_action(ctx, src, dst, dir_path = None):
     """Factory function that creates an action to copy a file from src to dst.
 
     If src is a TreeArtifact, dir_path must be specified as the path within
@@ -98,10 +98,8 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
         src: The source file to copy or TreeArtifact to copy a single file out of.
         dst: The destination file.
         dir_path: If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.
-        is_windows: Deprecated and unused
     """
 
-    # TODO(2.0): remove deprecated & unused is_windows parameter
     if dst.is_directory:
         fail("dst must not be a TreeArtifact")
     if src.is_directory:
@@ -114,8 +112,7 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
     # Because copy actions have "local" execution requirements, we can safely assume
     # the execution is the same as the host platform and generate different actions for Windows
     # and non-Windows host platforms
-    is_windows = _platform_utils.host_platform_is_windows()
-    if is_windows:
+    if _platform_utils.host_platform_is_windows():
         _copy_cmd(ctx, src, src_path, dst)
     else:
         _copy_bash(ctx, src, src_path, dst)

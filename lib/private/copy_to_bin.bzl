@@ -17,7 +17,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":copy_file.bzl", "copy_file_action")
 
-def copy_file_to_bin_action(ctx, file, is_windows = None):
+def copy_file_to_bin_action(ctx, file):
     """Factory function that creates an action to copy a file to the output tree.
 
     File are copied to the same workspace-relative path. The resulting files is
@@ -29,13 +29,11 @@ def copy_file_to_bin_action(ctx, file, is_windows = None):
     Args:
         ctx: The rule context.
         file: The file to copy.
-        is_windows: Deprecated and unused
 
     Returns:
         A File in the output tree.
     """
 
-    # TODO(2.0): remove deprecated & unused is_windows parameter
     if not file.is_source:
         return file
     if ctx.label.workspace_name != file.owner.workspace_name:
@@ -60,7 +58,7 @@ and/or correct the `glob` patterns that are including these files in the sources
 """.format(bin = first))
 
     dst = ctx.actions.declare_file(file.basename, sibling = file)
-    copy_file_action(ctx, file, dst, is_windows = is_windows)
+    copy_file_action(ctx, file, dst)
     return dst
 
 def _file_in_external_repo_error_msg(file):
@@ -91,7 +89,7 @@ target to {file_package} using:
         package = "%s//%s" % (curr_package_label.workspace_name, curr_package_label.package),
     )
 
-def copy_files_to_bin_actions(ctx, files, is_windows = None):
+def copy_files_to_bin_actions(ctx, files):
     """Factory function that creates actions to copy files to the output tree.
 
     Files are copied to the same workspace-relative path. The resulting list of
@@ -103,14 +101,12 @@ def copy_files_to_bin_actions(ctx, files, is_windows = None):
     Args:
         ctx: The rule context.
         files: List of File objects.
-        is_windows: Deprecated and unused
 
     Returns:
         List of File objects in the output tree.
     """
 
-    # TODO(2.0): remove deprecated & unused is_windows parameter
-    return [copy_file_to_bin_action(ctx, file, is_windows = is_windows) for file in files]
+    return [copy_file_to_bin_action(ctx, file) for file in files]
 
 def _copy_to_bin_impl(ctx):
     files = copy_files_to_bin_actions(ctx, ctx.files.srcs)

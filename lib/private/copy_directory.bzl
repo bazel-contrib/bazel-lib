@@ -63,7 +63,7 @@ def _copy_bash(ctx, src, dst):
     )
 
 # TODO(2.0): remove the legacy copy_directory_action helper
-def copy_directory_action(ctx, src, dst, is_windows = None):
+def copy_directory_action(ctx, src, dst):
     """Legacy factory function that creates an action to copy a directory from src to dst.
 
     For improved analysis and runtime performance, it is recommended the switch
@@ -79,10 +79,8 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
         ctx: The rule context.
         src: The directory to make a copy of. Can be a source directory or TreeArtifact.
         dst: The directory to copy to. Must be a TreeArtifact.
-        is_windows: Deprecated and unused
     """
 
-    # TODO(2.0): remove deprecated & unused is_windows parameter
     if not src.is_source and not dst.is_directory:
         fail("src must be a source directory or TreeArtifact")
     if dst.is_source or not dst.is_directory:
@@ -91,8 +89,7 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
     # Because copy actions have "local" execution requirements, we can safely assume
     # the execution is the same as the host platform and generate different actions for Windows
     # and non-Windows host platforms
-    is_windows = _platform_utils.host_platform_is_windows()
-    if is_windows:
+    if _platform_utils.host_platform_is_windows():
         _copy_cmd(ctx, src, dst)
     else:
         _copy_bash(ctx, src, dst)
