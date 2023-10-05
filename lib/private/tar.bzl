@@ -73,7 +73,7 @@ def _tar_impl(ctx):
     args = ctx.actions.args()
 
     # Set mode
-    args.add("--" + ctx.attr.mode)
+    args.add(ctx.attr.mode, format = "--%s")
 
     # User-provided args first
     args.add_all(ctx.attr.args)
@@ -82,9 +82,9 @@ def _tar_impl(ctx):
     _add_compress_options(ctx.attr.compress, args)
 
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
-    args.add_all(["--file", out.path])
+    args.add("--file", out)
 
-    args.add("@" + ctx.file.mtree.path)
+    args.add(ctx.file.mtree, format = "@%s")
     inputs.append(ctx.file.mtree)
 
     ctx.actions.run(
@@ -96,6 +96,10 @@ def _tar_impl(ctx):
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
+
+def _default_mtree_line(file):
+    # Functions passed to map_each cannot take optional arguments.
+    return _mtree_line(file)
 
 def _mtree_line(file, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     return " ".join([
@@ -109,11 +113,16 @@ def _mtree_line(file, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     ])
 
 def _mtree_impl(ctx):
-    specification = []
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".spec")
-    for s in ctx.files.srcs:
-        specification.append(_mtree_line(s))
-    ctx.actions.write(out, "\n".join(specification + [""]))
+
+    content = ctx.actions.args()
+    content.set_param_file_format("multiline")
+    content.add_all(ctx.files.srcs, map_each = _default_mtree_line)
+    # TODO(zbarsky): do we need this blank line? Tests pass on OSX without it for me.
+    #content.add("")
+
+    ctx.actions.write(out, content = content)
+
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
 tar_lib = struct(
