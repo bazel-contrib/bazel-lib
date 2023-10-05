@@ -118,9 +118,6 @@ def _mtree_impl(ctx):
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
     content.add_all(ctx.files.srcs, map_each = _default_mtree_line)
-    # TODO(zbarsky): do we need this blank line? Tests pass on OSX without it for me.
-    #content.add("")
-
     ctx.actions.write(out, content = content)
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
