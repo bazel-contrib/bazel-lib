@@ -12,7 +12,7 @@ bazel_lib_internal_deps()
 
 load("//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
-aspect_bazel_lib_dependencies(override_local_config_platform = True)
+aspect_bazel_lib_dependencies()
 
 # For running our own unit tests
 load("@bazel_skylib//lib:unittest.bzl", "register_unittest_toolchains")

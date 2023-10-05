@@ -1,5 +1,6 @@
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing")
 
@@ -139,5 +140,15 @@ assert_tar_listing(
     expected = [
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 a",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 src_file",
+    ],
+)
+
+bzl_library(
+    name = "asserts",
+    srcs = ["asserts.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@bazel_skylib//rules:diff_test",
+        "@bazel_skylib//rules:write_file",
     ],
 )
