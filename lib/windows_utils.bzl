@@ -14,6 +14,8 @@
 
 "Helpers for rules running on windows"
 
+load("//lib/private:paths.bzl", "paths")
+
 # cmd.exe function for looking up runfiles.
 # Equivalent of the BASH_RLOCATION_FUNCTION in paths.bzl.
 # Use this to write actions that don't require bash.
@@ -65,12 +67,6 @@ exit /b 0
 :: End of rlocation
 """
 
-def _to_manifest_path(ctx, file):
-    if file.short_path.startswith("../"):
-        return file.short_path[3:]
-    else:
-        return ctx.workspace_name + "/" + file.short_path
-
 def create_windows_native_launcher_script(ctx, shell_script):
     """Create a Windows Batch file to launch the given shell script.
 
@@ -106,7 +102,7 @@ if defined args (
 "{bash_bin}" -c "!run_script! !args!"
 """.format(
             bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
-            sh_script = _to_manifest_path(ctx, shell_script),
+            sh_script = paths.to_rlocation_path(ctx, shell_script),
             rlocation_function = BATCH_RLOCATION_FUNCTION,
         ),
         is_executable = True,

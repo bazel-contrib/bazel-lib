@@ -456,7 +456,7 @@ def copy_to_directory_bin_action(
             path = f.path,
             root_path = f.root.path,
             short_path = f.short_path,
-            workspace_path = paths.to_workspace_path(f),
+            workspace_path = paths.to_repository_relative_path(f),
         ))
     for t in targets:
         if not DirectoryPathInfo in t:
@@ -466,7 +466,7 @@ def copy_to_directory_bin_action(
             path = "/".join([t[DirectoryPathInfo].directory.path, t[DirectoryPathInfo].path]),
             root_path = t[DirectoryPathInfo].directory.root.path,
             short_path = "/".join([t[DirectoryPathInfo].directory.short_path, t[DirectoryPathInfo].path]),
-            workspace_path = "/".join([paths.to_workspace_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
+            workspace_path = "/".join([paths.to_repository_relative_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
         ))
 
     file_infos = []
