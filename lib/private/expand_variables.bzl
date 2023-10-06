@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:paths.bzl", _spaths = "paths")
 
-def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "args"):
+def expand_variables(ctx, s, outs = [], attribute_name = "args"):
     """Expand make variables and substitute like genrule does.
 
     Bazel [pre-defined variables](https://bazel.build/reference/be/make-variables#predefined_variables)
@@ -45,9 +45,6 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
         ctx: starlark rule context
         s: expression to expand
         outs: declared outputs of the rule, for expanding references to outputs
-        output_dir: whether the rule is expected to output a directory (TreeArtifact)
-            Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Pass
-            output tree artifacts to outs instead.
         attribute_name: name of the attribute containing the expression. Used for error reporting.
 
     Returns:
@@ -60,30 +57,17 @@ def expand_variables(ctx, s, outs = [], output_dir = False, attribute_name = "ar
     )
     additional_substitutions = {}
 
-    # TODO(2.0): remove output_dir in 2.x release
-    if output_dir:
-        if s.find("$@") != -1 or s.find("$(@)") != -1:
-            fail("$@ substitution may only be used with output_dir=False.")
-
-        # We'll write into a newly created directory named after the rule
-        output_dir = _spaths.join(
-            ctx.bin_dir.path,
-            ctx.label.workspace_root,
-            ctx.label.package,
-            ctx.label.name,
-        )
-    else:
-        if s.find("$@") != -1 or s.find("$(@)") != -1:
-            if len(outs) > 1:
-                fail("$@ substitution may only be used with a single out.")
-        if len(outs) == 1:
-            additional_substitutions["@"] = outs[0].path
-            if outs[0].is_directory:
-                output_dir = outs[0].path
-            else:
-                output_dir = outs[0].dirname
+    if s.find("$@") != -1 or s.find("$(@)") != -1:
+        if len(outs) > 1:
+            fail("$@ substitution may only be used with a single out.")
+    if len(outs) == 1:
+        additional_substitutions["@"] = outs[0].path
+        if outs[0].is_directory:
+            output_dir = outs[0].path
         else:
-            output_dir = rule_dir
+            output_dir = outs[0].dirname
+    else:
+        output_dir = rule_dir
 
     additional_substitutions["@D"] = output_dir
     additional_substitutions["RULEDIR"] = rule_dir

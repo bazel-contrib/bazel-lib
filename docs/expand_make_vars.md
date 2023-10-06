@@ -54,7 +54,7 @@ The expanded path or the original path
 ## expand_variables
 
 <pre>
-expand_variables(<a href="#expand_variables-ctx">ctx</a>, <a href="#expand_variables-s">s</a>, <a href="#expand_variables-outs">outs</a>, <a href="#expand_variables-output_dir">output_dir</a>, <a href="#expand_variables-attribute_name">attribute_name</a>)
+expand_variables(<a href="#expand_variables-ctx">ctx</a>, <a href="#expand_variables-s">s</a>, <a href="#expand_variables-outs">outs</a>, <a href="#expand_variables-attribute_name">attribute_name</a>)
 </pre>
 
 Expand make variables and substitute like genrule does.
@@ -104,7 +104,6 @@ for more information of how these special variables are expanded.
 | <a id="expand_variables-ctx"></a>ctx |  starlark rule context   |  none |
 | <a id="expand_variables-s"></a>s |  expression to expand   |  none |
 | <a id="expand_variables-outs"></a>outs |  declared outputs of the rule, for expanding references to outputs   |  <code>[]</code> |
-| <a id="expand_variables-output_dir"></a>output_dir |  whether the rule is expected to output a directory (TreeArtifact) Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Pass output tree artifacts to outs instead.   |  <code>False</code> |
 | <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression. Used for error reporting.   |  <code>"args"</code> |
 
 **RETURNS**

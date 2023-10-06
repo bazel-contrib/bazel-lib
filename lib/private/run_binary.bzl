@@ -119,8 +119,6 @@ def run_binary(
         progress_message = None,
         execution_requirements = None,
         stamp = 0,
-        # TODO: remove output_dir in 2.x release
-        output_dir = False,
         **kwargs):
     """Runs a binary as a build action.
 
@@ -185,11 +183,6 @@ def run_binary(
 
             See https://docs.bazel.build/versions/main/be/common-definitions.html#common.tags for useful keys.
 
-        output_dir: If set to True then an output directory named the same as the target name
-            is added to out_dirs.
-
-            Deprecated. For backward compatability with @aspect_bazel_lib 1.x. Use out_dirs instead.
-
         stamp: Whether to include build status files as inputs to the tool. Possible values:
 
             - `stamp = 0` (default): Never include build status files as inputs to the tool.
@@ -221,7 +214,7 @@ def run_binary(
         args = args,
         env = env,
         outs = outs,
-        out_dirs = out_dirs + ([name] if output_dir else []),
+        out_dirs = out_dirs,
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
