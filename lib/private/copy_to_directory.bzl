@@ -166,23 +166,6 @@ directory will be.
 
 Globs are supported (see rule docstring above).
 """,
-    # exclude_prefixes
-    "exclude_prefixes": """List of path prefixes (with glob support) to exclude from output directory.
-
-DEPRECATED: use `exclude_srcs_patterns` instead
-
-Files in srcs are not copied to the output directory if their output
-directory path, after applying `root_paths`, starts with or fully matches one of the
-patterns specified.
-
-Forward slashes (`/`) should be used as path separators.
-
-Files that do not have matching output directory paths are subject to subsequent
-filters and transformations to determine if they are copied and what their path in the output
-directory will be.
-
-Globs are supported (see rule docstring above).
-""",
     # replace_prefixes
     "replace_prefixes": """Map of paths prefixes (with glob support) to replace in the output directory path when copying files.
 
@@ -257,9 +240,6 @@ _copy_to_directory_attr = {
     "exclude_srcs_patterns": attr.string_list(
         doc = _copy_to_directory_attr_doc["exclude_srcs_patterns"],
     ),
-    "exclude_prefixes": attr.string_list(
-        doc = _copy_to_directory_attr_doc["exclude_prefixes"],
-    ),
     "replace_prefixes": attr.string_dict(
         doc = _copy_to_directory_attr_doc["replace_prefixes"],
     ),
@@ -302,7 +282,6 @@ def _copy_to_directory_impl(ctx):
         exclude_srcs_packages = ctx.attr.exclude_srcs_packages,
         include_srcs_patterns = ctx.attr.include_srcs_patterns,
         exclude_srcs_patterns = ctx.attr.exclude_srcs_patterns,
-        exclude_prefixes = ctx.attr.exclude_prefixes,
         replace_prefixes = ctx.attr.replace_prefixes,
         allow_overwrites = ctx.attr.allow_overwrites,
         hardlink = ctx.attr.hardlink,
@@ -342,7 +321,6 @@ def copy_to_directory_bin_action(
         exclude_srcs_packages = [],
         include_srcs_patterns = ["**"],
         exclude_srcs_patterns = [],
-        exclude_prefixes = [],
         replace_prefixes = {},
         allow_overwrites = False,
         hardlink = "auto",
@@ -392,10 +370,6 @@ def copy_to_directory_bin_action(
 
             See copy_to_directory rule documentation for more details.
 
-        exclude_prefixes: List of path prefixes to exclude from output directory.
-
-            See copy_to_directory rule documentation for more details.
-
         replace_prefixes: Map of paths prefixes to replace in the output directory path when copying files.
 
             See copy_to_directory rule documentation for more details.
@@ -417,20 +391,6 @@ def copy_to_directory_bin_action(
     # Replace a leading "." with the package name of the target in include_srcs_packages & exclude_srcs_packages
     include_srcs_packages = _expand_src_packages_patterns(include_srcs_packages, ctx.label.package)
     exclude_srcs_packages = _expand_src_packages_patterns(exclude_srcs_packages, ctx.label.package)
-
-    # Convert and append exclude_prefixes to exclude_srcs_patterns
-    # TODO(2.0): remove exclude_prefixes this block and in a future breaking release
-    for exclude_prefix in exclude_prefixes:
-        if exclude_prefix.endswith("**"):
-            exclude_srcs_patterns.append(exclude_prefix)
-        elif exclude_prefix.endswith("*"):
-            exclude_srcs_patterns.append(exclude_prefix + "/**")
-            exclude_srcs_patterns.append(exclude_prefix)
-        elif exclude_prefix.endswith("/"):
-            exclude_srcs_patterns.append(exclude_prefix + "**")
-        else:
-            exclude_srcs_patterns.append(exclude_prefix + "*/**")
-            exclude_srcs_patterns.append(exclude_prefix + "*")
 
     if not include_srcs_packages:
         fail("An empty 'include_srcs_packages' list will exclude all srcs and result in an empty directory")
