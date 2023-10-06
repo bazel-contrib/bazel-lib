@@ -7,10 +7,6 @@ to_output_relative_path = paths.to_output_relative_path
 to_repository_relative_path = paths.to_repository_relative_path
 to_rlocation_path = paths.to_rlocation_path
 
-# deprecated namings
-to_manifest_path = paths.to_manifest_path  # equivalent to to_rlocation_path
-to_workspace_path = paths.to_workspace_path  # equivalent to to_repository_relative_path
-
 # Bash helper function for looking up runfiles.
 # See windows_utils.bzl for the cmd.exe equivalent.
 # Vendored from

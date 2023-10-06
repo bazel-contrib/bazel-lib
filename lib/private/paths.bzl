@@ -136,8 +136,4 @@ paths = struct(
     to_output_relative_path = _to_output_relative_path,
     to_repository_relative_path = _to_repository_relative_path,
     to_rlocation_path = _to_rlocation_path,
-    # TODO(2.0): remove to_workspace_path? it is replaced by to_repository_relative_path
-    to_workspace_path = _to_repository_relative_path,
-    # TODO(2.0): remove to_manifest_path? it is replaced by to_rlocation_path
-    to_manifest_path = _to_rlocation_path,
 )

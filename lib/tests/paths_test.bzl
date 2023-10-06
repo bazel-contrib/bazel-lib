@@ -193,20 +193,12 @@ def _rlocation_path_test_impl(ctx):
     env = unittest.begin(ctx)
     asserts.equals(env, "bazel_skylib/LICENSE", paths.to_rlocation_path(ctx, ctx.file.f1))
     asserts.equals(env, "aspect_bazel_lib/lib/paths.bzl", paths.to_rlocation_path(ctx, ctx.file.f2))
-
-    # deprecated naming
-    asserts.equals(env, "bazel_skylib/LICENSE", paths.to_manifest_path(ctx, ctx.file.f1))
-    asserts.equals(env, "aspect_bazel_lib/lib/paths.bzl", paths.to_manifest_path(ctx, ctx.file.f2))
     return unittest.end(env)
 
 def _repository_relative_path_test_impl(ctx):
     env = unittest.begin(ctx)
     asserts.equals(env, "LICENSE", paths.to_repository_relative_path(ctx.file.f1))
     asserts.equals(env, "lib/paths.bzl", paths.to_repository_relative_path(ctx.file.f2))
-
-    # deprecated naming
-    asserts.equals(env, "LICENSE", paths.to_workspace_path(ctx.file.f1))
-    asserts.equals(env, "lib/paths.bzl", paths.to_workspace_path(ctx.file.f2))
     return unittest.end(env)
 
 def _output_relative_path_test_impl(ctx):
