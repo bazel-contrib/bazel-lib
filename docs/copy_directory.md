@@ -37,36 +37,6 @@ for more context.
 | <a id="copy_directory-kwargs"></a>kwargs |  further keyword arguments, e.g. <code>visibility</code>   |  none |
 
 
-<a id="copy_directory_action"></a>
-
-## copy_directory_action
-
-<pre>
-copy_directory_action(<a href="#copy_directory_action-ctx">ctx</a>, <a href="#copy_directory_action-src">src</a>, <a href="#copy_directory_action-dst">dst</a>)
-</pre>
-
-Legacy factory function that creates an action to copy a directory from src to dst.
-
-For improved analysis and runtime performance, it is recommended the switch
-to `copy_directory_bin_action` which takes a tool binary, typically the
-`@aspect_bazel_lib//tools/copy_to_directory` `go_binary` either built from
-source or provided by a toolchain and creates hard links instead of performing full
-file copies.
-
-This helper is used by copy_directory. It is exposed as a public API so it can be used within
-other rule implementations.
-
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="copy_directory_action-ctx"></a>ctx |  The rule context.   |  none |
-| <a id="copy_directory_action-src"></a>src |  The directory to make a copy of. Can be a source directory or TreeArtifact.   |  none |
-| <a id="copy_directory_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
-
-
 <a id="copy_directory_bin_action"></a>
 
 ## copy_directory_bin_action
