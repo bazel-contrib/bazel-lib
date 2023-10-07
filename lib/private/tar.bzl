@@ -1,4 +1,7 @@
 "Implementation of tar rule"
+
+load("@aspect_bazel_lib//lib:paths.bzl", "to_rlocation_path")
+
 _tar_attrs = {
     "args": attr.string_list(
         doc = "Additional flags permitted by BSD tar; see the man page.",
@@ -67,6 +70,13 @@ def _add_compress_options(compress, args):
     if compress == "zstd":
         args.add("--zstd")
 
+def _runfile_path(ctx, file, runfiles_dir):
+    return "/".join([runfiles_dir, to_rlocation_path(ctx, file)])
+
+def _calculate_runfiles_dir(root, default_info):
+    manifest = default_info.files_to_run.runfiles_manifest
+    return "/".join([r for r in [root, manifest.short_path.replace(manifest.basename, "")[:-1]] if r])
+
 def _tar_impl(ctx):
     bsdtar = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"]
     inputs = ctx.files.srcs[:]
@@ -89,7 +99,10 @@ def _tar_impl(ctx):
 
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
-        inputs = depset(direct = inputs, transitive = [bsdtar.default.files]),
+        inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + [
+            src[DefaultInfo].default_runfiles.files
+            for src in ctx.attr.srcs
+        ]),
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
@@ -118,6 +131,21 @@ def _mtree_impl(ctx):
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
     content.add_all(ctx.files.srcs, map_each = _default_mtree_line)
+
+    for s in ctx.attr.srcs:
+        default_info = s[DefaultInfo]
+        if not default_info.files_to_run.runfiles_manifest:
+            continue
+
+        root = ""  # TODO
+        runfiles_dir = _calculate_runfiles_dir(root, default_info)
+        for file in depset(transitive = [s.default_runfiles.files]).to_list():
+            destination = _runfile_path(ctx, file, runfiles_dir)
+            content.add("{} uid=0 gid=0 mode=0755 time=1672560000 type=file content={}".format(
+                destination,
+                file.path,
+            ))
+
     ctx.actions.write(out, content = content)
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))

@@ -268,6 +268,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "tar",
+    srcs = ["tar.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = ["@aspect_bazel_lib//lib:paths"],
+)
+
+bzl_library(
     name = "copy_common",
     srcs = ["copy_common.bzl"],
     visibility = ["//lib:__subpackages__"],
@@ -318,11 +325,5 @@ bzl_library(
 bzl_library(
     name = "strings",
     srcs = ["strings.bzl"],
-    visibility = ["//lib:__subpackages__"],
-)
-
-bzl_library(
-    name = "tar",
-    srcs = ["tar.bzl"],
     visibility = ["//lib:__subpackages__"],
 )
