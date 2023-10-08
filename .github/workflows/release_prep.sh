@@ -48,25 +48,16 @@ http_archive(
     url = "https://github.com/aspect-build/bazel-lib/releases/download/${TAG}/${ARCHIVE}",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "aspect_bazel_lib_register_toolchains")
+
+# Required bazel-lib dependencies
 
 aspect_bazel_lib_dependencies()
 
+# Register bazel-lib toolchains
+
+aspect_bazel_lib_register_toolchains()
+
 \`\`\`
 
-Optional toolchains:
-
-\`\`\`starlark
-# Register the following toolchain to use jq
-
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
-
-register_jq_toolchains()
-
-# Register the following toolchain to use yq
-
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
-
-register_yq_toolchains()
-\`\`\`
 EOF

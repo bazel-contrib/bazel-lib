@@ -10,5 +10,5 @@ local_path_override(
     path = "../..",
 )
 
-ext = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "ext")
-use_repo(ext, "coreutils_toolchains")
+bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
+use_repo(bazel_lib_toolchains, "coreutils_toolchains")

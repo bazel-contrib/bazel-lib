@@ -23,23 +23,10 @@ def aspect_bazel_lib_dependencies():
         ],
     )
 
-    # Always register the copy_to_directory toolchain
-    register_copy_directory_toolchains()
-    register_copy_to_directory_toolchains()
-
-    # Always register the expand_template toolchain
-    register_expand_template_toolchains()
-
-    # Always register the coreutils toolchain and the tar toolchain
-    register_coreutils_toolchains()
-    register_tar_toolchains()
-
-# Re-export the default versions
+DEFAULT_JQ_REPOSITORY = "jq"
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
-DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
-DEFAULT_COREUTILS_VERSION = _DEFAULT_COREUTILS_VERSION
 
-def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION, register = True):
+def register_jq_toolchains(name = DEFAULT_JQ_REPOSITORY, version = DEFAULT_JQ_VERSION, register = True):
     """Registers jq toolchain and repositories
 
     Args:
@@ -64,7 +51,10 @@ def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION, register =
         user_repository_name = name,
     )
 
-def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register = True):
+DEFAULT_YQ_REPOSITORY = "yq"
+DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
+
+def register_yq_toolchains(name = DEFAULT_YQ_REPOSITORY, version = DEFAULT_YQ_VERSION, register = True):
     """Registers yq toolchain and repositories
 
     Args:
@@ -89,7 +79,9 @@ def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register =
         user_repository_name = name,
     )
 
-def register_tar_toolchains(name = "bsd_tar", register = True):
+DEFAULT_TAR_REPOSITORY = "bsd_tar"
+
+def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
     """Registers bsdtar toolchain and repositories
 
     Args:
@@ -110,7 +102,10 @@ def register_tar_toolchains(name = "bsd_tar", register = True):
         user_repository_name = name,
     )
 
-def register_coreutils_toolchains(name = "coreutils", version = DEFAULT_COREUTILS_VERSION, register = True):
+DEFAULT_COREUTILS_REPOSITORY = "coreutils"
+DEFAULT_COREUTILS_VERSION = _DEFAULT_COREUTILS_VERSION
+
+def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version = DEFAULT_COREUTILS_VERSION, register = True):
     """Registers coreutils toolchain and repositories
 
     Args:
@@ -133,7 +128,9 @@ def register_coreutils_toolchains(name = "coreutils", version = DEFAULT_COREUTIL
         user_repository_name = name,
     )
 
-def register_copy_directory_toolchains(name = "copy_directory", register = True):
+DEFAULT_COPY_DIRECTORY_REPOSITORY = "copy_directory"
+
+def register_copy_directory_toolchains(name = DEFAULT_COPY_DIRECTORY_REPOSITORY, register = True):
     """Registers copy_directory toolchain and repositories
 
     Args:
@@ -166,7 +163,9 @@ def register_copy_directory_toolchains(name = "copy_directory", register = True)
         user_repository_name = name,
     )
 
-def register_copy_to_directory_toolchains(name = "copy_to_directory", register = True):
+DEFAULT_COPY_TO_DIRECTORY_REPOSITORY = "copy_to_directory"
+
+def register_copy_to_directory_toolchains(name = DEFAULT_COPY_TO_DIRECTORY_REPOSITORY, register = True):
     """Registers copy_to_directory toolchain and repositories
 
     Args:
@@ -199,7 +198,9 @@ def register_copy_to_directory_toolchains(name = "copy_to_directory", register =
         user_repository_name = name,
     )
 
-def register_expand_template_toolchains(name = "expand_template", register = True):
+DEFAULT_EXPAND_TEMPLATE_REPOSITORY = "expand_template"
+
+def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITORY, register = True):
     """Registers expand_template toolchain and repositories
 
     Args:
@@ -231,3 +232,18 @@ def register_expand_template_toolchains(name = "expand_template", register = Tru
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
+
+# buildifier: disable=unnamed-macro
+def aspect_bazel_lib_register_toolchains():
+    """Register all bazel-lib toolchains at their default versions.
+
+    To be more selective about which toolchains and versions to register,
+    call the individual toolchain registration macros.
+    """
+    register_copy_directory_toolchains()
+    register_copy_to_directory_toolchains()
+    register_expand_template_toolchains()
+    register_coreutils_toolchains()
+    register_jq_toolchains()
+    register_yq_toolchains()
+    register_tar_toolchains()
