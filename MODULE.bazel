@@ -15,16 +15,21 @@ bazel_dep(name = "platforms", version = "0.0.7")
 bazel_dep(name = "stardoc", version = "0.5.4", repo_name = "io_bazel_stardoc")
 
 ext = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "ext")
-use_repo(ext, "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq_toolchains", "tar_toolchains", "yq_toolchains")
+use_repo(ext, "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq_toolchains", "yq_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
     "@copy_to_directory_toolchains//:all",
     "@jq_toolchains//:all",
-    "@tar_toolchains//:all",
     "@yq_toolchains//:all",
     "@coreutils_toolchains//:all",
     "@expand_template_toolchains//:all",
+    # Expand bsd_tar_toolchains
+    "@bsd_tar_toolchains//:linux_amd64_toolchain",
+    "@bsd_tar_toolchains//:linux_arm64_toolchain",
+    "@bsd_tar_toolchains//:windows_amd64_toolchain",
+    # host toolchain must be last, as it's only suitable as a fallback on macos
+    "@bsd_tar_toolchains//:host_toolchain",
 )
 
 # To allow /tools to be built from source
