@@ -126,17 +126,17 @@ def _tar_impl(ctx):
 
 def _default_mtree_line(file):
     # Functions passed to map_each cannot take optional arguments.
-    return _mtree_line(file)
+    return _mtree_line(file.short_path, file.path, "dir" if file.is_directory else "file")
 
-def _mtree_line(file, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+def _mtree_line(file, content, type, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     return " ".join([
-        file.short_path,
+        file,
         "uid=" + uid,
         "gid=" + gid,
         "time=" + time,
         "mode=" + mode,
-        "type=" + ("dir" if file.is_directory else "file"),
-        "content=" + file.path,
+        "type=" + type,
+        "content=" + content,
     ])
 
 def _mtree_impl(ctx):
