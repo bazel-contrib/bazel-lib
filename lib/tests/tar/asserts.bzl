@@ -26,4 +26,5 @@ def assert_tar_listing(name, actual, expected):
         name = name,
         file1 = actual_listing,
         file2 = expected_listing,
+        timeout = "short",
     )

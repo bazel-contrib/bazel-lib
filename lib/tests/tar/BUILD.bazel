@@ -1,6 +1,7 @@
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing")
 
@@ -151,4 +152,39 @@ bzl_library(
         "@bazel_skylib//rules:diff_test",
         "@bazel_skylib//rules:write_file",
     ],
+)
+
+# Case 6: Runfiles
+sh_binary(
+    name = "cat_src_file",
+    srcs = ["cat_src_file.sh"],
+    data = ["src_file"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+tar(
+    name = "tar_runfiles",
+    srcs = [":cat_src_file"],
+)
+
+genrule(
+    name = "run_program_with_runfiles",
+    srcs = [":tar_runfiles"],
+    outs = ["cat_src_file_output"],
+    cmd = """\
+      export DIR=$$(mktemp -d)
+      $(BSDTAR_BIN) --extract --file $(execpath :tar_runfiles) --directory $$DIR
+      (
+        cd $$DIR
+        ./lib/tests/tar/cat_src_file
+      ) > $@
+    """,
+    toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
+)
+
+diff_test(
+    name = "test_runfiles",
+    timeout = "short",
+    file1 = "src_file",
+    file2 = "cat_src_file_output",
 )
