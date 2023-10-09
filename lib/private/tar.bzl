@@ -7,7 +7,11 @@ _tar_attrs = {
         doc = "Additional flags permitted by BSD tar; see the man page.",
     ),
     "srcs": attr.label_list(
-        doc = "Files and directories that are placed into the tar",
+        doc = """\
+        Files, directories, or other targets whose default outputs are placed into the tar.
+
+        If any of the srcs are binaries with runfiles, those are copied into the resulting tar as well.
+        """,
         mandatory = True,
         allow_files = True,
     ),
