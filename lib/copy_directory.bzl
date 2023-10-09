@@ -3,7 +3,9 @@
 The rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command
 on Windows (no Bash is required).
 
-NB: See notes on [copy_file](./copy_file.md) regarding execution_requirements settings for remote execution.
+NB: See notes on [copy_file](./copy_file.md#choosing-execution-requirements)
+regarding `execution_requirements` settings for remote execution.
+These settings apply to the rules below as well.
 """
 
 load(

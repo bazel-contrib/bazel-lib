@@ -2,7 +2,9 @@
 
 Copy files and directories to an output directory.
 
-NB: See notes on [copy_file](./copy_file.md) regarding execution_requirements settings for remote execution.
+NB: See notes on [copy_file](./copy_file.md#choosing-execution-requirements)
+regarding `execution_requirements` settings for remote execution.
+These settings apply to the rules below as well.
 
 
 <a id="copy_to_directory"></a>
