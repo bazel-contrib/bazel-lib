@@ -1,10 +1,17 @@
 "Implementation of tar rule"
+
+load("@aspect_bazel_lib//lib:paths.bzl", "to_rlocation_path")
+
 _tar_attrs = {
     "args": attr.string_list(
         doc = "Additional flags permitted by BSD tar; see the man page.",
     ),
     "srcs": attr.label_list(
-        doc = "Files and directories that are placed into the tar",
+        doc = """\
+        Files, directories, or other targets whose default outputs are placed into the tar.
+
+        If any of the srcs are binaries with runfiles, those are copied into the resulting tar as well.
+        """,
         mandatory = True,
         allow_files = True,
     ),
@@ -67,6 +74,23 @@ def _add_compress_options(compress, args):
     if compress == "zstd":
         args.add("--zstd")
 
+def _runfile_path(ctx, file, runfiles_dir):
+    return "/".join([runfiles_dir, to_rlocation_path(ctx, file)])
+
+def _calculate_runfiles_dir(default_info):
+    manifest = default_info.files_to_run.runfiles_manifest
+
+    # Newer versions of Bazel put the manifest besides the runfiles with the suffix .runfiles_manifest.
+    # For example, the runfiles directory is named my_binary.runfiles then the manifest is beside the
+    # runfiles directory and named my_binary.runfiles_manifest
+    # Older versions of Bazel put the manifest file named MANIFEST in the runfiles directory
+    # See similar logic:
+    # https://github.com/aspect-build/rules_js/blob/c50bd3f797c501fb229cf9ab58e0e4fc11464a2f/js/private/bash.bzl#L63
+    if manifest.short_path.endswith("_manifest") or manifest.short_path.endswith("/MANIFEST"):
+        # Trim last 9 characters, as that's the length in both cases
+        return manifest.short_path[:-9]
+    fail("manifest path {} seems malformed".format(manifest.short_path))
+
 def _tar_impl(ctx):
     bsdtar = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"]
     inputs = ctx.files.srcs[:]
@@ -89,7 +113,10 @@ def _tar_impl(ctx):
 
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
-        inputs = depset(direct = inputs, transitive = [bsdtar.default.files]),
+        inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + [
+            src[DefaultInfo].default_runfiles.files
+            for src in ctx.attr.srcs
+        ]),
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
@@ -99,17 +126,17 @@ def _tar_impl(ctx):
 
 def _default_mtree_line(file):
     # Functions passed to map_each cannot take optional arguments.
-    return _mtree_line(file)
+    return _mtree_line(file.short_path, file.path, "dir" if file.is_directory else "file")
 
-def _mtree_line(file, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+def _mtree_line(file, content, type, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     return " ".join([
-        file.short_path,
+        file,
         "uid=" + uid,
         "gid=" + gid,
         "time=" + time,
         "mode=" + mode,
-        "type=" + ("dir" if file.is_directory else "file"),
-        "content=" + file.path,
+        "type=" + type,
+        "content=" + content,
     ])
 
 def _mtree_impl(ctx):
@@ -118,6 +145,20 @@ def _mtree_impl(ctx):
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
     content.add_all(ctx.files.srcs, map_each = _default_mtree_line)
+
+    for s in ctx.attr.srcs:
+        default_info = s[DefaultInfo]
+        if not default_info.files_to_run.runfiles_manifest:
+            continue
+
+        runfiles_dir = _calculate_runfiles_dir(default_info)
+        for file in depset(transitive = [s.default_runfiles.files]).to_list():
+            destination = _runfile_path(ctx, file, runfiles_dir)
+            content.add("{} uid=0 gid=0 mode=0755 time=1672560000 type=file content={}".format(
+                destination,
+                file.path,
+            ))
+
     ctx.actions.write(out, content = content)
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))

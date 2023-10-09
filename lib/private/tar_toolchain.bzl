@@ -9,7 +9,6 @@ BSDTAR_PLATFORMS = {
             "@platforms//cpu:x86_64",
         ],
     ),
-    # TODO(alexeagle): download from somewhere
     "linux_arm64": struct(
         compatible_with = [
             "@platforms//os:linux",
