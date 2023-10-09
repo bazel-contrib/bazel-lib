@@ -32,6 +32,7 @@ bool_flag(
     build_setting_default = True if is_bzlmod_enabled() else False,
 )
 
+# Users may set this flag with
 bool_flag(
     name = "copy_use_local_execution",
     build_setting_default = True,
