@@ -1,7 +1,7 @@
 "copy_to_directory implementation"
 
 load("@bazel_skylib//lib:paths.bzl", skylib_paths = "paths")
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
+load(":copy_common.bzl", "execution_requirements_for_copy", _progress_path = "progress_path")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":glob_match.bzl", "glob_match", "is_glob")
 load(":paths.bzl", "paths")
@@ -277,6 +277,7 @@ _copy_to_directory_attr = {
     "verbose": attr.bool(
         doc = _copy_to_directory_attr_doc["verbose"],
     ),
+    "_options": attr.label(default = "//lib:copy_options"),
     # use '_tool' attribute for development only; do not commit with this attribute active since it
     # propagates a dependency on rules_go which would be breaking for users
     # "_tool": attr.label(
@@ -459,7 +460,7 @@ def _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
                 return True
     return False
 
-def _copy_to_dir_bash(ctx, copy_paths, dst_dir, allow_overwrites):
+def _copy_to_dir_bash(ctx, copy_paths, dst_dir, allow_overwrites, override_execution_requirements = None):
     cmds = [
         "set -o errexit -o nounset -o pipefail",
         "OUT_CAPTURE=$(mktemp)",
@@ -520,10 +521,10 @@ fi
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst_dir),
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
     )
 
-def _copy_to_dir_cmd(ctx, copy_paths, dst_dir):
+def _copy_to_dir_cmd(ctx, copy_paths, dst_dir, override_execution_requirements = None):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -588,7 +589,7 @@ if exist "{src}\\*" (
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst_dir),
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
     )
 
 def _copy_to_directory_impl(ctx):
@@ -654,7 +655,8 @@ def copy_to_directory_bin_action(
         replace_prefixes = {},
         allow_overwrites = False,
         hardlink = "auto",
-        verbose = False):
+        verbose = False,
+        override_execution_requirements = None):
     """Factory function to copy files to a directory using a tool binary.
 
     The tool binary will typically be the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary`
@@ -717,6 +719,8 @@ def copy_to_directory_bin_action(
             See copy_to_directory rule documentation for more details.
 
         verbose: If true, prints out verbose logs to stdout
+
+        override_execution_requirements: specify execution_requirements for this action
     """
 
     # Replace "." in root_paths with the package name of the target
@@ -839,7 +843,7 @@ def copy_to_directory_bin_action(
         arguments = [config_file.path],
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst),
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
     )
 
 # TODO(2.0): remove the legacy copy_to_directory_action helper

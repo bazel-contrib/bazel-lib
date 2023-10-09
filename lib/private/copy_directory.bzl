@@ -4,10 +4,10 @@ This rule copies a directory to another location using Bash (on Linux/macOS) or
 cmd.exe (on Windows).
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
+load(":copy_common.bzl", "execution_requirements_for_copy", _progress_path = "progress_path")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
-def _copy_cmd(ctx, src, dst):
+def _copy_cmd(ctx, src, dst, override_execution_requirements = None):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -43,10 +43,10 @@ def _copy_cmd(ctx, src, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
     )
 
-def _copy_bash(ctx, src, dst):
+def _copy_bash(ctx, src, dst, override_execution_requirements = None):
     cmd = "rm -Rf \"$2\" && cp -fR \"$1/\" \"$2\""
     mnemonic = "CopyDirectory"
     progress_message = "Copying directory %s" % _progress_path(src)
@@ -59,7 +59,7 @@ def _copy_bash(ctx, src, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
     )
 
 # TODO(2.0): remove the legacy copy_directory_action helper
@@ -103,7 +103,8 @@ def copy_directory_bin_action(
         dst,
         copy_directory_bin,
         hardlink = "auto",
-        verbose = False):
+        verbose = False,
+        override_execution_requirements = None):
     """Factory function that creates an action to copy a directory from src to dst using a tool binary.
 
     The tool binary will typically be the `@aspect_bazel_lib//tools/copy_directory` `go_binary`
@@ -126,6 +127,8 @@ def copy_directory_bin_action(
             See copy_directory rule documentation for more details.
 
         verbose: If true, prints out verbose logs to stdout
+
+        override_execution_requirements: specify execution_requirements for this action
     """
     args = [
         src.path,
@@ -146,7 +149,7 @@ def copy_directory_bin_action(
         arguments = args,
         mnemonic = "CopyDirectory",
         progress_message = "Copying directory %s" % _progress_path(src),
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
     )
 
 def _copy_directory_impl(ctx):
@@ -184,6 +187,7 @@ _copy_directory = rule(
             default = "auto",
         ),
         "verbose": attr.bool(),
+        "_options": attr.label(default = "//lib:copy_options"),
         # use '_tool' attribute for development only; do not commit with this attribute active since it
         # propagates a dependency on rules_go which would be breaking for users
         # "_tool": attr.label(
