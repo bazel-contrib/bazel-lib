@@ -1,7 +1,25 @@
 "Helpers for copy rules"
 
-# Hints for Bazel spawn strategy
-COPY_EXECUTION_REQUIREMENTS = {
+CopyOptionsInfo = provider("Options for running copy actions", fields = ["execution_requirements"])
+
+def _copy_options_impl(ctx):
+    return CopyOptionsInfo(
+        execution_requirements = COPY_EXECUTION_REQUIREMENTS_LOCAL if ctx.attr.copy_use_local_execution else {},
+    )
+
+copy_options = rule(implementation = _copy_options_impl, attrs = {"copy_use_local_execution": attr.bool()})
+
+# Helper function to be used when creating an action
+def execution_requirements_for_copy(ctx):
+    if hasattr(ctx.attr, "_options") and CopyOptionsInfo in ctx.attr._options:
+        return ctx.attr._options[CopyOptionsInfo].execution_requirements
+
+    # If the rule ctx doesn't expose the CopyOptions, the default is to run locally
+    return COPY_EXECUTION_REQUIREMENTS_LOCAL
+
+# When applied to execution_requirements of an action, these prevent the action from being
+# sandboxed or remotely cached, for performance of builds that don't rely on RBE and build-without-bytes.
+COPY_EXECUTION_REQUIREMENTS_LOCAL = {
     # ----------------+-----------------------------------------------------------------------------
     # no-remote       | Prevents the action or test from being executed remotely or cached remotely.
     #                 | This is equivalent to using both `no-remote-cache` and `no-remote-exec`.
