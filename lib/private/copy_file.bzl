@@ -28,7 +28,7 @@ load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREM
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
-def _copy_cmd(ctx, src, src_path, dst):
+def _copy_cmd(ctx, src, src_path, dst, force_local_execution):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -65,10 +65,10 @@ def _copy_cmd(ctx, src, src_path, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
-def _copy_bash(ctx, src, src_path, dst):
+def _copy_bash(ctx, src, src_path, dst, force_local_execution):
     cmd_tmpl = "cp -f \"$1\" \"$2\""
     mnemonic = "CopyFile"
     progress_message = "Copying file %s" % _progress_path(src)
@@ -81,10 +81,10 @@ def _copy_bash(ctx, src, src_path, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
-def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
+def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None, force_local_execution = True):
     """Factory function that creates an action to copy a file from src to dst.
 
     If src is a TreeArtifact, dir_path must be specified as the path within
@@ -95,10 +95,18 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
 
     Args:
         ctx: The rule context.
+
         src: The source file to copy or TreeArtifact to copy a single file out of.
+
         dst: The destination file.
+
         dir_path: If src is a TreeArtifact, the path within the TreeArtifact to the file to copy.
+
         is_windows: Deprecated and unused
+
+        force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+            See copy_file rule documentation for more details.
     """
 
     # TODO(2.0): remove deprecated & unused is_windows parameter
@@ -116,9 +124,9 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
     # and non-Windows host platforms
     is_windows = _platform_utils.host_platform_is_windows()
     if is_windows:
-        _copy_cmd(ctx, src, src_path, dst)
+        _copy_cmd(ctx, src, src_path, dst, force_local_execution)
     else:
-        _copy_bash(ctx, src, src_path, dst)
+        _copy_bash(ctx, src, src_path, dst, force_local_execution)
 
 def _copy_file_impl(ctx):
     if ctx.attr.allow_symlink:
@@ -137,6 +145,7 @@ def _copy_file_impl(ctx):
             ctx.attr.src[DirectoryPathInfo].directory,
             ctx.outputs.out,
             dir_path = ctx.attr.src[DirectoryPathInfo].path,
+            force_local_execution = ctx.attr.force_local_execution,
         )
     else:
         if len(ctx.files.src) != 1:
@@ -157,6 +166,7 @@ _ATTRS = {
     "is_executable": attr.bool(mandatory = True),
     "allow_symlink": attr.bool(mandatory = True),
     "out": attr.output(mandatory = True),
+    "force_local_execution": attr.bool(default = True),
 }
 
 _copy_file = rule(
@@ -172,7 +182,14 @@ _copy_xfile = rule(
     attrs = _ATTRS,
 )
 
-def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kwargs):
+def copy_file(
+        name,
+        src,
+        out,
+        is_executable = False,
+        allow_symlink = False,
+        force_local_execution = True,
+        **kwargs):
     """Copies a file or directory to another location.
 
     `native.genrule()` is sometimes used to copy files (often wishing to rename them). The 'copy_file' rule does this with a simpler interface than genrule.
@@ -187,19 +204,28 @@ def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kw
 
     Args:
       name: Name of the rule.
+
       src: A Label. The file to make a copy of.
           (Can also be the label of a rule that generates a file.)
+
       out: Path of the output file, relative to this package.
+
       is_executable: A boolean. Whether to make the output file executable. When
           True, the rule's output can be executed using `bazel run` and can be
           in the srcs of binary and test rules that require executable sources.
           WARNING: If `allow_symlink` is True, `src` must also be executable.
+
       allow_symlink: A boolean. Whether to allow symlinking instead of copying.
           When False, the output is always a hard copy. When True, the output
           *can* be a symlink, but there is no guarantee that a symlink is
           created (i.e., at the time of writing, we don't create symlinks on
           Windows). Set this to True if you need fast copying and your tools can
           handle symlinks (which most UNIX tools can).
+
+      force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+        See https://github.com/aspect-build/bazel-lib/blob/main/lib/private/copy_common.bzl for more details.
+
       **kwargs: further keyword arguments, e.g. `visibility`
     """
 
@@ -213,5 +239,6 @@ def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kw
         out = out,
         is_executable = is_executable,
         allow_symlink = allow_symlink,
+        force_local_execution = force_local_execution,
         **kwargs
     )

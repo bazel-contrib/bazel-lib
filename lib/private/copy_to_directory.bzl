@@ -227,6 +227,10 @@ removed from sources files.
     """,
     # verbose
     "verbose": """If true, prints out verbose logs to stdout""",
+    # force_local_execution
+    "force_local_execution": """Whether to force local execution in the execution requirements of the copy action.
+
+See https://github.com/aspect-build/bazel-lib/blob/main/lib/private/copy_common.bzl for more details.""",
 }
 
 _copy_to_directory_attr = {
@@ -277,13 +281,10 @@ _copy_to_directory_attr = {
     "verbose": attr.bool(
         doc = _copy_to_directory_attr_doc["verbose"],
     ),
-    # use '_tool' attribute for development only; do not commit with this attribute active since it
-    # propagates a dependency on rules_go which would be breaking for users
-    # "_tool": attr.label(
-    #     executable = True,
-    #     cfg = "exec",
-    #     default = "//tools/copy_to_directory",
-    # ),
+    "force_local_execution": attr.bool(
+        doc = _copy_to_directory_attr_doc["force_local_execution"],
+        default = True,
+    ),
 }
 
 def _any_globs_match(exprs, path):
@@ -459,7 +460,7 @@ def _merge_into_copy_path(copy_paths, src_path, dst_path, src_file):
                 return True
     return False
 
-def _copy_to_dir_bash(ctx, copy_paths, dst_dir, allow_overwrites):
+def _copy_to_dir_bash(ctx, copy_paths, dst_dir, allow_overwrites, force_local_execution):
     cmds = [
         "set -o errexit -o nounset -o pipefail",
         "OUT_CAPTURE=$(mktemp)",
@@ -520,10 +521,10 @@ fi
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst_dir),
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
-def _copy_to_dir_cmd(ctx, copy_paths, dst_dir):
+def _copy_to_dir_cmd(ctx, copy_paths, dst_dir, force_local_execution):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -588,7 +589,7 @@ if exist "{src}\\*" (
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst_dir),
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
 def _copy_to_directory_impl(ctx):
@@ -615,6 +616,7 @@ def _copy_to_directory_impl(ctx):
         allow_overwrites = ctx.attr.allow_overwrites,
         hardlink = ctx.attr.hardlink,
         verbose = ctx.attr.verbose,
+        force_local_execution = ctx.attr.force_local_execution,
     )
 
     return [
@@ -654,7 +656,8 @@ def copy_to_directory_bin_action(
         replace_prefixes = {},
         allow_overwrites = False,
         hardlink = "auto",
-        verbose = False):
+        verbose = False,
+        force_local_execution = True):
     """Factory function to copy files to a directory using a tool binary.
 
     The tool binary will typically be the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary`
@@ -717,6 +720,10 @@ def copy_to_directory_bin_action(
             See copy_to_directory rule documentation for more details.
 
         verbose: If true, prints out verbose logs to stdout
+
+        force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+            See copy_to_directory rule documentation for more details.
     """
 
     # Replace "." in root_paths with the package name of the target
@@ -839,7 +846,7 @@ def copy_to_directory_bin_action(
         arguments = [config_file.path],
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst),
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
 # TODO(2.0): remove the legacy copy_to_directory_action helper
@@ -857,7 +864,8 @@ def copy_to_directory_action(
         exclude_prefixes = [],
         replace_prefixes = {},
         allow_overwrites = False,
-        is_windows = None):
+        is_windows = None,
+        force_local_execution = True):
     """Legacy factory function to copy files to a directory.
 
     This helper calculates copy paths in Starlark during analysis and performs the copies in a
@@ -915,6 +923,10 @@ def copy_to_directory_action(
             See copy_to_directory rule documentation for more details.
 
         is_windows: Deprecated and unused
+
+        force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+            See copy_to_directory rule documentation for more details.
     """
 
     # TODO(2.0): remove deprecated & unused is_windows parameter
@@ -994,9 +1006,9 @@ def copy_to_directory_action(
     # and non-Windows host platforms
     is_windows = _platform_utils.host_platform_is_windows()
     if is_windows:
-        _copy_to_dir_cmd(ctx, copy_paths, dst)
+        _copy_to_dir_cmd(ctx, copy_paths, dst, force_local_execution)
     else:
-        _copy_to_dir_bash(ctx, copy_paths, dst, allow_overwrites)
+        _copy_to_dir_bash(ctx, copy_paths, dst, allow_overwrites, force_local_execution)
 
 copy_to_directory_lib = struct(
     doc = _copy_to_directory_doc,

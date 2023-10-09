@@ -7,7 +7,7 @@ cmd.exe (on Windows).
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
-def _copy_cmd(ctx, src, dst):
+def _copy_cmd(ctx, src, dst, force_local_execution):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -43,10 +43,10 @@ def _copy_cmd(ctx, src, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
-def _copy_bash(ctx, src, dst):
+def _copy_bash(ctx, src, dst, force_local_execution):
     cmd = "rm -Rf \"$2\" && cp -fR \"$1/\" \"$2\""
     mnemonic = "CopyDirectory"
     progress_message = "Copying directory %s" % _progress_path(src)
@@ -59,11 +59,11 @@ def _copy_bash(ctx, src, dst):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
 # TODO(2.0): remove the legacy copy_directory_action helper
-def copy_directory_action(ctx, src, dst, is_windows = None):
+def copy_directory_action(ctx, src, dst, is_windows = None, force_local_execution = true):
     """Legacy factory function that creates an action to copy a directory from src to dst.
 
     For improved analysis and runtime performance, it is recommended the switch
@@ -77,9 +77,16 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
 
     Args:
         ctx: The rule context.
+
         src: The directory to make a copy of. Can be a source directory or TreeArtifact.
+
         dst: The directory to copy to. Must be a TreeArtifact.
+
         is_windows: Deprecated and unused
+
+        force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+            See copy_directory rule documentation for more details.
     """
 
     # TODO(2.0): remove deprecated & unused is_windows parameter
@@ -93,9 +100,9 @@ def copy_directory_action(ctx, src, dst, is_windows = None):
     # and non-Windows host platforms
     is_windows = _platform_utils.host_platform_is_windows()
     if is_windows:
-        _copy_cmd(ctx, src, dst)
+        _copy_cmd(ctx, src, dst, force_local_execution)
     else:
-        _copy_bash(ctx, src, dst)
+        _copy_bash(ctx, src, dst, force_local_execution)
 
 def copy_directory_bin_action(
         ctx,
@@ -103,7 +110,8 @@ def copy_directory_bin_action(
         dst,
         copy_directory_bin,
         hardlink = "auto",
-        verbose = False):
+        verbose = False,
+        force_local_execution = True):
     """Factory function that creates an action to copy a directory from src to dst using a tool binary.
 
     The tool binary will typically be the `@aspect_bazel_lib//tools/copy_directory` `go_binary`
@@ -126,6 +134,10 @@ def copy_directory_bin_action(
             See copy_directory rule documentation for more details.
 
         verbose: If true, prints out verbose logs to stdout
+
+        force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+            See copy_directory rule documentation for more details.
     """
     args = [
         src.path,
@@ -146,7 +158,7 @@ def copy_directory_bin_action(
         arguments = args,
         mnemonic = "CopyDirectory",
         progress_message = "Copying directory %s" % _progress_path(src),
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS if force_local_execution else None,
     )
 
 def _copy_directory_impl(ctx):
@@ -162,6 +174,7 @@ def _copy_directory_impl(ctx):
         copy_directory_bin = copy_directory_bin,
         hardlink = ctx.attr.hardlink,
         verbose = ctx.attr.verbose,
+        force_local_execution = ctx.attr.force_local_execution,
     )
 
     return [
@@ -184,13 +197,7 @@ _copy_directory = rule(
             default = "auto",
         ),
         "verbose": attr.bool(),
-        # use '_tool' attribute for development only; do not commit with this attribute active since it
-        # propagates a dependency on rules_go which would be breaking for users
-        # "_tool": attr.label(
-        #     executable = True,
-        #     cfg = "exec",
-        #     default = "//tools/copy_directory",
-        # ),
+        "force_local_execution": attr.bool(default = True),
     },
     toolchains = ["@aspect_bazel_lib//lib:copy_directory_toolchain_type"],
 )
@@ -200,6 +207,8 @@ def copy_directory(
         src,
         out,
         hardlink = "auto",
+        verbose = False,
+        force_local_execution = True,
         **kwargs):
     """Copies a directory to another location.
 
@@ -231,6 +240,12 @@ def copy_directory(
         - "off": files are always copied
         - "on": hardlinks are always used (not recommended)
 
+      verbose: If true, prints out verbose logs to stdout
+
+      force_local_execution: Whether to force local execution in the execution requirements of the copy action.
+
+        See https://github.com/aspect-build/bazel-lib/blob/main/lib/private/copy_common.bzl for more details.
+
       **kwargs: further keyword arguments, e.g. `visibility`
     """
     _copy_directory(
@@ -238,5 +253,7 @@ def copy_directory(
         src = src,
         out = out,
         hardlink = hardlink,
+        verbose = verbose,
+        force_local_execution = force_local_execution,
         **kwargs
     )
