@@ -13,7 +13,10 @@ workspaces:
   - e2e/copy_to_directory:
       gazelle:
         without: true
-
+bazel:
+  flags:
+    - --remote_download_minimal
+    - --nobuild_runfile_links
 tasks:
   branch_freshness:
   gazelle:

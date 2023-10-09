@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# A trivial program that only works when runfiles are resolved at runtime.
 
 # --- begin runfiles.bash initialization v3 ---
 # Copy-pasted from the Bazel Bash runfiles library v3.

@@ -73,9 +73,12 @@ def _add_compress_options(compress, args):
 def _runfile_path(ctx, file, runfiles_dir):
     return "/".join([runfiles_dir, to_rlocation_path(ctx, file)])
 
-def _calculate_runfiles_dir(root, default_info):
+def _calculate_runfiles_dir(default_info):
     manifest = default_info.files_to_run.runfiles_manifest
-    return "/".join([r for r in [root, manifest.short_path.replace(manifest.basename, "")[:-1]] if r])
+    if manifest.short_path.endswith("_manifest") or manifest.short_path.endswith("/MANIFEST"):
+        # Trim last 9 characters, as that's the length in both cases
+        return manifest.short_path[:-9]
+    fail("manifest path {} seems malformed".format(manifest.short_path))
 
 def _tar_impl(ctx):
     bsdtar = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"]
@@ -137,8 +140,7 @@ def _mtree_impl(ctx):
         if not default_info.files_to_run.runfiles_manifest:
             continue
 
-        root = ""  # TODO
-        runfiles_dir = _calculate_runfiles_dir(root, default_info)
+        runfiles_dir = _calculate_runfiles_dir(default_info)
         for file in depset(transitive = [s.default_runfiles.files]).to_list():
             destination = _runfile_path(ctx, file, runfiles_dir)
             content.add("{} uid=0 gid=0 mode=0755 time=1672560000 type=file content={}".format(
