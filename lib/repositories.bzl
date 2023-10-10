@@ -101,6 +101,7 @@ def register_tar_toolchains(name = "bsd_tar", register = True):
         bsdtar_binary_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
+            libs = meta.packages() if hasattr(meta, "packages") else [],
         )
         if register:
             native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
