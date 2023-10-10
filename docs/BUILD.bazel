@@ -116,10 +116,12 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:host_repo",
 )
 
-stardoc_with_diff_test(
-    name = "platform_utils",
-    bzl_library_target = "//lib:platform_utils",
-)
+# NB: we don't bother documenting this, because it just has three trivial functions,
+# and the dependency on @local_config_platform makes the load() break for Bazel 5 users.
+# stardoc_with_diff_test(
+#     name = "platform_utils",
+#     bzl_library_target = "//lib:platform_utils",
+# )
 
 stardoc_with_diff_test(
     name = "stamping",

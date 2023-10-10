@@ -5,6 +5,8 @@ load("//lib/private:copy_common.bzl", "copy_options")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
 
 # Ensure that users building their own rules can dep on our bzl_library targets for their stardoc
+# This file has a dependency on @local_config_platform which is breaking for Bazel 5 users.
+# gazelle:exclude platform_utils.bzl
 package(default_visibility = ["//visibility:public"])
 
 exports_files(
@@ -275,12 +277,6 @@ bzl_library(
     deps = [
         "@bazel_skylib//lib:paths",
     ],
-)
-
-bzl_library(
-    name = "platform_utils",
-    srcs = ["platform_utils.bzl"],
-    deps = ["//lib/private:platform_utils"],
 )
 
 bzl_library(

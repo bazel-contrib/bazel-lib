@@ -1,5 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
+# This file has a dependency on @local_config_platform which is breaking for Bazel 5 users.
+# gazelle:exclude platform_utils.bzl
 exports_files(
     [
         "diff_test_tmpl.sh",
@@ -248,16 +250,6 @@ bzl_library(
     srcs = ["yq_toolchain.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [":repo_utils"],
-)
-
-bzl_library(
-    name = "platform_utils",
-    srcs = [
-        "platform_utils.bzl",
-        "@local_config_platform//:constraints.bzl",  # keep
-    ],
-    visibility = ["//lib:__subpackages__"],
-    deps = [],  # keep
 )
 
 bzl_library(
