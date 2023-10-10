@@ -90,9 +90,8 @@ jobs:
           - "."
           - "e2e/coreutils"
           - "e2e/copy_to_directory"
-          - "e2e/external_copy_to_directory/workspace"
+          - "e2e/external_copy_to_directory"
           - "e2e/smoke"
-          - "e2e/workspace"
         exclude:
           # Don't test Bazel 5.3 with bzlmod. (Unrecognized option: --enable_bzlmod)
           - bzlmodEnabled: true
