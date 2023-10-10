@@ -154,7 +154,7 @@ bzl_library(
     srcs = ["asserts.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "@bazel_skylib//rules:diff_test",
+        "//lib:diff_test",
         "@bazel_skylib//rules:write_file",
     ],
 )
