@@ -76,6 +76,7 @@ def tar(name, mtree = "auto", **kwargs):
             out = "{}.txt".format(mtree_target),
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
             content = mtree + [""],
+            newline = "unix",
         )
     else:
         mtree_target = mtree

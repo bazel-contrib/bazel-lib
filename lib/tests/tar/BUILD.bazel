@@ -1,7 +1,7 @@
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing")
 
@@ -20,6 +20,11 @@ genrule(
     ],
     outs = ["1.tar"],
     cmd = "$(BSDTAR_BIN) --create --dereference --file $@ -s '#$(BINDIR)##' $(execpath :fixture1) $(execpath src_file)",
+    target_compatible_with = select({
+        # bsdtar.exe: -s is not supported by this version of bsdtar
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
     toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 
@@ -149,7 +154,7 @@ bzl_library(
     srcs = ["asserts.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "@bazel_skylib//rules:diff_test",
+        "//lib:diff_test",
         "@bazel_skylib//rules:write_file",
     ],
 )
@@ -179,6 +184,12 @@ genrule(
         ./lib/tests/tar/cat_src_file
       ) > $@
     """,
+    target_compatible_with = select({
+        # requires runfiles tree, otherwise get
+        # ERROR: cannot find bazel_tools/tools/bash/runfiles/runfiles.bash
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
     toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 

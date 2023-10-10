@@ -238,11 +238,11 @@ bzl_library(
     name = "testing",
     srcs = ["testing.bzl"],
     deps = [
+        ":diff_test",
         ":jq",
         ":params_file",
         ":utils",
         "@bazel_skylib//lib:types",
-        "@bazel_skylib//rules:diff_test",
         "@bazel_skylib//rules:write_file",
     ],
 )
