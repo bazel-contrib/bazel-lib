@@ -79,7 +79,7 @@ Globs are supported (see rule docstring above).
 
 Files from external repositories are only copied into the output directory if
 the external repository they come from matches one of the external repository patterns
-specified.
+specified or if they are in the same external repository as this target.
 
 When copied from an external repository, the file path in the output directory
 defaults to the file's path within the external repository. The external repository
@@ -492,7 +492,7 @@ def copy_to_directory_bin_action(
         inputs = file_inputs + [config_file],
         outputs = [dst],
         executable = copy_to_directory_bin,
-        arguments = [config_file.path],
+        arguments = [config_file.path, ctx.label.workspace_name],
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %s" % _progress_path(dst),
         execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),

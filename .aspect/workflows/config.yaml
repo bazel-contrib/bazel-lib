@@ -13,6 +13,10 @@ workspaces:
   - e2e/copy_to_directory:
       gazelle:
         without: true
+  - e2e/external_copy_to_directory:
+      gazelle:
+        without: true
+
 bazel:
   flags:
     - --remote_download_minimal
