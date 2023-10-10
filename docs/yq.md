@@ -14,14 +14,6 @@ Invoke yq with an expression on a set of input files.
 
 For yq documentation, see https://mikefarah.gitbook.io/yq.
 
-To use this rule you must register the yq toolchain in your WORKSPACE:
-
-```starlark
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
-
-register_yq_toolchains()
-```
-
 Usage examples:
 
 ```starlark

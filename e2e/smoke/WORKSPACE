@@ -3,13 +3,11 @@ local_repository(
     path = "../..",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "register_jq_toolchains", "register_yq_toolchains")
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "aspect_bazel_lib_register_toolchains")
 
 aspect_bazel_lib_dependencies()
 
-register_jq_toolchains()
-
-register_yq_toolchains()
+aspect_bazel_lib_register_toolchains()
 
 ############################################
 # rules_go is needed to consume tools from sources

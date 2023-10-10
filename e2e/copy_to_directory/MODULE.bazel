@@ -10,7 +10,3 @@ local_path_override(
     module_name = "aspect_bazel_lib",
     path = "../..",
 )
-
-ext = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "ext")
-ext.host()
-use_repo(ext, "aspect_bazel_lib_host")

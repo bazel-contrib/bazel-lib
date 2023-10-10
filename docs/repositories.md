@@ -14,6 +14,21 @@ Load dependencies required by aspect rules
 
 
 
+<a id="aspect_bazel_lib_register_toolchains"></a>
+
+## aspect_bazel_lib_register_toolchains
+
+<pre>
+aspect_bazel_lib_register_toolchains()
+</pre>
+
+Register all bazel-lib toolchains at their default versions.
+
+To be more selective about which toolchains and versions to register,
+call the individual toolchain registration macros.
+
+
+
 <a id="register_copy_directory_toolchains"></a>
 
 ## register_copy_directory_toolchains

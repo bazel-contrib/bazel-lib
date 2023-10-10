@@ -14,14 +14,6 @@ Invoke jq with a filter on a set of json input files.
 
 For jq documentation, see https://stedolan.github.io/jq/.
 
-To use this rule you must register the jq toolchain in your WORKSPACE:
-
-```starlark
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
-
-register_jq_toolchains()
-```
-
 Usage examples:
 
 ```starlark
