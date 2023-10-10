@@ -20,6 +20,7 @@ def assert_tar_listing(name, actual, expected):
         name = expected_listing,
         out = "_{}.expected".format(name),
         content = expected + [""],
+        newline = "unix",
     )
 
     diff_test(
