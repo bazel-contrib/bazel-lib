@@ -111,8 +111,6 @@ jobs:
           # //docs:update_11_test FAILED TO BUILD
           # //docs:update_12_test FAILED TO BUILD
           # //docs:update_13_test FAILED TO BUILD
-          - folder: .
-            os: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

@@ -15,7 +15,6 @@ BSDTAR_PLATFORMS = {
             "@platforms//cpu:aarch64",
         ],
     ),
-    # TODO(alexeagle): download from libarchive github releases.
     "windows_amd64": struct(
         release_platform = "win64",
         compatible_with = [
@@ -29,6 +28,11 @@ BSDTAR_PLATFORMS = {
         compatible_with = "HOST_CONSTRAINTS",
     ),
 }
+
+WINDOWS_DEPS = (
+    "e06f10043b1b148eb38ad06cff678af05beade0bdd2edd8735a198c521fa3993",
+    "https://github.com/libarchive/libarchive/releases/download/v3.7.2/libarchive-v3.7.2-amd64.zip",
+)
 
 # note, using Ubuntu Focal packages as they link with older glibc versions.
 # Ubuntu Jammy packages will fail on ubuntu 20.02 with
@@ -124,10 +128,17 @@ package(default_visibility = ["//visibility:public"])
         rctx.file("BUILD.bazel", build_header + """tar_toolchain(name = "bsdtar_toolchain", binary = "tar")""")
         return
 
+    if repo_utils.is_windows(rctx):
+        rctx.download_and_extract(
+            url = WINDOWS_DEPS[1],
+            type = "zip",
+            sha256 = WINDOWS_DEPS[0],
+        )
+        rctx.file("BUILD.bazel", build_header + """tar_toolchain(name = "bsdtar_toolchain", binary = "libarchive/bin/bsdtar.exe")""")
+        return
+
     # Other platforms, we have more work to do.
     libs_dir = "usr/lib/x86_64-linux-gnu" if rctx.attr.platform.endswith("amd64") else "usr/lib/aarch64-linux-gnu"
-
-    # TODO: windows
 
     for lib in LINUX_LIB_DEPS[rctx.attr.platform]:
         rctx.download_and_extract(
