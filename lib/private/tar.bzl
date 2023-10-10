@@ -154,10 +154,7 @@ def _mtree_impl(ctx):
         runfiles_dir = _calculate_runfiles_dir(default_info)
         for file in depset(transitive = [s.default_runfiles.files]).to_list():
             destination = _runfile_path(ctx, file, runfiles_dir)
-            content.add("{} uid=0 gid=0 mode=0755 time=1672560000 type=file content={}".format(
-                destination,
-                file.path,
-            ))
+            content.add(_mtree_line(destination, file.path, "file"))
 
     ctx.actions.write(out, content = content)
 
