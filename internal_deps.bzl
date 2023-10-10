@@ -30,6 +30,8 @@ def bazel_lib_internal_deps():
 
     http_archive(
         name = "bazel_skylib",
+        patch_args = ["-p1"],
+        patches = ["//:skylib.patch"],
         sha256 = "66ffd9315665bfaafc96b52278f57c7e2dd09f5ede279ea6d39b2be471e7e3aa",
         urls = [
             "https://github.com/bazelbuild/bazel-skylib/releases/download/1.4.2/bazel-skylib-1.4.2.tar.gz",
