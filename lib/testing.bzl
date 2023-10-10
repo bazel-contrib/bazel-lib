@@ -1,8 +1,8 @@
 "Helpers for making test assertions"
 
 load("@bazel_skylib//lib:types.bzl", "types")
-load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:diff_test.bzl", "diff_test")
 load("//lib:jq.bzl", "jq")
 load("//lib:params_file.bzl", "params_file")
 load("//lib:utils.bzl", "default_timeout")
