@@ -20,13 +20,21 @@ setup: true
 orbs:
   continuation: circleci/continuation@1.0.0
   slack: circleci/slack@4.12.5
-  bazel: aspect-build/workflows@dev:5.8.0-rc14
+  aspect-workflows: aspect-build/workflows@5.8.0
+
+jobs:
+  legacy:
+    docker:
+      - image: cimg/base:2023.03
+    steps:
+      - checkout
+      - run: echo "this is an example of legacy non-workflows job"
 
 workflows:
-  bazel-setup:
+  default-workflow:
     jobs:
-      - bazel/setup:
-          aspect-config: .aspect/workflows/config.yaml
+      - legacy
+      - aspect-workflows/setup:
           resource_class: aspect-build/bazel-lib
           context:
             - slack
