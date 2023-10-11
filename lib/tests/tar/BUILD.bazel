@@ -165,6 +165,16 @@ sh_binary(
 tar(
     name = "tar_runfiles",
     srcs = [":cat_src_file"],
+    tags = [
+        # bsdtar does an optimization where it canonicalizes files in the archive with same dev/inode
+        # by hardlinking them to make the archive smaller. This is an unhermetic behavior because
+        # bazel uses different sandboxing mechanisms depending on the platform and they don't suffer
+        # from this problem.
+        # However, on some RBE implementations like buildbuddy where everything is a hardlink (assuming)
+        # this doesn't work as it allows bsdtar to optimize archive by canonicalizing entries.
+        # See: https://github.com/aspect-build/bazel-lib/issues/620
+        "no-remote-exec",
+    ],
 )
 
 genrule(
