@@ -57,6 +57,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     ctx.actions.run(
         executable = coreutils.bin,
         arguments = ["cp", src_path, dst.path],
+        inputs = [src],
         outputs = [dst],
         mnemonic = "CopyFile",
         progress_message = "Copying file %s" % _progress_path(src),

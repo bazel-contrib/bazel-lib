@@ -58,12 +58,12 @@ jobs:
         run: echo "os=macos-latest" >> $GITHUB_OUTPUT
         # Only run on main branch (or PR branches that contain 'macos') to minimize macOS minutes (billed at 10X)
         # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
-        if: ${{ github.ref == 'refs/heads/main' || contains(github.head_ref, 'macos') }}
+        #if: ${{ github.ref == 'refs/heads/main' || contains(github.head_ref, 'macos') }}
       - id: windows
         run: echo "os=windows-latest" >> $GITHUB_OUTPUT
         # Only run on main branch (or PR branches that contain 'windows') to minimize Windows minutes (billed at 2X)
         # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
-        if: ${{ github.ref == 'refs/heads/main' || contains(github.head_ref, 'windows') }}
+        #if: ${{ github.ref == 'refs/heads/main' || contains(github.head_ref, 'windows') }}
     outputs:
       # Will look like ["ubuntu-latest", "macos-latest", "windows-latest"]
       os: ${{ toJSON(steps.*.outputs.os) }}
