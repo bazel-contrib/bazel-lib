@@ -340,12 +340,9 @@ def _write_source_file_impl(ctx):
         files = runfiles,
         transitive_files = ctx.attr.in_file.files if ctx.attr.in_file else None,
     )
-    deps_runfiles = [dep[DefaultInfo].default_runfiles for dep in ctx.attr.additional_update_targets]
-    if "merge_all" in dir(runfiles):
-        runfiles = runfiles.merge_all(deps_runfiles)
-    else:
-        for dep in deps_runfiles:
-            runfiles = runfiles.merge(dep)
+    runfiles = runfiles.merge_all(
+        [dep[DefaultInfo].default_runfiles for dep in ctx.attr.additional_update_targets],
+    )
 
     return [
         DefaultInfo(
