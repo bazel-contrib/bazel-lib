@@ -4,7 +4,7 @@ write_aspect_bazelrc_presets(
     name = "update_aspect_bazelrc_presets",
     presets = [
         # Just pick a few to test the `presets` attribute
-        "bazel5",
+        "convenience",
         "javascript",
     ],
 )

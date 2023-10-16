@@ -3,7 +3,6 @@
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
 ALL_PRESETS = [
-    "bazel5",
     "bazel6",
     "ci",
     "convenience",

@@ -27,7 +27,7 @@ See https://docs.aspect.build/guides/bazelrc for more info.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="write_aspect_bazelrc_presets-name"></a>name |  a unique name for this target   |  none |
-| <a id="write_aspect_bazelrc_presets-presets"></a>presets |  a list of preset names to keep up-to-date<br><br>For example,<br><br><pre><code> write_aspect_bazelrc_presets(   name = "update_aspect_bazelrc_presets",   presets = [     "bazel6",     "ci",     "convenience",     "correctness",     "debug",     "javascript",     "performance",   ], ) </code></pre>   |  <code>["bazel5", "bazel6", "ci", "convenience", "correctness", "debug", "javascript", "performance"]</code> |
+| <a id="write_aspect_bazelrc_presets-presets"></a>presets |  a list of preset names to keep up-to-date<br><br>For example,<br><br><pre><code> write_aspect_bazelrc_presets(   name = "update_aspect_bazelrc_presets",   presets = [     "bazel6",     "ci",     "convenience",     "correctness",     "debug",     "javascript",     "performance",   ], ) </code></pre>   |  <code>["bazel6", "ci", "convenience", "correctness", "debug", "javascript", "performance"]</code> |
 | <a id="write_aspect_bazelrc_presets-kwargs"></a>kwargs |  Additional arguments to pass to <code>write_source_files</code>   |  none |
 
 
