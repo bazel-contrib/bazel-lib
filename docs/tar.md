@@ -25,10 +25,30 @@ TODO:
 ## mtree_spec
 
 <pre>
-mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-out">out</a>, <a href="#mtree_spec-srcs">srcs</a>)
+mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-out">out</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-transform">transform</a>)
 </pre>
 
 Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)
+
+Supports `$` and `^` RegExp tokens, which may be used together.
+
+* for stripping prefix, use `^path/to/strip`
+* for stripping suffix, use `path/to/strip$`
+* for exact match and replace, use `^path/to/strip$`
+* for partial match and replace, use `replace_anywhere`
+
+
+An example of stripping package path relative to the workspace
+
+```starlark
+tar(
+    srcs = ["PKGINFO"],
+    transform = {
+        "^{}".format(package_name()): ""
+    }
+)
+```
+
 
 **ATTRIBUTES**
 
@@ -38,6 +58,7 @@ Create an mtree specification to map a directory hierarchy. See https://man.free
 | <a id="mtree_spec-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
 | <a id="mtree_spec-out"></a>out |  Resulting specification file to write   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | optional |  |
 | <a id="mtree_spec-srcs"></a>srcs |  Files that are placed into the tar   | <a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a> | required |  |
+| <a id="mtree_spec-transform"></a>transform |  A dict for path transforming. These are applied serially in respect to their orders.   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -> String</a> | optional | {} |
 
 
 <a id="tar_rule"></a>

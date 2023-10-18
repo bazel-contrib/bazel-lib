@@ -199,3 +199,30 @@ diff_test(
     file1 = "src_file",
     file2 = "cat_src_file_output",
 )
+
+tar(
+    name = "transform",
+    srcs = [
+        "pkg/debian-binary",
+        "src_file",
+    ],
+    out = "transform.tar",
+    transform = {
+        "^lib/tests/": "",
+        "src_file$": "PKGINFO",
+        "^tar": "package",
+        # will flatten pkg/debian-binary to be inside package
+        "pkg/debian-binary": "debian-binary",
+    },
+)
+
+assert_tar_listing(
+    name = "test_transform",
+    actual = "transform",
+    expected = [
+        #
+        # TODO: https://github.com/aspect-build/bazel-lib/issues/625
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 package/debian-binary",
+        "-rwxr-xr-x  0 0      0          21 Jan  1  2023 package/PKGINFO",
+    ],
+)

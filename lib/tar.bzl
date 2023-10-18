@@ -23,7 +23,27 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib/private:tar.bzl", "tar_lib", _tar = "tar")
 
 mtree_spec = rule(
-    doc = "Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)",
+    doc = """Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)
+
+Supports `$` and `^` RegExp tokens, which may be used together.
+
+* for stripping prefix, use `^path/to/strip`
+* for stripping suffix, use `path/to/strip$`
+* for exact match and replace, use `^path/to/strip$`
+* for partial match and replace, use `replace_anywhere`
+
+
+An example of stripping package path relative to the workspace
+
+```starlark
+tar(
+    srcs = ["PKGINFO"],
+    transform = {
+        "^{}".format(package_name()): ""
+    }
+)
+```
+""",
     implementation = tar_lib.mtree_implementation,
     attrs = tar_lib.mtree_attrs,
 )
@@ -69,8 +89,11 @@ def tar(name, mtree = "auto", **kwargs):
             name = mtree_target,
             srcs = kwargs["srcs"],
             out = "{}.txt".format(mtree_target),
+            transform = kwargs.pop("transform", {}),
         )
     elif types.is_list(mtree):
+        if kwargs.pop("transform", None):
+            fail("transform shall be provided only when mtree=auto")
         write_file(
             name = mtree_target,
             out = "{}.txt".format(mtree_target),

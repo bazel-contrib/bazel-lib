@@ -51,6 +51,7 @@ _tar_attrs = {
 
 _mtree_attrs = {
     "srcs": attr.label_list(doc = "Files that are placed into the tar", mandatory = True, allow_files = True),
+    "transform": attr.string_dict(doc = """A dict for path transforming. These are applied serially in respect to their orders."""),
     "out": attr.output(doc = "Resulting specification file to write"),
 }
 
@@ -124,11 +125,7 @@ def _tar_impl(ctx):
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
-def _default_mtree_line(file):
-    # Functions passed to map_each cannot take optional arguments.
-    return _mtree_line(file.short_path, file.path, "dir" if file.is_directory else "file")
-
-def _mtree_line(file, content, type, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+def _mtree_line(file, content, type, uid = "0", gid = "0", time = "1672560000.000000", mode = "0755"):
     return " ".join([
         file,
         "uid=" + uid,
@@ -139,12 +136,32 @@ def _mtree_line(file, content, type, uid = "0", gid = "0", time = "1672560000", 
         "content=" + content,
     ])
 
+def _transform(path, transforms):
+    for (match, replace) in transforms.items():
+        # full match
+        if match.startswith("^") and match.endswith("$"):
+            if match.removeprefix("^").removesuffix("$") == path:
+                path = replace
+        elif match.startswith("^"):
+            if path.startswith(match.removeprefix("^")):
+                path = "".join([replace, path.removeprefix(match.removeprefix("^"))])
+        elif match.endswith("$"):
+            if path.endswith(match.removesuffix("$")):
+                path = "".join([path.removesuffix(match.removesuffix("$")), replace])
+        else:
+            path = path.replace(match, replace)
+
+    return path
+
 def _mtree_impl(ctx):
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".spec")
 
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
-    content.add_all(ctx.files.srcs, map_each = _default_mtree_line)
+
+    for s in ctx.files.srcs:
+        path = _transform(s.short_path, ctx.attr.transform)
+        content.add(_mtree_line(path, s.path, "dir" if s.is_directory else "file"))
 
     for s in ctx.attr.srcs:
         default_info = s[DefaultInfo]
@@ -153,7 +170,7 @@ def _mtree_impl(ctx):
 
         runfiles_dir = _calculate_runfiles_dir(default_info)
         for file in depset(transitive = [s.default_runfiles.files]).to_list():
-            destination = _runfile_path(ctx, file, runfiles_dir)
+            destination = _transform(_runfile_path(ctx, file, runfiles_dir), ctx.attr.transform)
             content.add(_mtree_line(destination, file.path, "file"))
 
     ctx.actions.write(out, content = content)
