@@ -1,7 +1,5 @@
 "Implementation of tar rule"
 
-load("@aspect_bazel_lib//lib:paths.bzl", "to_rlocation_path")
-
 _tar_attrs = {
     "args": attr.string_list(
         doc = "Additional flags permitted by BSD tar; see the man page.",
@@ -74,9 +72,6 @@ def _add_compress_options(compress, args):
     if compress == "zstd":
         args.add("--zstd")
 
-def _runfile_path(ctx, file, runfiles_dir):
-    return "/".join([runfiles_dir, to_rlocation_path(ctx, file)])
-
 def _calculate_runfiles_dir(default_info):
     manifest = default_info.files_to_run.runfiles_manifest
 
@@ -124,27 +119,49 @@ def _tar_impl(ctx):
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
-def _default_mtree_line(file):
-    # Functions passed to map_each cannot take optional arguments.
-    return _mtree_line(file.short_path, file.path, "dir" if file.is_directory else "file")
-
-def _mtree_line(file, content, type, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
-    return " ".join([
+def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+    spec = [
         file,
         "uid=" + uid,
         "gid=" + gid,
         "time=" + time,
         "mode=" + mode,
         "type=" + type,
-        "content=" + content,
-    ])
+    ]
+    if content:
+        spec.append("content=" + content)
+    return " ".join(spec)
+
+def _to_rlocation_path(file, workspace):
+    if file.short_path.startswith("../"):
+        return file.short_path[3:]
+    else:
+        return workspace + "/" + file.short_path
+
+def _expand(file, expander, transform = lambda f: f.short_path):
+    expanded = expander.expand(file)
+    lines = []
+    for e in expanded:
+        path = transform(e)
+        segments = path.split("/")
+        for i in range(1, len(segments)):
+            parent = "/".join(segments[:i])
+            lines.append(_mtree_line(parent, "dir"))
+
+        lines.append(_mtree_line(path, "file", content = e.path))
+    return lines
 
 def _mtree_impl(ctx):
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".spec")
 
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
-    content.add_all(ctx.files.srcs, map_each = _default_mtree_line)
+    content.add_all(
+        ctx.files.srcs,
+        map_each = _expand,
+        expand_directories = True,
+        uniquify = True,
+    )
 
     for s in ctx.attr.srcs:
         default_info = s[DefaultInfo]
@@ -152,9 +169,21 @@ def _mtree_impl(ctx):
             continue
 
         runfiles_dir = _calculate_runfiles_dir(default_info)
-        for file in depset(transitive = [s.default_runfiles.files]).to_list():
-            destination = _runfile_path(ctx, file, runfiles_dir)
-            content.add(_mtree_line(destination, file.path, "file"))
+
+        # copy workspace name here just in case to prevent ctx
+        # to be transferred to execution phase.
+        workspace_name = str(ctx.workspace_name)
+
+        content.add(_mtree_line(runfiles_dir, type = "dir"))
+        content.add_all(
+            s.default_runfiles.files,
+            expand_directories = True,
+            uniquify = True,
+            format_each = "{}/%s".format(runfiles_dir),
+            # be careful about what you pass to _expand_for_runfiles as it will carry the data structures over to execution phase.
+            map_each = lambda f, e: _expand(f, e, lambda f: _to_rlocation_path(f, workspace_name)),
+            allow_closure = True,
+        )
 
     ctx.actions.write(out, content = content)
 
