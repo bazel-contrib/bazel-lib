@@ -132,6 +132,10 @@ def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "167256
         spec.append("content=" + content)
     return " ".join(spec)
 
+# This function exactly same as the one from "@aspect_bazel_lib//lib:paths.bzl"
+# except that it takes workspace_name directly instead of the ctx object.
+# Reason is the performance of Args.add_all closures where we use this function.
+# https://bazel.build/rules/lib/builtins/Args#add_all `allow_closure` explains this.
 def _to_rlocation_path(file, workspace):
     if file.short_path.startswith("../"):
         return file.short_path[3:]
