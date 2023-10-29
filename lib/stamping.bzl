@@ -103,6 +103,7 @@ def maybe_stamp(ctx):
         return struct(
             volatile_status_file = ctx.version_file,
             stable_status_file = ctx.info_file,
+            stamp_env_vars_only = ctx.attr.stamp_env_vars_only,
         )
 
     return None
@@ -126,6 +127,7 @@ Whether to encode build information into the output. Possible values:
         default = -1,
         values = [1, 0, -1],
     ),
+    "stamp_env_vars_only": attr.bool(),
     "_stamp_flag": attr.label(
         doc = "Internal use only. A setting used to determine whether or not the `--stamp` flag is enabled.",
         default = Label("//lib:stamp"),

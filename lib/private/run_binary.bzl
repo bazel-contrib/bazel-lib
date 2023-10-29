@@ -59,13 +59,14 @@ Possible fixes:
     for k, v in ctx.attr.env.items():
         envs[k] = " ".join([expand_variables(ctx, e, outs = outputs, attribute_name = "env") for e in expand_locations(ctx, v, ctx.attr.srcs).split(" ")])
 
+    inputs = ctx.files.srcs
+
     stamp = maybe_stamp(ctx)
     if stamp:
-        inputs = ctx.files.srcs + [stamp.volatile_status_file, stamp.stable_status_file]
-        envs["BAZEL_STABLE_STATUS_FILE"] = stamp.stable_status_file.path
         envs["BAZEL_VOLATILE_STATUS_FILE"] = stamp.volatile_status_file.path
-    else:
-        inputs = ctx.files.srcs
+        envs["BAZEL_STABLE_STATUS_FILE"] = stamp.stable_status_file.path
+        if not stamp.stamp_env_vars_only:
+            inputs = inputs + [stamp.stable_status_file, stamp.volatile_status_file]
 
     ctx.actions.run(
         outputs = outputs,
