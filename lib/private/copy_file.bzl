@@ -24,11 +24,11 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 `_copy_file` does not.
 """
 
-load(":copy_common.bzl", "execution_requirements_for_copy", _progress_path = "progress_path")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
-def _copy_cmd(ctx, src, src_path, dst, override_execution_requirements = None):
+def _copy_cmd(ctx, src, src_path, dst):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
     # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
@@ -65,10 +65,10 @@ def _copy_cmd(ctx, src, src_path, dst, override_execution_requirements = None):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
-def _copy_bash(ctx, src, src_path, dst, override_execution_requirements = None):
+def _copy_bash(ctx, src, src_path, dst):
     cmd_tmpl = "cp -f \"$1\" \"$2\""
     mnemonic = "CopyFile"
     progress_message = "Copying file %s" % _progress_path(src)
@@ -81,7 +81,7 @@ def _copy_bash(ctx, src, src_path, dst, override_execution_requirements = None):
         mnemonic = mnemonic,
         progress_message = progress_message,
         use_default_shell_env = True,
-        execution_requirements = override_execution_requirements or execution_requirements_for_copy(ctx),
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
 def copy_file_action(ctx, src, dst, dir_path = None):
@@ -154,7 +154,6 @@ _ATTRS = {
     "is_executable": attr.bool(mandatory = True),
     "allow_symlink": attr.bool(mandatory = True),
     "out": attr.output(mandatory = True),
-    "_options": attr.label(default = "//lib:copy_options"),
 }
 
 _copy_file = rule(

@@ -11,40 +11,6 @@ on Windows (no Bash is required).
 This fork of bazel-skylib's copy_file adds DirectoryPathInfo support and allows multiple
 copy_file in the same package.
 
-Choosing execution requirements
--------------------------------
-
-Copy actions can be very numerous, especially when used on third-party dependency packages.
-
-By default, we set the `execution_requirements` of actions we spawn to be non-sandboxed and run
-locally, not reading or writing to a remote cache. For the typical user this is the fastest, because
-it avoids the overhead of creating a sandbox and making network calls for every file being copied.
-
-If you use Remote Execution and Build-without-the-bytes, then you'll want the copy action to
-occur on the remote machine instead, since the inputs and outputs stay in the cloud and don't need
-to be brought to the local machine where Bazel runs.
-
-Other reasons to allow copy actions to run remotely:
-- Bazel prints an annoying warning "[action] uses implicit fallback from sandbox to local, which is deprecated because it is not hermetic"
-- When the host and exec platforms have different architectures, toolchain resolution runs the wrong binary locally,
-  see https://github.com/aspect-build/bazel-lib/issues/466
-
-To disable our `copy_use_local_execution` flag, put this in your `.bazelrc` file:
-
-```
-# with Bazel 6.4 or greater:
-
-# Disable default for execution_requirements of copy actions
-common --@aspect_bazel_lib//lib:copy_use_local_execution=false
-
-# with Bazel 6.3 or earlier:
-
-# Disable default for execution_requirements of copy actions
-build --@aspect_bazel_lib//lib:copy_use_local_execution=false
-fetch --@aspect_bazel_lib//lib:copy_use_local_execution=false
-query --@aspect_bazel_lib//lib:copy_use_local_execution=false
-```
-
 
 <a id="copy_file"></a>
 
