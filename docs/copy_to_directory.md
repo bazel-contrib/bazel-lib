@@ -2,10 +2,6 @@
 
 Copy files and directories to an output directory.
 
-NB: See notes on [copy_file](./copy_file.md#choosing-execution-requirements)
-regarding `execution_requirements` settings for remote execution.
-These settings apply to the rules below as well.
-
 
 <a id="copy_to_directory"></a>
 
@@ -77,8 +73,7 @@ for more information on supported globbing patterns.
 copy_to_directory_bin_action(<a href="#copy_to_directory_bin_action-ctx">ctx</a>, <a href="#copy_to_directory_bin_action-name">name</a>, <a href="#copy_to_directory_bin_action-dst">dst</a>, <a href="#copy_to_directory_bin_action-copy_to_directory_bin">copy_to_directory_bin</a>, <a href="#copy_to_directory_bin_action-files">files</a>, <a href="#copy_to_directory_bin_action-targets">targets</a>, <a href="#copy_to_directory_bin_action-root_paths">root_paths</a>,
                              <a href="#copy_to_directory_bin_action-include_external_repositories">include_external_repositories</a>, <a href="#copy_to_directory_bin_action-include_srcs_packages">include_srcs_packages</a>,
                              <a href="#copy_to_directory_bin_action-exclude_srcs_packages">exclude_srcs_packages</a>, <a href="#copy_to_directory_bin_action-include_srcs_patterns">include_srcs_patterns</a>, <a href="#copy_to_directory_bin_action-exclude_srcs_patterns">exclude_srcs_patterns</a>,
-                             <a href="#copy_to_directory_bin_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_bin_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_bin_action-hardlink">hardlink</a>, <a href="#copy_to_directory_bin_action-verbose">verbose</a>,
-                             <a href="#copy_to_directory_bin_action-override_execution_requirements">override_execution_requirements</a>)
+                             <a href="#copy_to_directory_bin_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_bin_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_bin_action-hardlink">hardlink</a>, <a href="#copy_to_directory_bin_action-verbose">verbose</a>)
 </pre>
 
 Factory function to copy files to a directory using a tool binary.
@@ -111,7 +106,6 @@ other rule implementations where additional_files can also be passed in.
 | <a id="copy_to_directory_bin_action-allow_overwrites"></a>allow_overwrites |  If True, allow files to be overwritten if the same output file is copied to twice.<br><br>See copy_to_directory rule documentation for more details.   |  <code>False</code> |
 | <a id="copy_to_directory_bin_action-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>See copy_to_directory rule documentation for more details.   |  <code>"auto"</code> |
 | <a id="copy_to_directory_bin_action-verbose"></a>verbose |  If true, prints out verbose logs to stdout   |  <code>False</code> |
-| <a id="copy_to_directory_bin_action-override_execution_requirements"></a>override_execution_requirements |  specify execution_requirements for this action   |  <code>None</code> |
 
 
 <a id="copy_to_directory_lib.impl"></a>
