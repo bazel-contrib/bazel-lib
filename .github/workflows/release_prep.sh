@@ -2,22 +2,16 @@
 
 set -o errexit -o nounset -o pipefail
 
-# Configuration for 'git archive'
-# see https://git-scm.com/docs/git-archive/2.40.0#ATTRIBUTES
-cat >.git/info/attributes <<EOF
-# Omit folders that users don't need, making the distribution artifact smaller
-lib/tests export-ignore
-
-# Substitution for the _VERSION_PRIVATE placeholder
-tools/version.bzl export-subst
-EOF
-
 # Set by GH actions, see
 # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
 TAG=${GITHUB_REF_NAME}
 # The prefix is chosen to match what GitHub generates for source archives
+# This guarantees that users can easily switch from a released artifact to a source archive
+# with minimal differences in their code (e.g. strip_prefix remains the same)
 PREFIX="bazel-lib-${TAG:1}"
 ARCHIVE="bazel-lib-$TAG.tar.gz"
+
+# NB: configuration for 'git archive' is in /.gitattributes
 git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
 
