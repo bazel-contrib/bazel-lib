@@ -46,7 +46,7 @@ Possible fixes:
   then call it directly with `bazel run` and don't wrap it in a run_binary rule.
 """.format(
             target = str(ctx.label),
-            rule_kind = str(ctx.attr.tool.label),
+            rule_kind = str(ctx.attr.tool[DefaultInfo].label),
         ))
 
     # `expand_locations(...).split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
