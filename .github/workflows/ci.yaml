@@ -121,10 +121,10 @@ jobs:
       - name: Configure Bazel version
         if: ${{ matrix.os != 'windows-latest' }}
         working-directory: ${{ matrix.folder }}
-        # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
+        # - Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
         # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
         # then use .bazelversion to determine which Bazel version to use.
-        # Also delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
+        # - Delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
         # against Bazel 6 which has a try-import in the root .bazelrc for local development.
         run: |
           BAZEL_VERSION=${{ matrix.bazelversion }}
@@ -134,17 +134,19 @@ jobs:
       - name: Configure Bazel version (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         working-directory: ${{ matrix.folder }}
-        # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
+        # - Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
         # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
         # then use .bazelversion to determine which Bazel version to use.
-        # Also delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
+        # - Delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
         # against Bazel 6 which has a try-import in the root .bazelrc for local development.
+        # - Delete the .bazeliskrc file since Aspect CLI doesn't current ship Windows binaries
         run: |
           echo "${{ matrix.bazelversion }}" > .bazelversion
           $BAZEL_MAJOR_VERSION = "${{ matrix.bazelversion }}".substring(0, 1)
           if ($BAZEL_MAJOR_VERSION -ne "6") {
             rm -Force .aspect/bazelrc/bazel6.bazelrc
           }
+          rm -Force .bazeliskrc
 
       - name: Set bzlmod flag
         # Store the --enable_bzlmod flag that we add to the test command below
