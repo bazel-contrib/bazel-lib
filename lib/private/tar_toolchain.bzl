@@ -102,7 +102,9 @@ package(default_visibility = ["//visibility:public"])
             sha256 = remote[1],
         )
         rctx.file("extract.sh", executable = True, content = NAR_EXTRACT)
-        rctx.execute([rctx.path("extract.sh"), "bsdtar.nar.xz", "+%s" % (remote[2][0] + 1), "%s" % remote[2][1], tar_name])
+        r = rctx.execute([rctx.path("extract.sh"), "bsdtar.nar.xz", "+%s" % (remote[2][0] + 1), "%s" % remote[2][1], tar_name])
+        if r.return_code != 0:
+            fail("bsdtar extraction failed.\nstderr: \n{}\nstdout:\n{}".format(r.stderr, r.stdout))
 
     rctx.file("BUILD.bazel", build_header + """tar_toolchain(name = "bsdtar_toolchain", binary = "{}")""".format(tar_name))
 
