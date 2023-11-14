@@ -11,6 +11,15 @@ TAG=${GITHUB_REF_NAME}
 PREFIX="bazel-lib-${TAG:1}"
 ARCHIVE="bazel-lib-$TAG.tar.gz"
 
+# Remove the .bazeliskrc file from the smoke e2e so that the Bazel Central Registry
+# CI doesn't attempt to use the Aspect CLI, which will fail for the Windows run since
+# we don't publish Windows binaries. Two alternative solutions that were attempted but
+# did NOT work:
+#   1. In .bcr/presubmit.yml, override the env vars BAZELISK_BASE_URL and USE_BAZEL_VERSION
+#   2. Add a Publish To BCR patch under .bcr/patches to remove the file. Worked on the BCR CI
+#      on all platforms except for OSX where the patch command failed.
+rm ./e2e/smoke/.bazeliskrc
+
 # NB: configuration for 'git archive' is in /.gitattributes
 git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
