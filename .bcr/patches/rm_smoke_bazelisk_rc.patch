@@ -1,0 +1,8 @@
+diff --git a/e2e/smoke/.bazeliskrc b/e2e/smoke/.bazeliskrc
+deleted file mode 120000
+index 0fbe20f..0000000
+--- a/e2e/smoke/.bazeliskrc
++++ /dev/null
+@@ -1 +0,0 @@
+-../../.bazeliskrc
+\ No newline at end of file
