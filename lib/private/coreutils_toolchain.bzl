@@ -34,29 +34,33 @@ COREUTILS_PLATFORMS = {
     ),
 }
 
-DEFAULT_COREUTILS_VERSION = "0.0.16"
+DEFAULT_COREUTILS_VERSION = "0.0.23"
 
 # https://github.com/uutils/coreutils/releases
 #
 # The integrity hashes can be automatically fetched for the coreutils releases by running
 # `tools/coreutils_mirror_release.sh`.
 COREUTILS_VERSIONS = {
-    "0.0.16": {
+    "0.0.23": {
+        "darwin_arm64": {
+            "filename": "coreutils-0.0.23-aarch64-apple-darwin.tar.gz",
+            "sha256": "sha256-KP90sjKxtXDbLC+o5f4+gQnvP3Tr7O0RopME4g9QF5E=",
+        },
         "linux_arm64": {
-            "filename": "coreutils-0.0.16-aarch64-unknown-linux-gnu.tar.gz",
-            "sha256": "sha256-6tExkcMMHe7+59M9Mp9UKeq+g0y+juO7oakZfVOtOqw=",
+            "filename": "coreutils-0.0.23-aarch64-unknown-linux-gnu.tar.gz",
+            "sha256": "sha256-8wMVMgAgf8JQ2+2LdoewkyDo416VEsf9RlMJl4jiBjk=",
         },
         "darwin_amd64": {
-            "filename": "coreutils-0.0.16-x86_64-apple-darwin.tar.gz",
-            "sha256": "sha256-lQYWAuPOKS6XxwArZdiKIyczwppTVwjF4ml0iKBaB9s=",
+            "filename": "coreutils-0.0.23-x86_64-apple-darwin.tar.gz",
+            "sha256": "sha256-SswetVAuK/hMK1r9uBvNnKj5JpSgD0bzkbsHTxOabCo=",
         },
         "windows_amd64": {
-            "filename": "coreutils-0.0.16-x86_64-pc-windows-msvc.zip",
-            "sha256": "sha256-z5E1onYAKZoaUt2U1cv1t8UHPsJinYktEd6SpE2u07o=",
+            "filename": "coreutils-0.0.23-x86_64-pc-windows-msvc.zip",
+            "sha256": "sha256-aglIj5JvFGLm2ABwRzWAsZRTTD3X444V3GxHM9pGJS4=",
         },
         "linux_amd64": {
-            "filename": "coreutils-0.0.16-x86_64-unknown-linux-gnu.tar.gz",
-            "sha256": "sha256-Slf4qKf19sAWoK2pUVluAitmL3N2uz4eWpV4eibIEW0=",
+            "filename": "coreutils-0.0.23-x86_64-unknown-linux-gnu.tar.gz",
+            "sha256": "sha256-u7OMW43Y46aXRRIKULfKdfUW51WJn6G70s5Xxwb6/1g=",
         },
     },
 }
@@ -171,8 +175,6 @@ coreutils_toolchains_repo = repository_rule(
 def _coreutils_platform_repo_impl(rctx):
     is_windows = rctx.attr.platform.startswith("windows_")
     platform = rctx.attr.platform
-    if platform == "darwin_arm64":
-        platform = "darwin_amd64"
     filename = COREUTILS_VERSIONS[rctx.attr.version][platform]["filename"]
     url = "https://github.com/uutils/coreutils/releases/download/{}/{}".format(
         rctx.attr.version,
