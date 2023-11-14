@@ -146,7 +146,9 @@ jobs:
           if ($BAZEL_MAJOR_VERSION -ne "6") {
             rm -Force .aspect/bazelrc/bazel6.bazelrc
           }
-          rm -Force .bazeliskrc
+          if (Test-Path .bazeliskrc) {
+            rm -Force .bazeliskrc
+          }
 
       - name: Set bzlmod flag
         # Store the --enable_bzlmod flag that we add to the test command below
