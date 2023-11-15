@@ -21,8 +21,8 @@ Otherwise there is no way to give a Bazel label for it.
 
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
-| <a id="directory_path-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
-| <a id="directory_path-directory"></a>directory |  a TreeArtifact (ctx.actions.declare_directory)   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+| <a id="directory_path-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="directory_path-directory"></a>directory |  a TreeArtifact (ctx.actions.declare_directory)   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 | <a id="directory_path-path"></a>path |  path relative to the directory   | String | required |  |
 
 
