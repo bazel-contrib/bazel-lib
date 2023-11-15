@@ -28,6 +28,10 @@ load(":copy_common.bzl", "execution_requirements_for_copy", _progress_path = "pr
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":platform_utils.bzl", _platform_utils = "platform_utils")
 
+# Declare toolchains used by copy file actions so that downstream rulesets can pass it into
+# the `toolchains` attribute of their rule.
+COPY_FILE_TOOLCHAINS = []
+
 def _copy_cmd(ctx, src, src_path, dst, override_execution_requirements = None):
     # Most Windows binaries built with MSVC use a certain argument quoting
     # scheme. Bazel uses that scheme too to quote arguments. However,
@@ -92,6 +96,18 @@ def copy_file_action(ctx, src, dst, dir_path = None, is_windows = None):
 
     This helper is used by copy_file. It is exposed as a public API so it can be used within
     other rule implementations.
+
+    To use `copy_file_action` in your own rules, you need to include the toolchains it uses
+    in your rule definition. For example:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
+
+    my_rule = rule(
+        ...,
+        toolchains = COPY_FILE_TOOLCHAINS,
+    )
+    ```
 
     Args:
         ctx: The rule context.
@@ -164,6 +180,7 @@ _copy_file = rule(
     implementation = _copy_file_impl,
     provides = [DefaultInfo],
     attrs = _ATTRS,
+    toolchains = COPY_FILE_TOOLCHAINS,
 )
 
 _copy_xfile = rule(
@@ -171,6 +188,7 @@ _copy_xfile = rule(
     executable = True,
     provides = [DefaultInfo],
     attrs = _ATTRS,
+    toolchains = COPY_FILE_TOOLCHAINS,
 )
 
 def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kwargs):

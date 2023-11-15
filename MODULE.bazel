@@ -13,8 +13,14 @@ bazel_dep(name = "platforms", version = "0.0.7")
 # 0.5.4 is the first version with bzlmod support
 bazel_dep(name = "stardoc", version = "0.5.4", repo_name = "io_bazel_stardoc")
 
-ext = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "ext")
-use_repo(ext, "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq_toolchains", "yq_toolchains")
+bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
+bazel_lib_toolchains.copy_directory()
+bazel_lib_toolchains.copy_to_directory()
+bazel_lib_toolchains.jq()
+bazel_lib_toolchains.yq()
+bazel_lib_toolchains.coreutils()
+bazel_lib_toolchains.expand_template()
+use_repo(bazel_lib_toolchains, "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq_toolchains", "yq_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",

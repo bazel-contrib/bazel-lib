@@ -65,9 +65,11 @@ query --@aspect_bazel_lib//lib:copy_use_local_execution=false
 
 load(
     "//lib/private:copy_file.bzl",
+    _COPY_FILE_TOOLCHAINS = "COPY_FILE_TOOLCHAINS",
     _copy_file = "copy_file",
     _copy_file_action = "copy_file_action",
 )
 
 copy_file = _copy_file
 copy_file_action = _copy_file_action
+COPY_FILE_TOOLCHAINS = _COPY_FILE_TOOLCHAINS
