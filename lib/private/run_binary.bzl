@@ -20,8 +20,6 @@ load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
 
 def _run_binary_impl(ctx):
-    tool_as_list = [ctx.attr.tool]
-    tool_inputs, tool_input_mfs = ctx.resolve_tools(tools = tool_as_list)
     args = ctx.actions.args()
 
     outputs = []
@@ -70,7 +68,8 @@ Possible fixes:
     ctx.actions.run(
         outputs = outputs,
         inputs = inputs,
-        tools = tool_inputs,
+        tools = ctx.attr.tools.files,
+        toolchain = None,
         executable = ctx.executable.tool,
         arguments = [args],
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
@@ -78,7 +77,6 @@ Possible fixes:
         execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
         use_default_shell_env = False,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
-        input_manifests = tool_input_mfs,
     )
     return DefaultInfo(
         files = depset(outputs),
