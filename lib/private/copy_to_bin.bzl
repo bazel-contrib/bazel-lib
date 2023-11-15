@@ -121,7 +121,6 @@ _copy_to_bin = rule(
     attrs = {
         "srcs": attr.label_list(mandatory = True, allow_files = True),
     },
-    toolchains = ["@aspect_bazel_lib//lib:coreutils_toolchain_type"],
 )
 
 def copy_to_bin(name, srcs, **kwargs):

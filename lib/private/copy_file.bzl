@@ -26,6 +26,63 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":directory_path.bzl", "DirectoryPathInfo")
+load(":platform_utils.bzl", _platform_utils = "platform_utils")
+
+def _copy_cmd(ctx, src, src_path, dst):
+    # Most Windows binaries built with MSVC use a certain argument quoting
+    # scheme. Bazel uses that scheme too to quote arguments. However,
+    # cmd.exe uses different semantics, so Bazel's quoting is wrong here.
+    # To fix that we write the command to a .bat file so no command line
+    # quoting or escaping is required.
+    # Put a hash of the file name into the name of the generated batch file to
+    # make it unique within the package, so that users can define multiple copy_file's.
+    # The label of the target is intentionally not included so that two different targets
+    # can copy the same file to the output tree.
+    bat = ctx.actions.declare_file("%s-cmd.bat" % hash(src_path + dst.short_path))
+
+    # Flags are documented at
+    # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/copy
+    cmd_tmpl = "@copy /Y \"{src}\" \"{dst}\" >NUL"
+    mnemonic = "CopyFile"
+    progress_message = "Copying file %s" % _progress_path(src)
+
+    ctx.actions.write(
+        output = bat,
+        # Do not use lib/shell.bzl's shell.quote() method, because that uses
+        # Bash quoting syntax, which is different from cmd.exe's syntax.
+        content = cmd_tmpl.format(
+            src = src_path.replace("/", "\\"),
+            dst = dst.path.replace("/", "\\"),
+        ),
+        is_executable = True,
+    )
+    ctx.actions.run(
+        inputs = [src],
+        tools = [bat],
+        outputs = [dst],
+        executable = "cmd.exe",
+        arguments = ["/C", bat.path.replace("/", "\\")],
+        mnemonic = mnemonic,
+        progress_message = progress_message,
+        use_default_shell_env = True,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+    )
+
+def _copy_bash(ctx, src, src_path, dst):
+    cmd_tmpl = "cp -f \"$1\" \"$2\""
+    mnemonic = "CopyFile"
+    progress_message = "Copying file %s" % _progress_path(src)
+
+    ctx.actions.run_shell(
+        tools = [src],
+        outputs = [dst],
+        command = cmd_tmpl,
+        arguments = [src_path, dst.path],
+        mnemonic = mnemonic,
+        progress_message = progress_message,
+        use_default_shell_env = True,
+        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+    )
 
 def copy_file_action(ctx, src, dst, dir_path = None):
     """Factory function that creates an action to copy a file from src to dst.
@@ -52,17 +109,13 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     else:
         src_path = src.path
 
-    coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"].coreutils_info
-
-    ctx.actions.run(
-        executable = coreutils.bin,
-        arguments = ["cp", src_path, dst.path],
-        inputs = [src],
-        outputs = [dst],
-        mnemonic = "CopyFile",
-        progress_message = "Copying file %s" % _progress_path(src),
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
-    )
+    # Because copy actions have "local" execution requirements, we can safely assume
+    # the execution is the same as the host platform and generate different actions for Windows
+    # and non-Windows host platforms
+    if _platform_utils.host_platform_is_windows():
+        _copy_cmd(ctx, src, src_path, dst)
+    else:
+        _copy_bash(ctx, src, src_path, dst)
 
 def _copy_file_impl(ctx):
     if ctx.attr.allow_symlink:
@@ -107,7 +160,6 @@ _copy_file = rule(
     implementation = _copy_file_impl,
     provides = [DefaultInfo],
     attrs = _ATTRS,
-    toolchains = ["@aspect_bazel_lib//lib:coreutils_toolchain_type"],
 )
 
 _copy_xfile = rule(
@@ -115,7 +167,6 @@ _copy_xfile = rule(
     executable = True,
     provides = [DefaultInfo],
     attrs = _ATTRS,
-    toolchains = ["@aspect_bazel_lib//lib:coreutils_toolchain_type"],
 )
 
 def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kwargs):
