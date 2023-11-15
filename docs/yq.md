@@ -83,7 +83,7 @@ genrule(
     name = "generate",
     srcs = ["farm.yaml"],
     outs = ["genrule_output.yaml"],
-    cmd = "$(YQ_BIN) '.moo = "cow"' $(location farm.yaml) > $@",
+    cmd = "$(YQ_BIN) '.moo = "cow"' $(location farm.yaml) &gt; $@",
     toolchains = ["@yq_toolchains//:resolved_toolchain"],
 )
 ```
@@ -96,7 +96,7 @@ yq(
     expression = "|".join([
         "load(strenv(STAMP)) as $stamp",
         # Provide a default using the "alternative operator" in case $stamp is empty dict.
-        ".version = ($stamp.BUILD_EMBED_LABEL // "<unstamped>")",
+        ".version = ($stamp.BUILD_EMBED_LABEL // "&lt;unstamped&gt;")",
     ]),
 )
 ```

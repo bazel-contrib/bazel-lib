@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 
+BZLMOD_FLAG="${BZLMOD_FLAG:-}"
+
 function run_test {
-  bazel run //:write_source_file_root-test
+  bazel run $BZLMOD_FLAG //:write_source_file_root-test
   local expected_out="test-out/dist/write_source_file_root-test/test.txt"
   if [ ! -e "$expected_out" ]; then
     echo "ERROR: expected $expected_out to exist"

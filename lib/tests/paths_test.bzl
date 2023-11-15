@@ -229,7 +229,23 @@ def paths_test_suite():
     unittest.suite(
         "paths_tests",
         partial.make(relative_file_test, timeout = "short"),
-        partial.make(rlocation_path_test, timeout = "short"),
-        partial.make(output_relative_path_test, timeout = "short"),
+        partial.make(
+            rlocation_path_test,
+            timeout = "short",
+            # TODO: rlocation_path tests don't work under bzlmod
+            target_compatible_with = select({
+                "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+                "//conditions:default": [],
+            }),
+        ),
+        partial.make(
+            output_relative_path_test,
+            timeout = "short",
+            # TODO: output_relative_path tests don't work under bzlmod
+            target_compatible_with = select({
+                "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+                "//conditions:default": [],
+            }),
+        ),
         partial.make(repository_relative_path_test, timeout = "short"),
     )
