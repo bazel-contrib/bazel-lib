@@ -25,6 +25,27 @@ returned.
 If the file passed in is already in the output tree is then it is returned
 without a copy action.
 
+To use `copy_file_to_bin_action` in your own rules, you need to include the toolchains it uses
+in your rule definition. For example:
+
+```starlark
+load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
+
+my_rule = rule(
+    ...,
+    toolchains = COPY_FILE_TO_BIN_TOOLCHAINS,
+)
+```
+
+Additionally, you must ensure that the coreutils toolchain is has been registered in your
+WORKSPACE if you are not using bzlmod:
+
+```starlark
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+
+register_coreutils_toolchains()
+```
+
 
 **PARAMETERS**
 

@@ -14,6 +14,7 @@ load("//tools:version.bzl", "VERSION")
 # buildifier: disable=unnamed-macro
 def aspect_bazel_lib_dependencies():
     "Load dependencies required by aspect rules"
+
     http_archive(
         name = "bazel_skylib",
         sha256 = "66ffd9315665bfaafc96b52278f57c7e2dd09f5ede279ea6d39b2be471e7e3aa",
