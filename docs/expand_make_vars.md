@@ -29,8 +29,8 @@ This is of the format:
 - `./file`
 - `path/to/file`
 - `external/external_repo/path/to/file`
-- `<bin_dir>/path/to/file`
-- `<bin_dir>/external/external_repo/path/to/file`
+- `&lt;bin_dir&gt;/path/to/file`
+- `&lt;bin_dir&gt;/external/external_repo/path/to/file`
 
 The deprecated `$(location)` and `$(locations)` expansions returns either the execpath or rootpath depending on the context.
 

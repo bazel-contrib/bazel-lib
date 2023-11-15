@@ -1,6 +1,6 @@
 "tests for run_binary"
 
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:run_binary.bzl", "run_binary")
 
@@ -55,8 +55,11 @@ run_binary(
     tool = ":expansions_sh",
 )
 
-write_source_file(
-    name = "write_expansions_golden",
-    in_file = "expansions_out",
-    out_file = "expansions_golden",
+diff_test(
+    name = "expansions_golden_test",
+    file1 = ":expansions_out",
+    file2 = select({
+        "@aspect_bazel_lib//lib:bzlmod": "expansions_golden_bzlmod",
+        "//conditions:default": "expansions_golden",
+    }),
 )

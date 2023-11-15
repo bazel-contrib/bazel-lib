@@ -18,10 +18,10 @@ A rule that provides file(s) specific via DefaultInfo from a given target's Defa
 
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
-| <a id="output_files-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
-| <a id="output_files-output_group"></a>output_group |  if set, we look in the specified output group for paths instead of DefaultInfo   | String | optional | "" |
+| <a id="output_files-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
+| <a id="output_files-output_group"></a>output_group |  if set, we look in the specified output group for paths instead of DefaultInfo   | String | optional | <code>""</code> |
 | <a id="output_files-paths"></a>paths |  the paths of the file(s), relative to their roots, to provide via DefaultInfo from the given target's DefaultInfo or OutputGroupInfo   | List of strings | required |  |
-| <a id="output_files-target"></a>target |  the target to look in for requested paths in its' DefaultInfo or OutputGroupInfo   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+| <a id="output_files-target"></a>target |  the target to look in for requested paths in its' DefaultInfo or OutputGroupInfo   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
 <a id="make_output_files"></a>

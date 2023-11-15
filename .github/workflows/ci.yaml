@@ -193,7 +193,8 @@ jobs:
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc \
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
             --bazelrc=.bazelrc \
-            test --config=${{ matrix.config }} //...
+            test --config=${{ matrix.config }} //... \
+            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
@@ -208,8 +209,8 @@ jobs:
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
             --bazelrc=.bazelrc `
-            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} `
-            test --config=${{ matrix.config }} //...
+            test --config=${{ matrix.config }} //... `
+            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
@@ -218,7 +219,7 @@ jobs:
         # Don't run integration tests on Windows since they are bash scripts and Windows runs Powershell
         if: ${{ matrix.folder == '.' && matrix.os != 'windows-latest' }}
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
-        run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && "$0" || kill $PPID' \{\} \;
+        run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && BZLMOD_FLAG=${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} "$0" || kill $PPID' \{\} \;
 
       - name: verify bcr patches
         if: matrix.bzlmodEnabled && matrix.os == 'ubuntu-latest'

@@ -79,6 +79,11 @@ def release(name, targets, **kwargs):
             for target in targets
         ]),
         tools = [":create_versions.sh"],
+        # TODO: the hashes change when bzlmol is enabled
+        target_compatible_with = kwargs.pop("target_compatible_with", select({
+            "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+            "//conditions:default": [],
+        })),
         **kwargs
     )
 
