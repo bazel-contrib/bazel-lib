@@ -59,7 +59,7 @@ def _is_external_label_test_impl(ctx):
         asserts.false(env, utils.is_external_label("@@//some/label"))
 
     # assert that labels and string that give a workspace return true
-    asserts.true(env, utils.is_external_label(Label("@foo//some/label")))
+    asserts.true(env, utils.is_external_label(Label("@bazel_skylib//some/label")))
     asserts.true(env, ctx.attr.external_as_string)
 
     return unittest.end(env)
@@ -134,7 +134,7 @@ def _consistent_label_str_impl(ctx):
     asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("//foo:bar")))
     asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@//foo:bar")))
     asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@aspect_bazel_lib//foo:bar")))
-    asserts.equals(env, "@external_workspace//foo:bar", utils.consistent_label_str(ctx, Label("@external_workspace//foo:bar")))
+    asserts.equals(env, "@bazel_skylib//foo:bar", utils.consistent_label_str(ctx, Label("@bazel_skylib//foo:bar")))
 
     return unittest.end(env)
 
@@ -178,13 +178,22 @@ def file_exists_test():
 
 # buildifier: disable=function-docstring
 def utils_test_suite():
-    to_label_test(name = "to_label_tests", relative_asserts = {
-        utils.to_label(":utils_test.bzl"): "//lib/tests:utils_test.bzl",
-    }, timeout = "short")
+    to_label_test(
+        name = "to_label_tests",
+        relative_asserts = {
+            utils.to_label(":utils_test.bzl"): "//lib/tests:utils_test.bzl",
+        },
+        timeout = "short",
+        # TODO: to_label tests don't work under bzlmod
+        target_compatible_with = select({
+            "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+            "//conditions:default": [],
+        }),
+    )
 
     is_external_label_test(
         name = "is_external_label_tests",
-        external_as_string = utils.is_external_label("@foo//some/label"),
+        external_as_string = utils.is_external_label("@bazel_skylib//some/label"),
         internal_with_workspace_as_string = utils.is_external_label("@aspect_bazel_lib//some/label"),
         timeout = "short",
     )
@@ -212,6 +221,11 @@ def utils_test_suite():
     consistent_label_str_test(
         name = "consistent_label_str_tests",
         timeout = "short",
+        # TODO: consistent_label_str tests don't work under bzlmod
+        target_compatible_with = select({
+            "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+            "//conditions:default": [],
+        }),
     )
 
     file_exists_test()

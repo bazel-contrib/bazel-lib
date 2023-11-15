@@ -93,7 +93,7 @@ jq(
         "--raw-input",
         "--slurp",
     ],
-    filter = "{ deps: split("\n") | map(select(. | length > 0)) }",
+    filter = "{ deps: split("\n") | map(select(. | length &gt; 0)) }",
 )
 
 # With --stamp, causes properties to be replaced by version control info.
@@ -105,7 +105,7 @@ jq(
         # This 'as' syntax results in $stamp being null in unstamped builds.
         "$ARGS.named.STAMP as $stamp",
         # Provide a default using the "alternative operator" in case $stamp is null.
-        ".version = ($stamp.BUILD_EMBED_LABEL // "<unstamped>")",
+        ".version = ($stamp.BUILD_EMBED_LABEL // "&lt;unstamped&gt;")",
     ]),
 )
 ```
@@ -118,7 +118,7 @@ genrule(
     name = "case_genrule",
     srcs = ["a.json"],
     outs = ["genrule_output.json"],
-    cmd = "$(JQ_BIN) '.' $(location a.json) > $@",
+    cmd = "$(JQ_BIN) '.' $(location a.json) &gt; $@",
     toolchains = ["@jq_toolchains//:resolved_toolchain"],
 )
 ```

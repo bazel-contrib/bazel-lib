@@ -81,7 +81,7 @@ copy_to_bin(<a href="#copy_to_bin-name">name</a>, <a href="#copy_to_bin-srcs">sr
 
 Copies a source file to output tree at the same workspace-relative path.
 
-e.g. `<execroot>/path/to/file -> <execroot>/bazel-out/<platform>/bin/path/to/file`
+e.g. `&lt;execroot&gt;/path/to/file -&gt; &lt;execroot&gt;/bazel-out/&lt;platform&gt;/bin/path/to/file`
 
 If a file passed in is already in the output tree is then it is added directly to the
 DefaultInfo provided by the rule without a copy.

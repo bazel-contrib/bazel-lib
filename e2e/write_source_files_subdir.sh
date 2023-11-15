@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 
+BZLMOD_FLAG="${BZLMOD_FLAG:-}"
+
 function run_test {
-  bazel run //lib/tests/write_source_files:write_subdir
+  bazel run $BZLMOD_FLAG //lib/tests/write_source_files:write_subdir
   local expected_out="lib/tests/write_source_files/subdir_test/a/b/c/test.txt"
   if [ ! -e "$expected_out" ]; then
     echo "ERROR: expected $expected_out to exist"
@@ -13,7 +15,7 @@ function run_test {
     exit 1
   fi
 
-  bazel run //lib/tests/write_source_files:write_subdir_executable
+  bazel run $BZLMOD_FLAG //lib/tests/write_source_files:write_subdir_executable
   local expected_out="lib/tests/write_source_files/subdir_executable_test/a/b/c/test.txt"
   if [ ! -e "$expected_out" ]; then
     echo "ERROR: expected $expected_out to exist"

@@ -13,9 +13,15 @@ load("//lib:yq.bzl", "yq")
 
 gazelle_binary(
     name = "gazelle_bin",
-    languages = DEFAULT_LANGUAGES + [
-        "@bazel_skylib_gazelle_plugin//bzl",
-    ],
+    languages = select({
+        # TODO: under bzlmod we get go linking errors when adding
+        # the skylib gazelle plugin.
+        # https://github.com/bazelbuild/rules_go/issues/1877
+        "@aspect_bazel_lib//lib:bzlmod": DEFAULT_LANGUAGES,
+        "//conditions:default": DEFAULT_LANGUAGES + [
+            "@bazel_skylib_gazelle_plugin//bzl",
+        ],
+    }),
 )
 
 gazelle(

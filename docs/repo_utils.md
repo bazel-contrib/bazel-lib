@@ -145,8 +145,8 @@ Returns a normalized name of the host os and CPU architecture.
 
 Alias archictures names are normalized:
 
-x86_64 => amd64
-aarch64 => arm64
+x86_64 =&gt; amd64
+aarch64 =&gt; arm64
 
 The result can be used to generate repository names for host toolchain
 repositories for toolchains that use these normalized names.
@@ -171,6 +171,6 @@ Common os & architecture pairs that are returned are,
 
 **RETURNS**
 
-The normalized "<os>_<arch>" string of the host os and CPU architecture.
+The normalized "&lt;os&gt;_&lt;arch&gt;" string of the host os and CPU architecture.
 
 
