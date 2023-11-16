@@ -27,6 +27,14 @@ cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
+_COREUTILS_TOOLCHAIN = "@aspect_bazel_lib//lib:coreutils_toolchain_type"
+
+# Declare toolchains used by copy file actions so that downstream rulesets can pass it into
+# the `toolchains` attribute of their rule.
+COPY_FILE_TOOLCHAINS = [
+    _COREUTILS_TOOLCHAIN,
+]
+
 def copy_file_action(ctx, src, dst, dir_path = None):
     """Factory function that creates an action to copy a file from src to dst.
 
@@ -35,6 +43,27 @@ def copy_file_action(ctx, src, dst, dir_path = None):
 
     This helper is used by copy_file. It is exposed as a public API so it can be used within
     other rule implementations.
+
+    To use `copy_file_action` in your own rules, you need to include the toolchains it uses
+    in your rule definition. For example:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
+
+    my_rule = rule(
+        ...,
+        toolchains = COPY_FILE_TOOLCHAINS,
+    )
+    ```
+
+    Additionally, you must ensure that the coreutils toolchain is has been registered in your
+    WORKSPACE if you are not using bzlmod:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+
+    register_coreutils_toolchains()
+    ```
 
     Args:
         ctx: The rule context.
@@ -52,7 +81,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     else:
         src_path = src.path
 
-    coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"].coreutils_info
+    coreutils = ctx.toolchains[_COREUTILS_TOOLCHAIN].coreutils_info
 
     ctx.actions.run(
         executable = coreutils.bin,
@@ -107,7 +136,7 @@ _copy_file = rule(
     implementation = _copy_file_impl,
     provides = [DefaultInfo],
     attrs = _ATTRS,
-    toolchains = ["@aspect_bazel_lib//lib:coreutils_toolchain_type"],
+    toolchains = COPY_FILE_TOOLCHAINS,
 )
 
 _copy_xfile = rule(
@@ -115,7 +144,7 @@ _copy_xfile = rule(
     executable = True,
     provides = [DefaultInfo],
     attrs = _ATTRS,
-    toolchains = ["@aspect_bazel_lib//lib:coreutils_toolchain_type"],
+    toolchains = COPY_FILE_TOOLCHAINS,
 )
 
 def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kwargs):

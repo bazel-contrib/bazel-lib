@@ -15,7 +15,9 @@
 """Implementation of copy_to_bin macro and underlying rules."""
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load(":copy_file.bzl", "copy_file_action")
+load(":copy_file.bzl", "COPY_FILE_TOOLCHAINS", "copy_file_action")
+
+COPY_FILE_TO_BIN_TOOLCHAINS = COPY_FILE_TOOLCHAINS
 
 def copy_file_to_bin_action(ctx, file):
     """Factory function that creates an action to copy a file to the output tree.
@@ -25,6 +27,27 @@ def copy_file_to_bin_action(ctx, file):
 
     If the file passed in is already in the output tree is then it is returned
     without a copy action.
+
+    To use `copy_file_to_bin_action` in your own rules, you need to include the toolchains it uses
+    in your rule definition. For example:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
+
+    my_rule = rule(
+        ...,
+        toolchains = COPY_FILE_TO_BIN_TOOLCHAINS,
+    )
+    ```
+
+    Additionally, you must ensure that the coreutils toolchain is has been registered in your
+    WORKSPACE if you are not using bzlmod:
+
+    ```starlark
+    load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+
+    register_coreutils_toolchains()
+    ```
 
     Args:
         ctx: The rule context.
@@ -121,7 +144,7 @@ _copy_to_bin = rule(
     attrs = {
         "srcs": attr.label_list(mandatory = True, allow_files = True),
     },
-    toolchains = ["@aspect_bazel_lib//lib:coreutils_toolchain_type"],
+    toolchains = COPY_FILE_TO_BIN_TOOLCHAINS,
 )
 
 def copy_to_bin(name, srcs, **kwargs):
