@@ -84,6 +84,7 @@ def release(name, targets, **kwargs):
             "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
             "//conditions:default": [],
         })),
+        visibility = ["//tools:__pkg__"],
         **kwargs
     )
 
@@ -92,9 +93,9 @@ def release(name, targets, **kwargs):
         srcs = targets,
         outs = ["release.sh"],
         executable = True,
-        cmd = "./$(location //tools:create_release.sh) {locations} > \"$@\"".format(
+        cmd = "./$(location //tools/release:create_release.sh) {locations} > \"$@\"".format(
             locations = " ".join(["$(locations {})".format(target) for target in targets]),
         ),
-        tools = ["//tools:create_release.sh"],
+        tools = ["//tools/release:create_release.sh"],
         **kwargs
     )
