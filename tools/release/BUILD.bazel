@@ -1,0 +1,40 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(":release.bzl", "multi_platform_go_binaries", "release")
+
+multi_platform_go_binaries(
+    name = "copy_to_directory",
+    embed = ["//tools/copy_to_directory:copy_to_directory_lib"],
+    tags = ["manual"],
+)
+
+multi_platform_go_binaries(
+    name = "copy_directory",
+    embed = ["//tools/copy_directory:copy_directory_lib"],
+    tags = ["manual"],
+)
+
+multi_platform_go_binaries(
+    name = "expand_template",
+    embed = ["//tools/expand_template:expand_template_lib"],
+    tags = ["manual"],
+)
+
+release(
+    name = "release",
+    tags = [
+        "local",
+        "manual",
+        "no-remote",
+    ],
+    targets = [
+        ":copy_directory",
+        ":copy_to_directory",
+        ":expand_template",
+    ],
+)
+
+bzl_library(
+    name = "hashes",
+    srcs = ["hashes.bzl"],
+    visibility = ["//visibility:public"],
+)
