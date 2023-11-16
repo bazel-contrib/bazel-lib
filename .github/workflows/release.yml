@@ -34,7 +34,7 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/aspect/release
-          bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc run //tools:release -- /tmp/aspect/release
+          bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc run //tools/release -- /tmp/aspect/release
           if /tmp/aspect/release/copy_to_directory-linux_amd64 version | grep '(with local changes)'; then
             >&2 echo "ERROR: the release contained changes in the git state and the release will not be produced"
             exit 1
