@@ -93,11 +93,11 @@ def _toolchain_repos_bfs(mctx, get_tag_fn, toolchain_name, toolchain_repos_fn, d
             else:
                 registrations[name] = version
 
-        for name, version in registrations.items():
-            toolchain_repos_fn(
-                name = name,
-                version = version,
-            )
+    for name, version in registrations.items():
+        toolchain_repos_fn(
+            name = name,
+            version = version,
+        )
 
 extension_utils = struct(
     toolchain_repos_bfs = _toolchain_repos_bfs,
