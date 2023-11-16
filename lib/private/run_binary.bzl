@@ -68,7 +68,7 @@ Possible fixes:
     ctx.actions.run(
         outputs = outputs,
         inputs = inputs,
-        tools = ctx.attr.tools.files,
+        tools = ctx.attr.tools.files_to_run,
         toolchain = None,
         executable = ctx.executable.tool,
         arguments = [args],
