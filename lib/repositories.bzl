@@ -53,7 +53,9 @@ DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
 DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
 DEFAULT_COREUTILS_VERSION = _DEFAULT_COREUTILS_VERSION
 
-def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION, register = True):
+DEFAULT_JQ_REPOSITORY = "jq"
+
+def register_jq_toolchains(name = DEFAULT_JQ_REPOSITORY, version = DEFAULT_JQ_VERSION, register = True):
     """Registers jq toolchain and repositories
 
     Args:
@@ -78,7 +80,9 @@ def register_jq_toolchains(name = "jq", version = DEFAULT_JQ_VERSION, register =
         user_repository_name = name,
     )
 
-def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register = True):
+DEFAULT_YQ_REPOSITORY = "yq"
+
+def register_yq_toolchains(name = DEFAULT_YQ_REPOSITORY, version = DEFAULT_YQ_VERSION, register = True):
     """Registers yq toolchain and repositories
 
     Args:
@@ -103,7 +107,9 @@ def register_yq_toolchains(name = "yq", version = DEFAULT_YQ_VERSION, register =
         user_repository_name = name,
     )
 
-def register_coreutils_toolchains(name = "coreutils", version = DEFAULT_COREUTILS_VERSION, register = True):
+DEFAULT_COREUTILS_REPOSITORY = "coreutils"
+
+def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version = DEFAULT_COREUTILS_VERSION, register = True):
     """Registers coreutils toolchain and repositories
 
     Args:
@@ -126,7 +132,9 @@ def register_coreutils_toolchains(name = "coreutils", version = DEFAULT_COREUTIL
         user_repository_name = name,
     )
 
-def register_copy_directory_toolchains(name = "copy_directory", register = True):
+DEFAULT_COPY_DIRECTORY_REPOSITORY = "copy_directory"
+
+def register_copy_directory_toolchains(name = DEFAULT_COPY_DIRECTORY_REPOSITORY, register = True):
     """Registers copy_directory toolchain and repositories
 
     Args:
@@ -159,7 +167,9 @@ def register_copy_directory_toolchains(name = "copy_directory", register = True)
         user_repository_name = name,
     )
 
-def register_copy_to_directory_toolchains(name = "copy_to_directory", register = True):
+DEFAULT_COPY_TO_DIRECTORY_REPOSITORY = "copy_to_directory"
+
+def register_copy_to_directory_toolchains(name = DEFAULT_COPY_TO_DIRECTORY_REPOSITORY, register = True):
     """Registers copy_to_directory toolchain and repositories
 
     Args:
@@ -192,7 +202,9 @@ def register_copy_to_directory_toolchains(name = "copy_to_directory", register =
         user_repository_name = name,
     )
 
-def register_expand_template_toolchains(name = "expand_template", register = True):
+DEFAULT_EXPAND_TEMPLATE_REPOSITORY = "expand_template"
+
+def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITORY, register = True):
     """Registers expand_template toolchain and repositories
 
     Args:

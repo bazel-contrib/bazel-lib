@@ -96,6 +96,18 @@ the TreeArtifact to the file to copy.
 This helper is used by copy_file. It is exposed as a public API so it can be used within
 other rule implementations.
 
+To use `copy_file_action` in your own rules, you need to include the toolchains it uses
+in your rule definition. For example:
+
+```starlark
+load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
+
+my_rule = rule(
+    ...,
+    toolchains = COPY_FILE_TOOLCHAINS,
+)
+```
+
 
 **PARAMETERS**
 

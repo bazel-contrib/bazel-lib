@@ -9,6 +9,7 @@ https://github.com/bazelbuild/rules_nodejs/blob/8b5d27400db51e7027fe95ae413eeabe
 
 load(
     "//lib/private:copy_to_bin.bzl",
+    _COPY_FILE_TO_BIN_TOOLCHAINS = "COPY_FILE_TO_BIN_TOOLCHAINS",
     _copy_file_to_bin_action = "copy_file_to_bin_action",
     _copy_files_to_bin_actions = "copy_files_to_bin_actions",
     _copy_to_bin = "copy_to_bin",
@@ -17,3 +18,4 @@ load(
 copy_file_to_bin_action = _copy_file_to_bin_action
 copy_files_to_bin_actions = _copy_files_to_bin_actions
 copy_to_bin = _copy_to_bin
+COPY_FILE_TO_BIN_TOOLCHAINS = _COPY_FILE_TO_BIN_TOOLCHAINS
