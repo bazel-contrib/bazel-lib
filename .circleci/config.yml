@@ -19,13 +19,14 @@ setup: true
 
 orbs:
   slack: circleci/slack@4.12.5
-  aspect-workflows: aspect-build/workflows@5.8.7
+  aspect-workflows: aspect-build/workflows@5.8.10
 
 jobs:
   legacy:
     docker:
       - image: cimg/base:2023.03
     steps:
+      - run: echo "No-op step since CCI requires one step for the job to be valid"
       - when:
           condition:
             and:
@@ -33,7 +34,7 @@ jobs:
                   equal: [scheduled_pipeline, << pipeline.trigger_source >>]
           steps:
             - checkout
-            - run: echo "this is an example of legacy non-workflows job"
+            - run: echo "This is an example of legacy non-workflows job"
 
 workflows:
   default-workflow:
