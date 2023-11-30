@@ -32,7 +32,7 @@ def copy_file_to_bin_action(ctx, file):
     in your rule definition. For example:
 
     ```starlark
-    load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
+    load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
 
     my_rule = rule(
         ...,
