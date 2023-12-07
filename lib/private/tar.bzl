@@ -1,5 +1,41 @@
 "Implementation of tar rule"
 
+TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
+
+# https://www.gnu.org/software/tar/manual/html_section/Compression.html
+_ACCEPTED_EXTENSIONS = [
+    ".tar",  # uncompressed,
+    ".gz",  # gzip
+    ".tgz",  # gzip
+    ".taz",  # gzip
+    ".Z",  # compress
+    ".taZ",  # compress
+    ".bz2",  # bzip2
+    ".tz2",  # bzip2
+    ".tbz2",  # bzip2
+    ".tbz",  # bzip2
+    ".lz",  # lzip
+    ".lzma",  # lzma
+    ".tlz",  # lzma
+    ".lzo",  # lzop
+    ".xz",  # xz
+    ".zst",  # zstd
+    ".tzst",  # zstd
+]
+
+# https://www.gnu.org/software/tar/manual/html_section/Compression.html
+_ACCEPTED_COMPRESSION_TYPES = [
+    "bzip2",
+    "compress",
+    "gzip",
+    "lrzip",
+    "lz4",
+    "lzma",
+    "lzop",
+    "xz",
+    "zstd",
+]
+
 _tar_attrs = {
     "args": attr.string_list(
         doc = "Additional flags permitted by BSD tar; see the man page.",
@@ -43,7 +79,7 @@ _tar_attrs = {
     ),
     "compress": attr.string(
         doc = "Compress the archive file with a supported algorithm.",
-        values = ["bzip2", "compress", "gzip", "lrzip", "lz4", "lzma", "lzop", "xz", "zstd"],
+        values = _ACCEPTED_COMPRESSION_TYPES,
     ),
 }
 
@@ -52,7 +88,7 @@ _mtree_attrs = {
     "out": attr.output(doc = "Resulting specification file to write"),
 }
 
-def _add_compress_options(compress, args):
+def _add_compression_args(compress, args):
     if compress == "bzip2":
         args.add("--bzip2")
     if compress == "compress":
@@ -87,7 +123,7 @@ def _calculate_runfiles_dir(default_info):
     fail("manifest path {} seems malformed".format(manifest.short_path))
 
 def _tar_impl(ctx):
-    bsdtar = ctx.toolchains["@aspect_bazel_lib//lib:tar_toolchain_type"]
+    bsdtar = ctx.toolchains[TAR_TOOLCHAIN_TYPE]
     inputs = ctx.files.srcs[:]
     args = ctx.actions.args()
 
@@ -98,7 +134,7 @@ def _tar_impl(ctx):
     args.add_all(ctx.attr.args)
 
     # Compression args
-    _add_compress_options(ctx.attr.compress, args)
+    _add_compression_args(ctx.attr.compress, args)
 
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
     args.add("--file", out)
@@ -198,11 +234,17 @@ tar_lib = struct(
     implementation = _tar_impl,
     mtree_attrs = _mtree_attrs,
     mtree_implementation = _mtree_impl,
+    toolchain_type = TAR_TOOLCHAIN_TYPE,
+    common = struct(
+        accepted_tar_extensions = _ACCEPTED_EXTENSIONS,
+        accepted_compression_types = _ACCEPTED_COMPRESSION_TYPES,
+        add_compression_args = _add_compression_args,
+    ),
 )
 
 tar = rule(
     doc = "Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rather than load this directly.",
     implementation = tar_lib.implementation,
     attrs = tar_lib.attrs,
-    toolchains = ["@aspect_bazel_lib//lib:tar_toolchain_type"],
+    toolchains = [tar_lib.toolchain_type],
 )
