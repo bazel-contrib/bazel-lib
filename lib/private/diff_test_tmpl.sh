@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 escape() {
-  echo "$1" \
-    | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' \
-    | awk 1 ORS='&#10;' # preserve newlines
+  echo "$1" |
+    sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' |
+    awk 1 ORS='&#10;' # preserve newlines
 }
 fail() {
-  cat << EOF >"${XML_OUTPUT_FILE:-/dev/null}"
+  cat <<EOF >"${XML_OUTPUT_FILE:-/dev/null}"
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites name="$(escape "{name}")" tests="1" failures="1">
   <testsuite name="$(escape "{name}")" tests="1" failures="1" id="0">

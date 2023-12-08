@@ -12,10 +12,10 @@ PREFIX="bazel-lib-${TAG:1}"
 ARCHIVE="bazel-lib-$TAG.tar.gz"
 
 # NB: configuration for 'git archive' is in /.gitattributes
-git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
+git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip >$ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
 
-cat << EOF
+cat <<EOF
 
 ## Using Bzlmod with Bazel 6:
 

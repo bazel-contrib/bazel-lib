@@ -42,7 +42,7 @@ module "aspect_workflows" {
 
   # Warming set definitions
   warming_sets = {
-    default  = {}
+    default = {}
   }
 
   # Resource types for use by runner groups
@@ -67,7 +67,7 @@ module "aspect_workflows" {
       min_runners               = 0
       resource_type             = "default"
       scale_out_factor          = 7
-      scaling_polling_frequency = 3  # check for queued jobs every 20s
+      scaling_polling_frequency = 3 # check for queued jobs every 20s
       warming                   = true
     }
     # The warming runner group is used for the periodic warming job that creates
