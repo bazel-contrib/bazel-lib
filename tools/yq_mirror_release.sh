@@ -6,9 +6,9 @@ set -o errexit -o nounset -o pipefail
 
 # Find the latest version
 if [ "${1:-}" ]; then
-    version=$1
+  version=$1
 else
-    version=$(curl --silent "https://api.github.com/repos/mikefarah/yq/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+  version=$(curl --silent "https://api.github.com/repos/mikefarah/yq/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
 fi
 
 # yq publishes its checksums and a script to extract them
@@ -23,11 +23,11 @@ chmod u+x extract-checksum.sh
 echo "\"$version\": {"
 platforms=(darwin_{amd64,arm64} linux_{amd64,arm64,s390x,ppc64le} windows_amd64)
 for release in ${platforms[@]}; do
-    artifact=$release
-    if [[ $release == windows* ]]; then
-        artifact="$release.exe"
-    fi
-    echo "    \"$release\": \"$(./extract-checksum.sh SHA-384 $artifact | awk '{ print $2 }' | xxd -r -p | base64 | awk '{ print "sha384-" $1 }' )\","
+  artifact=$release
+  if [[ $release == windows* ]]; then
+    artifact="$release.exe"
+  fi
+  echo "    \"$release\": \"$(./extract-checksum.sh SHA-384 $artifact | awk '{ print $2 }' | xxd -r -p | base64 | awk '{ print "sha384-" $1 }')\","
 done
 echo "},"
 

@@ -10,7 +10,7 @@ cat <<EOF
 ${NAME_UPPER}_INTEGRITY = {
 EOF
 
-while (( $# > 0 )); do
+while (($# > 0)); do
 
   if [[ "$1" =~ .*.sha256 ]]; then
     base=$(basename $1)
@@ -23,7 +23,6 @@ EOF
   fi
   shift
 done
-
 
 echo -n "}"
 echo ""

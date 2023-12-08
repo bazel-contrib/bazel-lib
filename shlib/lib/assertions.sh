@@ -20,12 +20,11 @@ fail() {
 make_err_msg() {
   local err_msg="${1}"
   local prefix="${2:-}"
-  if [[  -n "${prefix:-}" ]]; then
+  if [[ -n "${prefix:-}" ]]; then
     err_msg="${prefix} ${err_msg}"
   fi
   echo "${err_msg}"
 }
-
 
 # Asserts that the actual value equals the expected value.
 #
@@ -41,9 +40,9 @@ assert_equal() {
   local expected="${1}"
   local actual="${2}"
   local err_msg
-  err_msg="$(\
+  err_msg="$(
     make_err_msg \
-      "Expected to be equal. expected: ${expected}, actual: ${actual}" "${3:-}" \
+      "Expected to be equal. expected: ${expected}, actual: ${actual}" "${3:-}"
   )"
   if [[ "${expected}" != "${actual}" ]]; then
     fail "${err_msg}"
@@ -64,9 +63,9 @@ assert_match() {
   local pattern=${1}
   local actual="${2}"
   local err_msg
-  err_msg="$(\
+  err_msg="$(
     make_err_msg \
-      "Expected to match. pattern: ${pattern}, actual: ${actual}" "${3:-}" \
+      "Expected to match. pattern: ${pattern}, actual: ${actual}" "${3:-}"
   )"
   if [[ ! "${actual}" =~ ${pattern} ]]; then
     fail "${err_msg}"
@@ -87,9 +86,9 @@ assert_no_match() {
   local pattern=${1}
   local actual="${2}"
   local err_msg
-  err_msg="$(\
+  err_msg="$(
     make_err_msg \
-      "Expected not to match. pattern: ${pattern}, actual: ${actual}" "${3:-}" \
+      "Expected not to match. pattern: ${pattern}, actual: ${actual}" "${3:-}"
   )"
   if [[ "${actual}" =~ ${pattern} ]]; then
     fail "${err_msg}"
