@@ -63,6 +63,11 @@ buildifier(
     tags = ["manual"],  # tag as manual so windows ci does not build it by default
 )
 
+alias(
+    name = "format",
+    actual = "//tools:format",
+)
+
 bzl_library(
     name = "internal_deps",
     srcs = ["internal_deps.bzl"],

@@ -5,27 +5,40 @@ env:
 workspaces:
   - .
   - e2e/smoke:
-      gazelle:
-        without: true
-      buildifier:
-        without: true
+      tasks:
+        format:
+          without: true
+        gazelle:
+          without: true
+        buildifier:
+          without: true
   - e2e/coreutils:
-      gazelle:
-        without: true
-      buildifier:
-        without: true
+      tasks:
+        format:
+          without: true
+        gazelle:
+          without: true
+        buildifier:
+          without: true
   - e2e/copy_to_directory:
-      gazelle:
-        without: true
-      buildifier:
-        without: true
+      tasks:
+        format:
+          without: true
+        gazelle:
+          without: true
+        buildifier:
+          without: true
   - e2e/external_copy_to_directory:
-      gazelle:
-        without: true
-      buildifier:
-        without: true
+      tasks:
+        format:
+          without: true
+        gazelle:
+          without: true
+        buildifier:
+          without: true
 tasks:
-  branch_freshness:
+  format:
+    soft_fail: false
   gazelle:
   buildifier:
   test:
