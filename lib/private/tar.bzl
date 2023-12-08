@@ -23,18 +23,20 @@ _ACCEPTED_EXTENSIONS = [
     ".tzst",  # zstd
 ]
 
+_COMPRESSION_TO_EXTENSION = {
+    "bzip2": ".tar.bz2",
+    "compress": ".tar.Z",
+    "gzip": ".tar.gz",
+    "lrzip": ".tar.lrz",
+    "lz4": ".tar.lz4",
+    "lzma": ".tar.lzma",
+    "lzop": ".tar.lzo",
+    "xz": ".tar.xz",
+    "zstd": ".tar.zst",
+}
+
 # https://www.gnu.org/software/tar/manual/html_section/Compression.html
-_ACCEPTED_COMPRESSION_TYPES = [
-    "bzip2",
-    "compress",
-    "gzip",
-    "lrzip",
-    "lz4",
-    "lzma",
-    "lzop",
-    "xz",
-    "zstd",
-]
+_ACCEPTED_COMPRESSION_TYPES = _COMPRESSION_TO_EXTENSION.keys()
 
 _tar_attrs = {
     "args": attr.string_list(
@@ -136,7 +138,9 @@ def _tar_impl(ctx):
     # Compression args
     _add_compression_args(ctx.attr.compress, args)
 
-    out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".tar")
+    ext = _COMPRESSION_TO_EXTENSION[ctx.attr.compress] if ctx.attr.compress else ".tar"
+
+    out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ext)
     args.add("--file", out)
 
     args.add(ctx.file.mtree, format = "@%s")
@@ -238,6 +242,7 @@ tar_lib = struct(
     common = struct(
         accepted_tar_extensions = _ACCEPTED_EXTENSIONS,
         accepted_compression_types = _ACCEPTED_COMPRESSION_TYPES,
+        compression_to_extension = _COMPRESSION_TO_EXTENSION,
         add_compression_args = _add_compression_args,
     ),
 )
