@@ -36,3 +36,10 @@ repos:
         exclude: &exclude_pattern "^(docs|e2e|lib/tests)/"
       - id: mixed-line-ending
       - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: aspect_rules_lint
+        name: Format
+        language: system
+        entry: bazel run //:format
+        files: .*
