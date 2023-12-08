@@ -23,30 +23,20 @@ _ACCEPTED_EXTENSIONS = [
     ".tzst",  # zstd
 ]
 
-# https://www.gnu.org/software/tar/manual/html_section/Compression.html
-_ACCEPTED_COMPRESSION_TYPES = [
-    "bzip2",
-    "compress",
-    "gzip",
-    "lrzip",
-    "lz4",
-    "lzma",
-    "lzop",
-    "xz",
-    "zstd",
-]
-
 _COMPRESSION_TO_EXTENSION = {
     "bzip2": ".tar.bz2",
     "compress": ".tar.Z",
     "gzip": ".tar.gz",
     "lrzip": ".tar.lrz",
-    "lzma": ".tar.lzma",
     "lz4": ".tar.lz4",
+    "lzma": ".tar.lzma",
     "lzop": ".tar.lzo",
     "xz": ".tar.xz",
     "zstd": ".tar.zst",
 }
+
+# https://www.gnu.org/software/tar/manual/html_section/Compression.html
+_ACCEPTED_COMPRESSION_TYPES = _COMPRESSION_TO_EXTENSION.keys()
 
 _tar_attrs = {
     "args": attr.string_list(
