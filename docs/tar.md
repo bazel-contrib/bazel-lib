@@ -110,3 +110,58 @@ https://man.freebsd.org/cgi/man.cgi?mtree(8)
 | <a id="tar-kwargs"></a>kwargs |  additional named parameters to pass to <code>tar_rule</code>   |  none |
 
 
+<a id="tar_lib.implementation"></a>
+
+## tar_lib.implementation
+
+<pre>
+tar_lib.implementation(<a href="#tar_lib.implementation-ctx">ctx</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="tar_lib.implementation-ctx"></a>ctx |  <p align="center"> - </p>   |  none |
+
+
+<a id="tar_lib.mtree_implementation"></a>
+
+## tar_lib.mtree_implementation
+
+<pre>
+tar_lib.mtree_implementation(<a href="#tar_lib.mtree_implementation-ctx">ctx</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="tar_lib.mtree_implementation-ctx"></a>ctx |  <p align="center"> - </p>   |  none |
+
+
+<a id="tar_lib.common.add_compression_args"></a>
+
+## tar_lib.common.add_compression_args
+
+<pre>
+tar_lib.common.add_compression_args(<a href="#tar_lib.common.add_compression_args-compress">compress</a>, <a href="#tar_lib.common.add_compression_args-args">args</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="tar_lib.common.add_compression_args-compress"></a>compress |  <p align="center"> - </p>   |  none |
+| <a id="tar_lib.common.add_compression_args-args"></a>args |  <p align="center"> - </p>   |  none |
+
+

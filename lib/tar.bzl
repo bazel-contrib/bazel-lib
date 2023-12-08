@@ -20,15 +20,17 @@ TODO:
 
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//lib/private:tar.bzl", "tar_lib", _tar = "tar")
+load("//lib/private:tar.bzl", _tar = "tar", _tar_lib = "tar_lib")
 
 mtree_spec = rule(
     doc = "Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)",
-    implementation = tar_lib.mtree_implementation,
-    attrs = tar_lib.mtree_attrs,
+    implementation = _tar_lib.mtree_implementation,
+    attrs = _tar_lib.mtree_attrs,
 )
 
 tar_rule = _tar
+
+tar_lib = _tar_lib
 
 def tar(name, mtree = "auto", **kwargs):
     """Wrapper macro around [`tar_rule`](#tar_rule).
