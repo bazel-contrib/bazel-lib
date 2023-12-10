@@ -1,44 +1,50 @@
 ---
-queue: bazel-lib
+queue: bazel-lib-small
 env:
   CC: /bin/false
 workspaces:
-  - .
-  - e2e/smoke:
-      tasks:
-        format:
+  .:
+    tasks:
+      - test:
+          queue: bazel-lib
+  e2e/smoke:
+    icon: bazel
+    tasks:
+      - format:
           without: true
-        gazelle:
+      - gazelle:
           without: true
-        buildifier:
+      - buildifier:
           without: true
-  - e2e/coreutils:
-      tasks:
-        format:
+  e2e/coreutils:
+    icon: bazel
+    tasks:
+      - format:
           without: true
-        gazelle:
+      - gazelle:
           without: true
-        buildifier:
+      - buildifier:
           without: true
-  - e2e/copy_to_directory:
-      tasks:
-        format:
+  e2e/copy_to_directory:
+    icon: bazel
+    tasks:
+      - format:
           without: true
-        gazelle:
+      - gazelle:
           without: true
-        buildifier:
+      - buildifier:
           without: true
-  - e2e/external_copy_to_directory:
-      tasks:
-        format:
+  e2e/external_copy_to_directory:
+    icon: bazel
+    tasks:
+      - format:
           without: true
-        gazelle:
+      - gazelle:
           without: true
-        buildifier:
+      - buildifier:
           without: true
 tasks:
-  format:
-    soft_fail: false
-  gazelle:
-  buildifier:
-  test:
+  - test:
+  # - format:
+  - gazelle:
+  - buildifier:
