@@ -65,7 +65,7 @@ buildifier(
 
 alias(
     name = "format",
-    actual = "//tools:format",
+    actual = "//tools/format",
 )
 
 bzl_library(
