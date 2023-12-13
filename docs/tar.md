@@ -15,8 +15,39 @@ this:
 
 We also provide full control for tar'ring binaries including their runfiles.
 
+## Modifying metadata
+
+The `mtree_spec` rule can be used to create an mtree manifest for the tar file.
+Then you can mutate that spec, as it's just a simple text file, and feed the result
+as the `mtree` attribute of the `tar` rule.
+
+For example, to set the `uid` property, you could:
+
+```starlark
+mtree_spec(
+    name = "mtree",
+    srcs = ["//some:files"],
+)
+
+genrule(
+    name = "change_owner",
+    srcs = ["mtree"],
+    outs = ["mtree.mutated"],
+    cmd = "sed 's/uid=0/uid=1000/' &lt;$&lt; &gt;$@",
+)
+
+tar(
+    name = "tar",
+    srcs = ["//some:files"],
+    mtree = "change_owner",
+)
+```
+
+Note: We intend to contribute mutation features to https://github.com/vbatts/go-mtree
+to provide a richer API for things like `strip_prefix`.
+In the meantime, see the `lib/tests/tar/BUILD.bazel` file in this repo for examples.
+
 TODO:
-- Ensure we are reproducible, see https://reproducible-builds.org/docs/archives/
 - Provide convenience for rules_pkg users to re-use or replace pkg_files trees
 
 
@@ -83,9 +114,9 @@ Because BSD tar doesn't have a flag to set modification times to a constant,
 we must always supply an mtree input to get reproducible builds.
 See https://reproducible-builds.org/docs/archives/ for more explanation.
 
-1. By default, mtree is "auto" which causes the macro to create an `mtree` rule.
+1. By default, mtree is "auto" which causes the macro to create an `mtree_spec` rule.
 
-2. `mtree` may also be supplied as an array literal of lines, e.g.
+2. `mtree` may be supplied as an array literal of lines, e.g.
 
 ```
 mtree =[
