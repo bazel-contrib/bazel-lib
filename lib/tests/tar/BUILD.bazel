@@ -123,9 +123,8 @@ mtree_spec(
     srcs = _SRCS5,
 )
 
-# This is a very simple way to mutate the mtree specification, just using regex.
-# In theory, this can be used for arbitrary replacements like using mode=644 or something,
-# but we'll probably have to add a richer API to the mtree_spec rule to make this more ergonomic.
+# This is a low-tech way to mutate the mtree specification, just using regex.
+# See docs on tar about future directions for mtree mutation
 genrule(
     name = "strip_prefix",
     srcs = ["mtree5"],
@@ -243,5 +242,48 @@ assert_tar_listing(
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/treeartifact/",
         "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/treeartifact/info",
         "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/treeartifact/pkg",
+    ],
+)
+
+# Case 8: setting owner of files
+_SRCS8 = [
+    ":fixture1",
+    "src_file",
+]
+
+mtree_spec(
+    name = "mtree8",
+    srcs = _SRCS8,
+)
+
+# This is a very simple way to mutate the mtree specification, just using regex.
+# See docs on tar about future directions for mtree mutation
+genrule(
+    name = "change_owner",
+    srcs = ["mtree8"],
+    outs = ["mtree8.mutated"],
+    # Modify uid and gid, e.g.
+    # lib/tests/tar/a uid=0 gid=0 time=1672560000 mode=0755 type=file content=bazel-out/darwin_arm64-opt/bin/lib/tests/tar/a
+    # ->
+    # lib/tests/tar/a uid=1000 gid=500 time=1672560000 mode=0755 type=file content=bazel-out/darwin_arm64-opt/bin/lib/tests/tar/a
+    cmd = "sed 's/uid=0/uid=1000/;s/gid=0/gid=500/' <$< >$@",
+)
+
+tar(
+    name = "tar_change_owner",
+    srcs = _SRCS8,
+    out = "8.tar",
+    mtree = "change_owner",
+)
+
+assert_tar_listing(
+    name = "test_change_owner",
+    actual = "tar_change_owner",
+    expected = [
+        "drwxr-xr-x  0 1000   500         0 Jan  1  2023 lib/",
+        "drwxr-xr-x  0 1000   500         0 Jan  1  2023 lib/tests/",
+        "drwxr-xr-x  0 1000   500         0 Jan  1  2023 lib/tests/tar/",
+        "-rwxr-xr-x  0 1000   500         7 Jan  1  2023 lib/tests/tar/a",
+        "-rwxr-xr-x  0 1000   500        21 Jan  1  2023 lib/tests/tar/src_file",
     ],
 )
