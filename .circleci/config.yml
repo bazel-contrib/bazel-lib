@@ -19,7 +19,7 @@ setup: true
 
 orbs:
   slack: circleci/slack@4.12.5
-  aspect-workflows: aspect-build/workflows@dev:5.9.0-beta.2
+  aspect-workflows: aspect-build/workflows@dev:5.9.0-beta.10
 
 jobs:
   legacy:
@@ -41,6 +41,6 @@ workflows:
     jobs:
       - legacy
       - aspect-workflows/setup:
-          resource_class: aspect-build/bazel-lib
+          resource_class: aspect-build/bazel-lib-small
           context:
             - slack

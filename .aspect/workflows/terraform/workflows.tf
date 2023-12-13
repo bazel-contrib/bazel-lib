@@ -16,7 +16,7 @@ module "aspect_workflows" {
   region  = local.region
 
   # Aspect Workflows terraform module
-  source = "https://s3.us-east-2.amazonaws.com/static.aspect.build/aspect/5.9.0-beta.2/workflows-gcp/terraform-gcp-aspect-workflows.zip"
+  source = "https://s3.us-east-2.amazonaws.com/static.aspect.build/aspect/5.9.0-beta.10/workflows-gcp/terraform-gcp-aspect-workflows.zip"
 
   # Network properties
   network    = google_compute_network.workflows_network.id
@@ -29,7 +29,10 @@ module "aspect_workflows" {
     machine_type = "e2-standard-2"
   }
 
-  # Remote cache configuration
+  # Delivery properties
+  delivery_enabled = true
+
+  # Remote cache properties
   remote = {
     cache_shards           = 3
     cache_size_gb          = 384
@@ -55,6 +58,14 @@ module "aspect_workflows" {
       image_id        = data.google_compute_image.runner_image.id
       use_preemptible = true
     }
+    small = {
+      # Aspect Workflows requires machine types that have local SSD drives. See
+      # https://cloud.google.com/compute/docs/machine-resource#machine_type_comparison for full list
+      # of machine types availble on GCP.
+      machine_type    = "n1-standard-1"
+      image_id        = data.google_compute_image.runner_image.id
+      use_preemptible = true
+    }
   }
 
   # CircleCI runner group definitions
@@ -62,19 +73,24 @@ module "aspect_workflows" {
     # The default runner group is use for the main build & test workflows.
     default = {
       agent_idle_timeout_min    = 1
-      job_max_run_time_min      = 5 * 60
       max_runners               = 10
       min_runners               = 0
       resource_type             = "default"
-      scale_out_factor          = 7
       scaling_polling_frequency = 3 # check for queued jobs every 20s
       warming                   = true
+    }
+    small = {
+      agent_idle_timeout_min    = 1
+      max_runners               = 10
+      min_runners               = 0
+      resource_type             = "small"
+      scaling_polling_frequency = 3     # check for queued jobs every 20s
+      warming                   = false # don't warm for faster bootstrap; these runners won't be running large builds
     }
     # The warming runner group is used for the periodic warming job that creates
     # warming archives for use by other runner groups.
     warming = {
       agent_idle_timeout_min = 1
-      job_max_run_time_min   = 5 * 60
       max_runners            = 1
       min_runners            = 0
       resource_type          = "default"
