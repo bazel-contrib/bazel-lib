@@ -224,6 +224,11 @@ copy_directory(
 
 tar(
     name = "dirs",
+    # Note, testonly should be propagated, proven by
+    # % bazel query --output=label_kind 'attr("testonly", 1,lib/tests/tar:all)'
+    # mtree_spec rule //lib/tests/tar:_dirs.mtree
+    # tar rule //lib/tests/tar:dirs
+    testonly = True,
     srcs = glob(["srcdir/**"]) + [
         "treeartifact",
     ],

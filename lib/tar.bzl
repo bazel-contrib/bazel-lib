@@ -20,6 +20,7 @@ TODO:
 
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:utils.bzl", "propagate_common_rule_attributes")
 load("//lib/private:tar.bzl", _tar = "tar", _tar_lib = "tar_lib")
 
 mtree_spec = rule(
@@ -71,6 +72,7 @@ def tar(name, mtree = "auto", **kwargs):
             name = mtree_target,
             srcs = kwargs["srcs"],
             out = "{}.txt".format(mtree_target),
+            **propagate_common_rule_attributes(kwargs)
         )
     elif types.is_list(mtree):
         write_file(
@@ -79,6 +81,7 @@ def tar(name, mtree = "auto", **kwargs):
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
             content = mtree + [""],
             newline = "unix",
+            **propagate_common_rule_attributes(kwargs)
         )
     else:
         mtree_target = mtree

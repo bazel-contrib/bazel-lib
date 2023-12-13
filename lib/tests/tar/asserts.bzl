@@ -11,6 +11,7 @@ def assert_tar_listing(name, actual, expected):
     native.genrule(
         name = actual_listing,
         srcs = [actual],
+        testonly = True,
         outs = ["_{}.listing".format(name)],
         cmd = "$(BSDTAR_BIN) -tvf $(execpath {}) >$@".format(actual),
         toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
@@ -18,6 +19,7 @@ def assert_tar_listing(name, actual, expected):
 
     write_file(
         name = expected_listing,
+        testonly = True,
         out = "_{}.expected".format(name),
         content = expected + [""],
         newline = "unix",
