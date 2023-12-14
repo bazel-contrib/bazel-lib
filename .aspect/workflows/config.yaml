@@ -53,7 +53,7 @@ workspaces:
           without: true
 tasks:
   - test:
-  # - format:
+  - format:
   - gazelle:
   - buildifier:
   - delivery:
