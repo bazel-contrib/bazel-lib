@@ -16,6 +16,8 @@ workspaces:
           without: true
       - buildifier:
           without: true
+      - delivery:
+          without: true
   e2e/coreutils:
     icon: bazel
     tasks:
@@ -24,6 +26,8 @@ workspaces:
       - gazelle:
           without: true
       - buildifier:
+          without: true
+      - delivery:
           without: true
   e2e/copy_to_directory:
     icon: bazel
@@ -34,6 +38,8 @@ workspaces:
           without: true
       - buildifier:
           without: true
+      - delivery:
+          without: true
   e2e/external_copy_to_directory:
     icon: bazel
     tasks:
@@ -43,8 +49,13 @@ workspaces:
           without: true
       - buildifier:
           without: true
+      - delivery:
+          without: true
 tasks:
   - test:
   # - format:
   - gazelle:
   - buildifier:
+  - delivery:
+      queue: bazel-lib
+      always_deliver: true
