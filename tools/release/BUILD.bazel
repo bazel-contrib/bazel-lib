@@ -33,6 +33,19 @@ release(
     ],
 )
 
+# Demonstration delivery target for Aspect Workflows.
+# In the future this could be wired up to push dev releases to an S3 bucket.
+sh_binary(
+    name = "tools_delivery",
+    srcs = ["delivery.sh"],
+    data = [
+        ":copy_directory",
+        ":copy_to_directory",
+        ":expand_template",
+    ],
+    tags = ["deliverable"],
+)
+
 bzl_library(
     name = "hashes",
     srcs = ["hashes.bzl"],
