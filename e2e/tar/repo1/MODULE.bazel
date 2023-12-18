@@ -1,4 +1,5 @@
 module(
+    name = "repo1",
     version = "0.0.0",
     compatibility_level = 1,
 )
