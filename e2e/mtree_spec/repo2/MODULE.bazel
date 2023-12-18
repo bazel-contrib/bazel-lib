@@ -1,0 +1,12 @@
+module(
+    version = "0.0.0",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.5.0")
+
+bazel_dep(name = "repo1", version = "0.0.0")
+local_path_override(
+    module_name = "repo1",
+    path = "../repo1",
+)

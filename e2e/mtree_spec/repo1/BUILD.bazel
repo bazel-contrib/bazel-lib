@@ -1,0 +1,16 @@
+load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+
+exports_files(["expect.mtree.spec"])
+
+mtree_spec(
+    name = "mtree",
+    srcs = ["file.txt"],
+    visibility = ["//visibility:public"],
+)
+
+diff_test(
+    name = "test_mtree",
+    file1 = ":mtree",
+    file2 = "expect.mtree.spec",
+)

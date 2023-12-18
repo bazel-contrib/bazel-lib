@@ -1,0 +1,7 @@
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+
+diff_test(
+    name = "test_mtree",
+    file1 = "@repo1//:mtree",
+    file2 = "@repo1//:expect.mtree.spec",
+)
