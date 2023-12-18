@@ -1,16 +1,17 @@
-load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec")
-load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 
 exports_files(["expect.mtree.spec"])
 
-mtree_spec(
-    name = "mtree",
+tar(
+    name = "tar",
+    out = "test.tar",
     srcs = ["file.txt"],
     visibility = ["//visibility:public"],
 )
 
-diff_test(
-    name = "test_mtree",
-    file1 = ":mtree",
-    file2 = "expect.mtree.spec",
+assert_archive_contains(
+    name = "test_rel_path",
+    archive = "test.tar",
+    expected = ["file.txt"]
 )

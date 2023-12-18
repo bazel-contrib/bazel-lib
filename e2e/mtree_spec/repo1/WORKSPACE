@@ -18,10 +18,8 @@ local_repository(
     path = "../../..",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "register_coreutils_toolchains")
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "register_tar_toolchains")
 
 aspect_bazel_lib_dependencies()
 
-# Registering coreutils is required under WORKSPACE for the copy action to work
-# Under bzlmod, this is done automatically by just depending on the bazel-lib module.
-register_coreutils_toolchains()
+register_tar_toolchains()

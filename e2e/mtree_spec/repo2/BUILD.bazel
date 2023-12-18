@@ -1,7 +1,7 @@
-load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 
-diff_test(
-    name = "test_mtree",
-    file1 = "@repo1//:mtree",
-    file2 = "@repo1//:expect.mtree.spec",
+assert_archive_contains(
+    name = "test_rel_path",
+    archive = "@repo1//:test.tar",
+    expected = ["file.txt"]
 )
