@@ -151,4 +151,9 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:strings",
 )
 
+stardoc_with_diff_test(
+    name = "bats",
+    bzl_library_target = "//lib:bats",
+)
+
 update_docs()

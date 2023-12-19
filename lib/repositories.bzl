@@ -1,6 +1,7 @@
 "Macros for loading dependencies and registering toolchains"
 
 load("//lib:utils.bzl", http_archive = "maybe_http_archive")
+load("//lib/private:bats_toolchain.bzl", "BATS_ASSERT_VERSIONS", "BATS_CORE_TEMPLATE", "BATS_CORE_VERSIONS", "BATS_FILE_VERSIONS", "BATS_LIBRARY_TEMPLATE", "BATS_SUPPORT_VERSIONS")
 load("//lib/private:copy_directory_toolchain.bzl", "COPY_DIRECTORY_PLATFORMS", "copy_directory_platform_repo", "copy_directory_toolchains_repo")
 load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFORMS", "copy_to_directory_platform_repo", "copy_to_directory_toolchains_repo")
 load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION")
@@ -102,6 +103,81 @@ def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
+
+DEFAULT_BATS_REPOSITORY = "bats"
+
+DEFAULT_BATS_CORE_VERSION = "v1.10.0"
+DEFAULT_BATS_SUPPORT_VERSION = "v0.3.0"
+DEFAULT_BATS_ASSERT_VERSION = "v2.1.0"
+DEFAULT_BATS_FILE_VERSION = "v0.4.0"
+
+def register_bats_toolchains(
+        name = DEFAULT_BATS_REPOSITORY,
+        core_version = DEFAULT_BATS_CORE_VERSION,
+        support_version = DEFAULT_BATS_SUPPORT_VERSION,
+        assert_version = DEFAULT_BATS_ASSERT_VERSION,
+        file_version = DEFAULT_BATS_FILE_VERSION,
+        libraries = [],
+        register = True):
+    """Registers bats toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        core_version: bats-core version to use
+        support_version: bats-support version to use
+        assert_version: bats-assert version to use
+        file_version: bats-file version to use
+        libraries: additional labels for libraries
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+
+    http_archive(
+        name = "%s_support" % name,
+        sha256 = BATS_SUPPORT_VERSIONS[support_version],
+        urls = [
+            "https://github.com/bats-core/bats-support/archive/{}.tar.gz".format(support_version),
+        ],
+        strip_prefix = "bats-support-{}".format(support_version.removeprefix("v")),
+        build_file_content = BATS_LIBRARY_TEMPLATE.format(name = "support"),
+    )
+
+    http_archive(
+        name = "%s_assert" % name,
+        sha256 = BATS_ASSERT_VERSIONS[assert_version],
+        urls = [
+            "https://github.com/bats-core/bats-assert/archive/{}.tar.gz".format(assert_version),
+        ],
+        strip_prefix = "bats-assert-{}".format(assert_version.removeprefix("v")),
+        build_file_content = BATS_LIBRARY_TEMPLATE.format(name = "assert"),
+    )
+
+    http_archive(
+        name = "%s_file" % name,
+        sha256 = BATS_FILE_VERSIONS[file_version],
+        urls = [
+            "https://github.com/bats-core/bats-file/archive/{}.tar.gz".format(file_version),
+        ],
+        strip_prefix = "bats-file-{}".format(file_version.removeprefix("v")),
+        build_file_content = BATS_LIBRARY_TEMPLATE.format(name = "file"),
+    )
+
+    http_archive(
+        name = "%s_toolchains" % name,
+        sha256 = BATS_CORE_VERSIONS[core_version],
+        urls = [
+            "https://github.com/bats-core/bats-core/archive/{}.tar.gz".format(core_version),
+        ],
+        strip_prefix = "bats-core-{}".format(core_version.removeprefix("v")),
+        build_file_content = BATS_CORE_TEMPLATE.format(libraries = [
+            "@%s_support//:support" % name,
+            "@%s_assert//:assert" % name,
+            "@%s_file//:file" % name,
+        ] + libraries),
+    )
+
+    if register:
+        native.register_toolchains("@%s_toolchains//:bats_toolchain" % name)
 
 DEFAULT_COREUTILS_REPOSITORY = "coreutils"
 DEFAULT_COREUTILS_VERSION = _DEFAULT_COREUTILS_VERSION
@@ -248,3 +324,4 @@ def aspect_bazel_lib_register_toolchains():
     register_jq_toolchains()
     register_yq_toolchains()
     register_tar_toolchains()
+    register_bats_toolchains()

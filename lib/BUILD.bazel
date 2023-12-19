@@ -59,6 +59,10 @@ toolchain_type(
     name = "tar_toolchain_type",
 )
 
+toolchain_type(
+    name = "bats_toolchain_type",
+)
+
 bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
@@ -235,6 +239,7 @@ bzl_library(
     srcs = ["repositories.bzl"],
     deps = [
         ":utils",
+        "//lib/private:bats_toolchain",
         "//lib/private:copy_directory_toolchain",
         "//lib/private:copy_to_directory_toolchain",
         "//lib/private:coreutils_toolchain",
@@ -294,4 +299,10 @@ bzl_library(
     name = "windows_utils",
     srcs = ["windows_utils.bzl"],
     deps = ["//lib/private:paths"],
+)
+
+bzl_library(
+    name = "bats",
+    srcs = ["bats.bzl"],
+    deps = ["//lib/private:bats"],
 )

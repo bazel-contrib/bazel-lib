@@ -2,6 +2,8 @@
 
 load(
     "@aspect_bazel_lib//lib:repositories.bzl",
+    "DEFAULT_BATS_CORE_VERSION",
+    "DEFAULT_BATS_REPOSITORY",
     "DEFAULT_COPY_DIRECTORY_REPOSITORY",
     "DEFAULT_COPY_TO_DIRECTORY_REPOSITORY",
     "DEFAULT_COREUTILS_REPOSITORY",
@@ -12,6 +14,7 @@ load(
     "DEFAULT_TAR_REPOSITORY",
     "DEFAULT_YQ_REPOSITORY",
     "DEFAULT_YQ_VERSION",
+    "register_bats_toolchains",
     "register_copy_directory_toolchains",
     "register_copy_to_directory_toolchains",
     "register_coreutils_toolchains",
@@ -94,6 +97,15 @@ def _toolchains_extension_impl(mctx):
         get_version_fn = lambda attr: None,
     )
 
+    extension_utils.toolchain_repos_bfs(
+        mctx = mctx,
+        get_tag_fn = lambda tags: tags.bats,
+        toolchain_name = "bats",
+        default_repository = DEFAULT_BATS_REPOSITORY,
+        toolchain_repos_fn = lambda name, version: register_bats_toolchains(name = name, core_version = version, register = False),
+        get_version_fn = lambda attr: attr.core_version,
+    )
+
 toolchains = module_extension(
     implementation = _toolchains_extension_impl,
     tag_classes = {
@@ -104,5 +116,9 @@ toolchains = module_extension(
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),
         "tar": tag_class(attrs = {"name": attr.string(default = DEFAULT_TAR_REPOSITORY)}),
         "expand_template": tag_class(attrs = {"name": attr.string(default = DEFAULT_EXPAND_TEMPLATE_REPOSITORY)}),
+        "bats": tag_class(attrs = {
+            "name": attr.string(default = DEFAULT_BATS_REPOSITORY),
+            "core_version": attr.string(default = DEFAULT_BATS_CORE_VERSION),
+        }),
     },
 )
