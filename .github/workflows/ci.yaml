@@ -92,6 +92,8 @@ jobs:
           - "e2e/external_copy_to_directory"
           - "e2e/smoke"
           - "e2e/write_source_files"
+          - "e2e/tar/repo1"
+          - "e2e/tar/repo2"
         exclude:
           # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
           - config: rbe
