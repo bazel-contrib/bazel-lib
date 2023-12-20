@@ -292,3 +292,21 @@ assert_tar_listing(
         "-rwxr-xr-x  0 1000   500        21 Jan  1  2023 lib/tests/tar/src_file",
     ],
 )
+
+# Case 9: Files from a different repository (#697)
+# Note: This test uses an exported file from skylib, so we do not need to create
+# an additional workspace just for this test.
+
+tar(
+    name = "tar_different_repo",
+    srcs = ["@bazel_skylib//:LICENSE"],
+    out = "9.tar",
+)
+
+assert_archive_contains(
+    name = "test_different_repo",
+    archive = "9.tar",
+    expected = [
+        "LICENSE",
+    ],
+)
