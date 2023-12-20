@@ -4,10 +4,9 @@ load("@aspect_bazel_lib//lib:expand_make_vars.bzl", "expand_locations", "expand_
 load("@aspect_bazel_lib//lib:paths.bzl", "BASH_RLOCATION_FUNCTION", "to_rlocation_path")
 
 _RUNNER_TMPL = """#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
 
 {BASH_RLOCATION_FUNCTION}
-
-# set -o errexit -o nounset -o pipefail
 
 readonly core_path="$(rlocation {core})"
 readonly bats="$core_path/bin/bats"
