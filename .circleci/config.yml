@@ -41,6 +41,6 @@ workflows:
     jobs:
       - legacy
       - aspect-workflows/setup:
-          resource_class: aspect-build/bazel-lib-small
+          resource_class: aspect-build/bazel-lib-nano
           context:
             - slack
