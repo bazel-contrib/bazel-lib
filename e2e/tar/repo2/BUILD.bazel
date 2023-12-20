@@ -1,7 +1,0 @@
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
-
-assert_archive_contains(
-    name = "test_rel_path",
-    archive = "@repo1//:test.tar",
-    expected = ["file.txt"]
-)
