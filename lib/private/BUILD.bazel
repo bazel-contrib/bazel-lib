@@ -275,6 +275,23 @@ bzl_library(
 )
 
 bzl_library(
+    name = "bats",
+    srcs = ["bats.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [
+        ":expand_locations",
+        ":expand_variables",
+        "@aspect_bazel_lib//lib:paths",
+    ],
+)
+
+bzl_library(
+    name = "bats_toolchain",
+    srcs = ["bats_toolchain.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)
+
+bzl_library(
     name = "copy_common",
     srcs = ["copy_common.bzl"],
     visibility = ["//lib:__subpackages__"],

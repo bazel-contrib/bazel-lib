@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:bats.bzl", "bats_test")
 load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
@@ -90,4 +91,11 @@ tar(
     name = "tar_empty",
     srcs = [],
     mtree = [],
+)
+
+bats_test(
+    name = "bats",
+    srcs = [
+        "basic.bats",
+    ],
 )

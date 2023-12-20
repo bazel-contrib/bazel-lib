@@ -29,6 +29,31 @@ call the individual toolchain registration macros.
 
 
 
+<a id="register_bats_toolchains"></a>
+
+## register_bats_toolchains
+
+<pre>
+register_bats_toolchains(<a href="#register_bats_toolchains-name">name</a>, <a href="#register_bats_toolchains-core_version">core_version</a>, <a href="#register_bats_toolchains-support_version">support_version</a>, <a href="#register_bats_toolchains-assert_version">assert_version</a>, <a href="#register_bats_toolchains-file_version">file_version</a>,
+                         <a href="#register_bats_toolchains-libraries">libraries</a>, <a href="#register_bats_toolchains-register">register</a>)
+</pre>
+
+Registers bats toolchain and repositories
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="register_bats_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"bats"</code> |
+| <a id="register_bats_toolchains-core_version"></a>core_version |  bats-core version to use   |  <code>"v1.10.0"</code> |
+| <a id="register_bats_toolchains-support_version"></a>support_version |  bats-support version to use   |  <code>"v0.3.0"</code> |
+| <a id="register_bats_toolchains-assert_version"></a>assert_version |  bats-assert version to use   |  <code>"v2.1.0"</code> |
+| <a id="register_bats_toolchains-file_version"></a>file_version |  bats-file version to use   |  <code>"v0.4.0"</code> |
+| <a id="register_bats_toolchains-libraries"></a>libraries |  additional labels for libraries   |  <code>[]</code> |
+| <a id="register_bats_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+
+
 <a id="register_copy_directory_toolchains"></a>
 
 ## register_copy_directory_toolchains

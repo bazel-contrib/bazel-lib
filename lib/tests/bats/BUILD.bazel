@@ -1,0 +1,56 @@
+load("//lib:bats.bzl", "bats_test")
+
+bats_test(
+    name = "basic",
+    size = "small",
+    srcs = [
+        "basic.bats",
+    ],
+)
+
+bats_test(
+    name = "env",
+    size = "small",
+    srcs = [
+        "env.bats",
+    ],
+    env = {
+        "USE_BAZEL_VERSION": "latest",
+    },
+)
+
+bats_test(
+    name = "args",
+    size = "small",
+    srcs = [
+        "basic.bats",
+    ],
+    args = ["--timing"],
+)
+
+bats_test(
+    name = "env_expansion",
+    size = "small",
+    srcs = [
+        "env_expansion.bats",
+    ],
+    data = [
+        "data.bin",
+    ],
+    env = {
+        "DATA_PATH": "$(location :data.bin)",
+    },
+)
+
+bats_test(
+    name = "additional_lib",
+    size = "small",
+    srcs = [
+        "additional_lib.bats",
+    ],
+    target_compatible_with = select({
+        # TODO(thesayyn): incompatible with bzlmod
+        "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
+)
