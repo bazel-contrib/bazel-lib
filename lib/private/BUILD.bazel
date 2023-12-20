@@ -279,7 +279,8 @@ bzl_library(
     srcs = ["bats.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        "@aspect_bazel_lib//lib:expand_make_vars",
+        ":expand_locations",
+        ":expand_variables",
         "@aspect_bazel_lib//lib:paths",
     ],
 )

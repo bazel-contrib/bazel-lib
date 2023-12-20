@@ -1,7 +1,8 @@
 "bats_test"
 
-load("@aspect_bazel_lib//lib:expand_make_vars.bzl", "expand_locations", "expand_variables")
-load("@aspect_bazel_lib//lib:paths.bzl", "BASH_RLOCATION_FUNCTION", "to_rlocation_path")
+load("//lib:paths.bzl", "BASH_RLOCATION_FUNCTION", "to_rlocation_path")
+load(":expand_locations.bzl", "expand_locations")
+load(":expand_variables.bzl", "expand_variables")
 
 _RUNNER_TMPL = """#!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
