@@ -1,5 +1,7 @@
 "Implementation of tar rule"
 
+load("//lib:paths.bzl", "to_repository_relative_path")
+
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
 # https://www.gnu.org/software/tar/manual/html_section/Compression.html
@@ -182,7 +184,7 @@ def _to_rlocation_path(file, workspace):
     else:
         return workspace + "/" + file.short_path
 
-def _expand(file, expander, transform = lambda f: f.short_path):
+def _expand(file, expander, transform = to_repository_relative_path):
     expanded = expander.expand(file)
     lines = []
     for e in expanded:
