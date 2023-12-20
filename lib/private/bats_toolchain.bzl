@@ -71,10 +71,6 @@ BatsInfo = provider(
 def _bats_toolchain_impl(ctx):
     core = ctx.file.core
 
-    # Make the $(BATS_BIN) variable available in places like genrules.
-    # See https://docs.bazel.build/versions/main/be/make-variables.html#custom_variables
-    template_variables = platform_common.TemplateVariableInfo({})
-
     default_info = DefaultInfo(
         files = depset(ctx.files.core + ctx.files.libraries),
         runfiles = ctx.runfiles(ctx.files.core + ctx.files.libraries),
@@ -89,11 +85,10 @@ def _bats_toolchain_impl(ctx):
     # so the resolved_toolchain rule can grab and re-export them.
     toolchain_info = platform_common.ToolchainInfo(
         batsinfo = batsinfo,
-        template_variables = template_variables,
         default = default_info,
     )
 
-    return [toolchain_info, template_variables, default_info]
+    return [toolchain_info, default_info]
 
 bats_toolchain = rule(
     implementation = _bats_toolchain_impl,
