@@ -66,6 +66,7 @@ buildifier(
 alias(
     name = "format",
     actual = "//tools/format",
+    tags = ["manual"],  # tag as manual so windows ci does not build it by default
 )
 
 bzl_library(

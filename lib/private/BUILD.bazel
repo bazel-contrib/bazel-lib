@@ -282,6 +282,7 @@ bzl_library(
         ":expand_locations",
         ":expand_variables",
         "@aspect_bazel_lib//lib:paths",
+        "@aspect_bazel_lib//lib:windows_utils",
     ],
 )
 

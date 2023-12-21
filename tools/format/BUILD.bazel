@@ -1,5 +1,10 @@
 load("@aspect_rules_lint//format:defs.bzl", "multi_formatter_binary")
 
+sh_binary(
+    name = "noop",
+    srcs = ["noop.sh"],
+)
+
 alias(
     name = "shfmt",
     actual = select({
@@ -7,6 +12,7 @@ alias(
         "@bazel_tools//src/conditions:darwin_x86_64": "@shfmt_darwin_x86_64//file:shfmt",
         "@bazel_tools//src/conditions:linux_aarch64": "@shfmt_linux_aarch64//file:shfmt",
         "@bazel_tools//src/conditions:linux_x86_64": "@shfmt_linux_x86_64//file:shfmt",
+        "//conditions:default": ":noop",
     }),
     visibility = ["//:__subpackages__"],
 )
@@ -17,6 +23,7 @@ alias(
         "@bazel_tools//src/conditions:darwin_arm64": "@terraform_macos_aarch64//:terraform",
         "@bazel_tools//src/conditions:darwin_x86_64": "@terraform_macos_x86_64//:terraform",
         "@bazel_tools//src/conditions:linux": "@terraform_linux_x86_64//:terraform",
+        "//conditions:default": ":noop",
     }),
     visibility = ["//:__subpackages__"],
 )
@@ -26,6 +33,7 @@ multi_formatter_binary(
     go = "@go_sdk//:bin/gofmt",
     sh = ":shfmt",
     starlark = "@buildifier_prebuilt//:buildifier",
+    tags = ["manual"],
     terraform = ":terraform",
     visibility = ["//:__subpackages__"],
 )
