@@ -63,7 +63,7 @@ def _bats_test_impl(ctx):
         content = _LAUNCHER_TMPL.format(
             core = to_rlocation_path(ctx, batsinfo.core),
             libraries = " ".join([to_rlocation_path(ctx, lib) for lib in batsinfo.libraries]),
-            tests = " ".join([test.short_path for test in ctx.files.srcs]),
+            tests = " ".join(["$(rlocation %s)" % to_rlocation_path(ctx, test) for test in ctx.files.srcs]),
             envs = "\n".join(envs),
             BASH_RLOCATION_FUNCTION = BASH_RLOCATION_FUNCTION,
         ),
