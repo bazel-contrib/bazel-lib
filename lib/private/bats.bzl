@@ -1,10 +1,11 @@
 "bats_test"
 
 load("//lib:paths.bzl", "BASH_RLOCATION_FUNCTION", "to_rlocation_path")
+load("//lib:windows_utils.bzl", "create_windows_native_launcher_script")
 load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
 
-_RUNNER_TMPL = """#!/usr/bin/env bash
+_LAUNCHER_TMPL = """#!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 
 {BASH_RLOCATION_FUNCTION}
@@ -30,23 +31,36 @@ export BATS_TMPDIR="$TEST_TMPDIR"
 exec $bats {tests} $@
 """
 
-_ENV_SET = """export {var}=\"{value}\""""
+_ENV_SET = """export {key}=\"{value}\""""
 
 def _bats_test_impl(ctx):
     toolchain = ctx.toolchains["@aspect_bazel_lib//lib:bats_toolchain_type"]
     batsinfo = toolchain.batsinfo
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
     envs = []
     for (key, value) in ctx.attr.env.items():
         envs.append(_ENV_SET.format(
-            var = key,
+            key = key,
             value = " ".join([expand_variables(ctx, exp, attribute_name = "env") for exp in expand_locations(ctx, value, ctx.attr.data).split(" ")]),
         ))
 
-    runner = ctx.actions.declare_file("%s_bats.sh" % ctx.label.name)
+    # See https://www.msys2.org/wiki/Porting/:
+    # > Setting MSYS2_ARG_CONV_EXCL=* prevents any path transformation.
+    if is_windows:
+        envs.append(_ENV_SET.format(
+            key = "MSYS2_ARG_CONV_EXCL",
+            value = "*",
+        ))
+        envs.append(_ENV_SET.format(
+            key = "MSYS_NO_PATHCONV",
+            value = "1",
+        ))
+
+    bash_launcher = ctx.actions.declare_file("%s_bats.sh" % ctx.label.name)
     ctx.actions.write(
-        output = runner,
-        content = _RUNNER_TMPL.format(
+        output = bash_launcher,
+        content = _LAUNCHER_TMPL.format(
             core = to_rlocation_path(ctx, batsinfo.core),
             libraries = " ".join([to_rlocation_path(ctx, lib) for lib in batsinfo.libraries]),
             tests = " ".join([test.short_path for test in ctx.files.srcs]),
@@ -55,13 +69,14 @@ def _bats_test_impl(ctx):
         ),
         is_executable = True,
     )
+    launcher = create_windows_native_launcher_script(ctx, bash_launcher) if is_windows else bash_launcher
 
-    runfiles = ctx.runfiles(ctx.files.srcs + ctx.files.data)
+    runfiles = ctx.runfiles(ctx.files.srcs + ctx.files.data + [bash_launcher])
     runfiles = runfiles.merge(toolchain.default.default_runfiles)
     runfiles = runfiles.merge(ctx.attr._runfiles.default_runfiles)
 
     return DefaultInfo(
-        executable = runner,
+        executable = launcher,
         runfiles = runfiles,
     )
 
@@ -84,7 +99,11 @@ bats_test = rule(
             """,
         ),
         "_runfiles": attr.label(default = "@bazel_tools//tools/bash/runfiles"),
+        "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
-    toolchains = ["@aspect_bazel_lib//lib:bats_toolchain_type"],
+    toolchains = [
+        "@aspect_bazel_lib//lib:bats_toolchain_type",
+        "@bazel_tools//tools/sh:toolchain_type",
+    ],
     test = True,
 )

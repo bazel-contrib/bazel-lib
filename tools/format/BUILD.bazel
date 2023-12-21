@@ -26,6 +26,7 @@ multi_formatter_binary(
     go = "@go_sdk//:bin/gofmt",
     sh = ":shfmt",
     starlark = "@buildifier_prebuilt//:buildifier",
+    tags = ["manual"],
     terraform = ":terraform",
     visibility = ["//:__subpackages__"],
 )

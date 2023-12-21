@@ -17,3 +17,5 @@ build:rbe --bes_results_url=https://app.buildbuddy.io/invocation/
 build:rbe --bes_backend=grpcs://remote.buildbuddy.io
 build:rbe --remote_timeout=3600
 build:rbe --remote_executor=grpcs://remote.buildbuddy.io
+
+test --test_output=errors
