@@ -14,6 +14,8 @@ workspaces:
           without: true
       - gazelle:
           without: true
+      # - configure:
+      #     without: true
       - buildifier:
           without: true
       - delivery:
@@ -25,6 +27,8 @@ workspaces:
           without: true
       - gazelle:
           without: true
+      # - configure:
+      #     without: true
       - buildifier:
           without: true
       - delivery:
@@ -36,6 +40,8 @@ workspaces:
           without: true
       - gazelle:
           without: true
+      # - configure:
+      #     without: true
       - buildifier:
           without: true
       - delivery:
@@ -47,6 +53,8 @@ workspaces:
           without: true
       - gazelle:
           without: true
+      # - configure:
+      #     without: true
       - buildifier:
           without: true
       - delivery:
@@ -55,6 +63,7 @@ tasks:
   - test:
   - format:
   - gazelle:
+  # - configure:
   - buildifier:
   - delivery:
       queue: bazel-lib
