@@ -5,3 +5,9 @@
 _VERSION_PRIVATE = "$Format:%(describe:tags=true)$"
 
 VERSION = "0.0.0" if _VERSION_PRIVATE.startswith("$Format") else _VERSION_PRIVATE.replace("v", "", 1)
+
+# Whether bazel-lib is a pre-release, and therefore has no release artifacts to download.
+# NB: When GitHub runs `git archive` to serve a source archive file,
+# it honors our .gitattributes and stamps this file, e.g.
+# _VERSION_PRIVATE = "v2.0.3-7-g57bfe2c1"
+IS_PRERELEASE = VERSION == "0.0.0" or VERSION.find("g") >= 0
