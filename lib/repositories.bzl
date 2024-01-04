@@ -10,7 +10,7 @@ load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
 load("//lib/private:tar_toolchain.bzl", "BSDTAR_PLATFORMS", "bsdtar_binary_repo", "tar_toolchains_repo")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
-load("//tools:version.bzl", "VERSION")
+load("//tools:version.bzl", "IS_PRERELEASE")
 
 # buildifier: disable=unnamed-macro
 def aspect_bazel_lib_dependencies():
@@ -215,7 +215,7 @@ def register_copy_directory_toolchains(name = DEFAULT_COPY_DIRECTORY_REPOSITORY,
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    if VERSION == "0.0.0":
+    if IS_PRERELEASE:
         source_toolchains_repo(
             name = "%s_toolchains" % name,
             toolchain_type = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
@@ -250,7 +250,7 @@ def register_copy_to_directory_toolchains(name = DEFAULT_COPY_TO_DIRECTORY_REPOS
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    if VERSION == "0.0.0":
+    if IS_PRERELEASE:
         source_toolchains_repo(
             name = "%s_toolchains" % name,
             toolchain_type = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
@@ -285,7 +285,7 @@ def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITOR
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    if VERSION == "0.0.0":
+    if IS_PRERELEASE:
         source_toolchains_repo(
             name = "%s_toolchains" % name,
             toolchain_type = "@aspect_bazel_lib//lib:expand_template_toolchain_type",
