@@ -5,6 +5,7 @@ load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 ALL_PRESETS = [
     "bazel5",
     "bazel6",
+    "bazel7",
     "ci",
     "convenience",
     "correctness",
@@ -39,6 +40,7 @@ def write_aspect_bazelrc_presets(
             name = "update_aspect_bazelrc_presets",
             presets = [
               "bazel6",
+              "bazel7",
               "ci",
               "convenience",
               "correctness",
