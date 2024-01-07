@@ -42,9 +42,9 @@ jobs:
       - id: bazel_6
         run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
       - id: bazel_7
-        run: echo "bazelversion=7.0.0-pre.20230530.3" >> $GITHUB_OUTPUT
+        run: echo "bazelversion=7.0.0" >> $GITHUB_OUTPUT
     outputs:
-      # Will look like '["<version from .bazelversion>", "7.0.0-pre.*"]'
+      # Will look like '["<version from .bazelversion>", "7.0.0"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
   matrix-prep-os:
@@ -97,13 +97,13 @@ jobs:
           - config: rbe
             os: macos-latest
           # Don't test MacOS with Bazel 7 to minimize MacOS minutes (billed at 10X)
-          - bazelversion: 7.0.0-pre.20230530.3
+          - bazelversion: 7.0.0
             os: macos-latest
           # Don't test Windows with RBE to minimize Windows minutes (billed at 2X)
           - config: rbe
             os: windows-latest
           # Don't test Windows with Bazel 7 to minimize Windows minutes (billed at 2X)
-          - bazelversion: 7.0.0-pre.20230530.3
+          - bazelversion: 7.0.0
             os: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -117,8 +117,8 @@ jobs:
           path: |
             ~/.cache/bazel
             ~/.cache/bazel-repo
-          key: bazel-cache-${{ hashFiles('**/BUILD.bazel', '**/*.bzl', 'WORKSPACE') }}
-          restore-keys: bazel-cache-
+          key: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-${{ matrix.config }}-${{ hashFiles('.bazelrc', '.bazelversion', '.bazeliskrc', '**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'WORKSPACE.bazel', 'WORKSPACE.bzlmod', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          restore-keys: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-${{ matrix.config }}-
 
       - name: Configure Bazel version
         if: ${{ matrix.os != 'windows-latest' }}
@@ -175,7 +175,6 @@ jobs:
           bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc \
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc \
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
-            --bazelrc=.bazelrc \
             test --config=${{ matrix.config }} //... \
             ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
         env:
@@ -191,7 +190,6 @@ jobs:
           bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
-            --bazelrc=.bazelrc `
             test --config=${{ matrix.config }} //... `
             ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
         env:
