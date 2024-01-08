@@ -10,6 +10,10 @@ load(":internal_deps.bzl", "bazel_lib_internal_deps")
 # Fetch deps needed only locally for development
 bazel_lib_internal_deps()
 
+load("@bazel_features//:deps.bzl", "bazel_features_deps")
+
+bazel_features_deps()
+
 load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
 
 stardoc_repositories()
