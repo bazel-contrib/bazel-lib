@@ -6,11 +6,9 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:testing.bzl", "assert_contains")
+load("//lib:utils.bzl", "is_bazel_7_or_greater")
 load("//lib:write_source_files.bzl", "write_source_files")
 load("//lib:yq.bzl", "yq")
-
-# buildifier: disable=bzl-visibility
-load("//lib/private:utils.bzl", "utils")
 
 # gazelle:prefix github.com/aspect-build/bazel-lib
 
@@ -67,7 +65,7 @@ bzl_library(
     deps = [
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
-    ] + (["@bazel_tools//tools/build_defs/repo:cache.bzl"] if utils.is_bazel_7_or_greater() else []),
+    ] + (["@bazel_tools//tools/build_defs/repo:cache.bzl"] if is_bazel_7_or_greater() else []),
 )
 
 # write_source_files() to a git ignored subdirectory of the root
