@@ -10,7 +10,7 @@ exports_files([
 bzl_library(
     name = "integrity",
     srcs = [":integrity.bzl"],
-    visibility = ["//lib/private/docs:__pkg__"],
+    visibility = ["//visibility:public"],
 )
 
 bzl_library(
