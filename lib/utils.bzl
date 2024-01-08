@@ -6,6 +6,7 @@ default_timeout = utils.default_timeout
 file_exists = utils.file_exists
 glob_directories = utils.glob_directories
 is_bazel_6_or_greater = utils.is_bazel_6_or_greater
+is_bazel_7_or_greater = utils.is_bazel_7_or_greater
 is_bzlmod_enabled = utils.is_bzlmod_enabled
 is_external_label = utils.is_external_label
 maybe_http_archive = utils.maybe_http_archive
