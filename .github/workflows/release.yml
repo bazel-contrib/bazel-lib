@@ -20,13 +20,17 @@ jobs:
           path: |
             ~/.cache/bazel
             ~/.cache/bazel-repo
-          key: bazel-cache-${{ hashFiles('**/BUILD.bazel', '**/*.bzl', 'WORKSPACE') }}
-          restore-keys: bazel-cache-
+          key: bazel-cache-release-${{ hashFiles('.bazelrc', '.bazelversion', '.bazeliskrc', '**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'WORKSPACE.bazel', 'WORKSPACE.bzlmod', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          restore-keys: bazel-cache-release-
       - name: bazel test //... (release)
         env:
           # Bazelisk will download bazel to here
           XDG_CACHE_HOME: ~/.cache/bazel-repo
-        run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
+        run: |
+          bazel --bazelrc=.aspect/bazelrc/ci.bazelrc \
+            --bazelrc=.github/workflows/ci.bazelrc \
+            --bazelrc=.aspect/bazelrc/bazel6.bazelrc \
+            test --config=local //...
       - name: Build release artifacts
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -34,7 +38,10 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/aspect/release
-          bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc run //tools/release -- /tmp/aspect/release
+          bazel --bazelrc=.aspect/bazelrc/ci.bazelrc \
+            --bazelrc=.github/workflows/ci.bazelrc \
+            --bazelrc=.aspect/bazelrc/bazel6.bazelrc \
+            run --config=local //tools/release -- /tmp/aspect/release
           if /tmp/aspect/release/copy_to_directory-linux_amd64 version | grep '(with local changes)'; then
             >&2 echo "ERROR: the release contained changes in the git state and the release will not be produced"
             exit 1

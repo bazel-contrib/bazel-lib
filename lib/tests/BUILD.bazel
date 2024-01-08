@@ -1,5 +1,6 @@
 "tests for libs"
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:expand_make_vars.bzl", "expand_template")
@@ -13,8 +14,8 @@ load(":strings_tests.bzl", "strings_test_suite")
 load(":utils_test.bzl", "utils_test_suite")
 
 config_setting(
-    name = "experimental_allow_unresolved_symlinks",
-    values = {"experimental_allow_unresolved_symlinks": "true"},
+    name = "allow_unresolved_symlinks",
+    values = {bazel_features.flags.allow_unresolved_symlinks: "true"},
     visibility = ["//visibility:public"],
 )
 

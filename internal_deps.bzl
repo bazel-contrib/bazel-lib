@@ -62,6 +62,13 @@ def bazel_lib_internal_deps():
         ],
     )
 
+    http_archive(
+        name = "bazel_features",
+        sha256 = "f3082bfcdca73dc77dcd68faace806135a2e08c230b02b1d9fbdbd7db9d9c450",
+        strip_prefix = "bazel_features-0.1.0",
+        url = "https://github.com/bazel-contrib/bazel_features/releases/download/v0.1.0/bazel_features-v0.1.0.tar.gz",
+    )
+
     # Register toolchains for tests
     register_jq_toolchains()
     register_yq_toolchains()

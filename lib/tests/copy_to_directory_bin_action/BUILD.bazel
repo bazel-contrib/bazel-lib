@@ -54,7 +54,7 @@ pkg(
         "//conditions:default": [],
     }),
     use_declare_symlink = select({
-        "//lib/tests:experimental_allow_unresolved_symlinks": True,
+        "//lib/tests:allow_unresolved_symlinks": True,
         "//conditions:default": False,
     }),
 )
