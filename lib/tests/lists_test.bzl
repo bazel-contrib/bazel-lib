@@ -1,7 +1,7 @@
 """unit tests for lists"""
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:lists.bzl", "every", "filter", "find", "map", "once", "pick", "some")
+load("//lib/private:lists.bzl", "every", "filter", "find", "map", "once", "pick", "some", "unique")
 
 def _every_test_impl(ctx):
     env = unittest.begin(ctx)
@@ -70,6 +70,15 @@ def _some_test_impl(ctx):
 
 some_test = unittest.make(_some_test_impl)
 
+def _unique_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, unique(["foo", {"bar": "baz"}, 42, {"bar": "baz"}, "foo"]), ["foo", {"bar": "baz"}, 42])
+
+    return unittest.end(env)
+
+unique_test = unittest.make(_unique_test_impl)
+
 def lists_test_suite():
     unittest.suite(
         "lists_tests",
@@ -80,4 +89,5 @@ def lists_test_suite():
         once_test,
         pick_test,
         some_test,
+        unique_test,
     )
