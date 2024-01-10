@@ -20,7 +20,7 @@ load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
 
 def _run_binary_impl(ctx):
-    tool_as_list = [ctx.attr.tool]
+    tool_as_list = [ctx.attr.tool] + ctx.attr.tools
     tool_inputs, tool_input_mfs = ctx.resolve_tools(tools = tool_as_list)
     args = ctx.actions.args()
 
@@ -94,6 +94,10 @@ _run_binary = rule(
             mandatory = True,
             cfg = "exec",
         ),
+        "tools": attr.label_list(
+            allow_files = True,
+            cfg = "exec",
+        ),
         "env": attr.string_dict(),
         "srcs": attr.label_list(
             allow_files = True,
@@ -110,6 +114,7 @@ _run_binary = rule(
 def run_binary(
         name,
         tool,
+        tools = [],
         srcs = [],
         args = [],
         env = {},
@@ -133,6 +138,9 @@ def run_binary(
             a file that can be executed as a subprocess (e.g. an .exe or .bat file on Windows or a
             binary with executable permission on Linux). This label is available for `$(location)`
             expansion in `args` and `env`.
+
+        tools: Additional tools which are available for `$(location)` expansion in `args` and `env`
+
         srcs: Additional inputs of the action.
 
             These labels are available for `$(location)` expansion in `args` and `env`.
@@ -210,6 +218,7 @@ def run_binary(
     _run_binary(
         name = name,
         tool = tool,
+        tools = tools,
         srcs = srcs,
         args = args,
         env = env,
