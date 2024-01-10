@@ -20,6 +20,7 @@ def write_source_file(
         additional_update_targets = [],
         suggested_update_target = None,
         diff_test = True,
+        check_that_out_file_exists = True,
         **kwargs):
     """Write a file or directory to the source tree.
 
@@ -34,7 +35,10 @@ def write_source_file(
 
             This is typically a file or directory output of another target. If `in_file` is a directory then entire directory contents are copied.
 
-        out_file: The file or directory to write to in the source tree. Must be within the same containing Bazel package as this target.
+        out_file: The file or directory to write to in the source tree.
+
+            The output file or directory must be within the same containing Bazel package as this target if `check_that_out_file_exists` is `True`.
+            See `check_that_out_file_exists` docstring for more info.
 
         executable: Whether source tree file or files within the source tree directory written should be made executable.
 
@@ -43,6 +47,11 @@ def write_source_file(
         suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
 
         diff_test: Test that the source tree file or directory exist and is up to date.
+
+        check_that_out_file_exists: Test that the output file exists and print a helpful error message if it doesn't.
+
+            If `True`, the output file or directory must be in the same containing Bazel package as the target since the underlying mechanism
+            for this check is limited to files in the same Bazel package.
 
         **kwargs: Other common named parameters such as `tags` or `visibility`
 
@@ -63,14 +72,15 @@ def write_source_file(
         if utils.is_external_label(out_file):
             msg = "out file {} must be in the user workspace".format(out_file)
             fail(msg)
-        if out_file.package != native.package_name():
-            msg = "out file {} (in package '{}') must be a source file within the target's package: '{}'".format(out_file, out_file.package, native.package_name())
+
+        if check_that_out_file_exists and out_file.package != native.package_name():
+            msg = "out file {} (in package '{}') must be a source file within the target's package: '{}'; set check_that_out_file_exists to False to work-around this requirement".format(out_file, out_file.package, native.package_name())
             fail(msg)
 
     _write_source_file(
         name = name,
         in_file = in_file,
-        out_file = out_file.name if out_file else None,
+        out_file = str(out_file) if out_file else None,
         executable = executable,
         additional_update_targets = additional_update_targets,
         **kwargs
@@ -79,7 +89,7 @@ def write_source_file(
     if not in_file or not out_file or not diff_test:
         return None
 
-    out_file_missing = _is_file_missing(out_file)
+    out_file_missing = check_that_out_file_exists and _is_file_missing(out_file)
     test_target_name = "%s_test" % name
 
     if out_file_missing:
@@ -304,15 +314,17 @@ if exist "%in%\\*" (
 def _write_source_file_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
-    if ctx.attr.out_file and not ctx.attr.in_file:
+    out_file = Label(ctx.attr.out_file) if ctx.attr.out_file else None
+
+    if out_file and not ctx.attr.in_file:
         fail("in_file must be specified if out_file is set")
-    if ctx.attr.in_file and not ctx.attr.out_file:
+    if ctx.attr.in_file and not out_file:
         fail("out_file must be specified if in_file is set")
 
     paths = []
     runfiles = []
 
-    if ctx.attr.in_file and ctx.attr.out_file:
+    if ctx.attr.in_file and out_file:
         if DirectoryPathInfo in ctx.attr.in_file:
             in_path = "/".join([
                 ctx.attr.in_file[DirectoryPathInfo].directory.short_path,
@@ -328,7 +340,7 @@ def _write_source_file_impl(ctx):
             msg = "in file {} must be a single file or a target that provides a DirectoryPathInfo".format(ctx.attr.in_file.label)
             fail(msg)
 
-        out_path = "/".join([ctx.label.package, ctx.attr.out_file]) if ctx.label.package else ctx.attr.out_file
+        out_path = "/".join([out_file.package, out_file.name]) if out_file.package else out_file.name
         paths.append((in_path, out_path))
 
     if is_windows:

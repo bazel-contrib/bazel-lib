@@ -172,7 +172,7 @@ _write_source_file_test = rule(
     test = True,
 )
 
-def write_source_file_test(name, in_file, out_file):
+def write_source_file_test(name, in_file, out_file, check_that_out_file_exists = True):
     """Stamp a write_source_files executable and a test to run against it"""
 
     _write_source_file(
@@ -180,6 +180,7 @@ def write_source_file_test(name, in_file, out_file):
         in_file = in_file,
         out_file = out_file,
         diff_test = False,
+        check_that_out_file_exists = check_that_out_file_exists,
     )
 
     # Note that for testing we update the source files in the sandbox,
