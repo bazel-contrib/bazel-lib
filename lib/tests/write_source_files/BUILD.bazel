@@ -204,3 +204,19 @@ write_source_files(
         "skylib_LICENSE": "@bazel_skylib//:LICENSE",
     },
 )
+
+# Test that we can write to a sub package
+write_source_file_test(
+    name = "a_subpkg_test",
+    check_that_out_file_exists = False,
+    in_file = ":a-desired",
+    out_file = "//lib/tests/write_source_files/subpkg:a.js",
+)
+
+# Test that we can write to a parent package
+write_source_file_test(
+    name = "a_parentpkg_test",
+    check_that_out_file_exists = False,
+    in_file = ":a-desired",
+    out_file = "//lib/tests:a.js",
+)

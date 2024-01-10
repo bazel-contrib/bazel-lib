@@ -13,6 +13,8 @@ load(":paths_test.bzl", "paths_test_suite")
 load(":strings_tests.bzl", "strings_test_suite")
 load(":utils_test.bzl", "utils_test_suite")
 
+exports_files(["a.js"])
+
 config_setting(
     name = "allow_unresolved_symlinks",
     values = {bazel_features.flags.allow_unresolved_symlinks: "true"},
