@@ -12,6 +12,7 @@ def write_source_files(
         additional_update_targets = [],
         suggested_update_target = None,
         diff_test = True,
+        check_that_out_file_exists = True,
         **kwargs):
     """Write one or more files and/or directories to the source tree.
 
@@ -102,7 +103,8 @@ def write_source_files(
         files: A dict where the keys are files or directories in the source tree to write to and the values are labels
             pointing to the desired content, typically file or directory outputs of other targets.
 
-            Destination files and directories must be within the same containing Bazel package as this target.
+            Destination files and directories must be within the same containing Bazel package as this target if
+            `check_that_out_file_exists` is True. See `check_that_out_file_exists` docstring for more info.
 
         executable: Whether source tree files written should be made executable.
 
@@ -115,6 +117,11 @@ def write_source_files(
         suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
 
         diff_test: Test that the source tree files and/or directories exist and are up to date.
+
+        check_that_out_file_exists: Test that each output file exists and print a helpful error message if it doesn't.
+
+            If `True`, destination files and directories must be in the same containing Bazel package as the target since the underlying
+            mechanism for this check is limited to files in the same Bazel package.
 
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
@@ -143,6 +150,7 @@ def write_source_files(
             additional_update_targets = additional_update_targets if single_update_target else [],
             suggested_update_target = this_suggested_update_target,
             diff_test = diff_test,
+            check_that_out_file_exists = check_that_out_file_exists,
             **kwargs
         )
 
@@ -162,7 +170,6 @@ def write_source_files(
             name = name,
             additional_update_targets = update_targets + additional_update_targets,
             suggested_update_target = suggested_update_target,
-            diff_test = False,
             **kwargs
         )
 
