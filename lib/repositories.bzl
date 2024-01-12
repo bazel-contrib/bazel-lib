@@ -182,7 +182,7 @@ def register_bats_toolchains(
 DEFAULT_COREUTILS_REPOSITORY = "coreutils"
 DEFAULT_COREUTILS_VERSION = _DEFAULT_COREUTILS_VERSION
 
-def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version = DEFAULT_COREUTILS_VERSION, register = True):
+def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version = DEFAULT_COREUTILS_VERSION, musl = False, register = True):
     """Registers coreutils toolchain and repositories
 
     Args:
@@ -196,6 +196,7 @@ def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version =
             name = "%s_%s" % (name, platform),
             platform = platform,
             version = version,
+            musl = musl,
         )
         if register:
             native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
