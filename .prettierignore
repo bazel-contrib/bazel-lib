@@ -1,3 +1,4 @@
+.circleci/config.yml
 docs/*.md
 e2e/*/docs.md
 lib/tests/jq/*.json
