@@ -81,3 +81,7 @@ load(
 fetch_shfmt()
 
 fetch_terraform()
+
+load("//.aspect/workflows:deps.bzl", "fetch_workflows_deps")
+
+fetch_workflows_deps()
