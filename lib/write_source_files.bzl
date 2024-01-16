@@ -2,8 +2,11 @@
 
 load(
     "//lib/private:write_source_file.bzl",
+    _WriteSourceFileInfo = "WriteSourceFileInfo",
     _write_source_file = "write_source_file",
 )
+
+WriteSourceFileInfo = _WriteSourceFileInfo
 
 def write_source_files(
         name,
