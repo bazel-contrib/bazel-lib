@@ -28,7 +28,7 @@ module "aspect_workflows" {
     # Kubernetes cluster on this deploymemt is tuned for cost. A high-performance deployment should
     # use a minimum of e2-standard-2 and multiple nodes so that the cache can be sharded.
     node_count   = 1
-    machine_type = "e2-small"
+    machine_type = "e2-medium"
   }
 
   # Delivery properties
