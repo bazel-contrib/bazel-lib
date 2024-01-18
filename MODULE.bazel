@@ -9,7 +9,7 @@ module(
 
 # Lower-bound versions of our dependencies
 bazel_dep(name = "bazel_skylib", version = "1.4.2")
-bazel_dep(name = "platforms", version = "0.0.7")
+bazel_dep(name = "platforms", version = "0.0.8")
 
 # 0.5.4 is the first version with bzlmod support
 bazel_dep(name = "stardoc", version = "0.5.4", repo_name = "io_bazel_stardoc")
