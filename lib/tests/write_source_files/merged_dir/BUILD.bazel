@@ -1,0 +1,20 @@
+load("//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//lib/private:write_source_file.bzl", "write_source_file")
+
+copy_to_directory(
+    name = "desired",
+    srcs = [
+        "somefile",
+        "//lib/tests/write_source_files/merged_dir/out:BUILD.bazel",
+    ],
+    root_paths = [
+        ".",
+        "lib/tests/write_source_files/merged_dir/out",
+    ],
+)
+
+write_source_file(
+    name = "merged_dir_test",
+    in_file = ":desired",
+    out_file = ":out",
+)
