@@ -2,6 +2,24 @@
 
 Public API for write_source_files
 
+<a id="WriteSourceFileInfo"></a>
+
+## WriteSourceFileInfo
+
+<pre>
+WriteSourceFileInfo(<a href="#WriteSourceFileInfo-executable">executable</a>)
+</pre>
+
+Provider for write_source_file targets
+
+**FIELDS**
+
+
+| Name  | Description |
+| :------------- | :------------- |
+| <a id="WriteSourceFileInfo-executable"></a>executable |  Executable that updates the source files    |
+
+
 <a id="write_source_file"></a>
 
 ## write_source_file
