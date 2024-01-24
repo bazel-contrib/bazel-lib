@@ -193,11 +193,11 @@ LD_LIBRARY_PATH=$wksp/{libs_dir}:$wksp/lib:$wksp/{usr_libs_dir} exec $wksp/{link
     rctx.file("BUILD.bazel", build_header + """\
 tar_toolchain(
     name = "bsdtar_toolchain",
-    files = glob(["{libs}/*.so.*"]) + ["usr/bin/bsdtar"],
+    files = glob(["**/*.so.*"]) + ["usr/bin/bsdtar"],
     binary = "bsdtar.sh",
     visibility = ["//visibility:public"],
 )
-""".format(libs = libs_dir, name = rctx.name))
+""".format(name = rctx.name))
 
 bsdtar_binary_repo = repository_rule(
     implementation = _bsdtar_binary_repo,
