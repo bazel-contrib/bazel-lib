@@ -91,6 +91,41 @@ LINUX_LIB_DEPS = {
             "00d0de456134668f41bd9ea308a076bc0a6a805180445af8a37209d433f41efe",
             "http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2.1_amd64.deb",
         ),
+        # https://packages.ubuntu.com/focal/amd64/libc6/download
+        (
+            "a469164a97599aaef2552512acfd91c8830dc8d5e8053f9c02215ff9cd36673c",
+            "http://security.ubuntu.com/ubuntu/pool/main/g/glibc/libc6_2.31-0ubuntu9.14_amd64.deb",
+        ),
+        # https://packages.ubuntu.com/focal/amd64/libacl1/download
+        (
+            "9fa9cc2f8eeccd8d29efcb998111b082432c65de75ca60ad9c333289bb3bb765",
+            "http://security.ubuntu.com/ubuntu/pool/main/a/acl/libacl1_2.2.53-6_amd64.deb",
+        ),
+        # https://packages.ubuntu.com/focal/amd64/liblzma5/download
+        (
+            "f545d34c86119802fbae869a09e1077a714e12a01ef6a3ef67fdc745e5db311d",
+            "http://security.ubuntu.com/ubuntu/pool/main/x/xz-utils/liblzma5_5.2.4-1ubuntu1.1_amd64.deb",
+        ),
+        # https://packages.ubuntu.com/focal/amd64/libstdc++6/download
+        (
+            "7f9222342d3551d063bf651319ec397c39278eeeb9ab5950ae0e8c28ef0af431",
+            "http://security.ubuntu.com/ubuntu/pool/main/g/gcc-10/libstdc++6_10.5.0-1ubuntu1~20.04_amd64.deb",
+        ),
+        # https://packages.ubuntu.com/focal/amd64/libgcc1/download
+        (
+            "be48e8f4b1cb8bbdd642966bfcc08b119a7c8317b807bce6bf8da35817468d06",
+            "http://security.ubuntu.com/ubuntu/pool/universe/g/gcc-10/libgcc1_10.5.0-1ubuntu1~20.04_amd64.deb",
+        ),
+        # https://packages.ubuntu.com/focal/amd64/libzstd1/download
+        (
+            "7a4422dadb90510dc90765c308d65e61a3e244ceb3886394335e48cff7559e69",
+            "http://security.ubuntu.com/ubuntu/pool/main/libz/libzstd/libzstd1_1.4.4+dfsg-3ubuntu0.1_amd64.deb",
+        ),
+        # https://packages.ubuntu.com/focal/amd64/libbz2-1.0/download
+        (
+            "f3632ec38402ca0f9c61a6854469f1a0eba9389d3f73827b466033c3d5bbec69",
+            "http://security.ubuntu.com/ubuntu/pool/main/b/bzip2/libbz2-1.0_1.0.8-2_amd64.deb",
+        ),
     ],
 }
 
@@ -138,7 +173,9 @@ package(default_visibility = ["//visibility:public"])
         return
 
     # Other platforms, we have more work to do.
-    libs_dir = "usr/lib/x86_64-linux-gnu" if rctx.attr.platform.endswith("amd64") else "usr/lib/aarch64-linux-gnu"
+    usr_libs_dir = "usr/lib/x86_64-linux-gnu" if rctx.attr.platform.endswith("amd64") else "usr/lib/aarch64-linux-gnu"
+    libs_dir = "lib/x86_64-linux-gnu" if rctx.attr.platform.endswith("amd64") else "lib/aarch64-linux-gnu"
+    linker = "lib/x86_64-linux-gnu/ld-linux-x86-64.so.2" if rctx.attr.platform.endswith("amd64") else "lib/aarch64-linux-gnu/ld-linux-aarch64.so.2"
 
     for lib in LINUX_LIB_DEPS[rctx.attr.platform]:
         rctx.download_and_extract(
@@ -150,8 +187,8 @@ package(default_visibility = ["//visibility:public"])
 
     rctx.file("bsdtar.sh", """#!/usr/bin/env bash
 readonly wksp="$(dirname "${{BASH_SOURCE[0]}}")"
-LD_LIBRARY_PATH=$wksp/{libs_dir} exec $wksp/usr/bin/bsdtar $@
-""".format(name = rctx.name, libs_dir = libs_dir))
+LD_LIBRARY_PATH=$wksp/{libs_dir}:$wksp/lib:$wksp/{usr_libs_dir} exec $wksp/{linker} $wksp/usr/bin/bsdtar $@
+""".format(name = rctx.name, libs_dir = libs_dir, usr_libs_dir = usr_libs_dir, linker = linker))
 
     rctx.file("BUILD.bazel", build_header + """\
 tar_toolchain(
