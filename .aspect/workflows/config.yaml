@@ -70,3 +70,5 @@ tasks:
       always_deliver: true
       branches:
         - main
+  - warming:
+      queue: bazel-lib-warming
