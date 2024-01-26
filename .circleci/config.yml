@@ -675,7 +675,7 @@ jobs:
       ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
       XDG_CACHE_HOME: /mnt/ephemeral/caches
     machine: true
-    resource_class: aspect-build/bazel-lib-small-warming
+    resource_class: aspect-build/bazel-lib-warming
     steps:
     - run:
         command: /etc/aspect/workflows/bin/configure_workflows_env
