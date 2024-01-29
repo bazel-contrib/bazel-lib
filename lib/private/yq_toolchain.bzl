@@ -314,7 +314,7 @@ YqInfo = provider(
 )
 
 def _yq_toolchain_impl(ctx):
-    binary = ctx.attr.bin.files.to_list()[0]
+    binary = ctx.file.bin
 
     # Make the $(YQ_BIN) variable available in places like genrules.
     # See https://docs.bazel.build/versions/main/be/make-variables.html#custom_variables

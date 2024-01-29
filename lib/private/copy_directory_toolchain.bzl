@@ -57,7 +57,7 @@ CopyToDirectoryInfo = provider(
 )
 
 def _copy_directory_toolchain_impl(ctx):
-    binary = ctx.attr.bin.files.to_list()[0]
+    binary = ctx.file.bin
 
     default_info = DefaultInfo(
         files = depset([binary]),
