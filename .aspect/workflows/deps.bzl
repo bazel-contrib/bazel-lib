@@ -4,12 +4,12 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", _http_archive = "http_archi
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 # TODO: move this to a rule set so repositories on Aspect Workflows can avoid this boilerplate
-rosetta_version = "5.9.0"
+rosetta_version = "5.9.1"
 rosetta_integrity = {
-    "darwin_aarch64": "sha256-evvaKQ2Wz6Hi8F82pLCBe1qYsTPBVEHCkJRqWvkpvgU=",
-    "darwin_x86_64": "sha256-ttlFMEYs2Ya5ykYbOCiW7afB0EZItMOgs1uT/Lf92Wc=",
-    "linux_aarch64": "sha256-Yywq2MF8Gg3Rl/LQjGGT8MJf6OzT9IQJYkyW6Hb3J0w=",
-    "linux_x86_64": "sha256-f2uy4Gy/sVStb5U0M7q/LsNroni2zWAa6AlrjvPQooQ=",
+    "darwin_aarch64": "sha256-0dmZCe8yqKTq/zQoB50q4oeiJXNywRsjHedAqp9Dj8w=",
+    "darwin_x86_64": "sha256-xX5yuevBRFTIfzVLcFPHOm6zwdYg8ODVazSwc7lh7JA=",
+    "linux_aarch64": "sha256-SogfjQWAdQ7ONr64MErvCbOemPQtdsLODEBxqfgJUNA=",
+    "linux_x86_64": "sha256-E82e/ZUprqp8BLc03FdmwKiJpz4efIdh1VByTG/e1is=",
 }
 
 # https://github.com/suzuki-shunsuke/circleci-config-merge/releases
