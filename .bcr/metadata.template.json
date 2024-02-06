@@ -2,9 +2,14 @@
   "homepage": "https://docs.aspect.build/rules/aspect_bazel_lib",
   "maintainers": [
     {
-      "email": "hello@aspect.dev",
-      "github": "aspect-build",
-      "name": "Aspect team"
+      "name": "Alex Eagle",
+      "email": "alex@aspect.dev",
+      "github": "alexeagle"
+    },
+    {
+      "name": "Derek Cormier",
+      "email": "derek@aspect.dev",
+      "github": "kormide"
     }
   ],
   "repository": ["github:aspect-build/bazel-lib"],
