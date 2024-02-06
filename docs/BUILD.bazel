@@ -23,6 +23,7 @@ stardoc_with_diff_test(
 stardoc_with_diff_test(
     name = "docs",
     bzl_library_target = "//lib:docs",
+    tags = ["some_random_tag_for_testing_pr746_regression"],
 )
 
 stardoc_with_diff_test(

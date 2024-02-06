@@ -30,7 +30,7 @@ def stardoc_with_diff_test(
         out = name + "-docgen.md",
         input = bzl_library_target + ".bzl",
         deps = [bzl_library_target],
-        tags = ["package:" + native.package_name()],  # Tag the package name which will help us reconstruct the write_source_files label in update_docs
+        tags = kwargs.pop("tags", []) + ["package:" + native.package_name()],  # Tag the package name which will help us reconstruct the write_source_files label in update_docs
         target_compatible_with = target_compatible_with,
         **kwargs
     )
