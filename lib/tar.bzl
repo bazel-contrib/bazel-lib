@@ -67,8 +67,7 @@ tar_lib = _tar_lib
 def tar(name, mtree = "auto", **kwargs):
     """Wrapper macro around [`tar_rule`](#tar_rule).
 
-    Options for mtree
-    -----------------
+    ### Options for mtree
 
     mtree provides the "specification" or manifest of a tar file.
     See https://man.freebsd.org/cgi/man.cgi?mtree(8)
