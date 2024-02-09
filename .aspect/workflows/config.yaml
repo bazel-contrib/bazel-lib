@@ -67,7 +67,7 @@ tasks:
   - buildifier:
   - delivery:
       queue: bazel-lib
-      always_deliver: true
+      auto_deliver: true
       branches:
         - main
   - warming:
