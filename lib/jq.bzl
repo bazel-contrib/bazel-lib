@@ -8,7 +8,7 @@ _jq_rule = rule(
     toolchains = ["@aspect_bazel_lib//lib:jq_toolchain_type"],
 )
 
-def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **kwargs):
+def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, data = [], expand_args = False, **kwargs):
     """Invoke jq with a filter on a set of json input files.
 
     For jq documentation, see https://stedolan.github.io/jq/.
@@ -117,6 +117,7 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
     Args:
         name: Name of the rule
         srcs: List of input files. May be empty.
+        data: List of additional files. May be empty.
         filter: Filter expression (https://stedolan.github.io/jq/manual/#Basicfilters).
             Subject to stamp variable replacements, see [Stamping](./stamping.md).
             When stamping is enabled, a variable named "STAMP" will be available in the filter.
@@ -125,6 +126,7 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
 
         filter_file: File containing filter expression (alternative to `filter`)
         args: Additional args to pass to jq
+        expand_args: Run bazel's location-expansion on the args.
         out: Name of the output json file; defaults to the rule name plus ".json"
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
@@ -139,5 +141,7 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, **k
         filter_file = filter_file,
         args = args,
         out = out,
+        expand_args = expand_args,
+        data = data,
         **kwargs
     )
