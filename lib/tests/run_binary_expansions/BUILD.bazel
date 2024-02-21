@@ -53,6 +53,9 @@ run_binary(
     },
     progress_message = "doing some work to make %{output}",
     tool = ":expansions_sh",
+    # May introduce non-determinism; use with care!
+    # See e.g. https://github.com/bazelbuild/bazel/issues/4912
+    use_default_shell_env = True,
 )
 
 diff_test(
