@@ -76,7 +76,7 @@ Possible fixes:
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
         progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
         execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
-        use_default_shell_env = False,
+        use_default_shell_env = ctx.attr.use_default_shell_env,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
         input_manifests = tool_input_mfs,
     )
@@ -104,6 +104,7 @@ _run_binary = rule(
         "mnemonic": attr.string(),
         "progress_message": attr.string(),
         "execution_requirements": attr.string_dict(),
+        "use_default_shell_env": attr.bool(),
     }, **STAMP_ATTRS),
 )
 
