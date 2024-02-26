@@ -64,6 +64,10 @@ For example to use commit `abc123`:
 - [stamping](docs/stamping.md) Support version stamping in custom rules.
 - [base64](docs/base64.md) Starlark Base64 encoder & decoder.
 
+## Testing
+
+- [bats_test]:(docs/bats.md) A test runner for the [Bash Automated Testing System](https://github.com/bats-core/bats-core).
+
 ## Generating documentation
 
 - [docs](docs/docs.md) Rules for generating docs and stamping tests to ensure they are up to date.
