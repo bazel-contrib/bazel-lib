@@ -1,6 +1,7 @@
 """Implementation for jq rule"""
 
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
+load(":expand_locations.bzl", "expand_locations")
 
 _jq_attrs = dict({
     "srcs": attr.label_list(
@@ -8,9 +9,13 @@ _jq_attrs = dict({
         mandatory = True,
         allow_empty = True,
     ),
+    "data": attr.label_list(
+        allow_files = True,
+    ),
     "filter": attr.string(),
     "filter_file": attr.label(allow_single_file = True),
     "args": attr.string_list(),
+    "expand_args": attr.bool(),
     "out": attr.output(),
     "_parse_status_file_filter": attr.label(
         allow_single_file = True,
@@ -18,12 +23,25 @@ _jq_attrs = dict({
     ),
 }, **STAMP_ATTRS)
 
+def _expand_locations(ctx, s):
+    # `.split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
+    # TODO: If the string has intentional spaces or if one or more of the expanded file
+    # locations has a space in the name, we will incorrectly split it into multiple arguments
+    return expand_locations(ctx, s, targets = ctx.attr.data).split(" ")
+
 def _jq_impl(ctx):
     jq_bin = ctx.toolchains["@aspect_bazel_lib//lib:jq_toolchain_type"].jqinfo.bin
 
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".json")
-    args = ctx.attr.args
+    if ctx.attr.expand_args:
+        args = []
+        for a in ctx.attr.args:
+            args += _expand_locations(ctx, a)
+    else:
+        args = ctx.attr.args
+
     inputs = ctx.files.srcs[:]
+    inputs += ctx.files.data
 
     if not ctx.attr.filter and not ctx.attr.filter_file:
         fail("Must provide a filter or a filter_file")
