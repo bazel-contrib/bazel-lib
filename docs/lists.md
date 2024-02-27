@@ -188,3 +188,29 @@ Example:
 True or False
 
 
+<a id="unique"></a>
+
+## unique
+
+<pre>
+unique(<a href="#unique-arr">arr</a>)
+</pre>
+
+Return a new list with unique items in it.
+
+Example:
+  `unique(["foo", "bar", "foo", "baz"]) // ["foo", "bar", "baz"]`
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="unique-arr"></a>arr |  List to iterate over   |  none |
+
+**RETURNS**
+
+A new list with unique items
+
+

@@ -117,3 +117,21 @@ def some(f, arr):
         if f(a):
             return True
     return False
+
+def unique(arr):
+    """Return a new list with unique items in it.
+
+    Example:
+      `unique(["foo", "bar", "foo", "baz"]) // ["foo", "bar", "baz"]`
+
+    Args:
+      arr: List to iterate over
+
+    Returns:
+      A new list with unique items
+    """
+    res = []
+    for a in arr:
+        if a not in res:
+            res.append(a)
+    return res
