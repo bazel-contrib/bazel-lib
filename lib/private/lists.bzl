@@ -1,4 +1,5 @@
 "Function definitions for working with lists"
+load("@bazel_skylib//lib:sets.bzl", "sets")
 
 def every(f, arr):
     """Check if every item of `arr` passes function `f`.
@@ -130,4 +131,4 @@ def unique(arr):
     Returns:
       A new list with unique items
     """
-    return dict([[a, a] for a in arr]).keys()
+    return sets.to_list(sets.make(arr))
