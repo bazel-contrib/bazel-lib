@@ -131,4 +131,8 @@ def unique(arr):
     Returns:
       A new list with unique items
     """
-    return sets.to_list(sets.make(arr))
+    res = []
+    for a in arr:
+        if a not in res:
+            res.append(a)
+    return res
