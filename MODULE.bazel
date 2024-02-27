@@ -76,5 +76,5 @@ use_repo(
 # Development-only dependencies
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
-bazel_dep(name = "buildifier_prebuilt", version = "6.3.3", dev_dependency = True)
+bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 bazel_dep(name = "bazel_features", version = "0.2.0", dev_dependency = True)
