@@ -1,5 +1,4 @@
 "Function definitions for working with lists"
-load("@bazel_skylib//lib:sets.bzl", "sets")
 
 def every(f, arr):
     """Check if every item of `arr` passes function `f`.
