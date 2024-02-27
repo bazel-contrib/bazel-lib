@@ -130,8 +130,4 @@ def unique(arr):
     Returns:
       A new list with unique items
     """
-    res = []
-    for a in arr:
-        if a not in res:
-            res.append(a)
-    return res
+    return dict([[a, a] for a in arr]).keys()
