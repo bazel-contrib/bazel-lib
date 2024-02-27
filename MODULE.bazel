@@ -51,7 +51,7 @@ use_repo(host, "aspect_bazel_lib_host")
 
 bazel_dep(
     name = "gazelle",
-    version = "0.33.0",
+    version = "0.35.0",
     # In released versions: dev_dependency = True
 )
 bazel_dep(
