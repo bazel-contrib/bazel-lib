@@ -83,8 +83,8 @@ LINUX_LIB_DEPS = {
         ),
         # https://packages.ubuntu.com/focal/amd64/libxml2/download
         (
-            "a8cbd10a0d74ff8ec43a7e6c09ad07629f20efea9972799d9ff7f63c4e82bfcf",
-            "http://security.ubuntu.com/ubuntu/pool/main/libx/libxml2/libxml2_2.9.10+dfsg-5ubuntu0.20.04.6_amd64.deb",
+            "cef3871873e5e7e7f1d01afec4d35f15504a9d8a0afbe56f57037e92f7f8e850",
+            "http://security.ubuntu.com/ubuntu/pool/main/libx/libxml2/libxml2_2.9.10+dfsg-5ubuntu0.20.04.7_amd64.deb",
         ),
         # https://packages.ubuntu.com/focal/amd64/libicu66/download
         (
