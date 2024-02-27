@@ -79,6 +79,26 @@ diff_test(
     file2 = "null.json",
 )
 
+# Data files are passed in correctly
+jq(
+    name = "case_data_input_flag",
+    srcs = [],
+    args = [
+        "--slurpfile",
+        "a",
+        "$(location a_pretty.json)",
+    ],
+    data = ["a_pretty.json"],
+    expand_args = True,
+    filter = "$a[0]",
+)
+
+diff_test(
+    name = "case_data_input_flag_test",
+    file1 = ":case_data_input_flag",
+    file2 = "a_pretty.json",
+)
+
 # Load filter from file
 jq(
     name = "case_filter_file",

@@ -159,7 +159,10 @@ bzl_library(
     name = "jq",
     srcs = ["jq.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = ["//lib:stamping"],
+    deps = [
+        ":expand_locations",
+        "//lib:stamping",
+    ],
 )
 
 bzl_library(
