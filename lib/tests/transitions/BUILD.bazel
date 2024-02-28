@@ -134,12 +134,20 @@ platform_transition_binary(
 platform_transition_test(
     name = "transitioned_go_test_x86_64",
     binary = ":test_transition_test",
+    # only run this test on x86_64 platforms
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+    ],
     target_platform = "x86_64_linux",
 )
 
 platform_transition_test(
     name = "transitioned_go_test_arm64",
     binary = ":test_transition_test",
+    # only run this test on arm64 platforms
+    target_compatible_with = [
+        "@platforms//cpu:arm64",
+    ],
     target_platform = "arm64_linux",
 )
 
