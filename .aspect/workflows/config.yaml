@@ -68,7 +68,16 @@ tasks:
   - delivery:
       queue: bazel-lib
       auto_deliver: true
-      branches:
-        - main
+      rules:
+        - deliverable: 'attr("tags", "\bdeliverable\b", //...)'
+          condition:
+            branches:
+              - main
+        - deliverable:
+            - //tools/release:tools_delivery
+          condition:
+            only_on_change: false
+            branches:
+              - main
   - warming:
       queue: bazel-lib-warming
