@@ -10,7 +10,6 @@ workflows:
           branches:
             only:
             - /^main$/
-            - /^aspect-build\/test-delivery$/
         requires:
         - aw-root_workspace_test
     - aw-buildifier:
@@ -553,9 +552,6 @@ jobs:
             - matches:
                 pattern: ^main$
                 value: << pipeline.git.branch >>
-            - matches:
-                pattern: ^aspect-build\/test-delivery$
-                value: << pipeline.git.branch >>
         steps:
         - run:
             command: rosetta run delivery_manifest --workspace << parameters.workspace
@@ -642,9 +638,6 @@ jobs:
           - or:
             - matches:
                 pattern: ^main$
-                value: << pipeline.git.branch >>
-            - matches:
-                pattern: ^aspect-build\/test-delivery$
                 value: << pipeline.git.branch >>
         steps:
         - run:

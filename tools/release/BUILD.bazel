@@ -36,7 +36,7 @@ release(
 # Demonstration delivery target for Aspect Workflows.
 # In the future this could be wired up to push dev releases to an S3 bucket.
 sh_binary(
-    name = "tools_delivery",
+    name = "tools_delivery_only_on_change",
     srcs = ["delivery.sh"],
     data = [
         ":copy_directory",
@@ -44,6 +44,18 @@ sh_binary(
         ":expand_template",
     ],
     tags = ["deliverable"],
+)
+
+# Demonstration delivery target for Aspect Workflows.
+# In the future this could be wired up to push dev releases to an S3 bucket.
+sh_binary(
+    name = "tools_delivery",
+    srcs = ["delivery.sh"],
+    data = [
+        ":copy_directory",
+        ":copy_to_directory",
+        ":expand_template",
+    ],
 )
 
 bzl_library(
