@@ -297,3 +297,21 @@ assert_archive_contains(
         "LICENSE",
     ],
 )
+
+# Case 10: Can reference generated files
+tar(
+    name = "tar_location_expansion",
+    srcs = ["@bazel_skylib//:LICENSE"],
+    out = "10.tar",
+    mtree = [
+        "a uid=0 gid=0 time=1672560000 mode=0755 type=file content=$(location @bazel_skylib//:LICENSE)",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_tar_location_expansion",
+    actual = "tar_location_expansion",
+    expected = [
+        "-rwxr-xr-x  0 0      0       11358 Jan  1  2023 a",
+    ],
+)

@@ -50,7 +50,7 @@ TODO:
 """
 
 load("@bazel_skylib//lib:types.bzl", "types")
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:expand_template.bzl", "expand_template")
 load("//lib:utils.bzl", "propagate_common_rule_attributes")
 load("//lib/private:tar.bzl", _tar = "tar", _tar_lib = "tar_lib")
 
@@ -64,7 +64,7 @@ tar_rule = _tar
 
 tar_lib = _tar_lib
 
-def tar(name, mtree = "auto", **kwargs):
+def tar(name, mtree = "auto", stamp = 0, **kwargs):
     """Wrapper macro around [`tar_rule`](#tar_rule).
 
     ### Options for mtree
@@ -94,6 +94,9 @@ def tar(name, mtree = "auto", **kwargs):
     Args:
         name: name of resulting `tar_rule`
         mtree: "auto", or an array of specification lines, or a label of a file that contains the lines.
+            Subject to [$(location)](https://bazel.build/reference/be/make-variables#predefined_label_variables)
+            and ["Make variable"](https://bazel.build/reference/be/make-variables) substitution.
+        stamp: should mtree attribute be stamped
         **kwargs: additional named parameters to pass to `tar_rule`
     """
     mtree_target = "_{}.mtree".format(name)
@@ -105,12 +108,18 @@ def tar(name, mtree = "auto", **kwargs):
             **propagate_common_rule_attributes(kwargs)
         )
     elif types.is_list(mtree):
-        write_file(
+        expand_template(
             name = mtree_target,
             out = "{}.txt".format(mtree_target),
+            data = kwargs["srcs"],
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
-            content = mtree + [""],
-            newline = "unix",
+            template = ["#mtree", "{content}", ""],
+            substitutions = {
+                # expand_template only expands strings in "substitions" dict. Here
+                # we expand mtree and then replace the template with expanded mtree.
+                "{content}": "\n".join(mtree),
+            },
+            stamp = stamp,
             **propagate_common_rule_attributes(kwargs)
         )
     else:

@@ -133,11 +133,11 @@ bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     deps = [
+        "//lib:expand_template",
         "//lib:utils",
         "//lib/private/docs:tar",
         "@aspect_bazel_lib//lib:paths",
         "@bazel_skylib//lib:types",
-        "@bazel_skylib//rules:write_file",
     ],
 )
 
