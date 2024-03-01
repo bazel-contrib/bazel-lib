@@ -110,10 +110,10 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
     elif types.is_list(mtree):
         expand_template(
             name = mtree_target,
-            out = "{}.mtree".format(mtree_target),
+            out = "{}.txt".format(mtree_target),
             data = kwargs["srcs"],
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
-            template = ["{content}"] + [""],
+            template = ["#mtree", "{content}", ""],
             substitutions = {
                 # expand_template only expands strings in "substitions" dict. Here
                 # we expand mtree and then replace the template with expanded mtree.
