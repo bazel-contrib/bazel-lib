@@ -100,7 +100,7 @@ Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rat
 ## tar
 
 <pre>
-tar(<a href="#tar-name">name</a>, <a href="#tar-mtree">mtree</a>, <a href="#tar-kwargs">kwargs</a>)
+tar(<a href="#tar-name">name</a>, <a href="#tar-mtree">mtree</a>, <a href="#tar-stamp">stamp</a>, <a href="#tar-kwargs">kwargs</a>)
 </pre>
 
 Wrapper macro around [`tar_rule`](#tar_rule).
@@ -136,7 +136,8 @@ https://man.freebsd.org/cgi/man.cgi?mtree(8)
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="tar-name"></a>name |  name of resulting <code>tar_rule</code>   |  none |
-| <a id="tar-mtree"></a>mtree |  "auto", or an array of specification lines, or a label of a file that contains the lines.   |  <code>"auto"</code> |
+| <a id="tar-mtree"></a>mtree |  "auto", or an array of specification lines, or a label of a file that contains the lines. Subject to [$(location)](https://bazel.build/reference/be/make-variables#predefined_label_variables) and ["Make variable"](https://bazel.build/reference/be/make-variables) substitution.   |  <code>"auto"</code> |
+| <a id="tar-stamp"></a>stamp |  should mtree attribute be stamped   |  <code>0</code> |
 | <a id="tar-kwargs"></a>kwargs |  additional named parameters to pass to <code>tar_rule</code>   |  none |
 
 

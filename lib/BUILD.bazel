@@ -104,10 +104,10 @@ bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     deps = [
+        "//lib:expand_template",
         "//lib:utils",
         "//lib/private:tar",
         "@bazel_skylib//lib:types",
-        "@bazel_skylib//rules:write_file",
     ],
 )
 
