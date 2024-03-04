@@ -36,7 +36,7 @@ genrule(
     name = "aspect_workflows_config",
     srcs = ["//.aspect/workflows:config.yaml"],
     outs = [":aspect-workflows-config.yml"],
-    cmd = "CIRCLE_PROJECT_USERNAME={0} $(execpath :rosetta) steps --configuration .aspect/workflows/config.yaml --host circleci > $@".format(CIRCLECI_ORG),
+    cmd = "CI=1 CIRCLE_PROJECT_USERNAME={0} $(execpath :rosetta) steps --configuration .aspect/workflows/config.yaml --host circleci > $@".format(CIRCLECI_ORG),
     target_compatible_with = not_windows,
     tools = [":rosetta"],
 )
