@@ -183,7 +183,10 @@ def run_binary(
 
         use_default_shell_env: Passed to the underlying ctx.actions.run.
 
-            See https://bazel.build/rules/lib/builtins/actions#run for more details.
+            May introduce non-determinism when True; use with care!
+            See e.g. https://github.com/bazelbuild/bazel/issues/4912
+
+            Refer to https://bazel.build/rules/lib/builtins/actions#run for more details.
 
         stamp: Whether to include build status files as inputs to the tool. Possible values:
 
