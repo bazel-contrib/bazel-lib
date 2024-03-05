@@ -115,6 +115,7 @@ def run_binary(
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
+        use_default_shell_env = False,
         stamp = 0,
         **kwargs):
     """Runs a binary as a build action.
@@ -180,6 +181,10 @@ def run_binary(
 
             See https://docs.bazel.build/versions/main/be/common-definitions.html#common.tags for useful keys.
 
+        use_default_shell_env: Passed to the underlying ctx.actions.run.
+
+            See https://bazel.build/rules/lib/builtins/actions#run for more details.
+
         stamp: Whether to include build status files as inputs to the tool. Possible values:
 
             - `stamp = 0` (default): Never include build status files as inputs to the tool.
@@ -215,6 +220,7 @@ def run_binary(
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
+        use_default_shell_env = use_default_shell_env,
         stamp = stamp,
         **kwargs
     )
