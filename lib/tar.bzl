@@ -103,7 +103,7 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
     if mtree == "auto":
         mtree_spec(
             name = mtree_target,
-            srcs = kwargs["srcs"],
+            srcs = kwargs.get("srcs", []),
             out = "{}.txt".format(mtree_target),
             **propagate_common_rule_attributes(kwargs)
         )
@@ -111,7 +111,7 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
         expand_template(
             name = mtree_target,
             out = "{}.txt".format(mtree_target),
-            data = kwargs["srcs"],
+            data = kwargs.get("srcs", []),
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
             template = ["#mtree", "{content}", ""],
             substitutions = {
