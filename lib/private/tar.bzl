@@ -50,7 +50,6 @@ _tar_attrs = {
 
         If any of the srcs are binaries with runfiles, those are copied into the resulting tar as well.
         """,
-        mandatory = True,
         allow_files = True,
     ),
     "mode": attr.string(
@@ -88,7 +87,7 @@ _tar_attrs = {
 }
 
 _mtree_attrs = {
-    "srcs": attr.label_list(doc = "Files that are placed into the tar", mandatory = True, allow_files = True),
+    "srcs": attr.label_list(doc = "Files that are placed into the tar", allow_files = True),
     "out": attr.output(doc = "Resulting specification file to write"),
 }
 
