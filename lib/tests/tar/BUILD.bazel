@@ -315,3 +315,17 @@ assert_tar_listing(
         "-rwxr-xr-x  0 0      0       11358 Jan  1  2023 a",
     ],
 )
+
+# Case 11: Can create tar without srcs
+tar(
+    name = "create_tmp",
+    mtree = ["./tmp time=1501783453.0 mode=1777 gid=0 uid=0 type=dir"],
+)
+
+assert_tar_listing(
+    name = "test_create_create_tmp",
+    actual = "create_tmp",
+    expected = [
+        "drwxrwxrwt  0 0      0           0 Aug  3  2017 ./tmp/",
+    ],
+)
