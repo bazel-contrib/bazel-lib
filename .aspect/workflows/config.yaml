@@ -1,15 +1,16 @@
 ---
-queue: bazel-lib-small
+queue: bazel-lib-default
 env:
   CC: /bin/false
 workspaces:
   .:
     tasks:
       - test:
-          queue: bazel-lib
   e2e/smoke:
     icon: bazel
     tasks:
+      - test:
+          queue: bazel-lib-small
       - format:
           without: true
       - gazelle:
@@ -23,6 +24,8 @@ workspaces:
   e2e/coreutils:
     icon: bazel
     tasks:
+      - test:
+          queue: bazel-lib-small
       - format:
           without: true
       - gazelle:
@@ -36,6 +39,8 @@ workspaces:
   e2e/copy_to_directory:
     icon: bazel
     tasks:
+      - test:
+          queue: bazel-lib-small
       - format:
           without: true
       - gazelle:
@@ -49,6 +54,8 @@ workspaces:
   e2e/external_copy_to_directory:
     icon: bazel
     tasks:
+      - test:
+          queue: bazel-lib-small
       - format:
           without: true
       - gazelle:
@@ -62,11 +69,15 @@ workspaces:
 tasks:
   - test:
   - format:
+      queue: bazel-lib-small
   - gazelle:
+      queue: bazel-lib-small
   - configure:
+      queue: bazel-lib-small
   - buildifier:
+      queue: bazel-lib-small
   - delivery:
-      queue: bazel-lib
+      queue: bazel-lib-default
       auto_deliver: true
       rules:
         - deliverable: 'attr("tags", "\bdeliverable\b", //...)'
