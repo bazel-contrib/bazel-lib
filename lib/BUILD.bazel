@@ -307,3 +307,8 @@ bzl_library(
     srcs = ["bats.bzl"],
     deps = ["//lib/private:bats"],
 )
+
+bzl_library(
+    name = "resource_sets",
+    srcs = ["resource_sets.bzl"],
+)
