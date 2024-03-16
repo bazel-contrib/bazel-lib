@@ -379,6 +379,8 @@ jobs:
         path: /workflows/testlogs
     - store_artifacts:
         path: /workflows/artifacts
+    - store_artifacts:
+        path: vmstat.out
     - run:
         command: rosetta run finalization
         environment:
@@ -466,6 +468,8 @@ jobs:
         path: /workflows/testlogs
     - store_artifacts:
         path: /workflows/artifacts
+    - store_artifacts:
+        path: vmstat.out
     - run:
         command: rosetta run finalization
         environment:
@@ -553,6 +557,8 @@ jobs:
         path: /workflows/testlogs
     - store_artifacts:
         path: /workflows/artifacts
+    - store_artifacts:
+        path: vmstat.out
     - run:
         command: rosetta run finalization
         environment:
@@ -640,6 +646,8 @@ jobs:
         path: /workflows/testlogs
     - store_artifacts:
         path: /workflows/artifacts
+    - store_artifacts:
+        path: vmstat.out
     - run:
         command: rosetta run finalization
         environment:
@@ -914,6 +922,8 @@ jobs:
         path: /workflows/testlogs
     - store_artifacts:
         path: /workflows/artifacts
+    - store_artifacts:
+        path: vmstat.out
     - run:
         command: rosetta run finalization
         environment:
