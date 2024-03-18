@@ -4,8 +4,11 @@ Utilities for rules that expose resource_set on ctx.actions.run[_shell]
 
 Workaround for https://github.com/bazelbuild/bazel/issues/15187
 
-By default, Bazel allocates 1 cpu and 250M of RAM:
-https://github.com/bazelbuild/bazel/blob/058f943037e21710837eda9ca2f85b5f8538c8c5/src/main/java/com/google/devtools/build/lib/actions/AbstractAction.java#L77
+Note, this workaround only provides some fixed values for either CPU or Memory.
+
+Rule authors who are ALSO the BUILD author might know better, and can
+write custom resource_set functions for use within their own repository.
+This seems to be the use case that Google engineers imagined.
 
 
 <a id="resource_set"></a>
