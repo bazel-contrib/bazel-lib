@@ -84,7 +84,7 @@ source_toolchains_repo = repository_rule(
     attrs = {
         "toolchain_type": attr.string(doc = "Label to the toolchain_type", mandatory = True),
         "toolchain_rule_load_from": attr.string(doc = "Label to the concrete toolchain rule to load from", mandatory = True),
-        "toolchain_rule": attr.string(doc = "Name of the concerete toolchain rule", mandatory = True),
+        "toolchain_rule": attr.string(doc = "Name of the concrete toolchain rule", mandatory = True),
         "binary": attr.string(doc = "Label to the binary", mandatory = True),
     },
 )
