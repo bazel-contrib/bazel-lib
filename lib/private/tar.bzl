@@ -162,7 +162,7 @@ def _tar_impl(ctx):
 
 def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     spec = [
-        file,
+        _mtree_vis_encode(file),
         "uid=" + uid,
         "gid=" + gid,
         "time=" + time,
@@ -170,8 +170,53 @@ def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "167256
         "type=" + type,
     ]
     if content:
-        spec.append("content=" + content)
+        spec.append("content=" + _mtree_vis_encode(content))
     return " ".join(spec)
+
+def _ord(ch):
+    fail("don't know how to get codepoint of unicode character")
+    return 0
+
+encode_unicode_characters = False
+
+def _mtree_vis_encode(s):
+    # range over the character indices of the string in reverse, replacing
+    # special characters with escape sequences.  Typical case there are no
+    # special characters and no modification of `s`, so this is an O(n) scan of
+    # the string.
+    for i in range(len(s) - 1, 0, -1):
+        ch = s[i]
+        if ch == " ":
+            s = s[:i] + "\\s" + s[i + 1:]
+
+        elif ch == " ":
+            s = s[:i] + "\\s" + s[i + 1:]
+
+        elif ch == "\n":
+            s = s[:i] + "\\n" + s[i + 1:]
+
+        elif ch == "\r":
+            s = s[:i] + "\\r" + s[i + 1:]
+
+        elif ch == "\b":
+            s = s[:i] + "\\b" + s[i + 1:]
+
+        elif ch == "\a":
+            s = s[:i] + "\\a" + s[i + 1:]
+
+        elif ch == "\v":
+            s = s[:i] + "\\v" + s[i + 1:]
+
+        elif ch == "\t":
+            s = s[:i] + "\\t" + s[i + 1:]
+
+        elif ch == "\f":
+            s = s[:i] + "\\f" + s[i + 1:]
+
+        elif encode_unicode_characters and not ch.isalpha():
+            s = s[:i] + ("\\x%x" % _ord(ch)) + s[i + 1:]
+
+    return s
 
 # This function exactly same as the one from "@aspect_bazel_lib//lib:paths.bzl"
 # except that it takes workspace_name directly instead of the ctx object.

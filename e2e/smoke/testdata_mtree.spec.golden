@@ -1,3 +1,4 @@
 testdata uid=0 gid=0 time=1672560000 mode=0755 type=dir
-testdata/file empty with spaces.txt uid=0 gid=0 time=1672560000 mode=0755 type=file content=testdata/file empty with spaces.txt
+testdata/file\sempty\swith\sspaces.txt uid=0 gid=0 time=1672560000 mode=0755 type=file content=testdata/file\sempty\swith\sspaces.txt
+testdata/file\sempty\swith\s😍.txt uid=0 gid=0 time=1672560000 mode=0755 type=file content=testdata/file\sempty\swith\s😍.txt
 testdata/file-empty.txt uid=0 gid=0 time=1672560000 mode=0755 type=file content=testdata/file-empty.txt

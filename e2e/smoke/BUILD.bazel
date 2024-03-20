@@ -98,6 +98,12 @@ mtree_spec(
     srcs = [":testdata_files"],
 )
 
+tar(
+    name = "testdata_tar",
+    srcs = [":testdata_files"],
+    mtree = [":testdata_mtree"],
+)
+
 filegroup(
     name = "testdata_files",
     srcs = glob(["testdata/**/*"]),
