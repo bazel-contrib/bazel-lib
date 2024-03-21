@@ -98,6 +98,30 @@ mtree_spec(
     srcs = [":testdata_files"],
 )
 
+genrule(
+    name = "testdata_mtree.fixed",
+    srcs = [":testdata_mtree"],
+    outs = ["testdata_mtree.mtree"],
+    cmd = """
+while IFS= read -r line; do
+    echo "Processing line: $$line"
+    output="$$line"
+    if [[ $$line = *[![:ascii:]]* ]]; then
+        echo "Contains Non-ASCII: $$line"
+        filename="$$(sed 's| uid=0.*||' <<< "$$line")"
+        body="$$(sed 's|.*\\( uid=0.* content=\\).*|\\1|' <<< "$$line")"
+        repl="$$(vis -wo <<< "$$filename")"
+        echo "filename: <$$filename> => <$$repl> (body=<$$body>)"
+        pattern="$$(echo "$$filename" | sed -e 's/[.^$$[*+?]/\\&/g')"
+        newline="$$(sed "s|$$filename|foo|g" <<< "$$line")"
+        echo "replaced line: $$newline"
+        output="$$repl$$body$$repl"
+    fi
+    echo "$$output" >>$@
+done < $<
+    """,
+)
+
 tar(
     name = "testdata_tar",
     srcs = [":testdata_files"],
