@@ -17,9 +17,10 @@ def _expand_substitutions(ctx, output, substitutions):
 def _expand_template_impl(ctx):
     output = ctx.outputs.out
     if not output:
-        if not ctx.file.template or not ctx.file.template.is_source:
-            fail("Template must be a source file if out is not specified")
-        output = ctx.actions.declare_file(ctx.file.template.basename, sibling = ctx.file.template)
+        if ctx.file.template and ctx.file.template.is_source:
+            output = ctx.actions.declare_file(ctx.file.template.basename, sibling = ctx.file.template)
+        else:
+            output = ctx.actions.declare_file(ctx.attr.name + ".txt")
 
     substitutions = _expand_substitutions(ctx, output, ctx.attr.substitutions)
     expand_template_info = ctx.toolchains["@aspect_bazel_lib//lib:expand_template_toolchain_type"].expand_template_info
@@ -90,12 +91,15 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
         "out": attr.output(
             doc = """Where to write the expanded file.
 
-            If unset, the template must be a source file and the output file
-            will be named the same as the template file and outputted to the same
+            If the `template` is a source file, then `out` defaults to
+            be named the same as the template file and outputted to the same
             workspace-relative path. In this case there will be no pre-declared
             label for the output file. It can be referenced by the target label
             instead. This pattern is similar to `copy_to_bin` but with substitutions on
-            the copy.""",
+            the copy.
+
+            Otherwise, `out` defaults to `[name].txt`.
+            """,
         ),
         "stamp_substitutions": attr.string_dict(
             doc = """Mapping of strings to substitutions.
