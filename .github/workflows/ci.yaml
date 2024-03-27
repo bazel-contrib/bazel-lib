@@ -43,10 +43,8 @@ jobs:
         run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
       - id: bazel_7
         run: echo "bazelversion=7.0.0" >> $GITHUB_OUTPUT
-      - id: bazel_5
-        run: echo "bazelversion=5.4.1" >> $GITHUB_OUTPUT
     outputs:
-      # Will look like '["<version from .bazelversion>", "7.0.0", "5.4.1"]'
+      # Will look like '["<version from .bazelversion>", "7.0.0"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
   matrix-prep-os:
