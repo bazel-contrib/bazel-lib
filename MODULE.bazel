@@ -30,12 +30,7 @@ register_toolchains(
     "@yq_toolchains//:all",
     "@coreutils_toolchains//:all",
     "@expand_template_toolchains//:all",
-    # Expand bsd_tar_toolchains
-    "@bsd_tar_toolchains//:linux_amd64_toolchain",
-    "@bsd_tar_toolchains//:linux_arm64_toolchain",
-    "@bsd_tar_toolchains//:windows_amd64_toolchain",
-    # host toolchain must be last, as it's only suitable as a fallback on macos
-    "@bsd_tar_toolchains//:host_toolchain",
+    "@bsd_tar_toolchains//:all",
 )
 
 # To allow /tools to be built from source
