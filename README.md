@@ -66,7 +66,7 @@ For example to use commit `abc123`:
 
 ## Testing
 
-- [bats_test]:(docs/bats.md) A test runner for the [Bash Automated Testing System](https://github.com/bats-core/bats-core).
+- [bats_test](docs/bats.md): A test runner for the [Bash Automated Testing System](https://github.com/bats-core/bats-core).
 
 ## Generating documentation
 
