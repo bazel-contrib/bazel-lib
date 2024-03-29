@@ -36,19 +36,19 @@ BSDTAR_PLATFORMS = {
 
 BSDTAR_PREBUILT = {
     "darwin_amd64": (
-        "https://github.com/dzbarsky/bsdtar/releases/download/v3.7.2-2/tar_darwin_amd64",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.2/tar_darwin_amd64",
         "a3bd0e7be92bcddcb70341f1efc48c29ef99b3ad57349b433e9a3182b68cb0c1",
     ),
     "darwin_arm64": (
-        "https://github.com/dzbarsky/bsdtar/releases/download/v3.7.2-2/tar_darwin_arm64",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.2/tar_darwin_arm64",
         "63ee769e2d870d1ed3542e292c919dc8a3934544d17b2de34213c18c41c5437f",
     ),
     "linux_amd64": (
-        "https://github.com/dzbarsky/bsdtar/releases/download/v3.7.2-2/tar_linux_amd64",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.2/tar_linux_amd64",
         "d40582e64aace892e2f9588045edc5e67023ca3371cd575e7043b0c2a08205b4",
     ),
     "linux_arm64": (
-        "https://github.com/dzbarsky/bsdtar/releases/download/v3.7.2-2/tar_linux_arm64",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.2/tar_linux_arm64",
         "e2527be38499e94e021c7c02476b4cff8083313d38c85bdf46fc5751d31d32aa",
     ),
     "windows_amd64": (
