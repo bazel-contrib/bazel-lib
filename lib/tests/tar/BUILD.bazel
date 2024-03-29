@@ -188,10 +188,9 @@ genrule(
     name = "run_program_with_runfiles",
     srcs = [":tar_runfiles"],
     outs = ["cat_src_file_output"],
-    # TODO: use hermetic bsdtar for this extract when supported
     cmd = """\
       export DIR=$$(mktemp -d)
-      tar --extract --file $(execpath :tar_runfiles) --directory $$DIR
+      $(BSDTAR_BIN) --extract --file $(execpath :tar_runfiles) --directory $$DIR
       (
         cd $$DIR
         ./lib/tests/tar/cat_src_file
@@ -205,7 +204,7 @@ genrule(
         "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
         "//conditions:default": [],
     }),
-    # toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
+    toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
 )
 
 diff_test(
