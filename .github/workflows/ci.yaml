@@ -24,22 +24,6 @@ jobs:
   # inspired from
   # https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional
 
-  matrix-prep-config:
-    # Prepares the 'config' axis of the test matrix
-    runs-on: ubuntu-latest
-    env:
-      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
-    steps:
-      - id: local
-        run: echo "config=local" >> $GITHUB_OUTPUT
-      - id: rbe
-        run: echo "config=rbe" >> $GITHUB_OUTPUT
-        # Don't run RBE if there is no API key which is the case on forks
-        if: ${{ env.BUILDBUDDY_API_KEY != '' }}
-    outputs:
-      # Will look like '["local", "rbe"]'
-      configs: ${{ toJSON(steps.*.outputs.config) }}
-
   matrix-prep-bazelversion:
     # Prepares the 'bazelversion' axis of the test matrix
     runs-on: ubuntu-latest
@@ -79,14 +63,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     needs:
-      - matrix-prep-config
       - matrix-prep-bazelversion
       - matrix-prep-os
 
     strategy:
       fail-fast: false
       matrix:
-        config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
         bzlmodEnabled: [true, false]
@@ -99,15 +81,9 @@ jobs:
           - "e2e/smoke"
           - "e2e/write_source_files"
         exclude:
-          # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
-          - config: rbe
-            os: macos-latest
           # Don't test MacOS with Bazel 7 to minimize MacOS minutes (billed at 10X)
           - bazelversion: 7.0.0
             os: macos-latest
-          # Don't test Windows with RBE to minimize Windows minutes (billed at 2X)
-          - config: rbe
-            os: windows-latest
           # Don't test Windows with Bazel 7 to minimize Windows minutes (billed at 2X)
           - bazelversion: 7.0.0
             os: windows-latest
@@ -123,8 +99,8 @@ jobs:
           path: |
             ~/.cache/bazel
             ~/.cache/bazel-repo
-          key: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-${{ matrix.config }}-${{ hashFiles('.bazelrc', '.bazelversion', '.bazeliskrc', '**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'WORKSPACE.bazel', 'WORKSPACE.bzlmod', 'MODULE.bazel', 'MODULE.bazel.lock') }}
-          restore-keys: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-${{ matrix.config }}-
+          key: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-${{ hashFiles('.bazelrc', '.bazelversion', '.bazeliskrc', '**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'WORKSPACE.bazel', 'WORKSPACE.bzlmod', 'MODULE.bazel', 'MODULE.bazel.lock') }}
+          restore-keys: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-
 
       - name: Configure Bazel version
         if: ${{ matrix.os != 'windows-latest' }}
@@ -163,16 +139,6 @@ jobs:
         if: matrix.bzlmodEnabled
         run: echo "bzlmod_flag=--enable_bzlmod" >> $GITHUB_OUTPUT
 
-      - name: Write rbe credentials
-        if: ${{ matrix.config == 'rbe' }}
-        working-directory: ${{ matrix.folder }}
-        run: |
-          touch $HOME/.bazelrc
-          chmod 0600 $HOME/.bazelrc
-          echo "build --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY" > $HOME/.bazelrc
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
-
       - name: bazel test //...
         if: ${{ matrix.os != 'windows-latest' }}
         working-directory: ${{ matrix.folder }}
@@ -181,7 +147,7 @@ jobs:
           bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc \
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc \
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
-            test --config=${{ matrix.config }} //... \
+            test //... \
             ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
         env:
           # Bazelisk will download bazel to here
@@ -196,7 +162,7 @@ jobs:
           bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
             --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
-            test --config=${{ matrix.config }} //... `
+            test //... `
             ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
         env:
           # Bazelisk will download bazel to here
