@@ -55,6 +55,9 @@ def _get_env_var(rctx, name, default):
         return rctx.os.environ[name]
     return default
 
+def _get_home_directory(rctx):
+    return _get_env_var(rctx, "HOME", None)
+
 def _platform(rctx):
     """Returns a normalized name of the host os and CPU architecture.
 
@@ -109,6 +112,7 @@ repo_utils = struct(
     is_linux = _is_linux,
     is_windows = _is_windows,
     get_env_var = _get_env_var,
+    get_home_directory = _get_home_directory,
     os = _os,
     platform = _platform,
 )

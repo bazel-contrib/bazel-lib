@@ -111,6 +111,24 @@ Find an environment variable in system. Doesn't %-escape the value!
 The environment variable value or the default if it is not set
 
 
+<a id="repo_utils.get_home_directory"></a>
+
+## repo_utils.get_home_directory
+
+<pre>
+repo_utils.get_home_directory(<a href="#repo_utils.get_home_directory-rctx">rctx</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="repo_utils.get_home_directory-rctx"></a>rctx |  <p align="center"> - </p>   |  none |
+
+
 <a id="repo_utils.os"></a>
 
 ## repo_utils.os
