@@ -220,3 +220,9 @@ write_source_file_test(
     in_file = ":a-desired",
     out_file = "//lib/tests:a.js",
 )
+
+# Copy directory to directory with the same name
+write_source_files(
+    name = "e_dir-desired_test",
+    files = {"e_dir-desired": ":e_dir-desired"},
+)
