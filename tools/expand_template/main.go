@@ -71,8 +71,8 @@ func main() {
 }
 
 // captures every `KEY VALUE` line in the status file.
-// for explanation see: https://regex101.com/r/B28NN7/1
-var STATUS_REGEX = regexp.MustCompile(`(?m)^([^\s]+)\s+([^\n ]*)$`)
+// for explanation see: https://regex101.com/r/3Lfw6U/2
+var STATUS_REGEX = regexp.MustCompile(`(?m)^([^\s]+)\s+([^\n]*)$`)
 
 func parseStatusFile(statusFilePath string) (map[string]string, error) {
 	statusFile, err := os.ReadFile(statusFilePath)
