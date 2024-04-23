@@ -2,3 +2,12 @@ bazel-*
 **/.terraform/*
 test-out/
 .DS_Store
+
+# Don't commit lockfile for now as it is unstable. Do allow for it to be
+# created, however, since it gives a performance boost for local development.
+# https://github.com/bazelbuild/bazel/issues/19026
+# https://github.com/bazelbuild/bazel/issues/19621
+# https://github.com/bazelbuild/bazel/issues/19971
+# https://github.com/bazelbuild/bazel/issues/20272
+# https://github.com/bazelbuild/bazel/issues/20369
+MODULE.bazel.lock
