@@ -12,6 +12,7 @@ workflows:
             - /^main$/
         requires:
         - aw-root_workspace_test
+        workspace: .
     - aw-buildifier:
         context: []
         workspace: .
@@ -90,6 +91,7 @@ workflows:
     jobs:
     - aw-manual-deliver:
         context: []
+        workspace: << pipeline.parameters.workspace >>
     when:
       equal:
       - true
@@ -119,16 +121,21 @@ jobs:
   aw-auto-deliver:
     environment:
       ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+      ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
       CC: /bin/false
       DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
       XDG_CACHE_HOME: /mnt/ephemeral/caches
     machine: true
+    parameters:
+      workspace:
+        type: string
     resource_class: aspect-build/bazel-lib-default
     steps:
     - run:
         command: /etc/aspect/workflows/bin/configure_workflows_env
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -138,6 +145,7 @@ jobs:
         command: /etc/aspect/workflows/bin/agent_health_check
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -147,6 +155,7 @@ jobs:
         command: git fetch
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -158,6 +167,7 @@ jobs:
             command: git checkout << pipeline.parameters.delivery_commit >>
             environment:
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+              ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
               CC: /bin/false
               DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
               XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -166,6 +176,7 @@ jobs:
         command: rosetta run delivery
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -903,17 +914,22 @@ jobs:
   aw-manual-deliver:
     environment:
       ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+      ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
       CC: /bin/false
       DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
       DELIVERY_TARGETS: << pipeline.parameters.delivery_targets >>
       XDG_CACHE_HOME: /mnt/ephemeral/caches
     machine: true
+    parameters:
+      workspace:
+        type: string
     resource_class: aspect-build/bazel-lib-default
     steps:
     - run:
         command: /etc/aspect/workflows/bin/configure_workflows_env
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -923,6 +939,7 @@ jobs:
         command: /etc/aspect/workflows/bin/agent_health_check
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -932,6 +949,7 @@ jobs:
         command: git fetch
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -943,6 +961,7 @@ jobs:
             command: git checkout << pipeline.parameters.delivery_commit >>
             environment:
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+              ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
               CC: /bin/false
               DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
               XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -951,6 +970,7 @@ jobs:
         command: rosetta run delivery
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+          ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
           CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -1175,3 +1195,7 @@ parameters:
   perform_delivery:
     default: false
     type: boolean
+  workspace:
+    default: .
+    description: The workspace that the `delivery_targets` live within.
+    type: string
