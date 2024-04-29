@@ -163,7 +163,7 @@ def _tar_impl(ctx):
 def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     spec = [
         file,
-        "uid=" + uid,
+        "uied=" + uid,
         "gid=" + gid,
         "time=" + time,
         "mode=" + mode,
