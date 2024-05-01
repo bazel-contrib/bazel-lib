@@ -126,12 +126,36 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
         **kwargs
     )
 
-def mtree_mutate(name, mtree, awk_script = "@aspect_bazel_lib//lib/private:modify_mtree.awk", **kwargs):
-    vars = [
-        "-v {}='{}'".format(variable, value)
-        for variable, value in kwargs.items()
-        if value != None
-    ]
+def mtree_mutate(
+        name,
+        mtree,
+        strip_prefix = None,
+        mtime = None,
+        owner = None,
+        ownername = None,
+        awk_script = "@aspect_bazel_lib//lib/private:modify_mtree.awk",
+        **kwargs):
+    """Modify metadata in an mtree file.
+
+    Args:
+        name: name of the target, output will be `[name].mtree`.
+        mtree: input mtree file, typically created by `mtree_spec`.
+        strip_prefix: prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.
+        mtime: new modification time for all entries.
+        owner: new uid for all entries.
+        ownername: new uname for all entries.
+        awk_script: may be overridden to change the script containing the modification logic.
+        **kwargs: additional named parameters to genrule
+    """
+    vars = []
+    if strip_prefix:
+        vars.append("-v strip_prefix='{}'".format(strip_prefix))
+    if mtime:
+        vars.append("-v mtime='{}'".format(mtime))
+    if owner:
+        vars.append("-v owner='{}'".format(owner))
+    if ownername:
+        vars.append("-v ownername='{}'".format(ownername))
 
     native.genrule(
         name = name,
@@ -139,4 +163,5 @@ def mtree_mutate(name, mtree, awk_script = "@aspect_bazel_lib//lib/private:modif
         outs = [name + ".mtree"],
         cmd = "awk {} -f $(execpath {}) <$< >$@".format(" ".join(vars), awk_script),
         tools = [awk_script],
+        **kwargs
     )
