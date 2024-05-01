@@ -13,13 +13,13 @@ this:
 
 We also provide full control for tar'ring binaries including their runfiles.
 
-## Modifying metadata
+## Mutating the tar contents
 
 The `mtree_spec` rule can be used to create an mtree manifest for the tar file.
-Then you can mutate that spec, as it's just a simple text file, and feed the result
+Then you can mutate that spec using `mtree_mutate` and feed the result
 as the `mtree` attribute of the `tar` rule.
 
-For example, to set the `uid` property, you could:
+For example, to set the owner uid of files in the tar, you could:
 
 ```starlark
 mtree_spec(
@@ -27,11 +27,10 @@ mtree_spec(
     srcs = ["//some:files"],
 )
 
-genrule(
+mtree_mutate(
     name = "change_owner",
-    srcs = ["mtree"],
-    outs = ["mtree.mutated"],
-    cmd = "sed 's/uid=0/uid=1000/' <$< >$@",
+    mtree = ":mtree",
+    owner = "1000",
 )
 
 tar(
@@ -40,10 +39,6 @@ tar(
     mtree = "change_owner",
 )
 ```
-
-Note: We intend to contribute mutation features to https://github.com/vbatts/go-mtree
-to provide a richer API for things like `strip_prefix`.
-In the meantime, see the `lib/tests/tar/BUILD.bazel` file in this repo for examples.
 
 TODO:
 - Provide convenience for rules_pkg users to re-use or replace pkg_files trees
@@ -129,4 +124,19 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
         name = name,
         mtree = mtree_target,
         **kwargs
+    )
+
+def mtree_mutate(name, mtree, awk_script = "@aspect_bazel_lib//lib/private:modify_mtree.awk", **kwargs):
+    vars = [
+        "-v {}='{}'".format(variable, value)
+        for variable, value in kwargs.items()
+        if value != None
+    ]
+
+    native.genrule(
+        name = name,
+        srcs = [mtree],
+        outs = [name + ".mtree"],
+        cmd = "awk {} -f $(execpath {}) <$< >$@".format(" ".join(vars), awk_script),
+        tools = [awk_script],
     )

@@ -15,13 +15,13 @@ this:
 
 We also provide full control for tar'ring binaries including their runfiles.
 
-## Modifying metadata
+## Mutating the tar contents
 
 The `mtree_spec` rule can be used to create an mtree manifest for the tar file.
-Then you can mutate that spec, as it's just a simple text file, and feed the result
+Then you can mutate that spec using `mtree_mutate` and feed the result
 as the `mtree` attribute of the `tar` rule.
 
-For example, to set the `uid` property, you could:
+For example, to set the owner uid of files in the tar, you could:
 
 ```starlark
 mtree_spec(
@@ -29,11 +29,10 @@ mtree_spec(
     srcs = ["//some:files"],
 )
 
-genrule(
+mtree_mutate(
     name = "change_owner",
-    srcs = ["mtree"],
-    outs = ["mtree.mutated"],
-    cmd = "sed 's/uid=0/uid=1000/' &lt;$&lt; &gt;$@",
+    mtree = ":mtree",
+    owner = "1000",
 )
 
 tar(
@@ -42,10 +41,6 @@ tar(
     mtree = "change_owner",
 )
 ```
-
-Note: We intend to contribute mutation features to https://github.com/vbatts/go-mtree
-to provide a richer API for things like `strip_prefix`.
-In the meantime, see the `lib/tests/tar/BUILD.bazel` file in this repo for examples.
 
 TODO:
 - Provide convenience for rules_pkg users to re-use or replace pkg_files trees
@@ -93,6 +88,27 @@ Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rat
 | <a id="tar_rule-mtree"></a>mtree |  An mtree specification file   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 | <a id="tar_rule-out"></a>out |  Resulting tar file to write. If absent, <code>[name].tar</code> is written.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  |
 | <a id="tar_rule-srcs"></a>srcs |  Files, directories, or other targets whose default outputs are placed into the tar.<br><br>        If any of the srcs are binaries with runfiles, those are copied into the resulting tar as well.   | <a href="https://bazel.build/concepts/labels">List of labels</a> | optional | <code>[]</code> |
+
+
+<a id="mtree_mutate"></a>
+
+## mtree_mutate
+
+<pre>
+mtree_mutate(<a href="#mtree_mutate-name">name</a>, <a href="#mtree_mutate-mtree">mtree</a>, <a href="#mtree_mutate-awk_script">awk_script</a>, <a href="#mtree_mutate-kwargs">kwargs</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="mtree_mutate-name"></a>name |  <p align="center"> - </p>   |  none |
+| <a id="mtree_mutate-mtree"></a>mtree |  <p align="center"> - </p>   |  none |
+| <a id="mtree_mutate-awk_script"></a>awk_script |  <p align="center"> - </p>   |  <code>"@aspect_bazel_lib//lib/private:modify_mtree.awk"</code> |
+| <a id="mtree_mutate-kwargs"></a>kwargs |  <p align="center"> - </p>   |  none |
 
 
 <a id="tar"></a>

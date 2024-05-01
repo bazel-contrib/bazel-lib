@@ -1,0 +1,5 @@
+xattr type=dir mode=0775 uid=1000 gid=1000 uname=vbatts gname=vbatts time=1512774394.470900767
+xattr/xattr.go type=file mode=0664 size=984 uid=1000 gid=1000 uname=vbatts gname=vbatts time=1512774394.470900767 sha512256digest=a2700b603df30c3b0a91bdcf9045e64aea42f62647b0128ea154f51a0c48991e
+xattr/xattr_test.go type=file mode=0664 size=859 uid=1000 gid=1000 uname=vbatts gname=vbatts time=1512774394.470900767 sha512256digest=91294ea554801b75f6a9e33c268807c9620b531eb813ea24512dd4eeaf0592e4
+xattr/xattr_unsupported.go type=file mode=0664 size=509 uid=1000 gid=1000 uname=vbatts gname=vbatts time=1512774394.470900767 sha512256digest=81ced06a1cdf88c4936d10bbf8d46edc2d42dc26efeed3691ddbeeb469865f8a
+xattr/xattr_unsupported_test.go type=file mode=0664 size=877 uid=1000 gid=1000 uname=vbatts gname=vbatts time=1512774394.470900767 sha512256digest=46605a03a985c7a3a4ab1a488f81382db4865f77b90b6a2b32693af39a8e1fba

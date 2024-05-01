@@ -5,6 +5,7 @@ exports_files(
     [
         "diff_test_tmpl.sh",
         "diff_test_tmpl.bat",
+        "modify_mtree.awk",
         "parse_status_file.jq",
         "parse_status_file.yq",
     ],
