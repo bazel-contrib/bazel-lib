@@ -20,8 +20,6 @@ def assert_contains(name, actual, expected, size = None, timeout = None, **kwarg
         timeout: the timeout attribute of the test target
         **kwargs: additional named arguments for the resulting sh_test
     """
-
-    test_sh = "_{}_test.sh".format(name)
     expected_file = "_{}_expected.txt".format(name)
 
     write_file(
@@ -30,23 +28,12 @@ def assert_contains(name, actual, expected, size = None, timeout = None, **kwarg
         content = [expected],
     )
 
-    write_file(
-        name = "_" + name,
-        out = test_sh,
-        content = [
-            "#!/usr/bin/env bash",
-            "set -o errexit",
-            "grep --fixed-strings -f $1 $2",
-        ],
-    )
-
-    native.sh_test(
+    diff_test(
         name = name,
-        srcs = [test_sh],
-        args = ["$(rootpath %s)" % expected_file, "$(rootpath %s)" % actual],
-        size = size,
+        file1 = expected_file,
+        file2 = actual,
         timeout = default_timeout(size, timeout),
-        data = [actual, expected_file],
+        size = size,
         **kwargs
     )
 
