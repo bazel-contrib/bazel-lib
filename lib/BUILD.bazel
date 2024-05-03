@@ -65,6 +65,10 @@ toolchain_type(
 )
 
 toolchain_type(
+    name = "zstd_toolchain_type",
+)
+
+toolchain_type(
     name = "bats_toolchain_type",
 )
 
@@ -254,6 +258,7 @@ bzl_library(
         "//lib/private:source_toolchains_repo",
         "//lib/private:tar_toolchain",
         "//lib/private:yq_toolchain",
+        "//lib/private:zstd_toolchain",
     ],
 )
 
