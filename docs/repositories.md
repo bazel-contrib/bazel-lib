@@ -190,3 +190,22 @@ Registers yq toolchain and repositories
 | <a id="register_yq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
 
 
+<a id="register_zstd_toolchains"></a>
+
+## register_zstd_toolchains
+
+<pre>
+register_zstd_toolchains(<a href="#register_zstd_toolchains-name">name</a>, <a href="#register_zstd_toolchains-register">register</a>)
+</pre>
+
+Registers zstd toolchain and repositories
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="register_zstd_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"zstd"</code> |
+| <a id="register_zstd_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+
+

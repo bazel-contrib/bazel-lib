@@ -14,6 +14,7 @@ load(
     "DEFAULT_TAR_REPOSITORY",
     "DEFAULT_YQ_REPOSITORY",
     "DEFAULT_YQ_VERSION",
+    "DEFAULT_ZSTD_REPOSITORY",
     "register_bats_toolchains",
     "register_copy_directory_toolchains",
     "register_copy_to_directory_toolchains",
@@ -22,6 +23,7 @@ load(
     "register_jq_toolchains",
     "register_tar_toolchains",
     "register_yq_toolchains",
+    "register_zstd_toolchains",
 )
 load("//lib/private:extension_utils.bzl", "extension_utils")
 load("//lib/private:host_repo.bzl", "host_repo")
@@ -91,6 +93,15 @@ def _toolchains_extension_impl(mctx):
 
     extension_utils.toolchain_repos_bfs(
         mctx = mctx,
+        get_tag_fn = lambda tags: tags.zstd,
+        toolchain_name = "zstd",
+        default_repository = DEFAULT_ZSTD_REPOSITORY,
+        toolchain_repos_fn = lambda name, version: register_zstd_toolchains(name = name, register = False),
+        get_version_fn = lambda attr: None,
+    )
+
+    extension_utils.toolchain_repos_bfs(
+        mctx = mctx,
         get_tag_fn = lambda tags: tags.expand_template,
         toolchain_name = "expand_template",
         toolchain_repos_fn = lambda name, version: register_expand_template_toolchains(name = name, register = False),
@@ -115,6 +126,7 @@ toolchains = module_extension(
         "yq": tag_class(attrs = {"name": attr.string(default = DEFAULT_YQ_REPOSITORY), "version": attr.string(default = DEFAULT_YQ_VERSION)}),
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),
         "tar": tag_class(attrs = {"name": attr.string(default = DEFAULT_TAR_REPOSITORY)}),
+        "zstd": tag_class(attrs = {"name": attr.string(default = DEFAULT_ZSTD_REPOSITORY)}),
         "expand_template": tag_class(attrs = {"name": attr.string(default = DEFAULT_EXPAND_TEMPLATE_REPOSITORY)}),
         "bats": tag_class(attrs = {
             "name": attr.string(default = DEFAULT_BATS_REPOSITORY),

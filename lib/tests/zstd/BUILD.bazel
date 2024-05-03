@@ -1,0 +1,30 @@
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
+
+# Case 1: Can decompress gzip archive
+genrule(
+    name = "tar",
+    srcs = [
+        "srcfile",
+    ],
+    outs = ["1.tar.gz"],
+    cmd = "$(BSDTAR_BIN) --create --gzip --dereference --file $@ -s '#$(BINDIR)##' $(execpath srcfile)",
+    toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
+)
+
+genrule(
+    name = "decompress_tar",
+    srcs = [
+        ":tar",
+    ],
+    outs = ["1.tar"],
+    cmd = "$(ZSTD_BIN) -f --decompress $(execpath :tar) --stdout > $@",
+    toolchains = ["@zstd_toolchains//:resolved_toolchain"],
+)
+
+assert_archive_contains(
+    name = "test_decompressed",
+    archive = "1.tar",
+    expected = [
+        "lib/tests/zstd/srcfile",
+    ],
+)

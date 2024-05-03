@@ -356,3 +356,9 @@ bzl_library(
     srcs = ["strings.bzl"],
     visibility = ["//lib:__subpackages__"],
 )
+
+bzl_library(
+    name = "zstd_toolchain",
+    srcs = ["zstd_toolchain.bzl"],
+    visibility = ["//lib:__subpackages__"],
+)

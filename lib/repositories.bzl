@@ -10,6 +10,7 @@ load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
 load("//lib/private:tar_toolchain.bzl", "BSDTAR_PLATFORMS", "bsdtar_binary_repo", "tar_toolchains_repo")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
+load("//lib/private:zstd_toolchain.bzl", "ZSTD_PLATFORMS", "zstd_binary_repo", "zstd_toolchains_repo")
 load("//tools:version.bzl", "IS_PRERELEASE")
 
 # buildifier: disable=unnamed-macro
@@ -100,6 +101,29 @@ def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
             native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
 
     tar_toolchains_repo(
+        name = "%s_toolchains" % name,
+        user_repository_name = name,
+    )
+
+DEFAULT_ZSTD_REPOSITORY = "zstd"
+
+def register_zstd_toolchains(name = DEFAULT_ZSTD_REPOSITORY, register = True):
+    """Registers zstd toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    for [platform, _] in ZSTD_PLATFORMS.items():
+        zstd_binary_repo(
+            name = "%s_%s" % (name, platform),
+            platform = platform,
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
+    zstd_toolchains_repo(
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
@@ -324,4 +348,5 @@ def aspect_bazel_lib_register_toolchains():
     register_jq_toolchains()
     register_yq_toolchains()
     register_tar_toolchains()
+    register_zstd_toolchains()
     register_bats_toolchains()
