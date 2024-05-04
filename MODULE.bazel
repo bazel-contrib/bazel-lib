@@ -35,6 +35,7 @@ register_toolchains(
     "@expand_template_toolchains//:all",
     "@bats_toolchains//:all",
     "@bsd_tar_toolchains//:all",
+    "@zstd_toolchains//:all",
 )
 
 host = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "host", dev_dependency = True)
