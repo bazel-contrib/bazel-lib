@@ -17,10 +17,10 @@ COPY_TO_DIRECTORY_INTEGRITY = {
     "windows_amd64": "sha256-nLybvOhMDWUw+2OyjfaFzmn08IwpO1tF80KwP2rrAPs=",
 }
 EXPAND_TEMPLATE_INTEGRITY = {
-    "darwin_amd64": "sha256-of+GYxwASXo/M3jMiWSpkzRDlnvr8f4vLFGEe0qI/40=",
-    "darwin_arm64": "sha256-FgiEWACZfXv5sUzDq24AkSclRQmCVDJodjieSMSTpnk=",
-    "freebsd_amd64": "sha256-sD0e4+DzdE9s2sKvF4AnR/uAq9opjJkmUzhVDfP/eEM=",
-    "linux_amd64": "sha256-0c4UV/JPDUnksH6y6sy3c7Fw8Uag89Yek/Ke0EpQ5mI=",
-    "linux_arm64": "sha256-0OPskN8X+uHYmLiPJDGGHFZTUqQjAOkn91d0I+PU8AM=",
-    "windows_amd64": "sha256-TZZP702IBhtT+qeuD3opd5s6jmBont3oi9f05aIsstA=",
+    "darwin_amd64": "sha256-pu46U2pS+Sw54B1Bx0OBKvztzBBwnxLQp5fstbrx+To=",
+    "darwin_arm64": "sha256-wn39/0aGKGd6O6ZCZJnVIPwuScDieELUwrhRITHSPJU=",
+    "freebsd_amd64": "sha256-5q9RKZAyoxJiwD1dyjeAmo0g/sMVWM4m//DkmkJIZQo=",
+    "linux_amd64": "sha256-fuHVMGdTm9Ubfk5yufvGbV4g7d9dXUQqUu1kAiawmB4=",
+    "linux_arm64": "sha256-TLZIWcAB/YvXDM0RSGS/i7mO9ZadAiJ+uByX11uyJeI=",
+    "windows_amd64": "sha256-rhF8EkJ1y/3Hp/dKZwTJ3HtVPV+B6uqmtkhjUNFQRXA=",
 }
