@@ -183,6 +183,10 @@ def _to_rlocation_path(file, workspace):
     else:
         return workspace + "/" + file.short_path
 
+def _vis_encode(filename):
+    # TODO(#794): correctly encode all filenames by using vis(3) (or porting it)
+    return filename.replace(" ", "\\040")
+
 def _expand(file, expander, transform = to_repository_relative_path):
     expanded = expander.expand(file)
     lines = []
@@ -193,7 +197,7 @@ def _expand(file, expander, transform = to_repository_relative_path):
             parent = "/".join(segments[:i])
             lines.append(_mtree_line(parent, "dir"))
 
-        lines.append(_mtree_line(path, "file", content = e.path))
+        lines.append(_mtree_line(_vis_encode(path), "file", content = _vis_encode(e.path)))
     return lines
 
 def _mtree_impl(ctx):
