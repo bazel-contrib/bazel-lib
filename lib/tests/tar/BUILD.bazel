@@ -217,6 +217,8 @@ tar(
         "treeartifact",
     ],
     out = "7.tar",
+    # When running remote, BB lays out files with inodes that mtree optimizes into a hardlink
+    tags = ["no-remote-exec"],
 )
 
 assert_tar_listing(
@@ -229,9 +231,11 @@ assert_tar_listing(
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/srcdir/",
         "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/srcdir/info",
         "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/srcdir/pkg",
+        "-rwxr-xr-x  0 0      0           1 Jan  1  2023 lib/tests/tar/srcdir/space in name.txt",
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/treeartifact/",
         "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/treeartifact/info",
         "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/treeartifact/pkg",
+        "-rwxr-xr-x  0 0      0           1 Jan  1  2023 lib/tests/tar/treeartifact/space in name.txt",
     ],
 )
 
