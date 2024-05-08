@@ -50,6 +50,10 @@ COREUTILS_VERSIONS = {
             "filename": "coreutils-0.0.26-aarch64-unknown-linux-musl.tar.gz",
             "sha256": "sha256-9zGLFOMDjUDbraDY/hrE5zFJ0O+QYrvx2wHk3Gw3q/A="
         },
+        "darwin_amd64": {
+            "filename": "coreutils-0.0.23-x86_64-apple-darwin.tar.gz",
+            "sha256": "sha256-SswetVAuK/hMK1r9uBvNnKj5JpSgD0bzkbsHTxOabCo=",
+        },
         "windows_amd64": {
             "filename": "coreutils-0.0.26-x86_64-pc-windows-msvc.zip",
             "sha256": "sha256-6qPkqxQZM4XBBBJ80t1uvzfZiz0gBeT/zoCdfqOO3uk="
