@@ -11,7 +11,7 @@ JQ_FILTER='map({
             (.name | contains("i686") | not) and
             (
                 ( (.name | contains("windows")) and (.name | contains("gnu") | not) ) or
-                ( (.name | contains("windows") | not) and (.name | contains("gnu") ) and (.name | contains("gnueabihf") | not) ) or
+                ( .name | contains("musl") ) or
                 ( .name | contains("darwin") )
             )
         ))
@@ -27,7 +27,7 @@ JQ_FILTER='map({
                 sub("aarch64"; "arm64") |
                 gsub("\\d+.\\d+.\\d+-"; "") |
                 rtrimstr("-msvc") |
-                rtrimstr("-gnu") |
+                rtrimstr("-musl") |
                 split("-") |
                 reverse |
                 join("_"),

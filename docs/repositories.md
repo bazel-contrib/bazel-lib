@@ -108,7 +108,7 @@ Registers coreutils toolchain and repositories
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="register_coreutils_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"coreutils"</code> |
-| <a id="register_coreutils_toolchains-version"></a>version |  the version of coreutils to execute (see https://github.com/uutils/coreutils/releases)   |  <code>"0.0.23"</code> |
+| <a id="register_coreutils_toolchains-version"></a>version |  the version of coreutils to execute (see https://github.com/uutils/coreutils/releases)   |  <code>"0.0.26"</code> |
 | <a id="register_coreutils_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
 
 
