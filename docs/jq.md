@@ -111,7 +111,7 @@ genrule(
     srcs = ["a.json"],
     outs = ["genrule_output.json"],
     cmd = "$(JQ_BIN) '.' $(location a.json) &gt; $@",
-    toolchains = ["@jq_toolchains//:resolved_toolchain"],
+    toolchains = ["@aspect_bazel_lib//lib:jq_toolchain_type"],
 )
 ```
 
