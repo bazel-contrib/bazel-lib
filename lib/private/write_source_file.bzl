@@ -122,6 +122,7 @@ To create an update *only* this file, run:
             message = message,
             visibility = kwargs.get("visibility"),
             tags = kwargs.get("tags"),
+            size = "small",
         )
     else:
         if suggested_update_target == None:

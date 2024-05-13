@@ -30,7 +30,7 @@ The test succeeds if the files' contents match.
 | <a id="diff_test-name"></a>name |  The name of the test rule.   |  none |
 | <a id="diff_test-file1"></a>file1 |  Label of the file to compare to &lt;code&gt;file2&lt;/code&gt;.   |  none |
 | <a id="diff_test-file2"></a>file2 |  Label of the file to compare to &lt;code&gt;file1&lt;/code&gt;.   |  none |
-| <a id="diff_test-size"></a>size |  standard attribute for tests   |  <code>None</code> |
+| <a id="diff_test-size"></a>size |  standard attribute for tests. Defaults to "small" if unspecified.   |  <code>None</code> |
 | <a id="diff_test-timeout"></a>timeout |  standard attribute for tests. Defaults to "short" if both timeout and size are unspecified.   |  <code>None</code> |
 | <a id="diff_test-kwargs"></a>kwargs |  The &lt;a href="https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-tests"&gt;common attributes for tests&lt;/a&gt;.   |  none |
 
