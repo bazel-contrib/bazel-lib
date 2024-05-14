@@ -44,11 +44,11 @@ COREUTILS_VERSIONS = {
     "0.0.26": {
         "darwin_arm64": {
             "filename": "coreutils-0.0.26-aarch64-apple-darwin.tar.gz",
-            "sha256": "sha256-/A6CNYWmvOwPW443pH+wO+VtzDFgussN1hRGuANnFOU="
+            "sha256": "sha256-/A6CNYWmvOwPW443pH+wO+VtzDFgussN1hRGuANnFOU=",
         },
         "linux_arm64": {
             "filename": "coreutils-0.0.26-aarch64-unknown-linux-musl.tar.gz",
-            "sha256": "sha256-9zGLFOMDjUDbraDY/hrE5zFJ0O+QYrvx2wHk3Gw3q/A="
+            "sha256": "sha256-9zGLFOMDjUDbraDY/hrE5zFJ0O+QYrvx2wHk3Gw3q/A=",
         },
         "darwin_amd64": {
             "filename": "coreutils-0.0.23-x86_64-apple-darwin.tar.gz",
@@ -56,7 +56,7 @@ COREUTILS_VERSIONS = {
         },
         "windows_amd64": {
             "filename": "coreutils-0.0.26-x86_64-pc-windows-msvc.zip",
-            "sha256": "sha256-6qPkqxQZM4XBBBJ80t1uvzfZiz0gBeT/zoCdfqOO3uk="
+            "sha256": "sha256-6qPkqxQZM4XBBBJ80t1uvzfZiz0gBeT/zoCdfqOO3uk=",
         },
         "linux_amd64": {
             "filename": "coreutils-0.0.26-x86_64-unknown-linux-musl.tar.gz",
