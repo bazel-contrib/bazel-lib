@@ -4,22 +4,7 @@ workspaces:
   .:
     tasks:
       - test:
-  e2e/smoke:
-    icon: bazel
-    tasks:
-      - test:
-          queue: bazel-lib-small
-      - format:
-          without: true
-      - gazelle:
-          without: true
-      - configure:
-          without: true
-      - buildifier:
-          without: true
-      - delivery:
-          without: true
-  e2e/coreutils:
+  e2e/copy_action:
     icon: bazel
     tasks:
       - test:
@@ -49,7 +34,37 @@ workspaces:
           without: true
       - delivery:
           without: true
+  e2e/coreutils:
+    icon: bazel
+    tasks:
+      - test:
+          queue: bazel-lib-small
+      - format:
+          without: true
+      - gazelle:
+          without: true
+      - configure:
+          without: true
+      - buildifier:
+          without: true
+      - delivery:
+          without: true
   e2e/external_copy_to_directory:
+    icon: bazel
+    tasks:
+      - test:
+          queue: bazel-lib-small
+      - format:
+          without: true
+      - gazelle:
+          without: true
+      - configure:
+          without: true
+      - buildifier:
+          without: true
+      - delivery:
+          without: true
+  e2e/smoke:
     icon: bazel
     tasks:
       - test:
