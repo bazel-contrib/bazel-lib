@@ -45,12 +45,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: bazel_6
-        run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
       - id: bazel_7
-        run: echo "bazelversion=7.0.0" >> $GITHUB_OUTPUT
+        run: echo "bazelversion=$(head -n 1 .bazelversion)" >> $GITHUB_OUTPUT
+      - id: bazel_6
+        run: echo "bazelversion=6.5.0" >> $GITHUB_OUTPUT
     outputs:
-      # Will look like '["<version from .bazelversion>", "7.0.0"]'
+      # Will look like '["<version from .bazelversion>", ...]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
   matrix-prep-os:
@@ -89,7 +89,7 @@ jobs:
         config: ${{ fromJSON(needs.matrix-prep-config.outputs.configs) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
-        bzlmodEnabled: [true, false]
+        bzlmod: [1, 0]
         folder:
           - "."
           - "e2e/copy_action"
@@ -102,19 +102,22 @@ jobs:
           # Don't test MacOS with RBE to minimize MacOS minutes (billed at 10X)
           - config: rbe
             os: macos-latest
-          # Don't test MacOS with Bazel 7 to minimize MacOS minutes (billed at 10X)
-          - bazelversion: 7.0.0
+          # Don't test MacOS with Bazel 6 to minimize MacOS minutes (billed at 10X)
+          - bazelversion: 6.5.0
             os: macos-latest
           # Don't test Windows with RBE to minimize Windows minutes (billed at 2X)
           - config: rbe
             os: windows-latest
-          # Don't test Windows with Bazel 7 to minimize Windows minutes (billed at 2X)
-          - bazelversion: 7.0.0
+          # Don't test Windows with Bazel 6 to minimize Windows minutes (billed at 2X)
+          - bazelversion: 6.5.0
+            os: windows-latest
+          # TODO: green up root Workspace on MacOS & Windows
+          - folder: .
+            os: macos-latest
+          - folder: .
             os: windows-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under ${{ github.workspace }} , so your job can access it
       - uses: actions/checkout@v4
 
       - name: Mount bazel caches
@@ -127,41 +130,18 @@ jobs:
           restore-keys: bazel-cache-${{ matrix.os }}-${{ matrix.bazelversion }}-${{ matrix.folder }}-${{ matrix.bzlmodEnabled }}-${{ matrix.config }}-
 
       - name: Configure Bazel version
-        if: ${{ matrix.os != 'windows-latest' }}
         working-directory: ${{ matrix.folder }}
-        # - Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
-        # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
-        # then use .bazelversion to determine which Bazel version to use.
-        # - Delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
-        # against Bazel 6 which has a try-import in the root .bazelrc for local development.
+        shell: bash
         run: |
-          BAZEL_VERSION=${{ matrix.bazelversion }}
+          # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
+          # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
+          # then use .bazelversion to determine which Bazel version to use.
           echo "${{ matrix.bazelversion }}" > .bazelversion
-          if [ ${BAZEL_VERSION::1} != "6" ]; then rm -f .aspect/bazelrc/bazel6.bazelrc; fi
-
-      - name: Configure Bazel version (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        working-directory: ${{ matrix.folder }}
-        # - Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
-        # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
-        # then use .bazelversion to determine which Bazel version to use.
-        # - Delete the .aspect/bazelrc/bazel6.bazelrc file if we are not testing
-        # against Bazel 6 which has a try-import in the root .bazelrc for local development.
-        # - Delete the .bazeliskrc file since Aspect CLI doesn't current ship Windows binaries
-        run: |
-          echo "${{ matrix.bazelversion }}" > .bazelversion
-          $BAZEL_MAJOR_VERSION = "${{ matrix.bazelversion }}".substring(0, 1)
-          if ($BAZEL_MAJOR_VERSION -ne "6") {
-            rm -Force .aspect/bazelrc/bazel6.bazelrc
-          }
-          rm -Force .bazeliskrc
-
-      - name: Set bzlmod flag
-        # Store the --enable_bzlmod flag that we add to the test command below
-        # only when we're running bzlmod in our test matrix.
-        id: set_bzlmod_flag
-        if: matrix.bzlmodEnabled
-        run: echo "bzlmod_flag=--enable_bzlmod" >> $GITHUB_OUTPUT
+          # Delete all the version specific bazelrc files that are used for local development
+          # since the version we're testing against is dynamic. These are just symlinks and the
+          # root .bazelrc brings these in with try-imports. In this CI workflows, we explicitly
+          # bring in the version specific bazelrc file with --bazelrc when we invoke bazel.
+          rm ${GITHUB_WORKSPACE//\\/\/}/.aspect/bazelrc/local/*.bazelrc
 
       - name: Write rbe credentials
         if: ${{ matrix.config == 'rbe' }}
@@ -173,41 +153,37 @@ jobs:
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
 
-      - name: bazel test //...
-        if: ${{ matrix.os != 'windows-latest' }}
+      # TODO: remove this block once we have Aspect CLI Windows releases
+      - name: Don't use Aspect CLI on Windows
+        if: matrix.os == 'windows-latest'
         working-directory: ${{ matrix.folder }}
+        shell: bash
+        run: rm -f .bazeliskrc
+
+      - name: bazel test //...
+        working-directory: ${{ matrix.folder }}
+        shell: bash
         run: |
           BAZEL_VERSION=${{ matrix.bazelversion }}
-          bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc \
-            --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc \
-            --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
-            test --config=${{ matrix.config }} //... \
-            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
+          bazel \
+            --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.aspect/bazelrc/bazel${BAZEL_VERSION::1}.bazelrc \
+            --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.aspect/bazelrc/ci.bazelrc \
+            --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.github/workflows/ci.bazelrc \
+            test \
+            --config=${{ matrix.config }} \
+            --test_tag_filters=-skip-on-bazel${BAZEL_VERSION::1} \
+            --build_tag_filters=-skip-on-bazel${BAZEL_VERSION::1} \
+            --enable_bzlmod=${{ matrix.bzlmod }} \
+            //...
         env:
-          # Bazelisk will download bazel to here
-          XDG_CACHE_HOME: ~/.cache/bazel-repo
-
-      - name: bazel test //... (Windows)
-        # A different run command is needed on Windows to account for differences between bash and Powershell
-        if: ${{ matrix.os == 'windows-latest' }}
-        working-directory: ${{ matrix.folder }}
-        run: |
-          $BAZEL_MAJOR_VERSION = "${{ matrix.bazelversion }}".substring(0, 1)
-          bazel --bazelrc=${{ github.workspace }}/.aspect/bazelrc/ci.bazelrc `
-            --bazelrc=${{ github.workspace }}/.github/workflows/ci.bazelrc `
-            --bazelrc=${{ github.workspace }}/.aspect/bazelrc/bazel$BAZEL_MAJOR_VERSION.bazelrc `
-            test --config=${{ matrix.config }} //... `
-            ${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }}
-        env:
-          # Bazelisk will download bazel to here
-          XDG_CACHE_HOME: ~/.cache/bazel-repo
+          XDG_CACHE_HOME: ~/.cache/xdg-cache # bazelisk will download bazel to here
 
       - name: integration tests
         # Don't run integration tests on Windows since they are bash scripts and Windows runs Powershell
-        if: ${{ matrix.folder == '.' && matrix.os != 'windows-latest' }}
+        if: matrix.folder == '.' && matrix.os != 'windows-latest' && matrix.bazelversion != '6.5.0'
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
         run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && BZLMOD_FLAG=${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} "$0" || kill $PPID' \{\} \;
 
       - name: verify bcr patches
-        if: matrix.bzlmodEnabled && matrix.os == 'ubuntu-latest'
+        if: matrix.bzlmod == '1' && matrix.os == 'ubuntu-latest'
         run: patch --dry-run -p1 < .bcr/patches/*.patch
