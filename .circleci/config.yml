@@ -122,7 +122,6 @@ jobs:
     environment:
       ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
       ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-      CC: /bin/false
       DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
       XDG_CACHE_HOME: /mnt/ephemeral/caches
     machine: true
@@ -136,7 +135,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
@@ -146,7 +144,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
@@ -156,7 +153,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Git fetch
@@ -168,7 +164,6 @@ jobs:
             environment:
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
               ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-              CC: /bin/false
               DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Checkout release commit
@@ -177,7 +172,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Delivery
@@ -205,7 +199,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -217,7 +210,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -228,7 +220,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -240,7 +231,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Buildifier
         no_output_timeout: 180m
@@ -254,7 +244,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -282,7 +271,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -294,7 +282,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -305,7 +292,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -317,7 +303,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure
         no_output_timeout: 180m
@@ -331,7 +316,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -359,7 +343,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -371,7 +354,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -382,7 +364,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -394,7 +375,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Test
         no_output_timeout: 180m
@@ -418,7 +398,6 @@ jobs:
                 >>
               ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-              CC: /bin/false
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Delivery Manifest
             no_output_timeout: 180m
@@ -436,7 +415,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -464,7 +442,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -476,7 +453,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -487,7 +463,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -499,7 +474,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Test
         no_output_timeout: 180m
@@ -523,7 +497,6 @@ jobs:
                 >>
               ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-              CC: /bin/false
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Delivery Manifest
             no_output_timeout: 180m
@@ -541,7 +514,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -569,7 +541,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -581,7 +552,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -592,7 +562,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -604,7 +573,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Test
         no_output_timeout: 180m
@@ -628,7 +596,6 @@ jobs:
                 >>
               ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-              CC: /bin/false
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Delivery Manifest
             no_output_timeout: 180m
@@ -646,7 +613,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -674,7 +640,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -686,7 +651,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -697,7 +661,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -709,7 +672,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Test
         no_output_timeout: 180m
@@ -733,7 +695,6 @@ jobs:
                 >>
               ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-              CC: /bin/false
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Delivery Manifest
             no_output_timeout: 180m
@@ -751,7 +712,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -779,7 +739,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -791,7 +750,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -802,7 +760,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -814,7 +771,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Format
         no_output_timeout: 180m
@@ -828,7 +784,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -856,7 +811,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -868,7 +822,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -879,7 +832,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -891,7 +843,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Gazelle
         no_output_timeout: 180m
@@ -905,7 +856,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -915,7 +865,6 @@ jobs:
     environment:
       ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
       ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-      CC: /bin/false
       DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
       DELIVERY_TARGETS: << pipeline.parameters.delivery_targets >>
       XDG_CACHE_HOME: /mnt/ephemeral/caches
@@ -930,7 +879,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
@@ -940,7 +888,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
@@ -950,7 +897,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Git fetch
@@ -962,7 +908,6 @@ jobs:
             environment:
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
               ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-              CC: /bin/false
               DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Checkout release commit
@@ -971,7 +916,6 @@ jobs:
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
           ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-          CC: /bin/false
           DELIVERY_COMMIT: << pipeline.parameters.delivery_commit >>
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Delivery
@@ -999,7 +943,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -1011,7 +954,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Prepare archive directories
     - run:
@@ -1022,7 +964,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -1034,7 +975,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Test
         no_output_timeout: 180m
@@ -1058,7 +998,6 @@ jobs:
                 >>
               ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
               ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-              CC: /bin/false
               XDG_CACHE_HOME: /mnt/ephemeral/caches
             name: Delivery Manifest
             no_output_timeout: 180m
@@ -1076,7 +1015,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Finalization
         no_output_timeout: 10m
@@ -1093,7 +1031,6 @@ jobs:
         command: /etc/aspect/workflows/bin/configure_workflows_env
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Configure Workflows
     - checkout
@@ -1101,7 +1038,6 @@ jobs:
         command: /etc/aspect/workflows/bin/agent_health_check
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Agent health checks
         no_output_timeout: 180m
@@ -1113,7 +1049,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Create warming archive for e2e/external_copy_to_directory
         no_output_timeout: 180m
@@ -1125,7 +1060,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Create warming archive for e2e/copy_to_directory
         no_output_timeout: 180m
@@ -1137,7 +1071,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Create warming archive for e2e/coreutils
         no_output_timeout: 180m
@@ -1149,7 +1082,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Create warming archive for e2e/smoke
         no_output_timeout: 180m
@@ -1161,7 +1093,6 @@ jobs:
             >>
           ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Create warming archive for root
         no_output_timeout: 180m
@@ -1169,7 +1100,6 @@ jobs:
         command: /etc/aspect/workflows/bin/warming_archive
         environment:
           ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-          CC: /bin/false
           XDG_CACHE_HOME: /mnt/ephemeral/caches
         name: Archive warming tars
     working_directory: /mnt/ephemeral/workdir
