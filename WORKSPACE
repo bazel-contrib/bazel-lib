@@ -75,12 +75,9 @@ buildifier_prebuilt_register_toolchains()
 load(
     "@aspect_rules_lint//format:repositories.bzl",
     "fetch_shfmt",
-    "fetch_terraform",
 )
 
 fetch_shfmt()
-
-fetch_terraform()
 
 load("//.aspect/workflows:deps.bzl", "fetch_workflows_deps")
 
