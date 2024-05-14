@@ -1,17 +1,12 @@
-# Bazel settings that apply to this repository.
-# Settings that apply only to CI are in .aspect/bazelrc/ci.bazelrc
-
 # Import Aspect bazelrc presets
+try-import %workspace%/.aspect/bazelrc/local/bazel7.bazelrc
 import %workspace%/.aspect/bazelrc/convenience.bazelrc
 import %workspace%/.aspect/bazelrc/correctness.bazelrc
-import %workspace%/.aspect/bazelrc/performance.bazelrc
 import %workspace%/.aspect/bazelrc/debug.bazelrc
 import %workspace%/.aspect/bazelrc/javascript.bazelrc
+import %workspace%/.aspect/bazelrc/performance.bazelrc
 
-# Use a try-import for Bazel 6 settings since this repository is also tested against Bazel 5 on CI
-try-import %workspace%/.aspect/bazelrc/bazel6.bazelrc
-
-### PROJECT SPECIFIC OPTIONS ###
+### YOUR PROJECT SPECIFIC OPTIONS GO HERE ###
 
 # For testing our --stamp behavior.
 # Normally users would use a --workspace_status_command with a script that calls `git describe`.
