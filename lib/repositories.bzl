@@ -38,7 +38,7 @@ def register_jq_toolchains(name = DEFAULT_JQ_REPOSITORY, version = DEFAULT_JQ_VE
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    for [platform, meta] in JQ_PLATFORMS.items():
+    for [platform, _] in JQ_PLATFORMS.items():
         jq_platform_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
@@ -66,7 +66,7 @@ def register_yq_toolchains(name = DEFAULT_YQ_REPOSITORY, version = DEFAULT_YQ_VE
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    for [platform, meta] in YQ_PLATFORMS.items():
+    for [platform, _] in YQ_PLATFORMS.items():
         yq_platform_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
@@ -92,7 +92,7 @@ def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    for [platform, meta] in BSDTAR_PLATFORMS.items():
+    for [platform, _] in BSDTAR_PLATFORMS.items():
         bsdtar_binary_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
@@ -215,7 +215,7 @@ def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version =
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
-    for [platform, meta] in COREUTILS_PLATFORMS.items():
+    for [platform, _] in COREUTILS_PLATFORMS.items():
         coreutils_platform_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
@@ -251,7 +251,7 @@ def register_copy_directory_toolchains(name = DEFAULT_COPY_DIRECTORY_REPOSITORY,
             native.register_toolchains("@%s_toolchains//:toolchain" % name)
         return
 
-    for [platform, meta] in COPY_DIRECTORY_PLATFORMS.items():
+    for [platform, _] in COPY_DIRECTORY_PLATFORMS.items():
         copy_directory_platform_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
@@ -286,7 +286,7 @@ def register_copy_to_directory_toolchains(name = DEFAULT_COPY_TO_DIRECTORY_REPOS
             native.register_toolchains("@%s_toolchains//:toolchain" % name)
         return
 
-    for [platform, meta] in COPY_TO_DIRECTORY_PLATFORMS.items():
+    for [platform, _] in COPY_TO_DIRECTORY_PLATFORMS.items():
         copy_to_directory_platform_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
@@ -321,7 +321,7 @@ def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITOR
             native.register_toolchains("@%s_toolchains//:toolchain" % name)
         return
 
-    for [platform, meta] in EXPAND_TEMPLATE_PLATFORMS.items():
+    for [platform, _] in EXPAND_TEMPLATE_PLATFORMS.items():
         expand_template_platform_repo(
             name = "%s_%s" % (name, platform),
             platform = platform,
