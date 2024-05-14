@@ -7,7 +7,7 @@ module(
     compatibility_level = 1,
 )
 
-# Lower-bound versions of our dependencies
+# Lower-bounds (minimum) versions for direct runtime dependencies
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "platforms", version = "0.0.8")
 
@@ -38,9 +38,7 @@ register_toolchains(
     "@zstd_toolchains//:all",
 )
 
-host = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "host", dev_dependency = True)
-host.host()
-use_repo(host, "aspect_bazel_lib_host")
+####### Dev dependencies ########
 
 # To allow /tools to be built from source
 # NOTE: when publishing to BCR, we patch this to be dev_dependency, as we publish pre-built binaries
@@ -70,7 +68,9 @@ use_repo(
     "org_golang_x_exp",
 )
 
-# Development-only dependencies
+host = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "host", dev_dependency = True)
+host.host()
+use_repo(host, "aspect_bazel_lib_host")
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
