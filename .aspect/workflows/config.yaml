@@ -1,7 +1,5 @@
 ---
 queue: bazel-lib-default
-env:
-  CC: /bin/false
 workspaces:
   .:
     tasks:
