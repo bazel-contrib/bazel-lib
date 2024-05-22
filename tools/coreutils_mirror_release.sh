@@ -40,7 +40,7 @@ JQ_FILTER='map({
 }) | from_entries
 '
 
-INFO="$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/uutils/coreutils/releases?per_page=1 | jq "$JQ_FILTER")"
+INFO="$(curl --silent -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/uutils/coreutils/releases?per_page=${1:-1}" | jq "$JQ_FILTER")"
 
 for VERSION in $(jq -r 'keys | join("\n")' <<<$INFO); do
   for PLATFORM in $(jq -r ".[\"$VERSION\"] | keys | join(\"\n\")" <<<$INFO); do
