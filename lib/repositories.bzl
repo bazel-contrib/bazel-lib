@@ -4,7 +4,7 @@ load("//lib:utils.bzl", http_archive = "maybe_http_archive")
 load("//lib/private:bats_toolchain.bzl", "BATS_ASSERT_VERSIONS", "BATS_CORE_TEMPLATE", "BATS_CORE_VERSIONS", "BATS_FILE_VERSIONS", "BATS_LIBRARY_TEMPLATE", "BATS_SUPPORT_VERSIONS")
 load("//lib/private:copy_directory_toolchain.bzl", "COPY_DIRECTORY_PLATFORMS", "copy_directory_platform_repo", "copy_directory_toolchains_repo")
 load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFORMS", "copy_to_directory_platform_repo", "copy_to_directory_toolchains_repo")
-load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION")
+load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION", _DEFAULT_FALLBACK_COREUTILS_VERSION = "DEFAULT_FALLBACK_COREUTILS_VERSION")
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
@@ -205,13 +205,15 @@ def register_bats_toolchains(
 
 DEFAULT_COREUTILS_REPOSITORY = "coreutils"
 DEFAULT_COREUTILS_VERSION = _DEFAULT_COREUTILS_VERSION
+DEFAULT_FALLBACK_COREUTILS_VERSION = _DEFAULT_FALLBACK_COREUTILS_VERSION
 
-def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version = DEFAULT_COREUTILS_VERSION, register = True):
+def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version = DEFAULT_COREUTILS_VERSION, fallback_version = DEFAULT_FALLBACK_COREUTILS_VERSION, register = True):
     """Registers coreutils toolchain and repositories
 
     Args:
         name: override the prefix for the generated toolchain repositories
         version: the version of coreutils to execute (see https://github.com/uutils/coreutils/releases)
+        fallback_version: the version of coreutils to execute (see https://github.com/uutils/coreutils/releases) only valid if {version}/{platform} not exist
         register: whether to call through to native.register_toolchains.
             Should be True for WORKSPACE users, but false when used under bzlmod extension
     """
@@ -220,6 +222,7 @@ def register_coreutils_toolchains(name = DEFAULT_COREUTILS_REPOSITORY, version =
             name = "%s_%s" % (name, platform),
             platform = platform,
             version = version,
+            fallback_version = fallback_version,
         )
         if register:
             native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
