@@ -51,6 +51,7 @@ COREUTILS_VERSIONS = {
             "sha256": "sha256-9zGLFOMDjUDbraDY/hrE5zFJ0O+QYrvx2wHk3Gw3q/A=",
         },
         "darwin_amd64": {
+            # TODO: remove this version_override hack once 0.0.27 is releases and contains a darwin arm binary
             "version_override": "0.0.23",
             "filename": "coreutils-0.0.23-x86_64-apple-darwin.tar.gz",
             "sha256": "sha256-SswetVAuK/hMK1r9uBvNnKj5JpSgD0bzkbsHTxOabCo=",
@@ -177,7 +178,9 @@ def _coreutils_platform_repo_impl(rctx):
     is_windows = rctx.attr.platform.startswith("windows_")
     platform = rctx.attr.platform
     filename = COREUTILS_VERSIONS[rctx.attr.version][platform]["filename"]
-    version = COREUTILS_VERSIONS[rctx.attr.version][platform]["version_override"] or rctx.attr.version
+    version = rctx.attr.version
+    if "version_override" in COREUTILS_VERSIONS[rctx.attr.version][platform]:
+        version = COREUTILS_VERSIONS[rctx.attr.version][platform]["version_override"]
     url = "https://github.com/uutils/coreutils/releases/download/{}/{}".format(
         version,
         filename,
