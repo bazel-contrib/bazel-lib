@@ -2,4 +2,4 @@
 
 set -o errexit -o nounset -o pipefail
 
-echo "Demostration delivery target"
+echo "Demonstration delivery target"
