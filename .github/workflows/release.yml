@@ -41,7 +41,7 @@ jobs:
       - name: Prepare workspace snippet
         run: .github/workflows/release_prep.sh > release_notes.txt
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           # Use GH feature to populate the changelog automatically
           generate_release_notes: true
