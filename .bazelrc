@@ -15,7 +15,11 @@ build --embed_label=v1.2.3
 # Mock versioning command to test the --stamp behavior
 build --workspace_status_command="echo BUILD_SCM_VERSION 1.2.3"
 
-common --compilation_mode opt
+# For releasing, use --workspace_status_command and stamp
+# before adding more flags to the release config make sure it does not
+# affect the hashes of /tools. See tools/release.bzl for opt transition
+# add appropriate commandline transition there to match the configuration.
+common:release -c opt
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This

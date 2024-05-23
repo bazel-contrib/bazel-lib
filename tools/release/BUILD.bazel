@@ -1,5 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load(":release.bzl", "multi_platform_go_binaries", "release")
+load(":release.bzl", "multi_platform_go_binaries")
 
 multi_platform_go_binaries(
     name = "copy_to_directory",
@@ -19,18 +19,18 @@ multi_platform_go_binaries(
     tags = ["manual"],
 )
 
-release(
-    name = "release",
-    tags = [
-        "local",
-        "manual",
-        "no-remote",
-    ],
-    targets = [
-        ":copy_directory",
-        ":copy_to_directory",
-        ":expand_template",
-    ],
+RELEASE_ARTIFACTS = [
+    ":copy_directory",
+    ":copy_to_directory",
+    ":expand_template",
+]
+
+sh_binary(
+    name = "copy_release_artifacts",
+    srcs = ["copy_release_artifacts.sh"],
+    args = ["$(rlocationpaths {})".format(s) for s in RELEASE_ARTIFACTS],
+    data = RELEASE_ARTIFACTS,
+    deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
 # Demonstration delivery target for Aspect Workflows.
@@ -38,11 +38,7 @@ release(
 sh_binary(
     name = "tools_delivery_only_on_change",
     srcs = ["delivery.sh"],
-    data = [
-        ":copy_directory",
-        ":copy_to_directory",
-        ":expand_template",
-    ],
+    data = RELEASE_ARTIFACTS,
     tags = ["deliverable"],
 )
 
@@ -51,11 +47,7 @@ sh_binary(
 sh_binary(
     name = "tools_delivery",
     srcs = ["delivery.sh"],
-    data = [
-        ":copy_directory",
-        ":copy_to_directory",
-        ":expand_template",
-    ],
+    data = RELEASE_ARTIFACTS,
 )
 
 bzl_library(
