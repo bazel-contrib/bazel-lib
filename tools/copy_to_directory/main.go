@@ -161,7 +161,10 @@ func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
 			linkPath, err := common.Realpath(p)
 			if err != nil {
-				return err
+				if os.IsNotExist(err) {
+					return fmt.Errorf("failed to get realpath of dangling symlink %s: %w", p, err)
+				}
+				return fmt.Errorf("failed to get realpath of %s: %w", p, err)
 			}
 			if srcPaths[linkPath] {
 				// recursive symlink; silently ignore
@@ -177,9 +180,9 @@ func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 					Package:       file.Package,
 					Path:          linkPath,
 					RootPath:      file.RootPath,
-					ShortPath:     path.Join(file.ShortPath),
+					ShortPath:     file.ShortPath,
 					Workspace:     file.Workspace,
-					WorkspacePath: path.Join(file.WorkspacePath),
+					WorkspacePath: file.WorkspacePath,
 					Hardlink:      file.Hardlink,
 					FileInfo:      stat,
 				}
@@ -215,7 +218,7 @@ func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 	})
 }
 
-func (w *walker) copyPath(cfg *config, file fileInfo) error {
+func (w *walker) calculateOutputPath(cfg *config, file fileInfo) (string, error) {
 	// Apply filters and transformations in the following order:
 	//
 	// - `include_external_repositories`
@@ -237,35 +240,35 @@ func (w *walker) copyPath(cfg *config, file fileInfo) error {
 	if file.Workspace != "" && (cfg.TargetWorkspace == nil || file.Workspace != *cfg.TargetWorkspace) {
 		match, err := anyGlobsMatch(cfg.IncludeExternalRepositories, file.Workspace)
 		if err != nil {
-			return err
+			return "", err
 		}
 		if !match {
-			return nil // external workspace is not included
+			return "", nil // external workspace is not included
 		}
 	}
 
 	// apply include_srcs_packages
 	match, err := anyGlobsMatch(cfg.IncludeSrcsPackages, file.Package)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if !match {
-		return nil // package is not included
+		return "", nil // package is not included
 	}
 
 	// apply exclude_srcs_packages
 	match, err = anyGlobsMatch(cfg.ExcludeSrcsPackages, file.Package)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if match {
-		return nil // package is excluded
+		return "", nil // package is excluded
 	}
 
 	// apply root_paths
 	rootPathMatch, _, err := longestGlobsMatch(cfg.RootPaths, outputRoot)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if rootPathMatch != "" {
 		outputPath = strings.TrimPrefix(outputPath[len(rootPathMatch):], "/")
@@ -274,32 +277,43 @@ func (w *walker) copyPath(cfg *config, file fileInfo) error {
 	// apply include_srcs_patterns
 	match, err = anyGlobsMatch(cfg.IncludeSrcsPatterns, outputPath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if !match {
-		return nil // outputPath is not included
+		return "", nil // outputPath is not included
 	}
 
 	// apply exclude_srcs_patterns
 	match, err = anyGlobsMatch(cfg.ExcludeSrcsPatterns, outputPath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if match {
-		return nil // outputPath is excluded
+		return "", nil // outputPath is excluded
 	}
 
 	// apply replace_prefixes
 	replacePrefixMatch, replacePrefixIndex, err := longestGlobsMatch(cfg.ReplacePrefixesKeys, outputPath)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if replacePrefixMatch != "" {
 		replaceWith := cfg.ReplacePrefixes[cfg.ReplacePrefixesKeys[replacePrefixIndex]]
 		outputPath = replaceWith + outputPath[len(replacePrefixMatch):]
 	}
 
-	outputPath = path.Join(cfg.Dst, outputPath)
+	return path.Join(cfg.Dst, outputPath), nil
+}
+
+func (w *walker) copyPath(cfg *config, file fileInfo) error {
+	outputPath, err := w.calculateOutputPath(cfg, file)
+	if err != nil {
+		return fmt.Errorf("failed to calculate output path %s: %w", file.WorkspacePath, err)
+	}
+	if outputPath == "" {
+		// this path is excluded
+		return nil
+	}
 
 	// add this file to the copy Paths
 	dup, exists := copySet[outputPath]
@@ -345,7 +359,10 @@ func (w *walker) copyPaths(cfg *config) error {
 			// call filepath.WalkDir on the realpath
 			realpath, err := common.Realpath(file.Path)
 			if err != nil {
-				return err
+				if os.IsNotExist(err) {
+					return fmt.Errorf("failed to get realpath of dangling symlink %s: %w", file.Path, err)
+				}
+				return fmt.Errorf("failed to get realpath of %s: %w", file.Path, err)
 			}
 			stat, err := os.Stat(realpath)
 			if err != nil {

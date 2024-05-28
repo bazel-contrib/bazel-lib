@@ -50,7 +50,10 @@ func (w *walker) copyDir(src string, dst string) error {
 			// symlink to directories are intentionally never followed by filepath.Walk to avoid infinite recursion
 			linkPath, err := common.Realpath(p)
 			if err != nil {
-				return err
+				if os.IsNotExist(err) {
+					return fmt.Errorf("failed to get realpath of dangling symlink %s: %w", p, err)
+				}
+				return fmt.Errorf("failed to get realpath of %s: %w", p, err)
 			}
 			if srcPaths[linkPath] {
 				// recursive symlink; silently ignore
