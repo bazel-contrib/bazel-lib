@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -23,7 +22,7 @@ func FileRel(basepath, targpath string) (string, error) {
 func Realpath(p string) (string, error) {
 	t, err := os.Readlink(p)
 	if err != nil {
-		return "", fmt.Errorf("readlink %s failed: %w", p, err)
+		return "", err
 	}
 
 	if !filepath.IsAbs(t) {
@@ -32,7 +31,7 @@ func Realpath(p string) (string, error) {
 
 	info, err := os.Lstat(t)
 	if err != nil {
-		return "", fmt.Errorf("lstat %s failed: %w", p, err)
+		return "", err
 	}
 
 	if info.Mode()&os.ModeSymlink == os.ModeSymlink {
