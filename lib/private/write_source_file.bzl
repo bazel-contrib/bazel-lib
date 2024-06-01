@@ -201,7 +201,7 @@ fi"""]
 
     if ctx.attr.executable:
         executable_file = "chmod +x \"$out\""
-        executable_dir = "chmod -R +x \"$out\"/*"
+        executable_dir = "chmod -R +x \"$out\"/{{*,.[!.]*}}"
     else:
         executable_file = "chmod -x \"$out\""
         if is_macos:
@@ -209,7 +209,7 @@ fi"""]
             executable_dir = "find \"$out\" -type f | xargs chmod -x"
         else:
             # Remove execute/search bit recursively from files bit not directories: https://superuser.com/a/434418
-            executable_dir = "chmod -R -x+X \"$out\"/*"
+            executable_dir = "chmod -R -x+X \"$out\"/{{*,.[!.]*}}"
 
     for in_path, out_path in paths:
         contents.append("""
@@ -231,10 +231,10 @@ else
     echo "Copying directory $in to $out in $PWD"
     # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
     chmod -R ug+w "$out" > /dev/null 2>&1 || true
-    rm -Rf "$out"/*
+    rm -Rf "$out"/{{*,.[!.]*}}
     mkdir -p "$out"
-    cp -fRL "$in"/* "$out"
-    chmod -R ug+w "$out"/*
+    cp -fRL "$in"/{{*,.[!.]*}} "$out"
+    chmod -R ug+w "$out"/{{*,.[!.]*}}
     {executable_dir}
 fi
 """.format(
