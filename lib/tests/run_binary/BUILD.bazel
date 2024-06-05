@@ -4,6 +4,7 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:run_binary.bzl", "run_binary")
+load("//lib:testing.bzl", "assert_contains")
 
 write_file(
     name = "make_dir_a_sh",
@@ -32,7 +33,7 @@ run_binary(
         "no-cache": "1",
     },
     mnemonic = "SomeAction",
-    out_dirs = ["dir_a"],
+    out_dirs = ["dir_a_out"],
     progress_message = "doing some work to make %{output}",
     tool = ":make_dir_a",
 )
@@ -61,4 +62,18 @@ diff_test(
     name = "dir_test",
     file1 = ":dir_a",
     file2 = ":dir_b",
+)
+
+# test that rootpath can be used on the out_dir of a run_binary
+genrule(
+    name = "dir_a_rootpath",
+    srcs = [":dir_a"],
+    outs = ["dir_a_rootpath"],
+    cmd = "echo $(rootpath :dir_a) > $@",
+)
+
+assert_contains(
+    name = "dir_a_rootpath_test",
+    actual = ":dir_a_rootpath",
+    expected = "lib/tests/run_binary/dir_a_out",
 )
