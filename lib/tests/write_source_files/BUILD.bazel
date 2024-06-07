@@ -101,6 +101,19 @@ output_files(
     target = ":g_h-desired",
 )
 
+genrule(
+    name = "hidden-contained",
+    outs = [".hidden"],
+    cmd = "echo 'hidden file test' > $@",
+)
+
+copy_to_directory(
+    name = "hidden_dir-desired",
+    srcs = [
+        ":hidden-contained",
+    ],
+)
+
 write_source_file_test(
     name = "a_test",
     in_file = ":a-desired",
@@ -135,6 +148,12 @@ write_source_file_test(
     name = "g_test",
     in_file = ":g-desired",
     out_file = "g.js",
+)
+
+write_source_file(
+    name = "hidden_dir_test",
+    in_file = ":hidden_dir-desired",
+    out_file = "hidden_dir",
 )
 
 write_source_files(
