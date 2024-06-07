@@ -201,7 +201,7 @@ fi"""]
 
     if ctx.attr.executable:
         executable_file = "chmod +x \"$out\""
-        executable_dir = "chmod -R +x \"$out\"/{{*,.[!.]*}}"
+        executable_dir = "chmod -R +x \"$out\""
     else:
         executable_file = "chmod -x \"$out\""
         if is_macos:
