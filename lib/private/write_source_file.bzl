@@ -233,7 +233,7 @@ else
     chmod -R ug+w "$out" > /dev/null 2>&1 || true
     rm -Rf "$out"/{{*,.[!.]*}}
     mkdir -p "$out"
-    cp -fRL "$in"/ "$out"
+    cp -fRL "$in"/. "$out"
     chmod -R ug+w "$out"
     {executable_dir}
 fi
