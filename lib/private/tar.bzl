@@ -1,6 +1,6 @@
 "Implementation of tar rule"
 
-load("//lib:paths.bzl", "to_repository_relative_path")
+load("//lib:paths.bzl", "relative_file", "to_repository_relative_path")
 
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
@@ -160,7 +160,7 @@ def _tar_impl(ctx):
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
-def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
+def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755", link = None):
     spec = [
         file,
         "uid=" + uid,
@@ -169,7 +169,9 @@ def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "167256
         "mode=" + mode,
         "type=" + type,
     ]
-    if content:
+    if link:
+        spec.append("link=" + link)
+    elif content:
         spec.append("content=" + content)
     return " ".join(spec)
 
@@ -198,6 +200,21 @@ def _expand(file, expander, transform = to_repository_relative_path):
             lines.append(_mtree_line(parent, "dir"))
 
         lines.append(_mtree_line(_vis_encode(path), "file", content = _vis_encode(e.path)))
+    return lines
+
+def _expand_symlink(symlink, workspace_name = None):
+    source = _to_rlocation_path(symlink.target_file, workspace_name)
+    path = "{}/{}".format(workspace_name, symlink.path)
+
+    lines = []
+
+    segments = path.split("/")
+    for i in range(1, len(segments)):
+        parent = "/".join(segments[:i])
+        lines.append(_mtree_line(parent, "dir"))
+
+    link = _vis_encode(relative_file(source, path))
+    lines.append(_mtree_line(_vis_encode(path), "link", link = link))
     return lines
 
 def _mtree_impl(ctx):
@@ -231,6 +248,15 @@ def _mtree_impl(ctx):
             format_each = "{}/%s".format(runfiles_dir),
             # be careful about what you pass to _expand_for_runfiles as it will carry the data structures over to execution phase.
             map_each = lambda f, e: _expand(f, e, lambda f: _to_rlocation_path(f, workspace_name)),
+            allow_closure = True,
+        )
+
+        content.add_all(
+            s.default_runfiles.symlinks,
+            expand_directories = False,
+            uniquify = True,
+            format_each = "{}/%s".format(runfiles_dir),
+            map_each = lambda f, e: _expand_symlink(symlink = f, workspace_name = workspace_name),
             allow_closure = True,
         )
 
