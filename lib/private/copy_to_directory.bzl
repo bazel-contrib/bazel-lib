@@ -461,9 +461,6 @@ def copy_to_directory_bin_action(
         })
         file_inputs.append(f.file)
 
-    if not file_inputs:
-        fail("No files to copy")
-
     config = {
         "allow_overwrites": allow_overwrites,
         "dst": dst.path,
