@@ -29,33 +29,32 @@ def _relative_file(to_file, frm_file):
 
         parent_count = to_parent_count - frm_parent_count
 
-    to_segments = _spaths.normalize(_spaths.join("/", to_file)).split("/")[:-1]
-    frm_segments = _spaths.normalize(_spaths.join("/", frm_file)).split("/")[:-1]
+    to_segments = _spaths.normalize(to_file if to_file.startswith("/") else "/" + to_file).split("/")[:-1]
+    frm_segments = _spaths.normalize(frm_file if frm_file.startswith("/") else "/" + frm_file).split("/")[:-1]
 
-    if len(to_segments) == 0 and len(frm_segments) == 0:
+    to_segments_len = len(to_segments)
+    frm_segments_len = len(frm_segments)
+
+    if to_segments_len == 0 and frm_segments_len == 0:
         return to_file
 
     # since we prefix a "/" and normalize, the first segment is always "". So split point will be at least 1
     split_point = 1
 
     # if either of the paths starts with ../ then assume that any shared paths are a coincidence
-    if to_segments[0] != ".." and frm_segments != "..":
-        longest_common = []
-        for to_seg, frm_seg in zip(to_segments, frm_segments):
-            if to_seg == frm_seg:
-                longest_common.append(to_seg)
-            else:
+    if to_segments[0] != ".." and frm_segments[0] != "..":
+        i = 0
+        for _ in to_segments if to_segments_len <= frm_segments_len else frm_segments:
+            if to_segments[i] != frm_segments[i]:
                 break
+            i += 1
+            split_point = i
 
-        split_point = len(longest_common)
+    segments = [".."] * (frm_segments_len - split_point + parent_count)
+    segments.extend(to_segments[split_point:])
+    segments.append(to_file[to_file.rfind("/") + 1:])
 
-    return _spaths.join(
-        *(
-            [".."] * (len(frm_segments) - split_point + parent_count) +
-            to_segments[split_point:] +
-            [_spaths.basename(to_file)]
-        )
-    )
+    return "/".join(segments)
 
 def _to_output_relative_path(file):
     """
@@ -127,7 +126,7 @@ def _to_repository_relative_path(file):
     """
 
     if file.short_path.startswith("../"):
-        return "/".join(file.short_path.split("/")[2:])
+        return file.short_path[file.short_path.find("/", 3) + 1:]
     else:
         return file.short_path
 

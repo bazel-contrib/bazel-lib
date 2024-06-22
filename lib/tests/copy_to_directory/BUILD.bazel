@@ -156,7 +156,10 @@ sh_test(
     name = "case_6_test",
     timeout = "short",
     srcs = ["case6.sh"],
-    data = ["case_6"],
+    data = [
+        "case_6",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
 )
 
 # Case 7: default settings
@@ -448,4 +451,23 @@ diff_test(
     name = "case_21_test",
     file1 = "case_21",
     file2 = ":expected_21",
+)
+
+# Case 22: empty sources creates an empty directory output
+copy_to_directory(
+    name = "case_22",
+    srcs = [],
+)
+
+copy_to_directory(
+    name = "expected_22",
+    srcs = ["dir_expected_22"],
+    exclude_srcs_patterns = ["**/filter_me_out"],
+)
+
+diff_test(
+    name = "case_22_test",
+    file1 = "case_22",
+    file2 = ":expected_22",
+    tags = ["local"],  # seems that the Bazel sandbox has trouble with empty directories
 )
