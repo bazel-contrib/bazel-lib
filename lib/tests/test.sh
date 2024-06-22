@@ -10,24 +10,26 @@ if [ "$diffs" != "" ]; then
     exit 1
 fi
 
+mkdir test-out
+
 bazel clean >/dev/null 2>&1
-bazel test "$@" --enable_runfiles > bazel_test_enable_runfiles.log 2>&1
-result=$(grep -m1 -E "Executed" bazel_test_enable_runfiles.log)
+bazel test "$@" --enable_runfiles > test-out/bazel_test_enable_runfiles.log 2>&1
+result=$(grep -m1 -E "Executed" test-out/bazel_test_enable_runfiles.log)
 echo "[test enable runfiles  ] $result"
 
 bazel clean >/dev/null 2>&1
-bazel test "$@" --noenable_runfiles > bazel_test_noenable_runfiles.log 2>&1
-result=$(grep -m1 -E "Executed" bazel_test_noenable_runfiles.log)
+bazel test "$@" --noenable_runfiles > test-out/bazel_test_noenable_runfiles.log 2>&1
+result=$(grep -m1 -E "Executed" test-out/bazel_test_noenable_runfiles.log)
 echo "[test noenable runfiles] $result"
 
 bazel clean >/dev/null 2>&1
-$SCRIPT_DIR/test_with_run.sh "$@" --enable_runfiles > bazel_run_enable_runfiles.log 2>&1
-result=$(grep -m1 -E "Executed" bazel_run_enable_runfiles.log)
+$SCRIPT_DIR/test_with_run.sh "$@" --enable_runfiles > test-out/bazel_run_enable_runfiles.log 2>&1
+result=$(grep -m1 -E "Executed" test-out/bazel_run_enable_runfiles.log)
 echo "[run enable runfiles   ] $result"
 git checkout lib/tests/ >/dev/null
 
 bazel clean >/dev/null 2>&1
-$SCRIPT_DIR/test_with_run.sh "$@" --noenable_runfiles > bazel_run_noenable_runfiles.log 2>&1
-result=$(grep -m1 -E "Executed" bazel_run_noenable_runfiles.log)
+$SCRIPT_DIR/test_with_run.sh "$@" --noenable_runfiles > test-out/bazel_run_noenable_runfiles.log 2>&1
+result=$(grep -m1 -E "Executed" test-out/bazel_run_noenable_runfiles.log)
 echo "[run noenable runfiles ] $result"
 git checkout lib/tests/ >/dev/null
