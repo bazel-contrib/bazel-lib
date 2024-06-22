@@ -11,14 +11,15 @@ if [ "$diffs" != "" ]; then
 fi
 
 mkdir test-out
+quiet_opts="--noshow_progress --ui_event_filters=,+error,+fail --show_result=0 --logging=0"
 
 bazel clean >/dev/null 2>&1
-bazel test "$@" --enable_runfiles > test-out/bazel_test_enable_runfiles.log 2>&1
+bazel test "$@" --enable_runfiles $quiet_opts > test-out/bazel_test_enable_runfiles.log 2>&1
 result=$(grep -m1 -E "Executed" test-out/bazel_test_enable_runfiles.log)
 echo "[test enable runfiles  ] $result"
 
 bazel clean >/dev/null 2>&1
-bazel test "$@" --noenable_runfiles > test-out/bazel_test_noenable_runfiles.log 2>&1
+bazel test "$@" --noenable_runfiles $quiet_opts > test-out/bazel_test_noenable_runfiles.log 2>&1
 result=$(grep -m1 -E "Executed" test-out/bazel_test_noenable_runfiles.log)
 echo "[test noenable runfiles] $result"
 
