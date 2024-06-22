@@ -13,7 +13,7 @@ if [ "$diffs" != "" ]; then
     echo commit or run 'git checkout lib/tests/*' to discard
 fi
 
-tests=$(eval "bazel query 'kind(\".*_test\", ${target})'" | tr -d '\r')
+tests=$(eval "bazel query 'kind(\".*_test\", ${target} ${@:2})'" | tr -d '\r')
 
 failures=0
 runs=0
