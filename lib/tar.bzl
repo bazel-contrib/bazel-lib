@@ -130,6 +130,7 @@ def mtree_mutate(
         name,
         mtree,
         strip_prefix = None,
+        package_dir = None,
         mtime = None,
         owner = None,
         ownername = None,
@@ -141,6 +142,7 @@ def mtree_mutate(
         name: name of the target, output will be `[name].mtree`.
         mtree: input mtree file, typically created by `mtree_spec`.
         strip_prefix: prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.
+        package_dir: directory prefix to add to all paths in the tar.
         mtime: new modification time for all entries.
         owner: new uid for all entries.
         ownername: new uname for all entries.
@@ -150,6 +152,8 @@ def mtree_mutate(
     vars = []
     if strip_prefix:
         vars.append("-v strip_prefix='{}'".format(strip_prefix))
+    if package_dir:
+        vars.append("-v package_dir='{}'".format(package_dir))
     if mtime:
         vars.append("-v mtime='{}'".format(mtime))
     if owner:

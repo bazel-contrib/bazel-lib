@@ -95,7 +95,7 @@ Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rat
 ## mtree_mutate
 
 <pre>
-mtree_mutate(<a href="#mtree_mutate-name">name</a>, <a href="#mtree_mutate-mtree">mtree</a>, <a href="#mtree_mutate-strip_prefix">strip_prefix</a>, <a href="#mtree_mutate-mtime">mtime</a>, <a href="#mtree_mutate-owner">owner</a>, <a href="#mtree_mutate-ownername">ownername</a>, <a href="#mtree_mutate-awk_script">awk_script</a>, <a href="#mtree_mutate-kwargs">kwargs</a>)
+mtree_mutate(<a href="#mtree_mutate-name">name</a>, <a href="#mtree_mutate-mtree">mtree</a>, <a href="#mtree_mutate-strip_prefix">strip_prefix</a>, <a href="#mtree_mutate-package_dir">package_dir</a>, <a href="#mtree_mutate-mtime">mtime</a>, <a href="#mtree_mutate-owner">owner</a>, <a href="#mtree_mutate-ownername">ownername</a>, <a href="#mtree_mutate-awk_script">awk_script</a>, <a href="#mtree_mutate-kwargs">kwargs</a>)
 </pre>
 
 Modify metadata in an mtree file.
@@ -108,6 +108,7 @@ Modify metadata in an mtree file.
 | <a id="mtree_mutate-name"></a>name |  name of the target, output will be <code>[name].mtree</code>.   |  none |
 | <a id="mtree_mutate-mtree"></a>mtree |  input mtree file, typically created by <code>mtree_spec</code>.   |  none |
 | <a id="mtree_mutate-strip_prefix"></a>strip_prefix |  prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.   |  <code>None</code> |
+| <a id="mtree_mutate-package_dir"></a>package_dir |  directory prefix to add to all paths in the tar.   |  <code>None</code> |
 | <a id="mtree_mutate-mtime"></a>mtime |  new modification time for all entries.   |  <code>None</code> |
 | <a id="mtree_mutate-owner"></a>owner |  new uid for all entries.   |  <code>None</code> |
 | <a id="mtree_mutate-ownername"></a>ownername |  new uname for all entries.   |  <code>None</code> |
