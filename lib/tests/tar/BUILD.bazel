@@ -382,8 +382,8 @@ write_file(
 mtree_spec(
     name = "mtree14",
     srcs = [
-        ":test14_main",
         ":test14_bin",
+        ":test14_main",
     ],
 )
 
@@ -394,12 +394,12 @@ mtree_mutate(
 )
 
 # NOTE: On some systems, the mtree_spec output can have a different order.
-#       In order to make the test more robust, we sort the mtree output.
+#       To make the test less brittle, we sort the mtree output and replace the BINDIR with a constant placeholder
 genrule(
     name = "strip_prefix14",
     srcs = [":strip_prefix14_unsorted"],
     outs = ["actual14.mtree"],
-    cmd = "sort $< > $@",
+    cmd = "sort $< | sed 's#$(BINDIR)#{BINDIR}#' >$@",
 )
 
 diff_test(
