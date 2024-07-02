@@ -337,6 +337,7 @@ mtree_mutate(
     name = "modified1",
     mtree = "source-casync.mtree",
     strip_prefix = "xattr",
+    package_dir = "test",
 )
 
 diff_test(
