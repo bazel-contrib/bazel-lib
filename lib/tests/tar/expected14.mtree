@@ -1,0 +1,3 @@
+14project/ uid=0 gid=0 time=1672560000 mode=0755 type=dir
+14project/__main__.py uid=0 gid=0 time=1672560000 mode=0755 type=file content={BINDIR}/lib/tests/tar/14project/__main__.py
+14project_bin uid=0 gid=0 time=1672560000 mode=0755 type=file content={BINDIR}/lib/tests/tar/14project_bin

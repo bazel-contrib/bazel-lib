@@ -359,3 +359,52 @@ diff_test(
     file1 = "modified2.mtree",
     file2 = "expected2.mtree",
 )
+
+# Case 13: Ensure that multiple entries at the root directory are handled correctly (bug #851)
+# NOTE: The mtree_spec part of this test is placed at the root BUILD.bazel because
+#       that's the only way to ensure that the mtree_spec generates single-component
+#       entries (which would trigger the bug).
+exports_files(["expected13.mtree"])
+
+# Case 14: Ensure mtree_mutate correctly handles prefix stripping for top-level directories (bug #851)
+
+write_file(
+    name = "test14_main",
+    out = "14project/__main__.py",
+    content = ["__main__.py"],
+)
+
+write_file(
+    name = "test14_bin",
+    out = "14project_bin",
+    content = ["project_bin"],
+)
+
+mtree_spec(
+    name = "mtree14",
+    srcs = [
+        ":test14_bin",
+        ":test14_main",
+    ],
+)
+
+mtree_mutate(
+    name = "strip_prefix14_unsorted",
+    mtree = "mtree14",
+    strip_prefix = "lib/tests/tar",
+)
+
+# NOTE: On some systems, the mtree_spec output can have a different order.
+#       To make the test less brittle, we sort the mtree output and replace the BINDIR with a constant placeholder
+genrule(
+    name = "strip_prefix14",
+    srcs = [":strip_prefix14_unsorted"],
+    outs = ["actual14.mtree"],
+    cmd = "sort $< | sed 's#$(BINDIR)#{BINDIR}#' >$@",
+)
+
+diff_test(
+    name = "test14",
+    file1 = ":strip_prefix14",
+    file2 = "expected14.mtree",
+)

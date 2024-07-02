@@ -1,0 +1,3 @@
+13project/ uid=0 gid=0 time=1672560000 mode=0755 type=dir
+13project/__main__.py uid=0 gid=0 time=1672560000 mode=0755 type=file content={BINDIR}/13project/__main__.py
+13project_bin uid=0 gid=0 time=1672560000 mode=0755 type=file content={BINDIR}/13project_bin

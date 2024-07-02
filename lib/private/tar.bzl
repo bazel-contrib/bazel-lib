@@ -195,6 +195,16 @@ def _expand(file, expander, transform = to_repository_relative_path):
         segments = path.split("/")
         for i in range(1, len(segments)):
             parent = "/".join(segments[:i])
+
+            # NOTE: The mtree format treats file paths without slashes as "relative" entries.
+            #       If a relative entry is a directory, then it will "change directory" to that
+            #       directory, and any subsequent "relative" entries will be created inside that
+            #       directory. This causes issues when there is a top-level directory that is
+            #       followed by a top-level file, as the file will be created inside the directory.
+            #       To avoid this, we append a slash to the directory path to make it a "full" entry.
+            if i == 1:
+                parent += "/"
+
             lines.append(_mtree_line(parent, "dir"))
 
         lines.append(_mtree_line(_vis_encode(path), "file", content = _vis_encode(e.path)))
