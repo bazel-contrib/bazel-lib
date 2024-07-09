@@ -1,6 +1,7 @@
 "Implementation of tar rule"
 
 load("//lib:paths.bzl", "to_repository_relative_path")
+load(":zstd_toolchain.bzl", "zstd_lib")
 
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
@@ -147,6 +148,16 @@ def _tar_impl(ctx):
     args.add(ctx.file.mtree, format = "@%s")
     inputs.append(ctx.file.mtree)
 
+    tools = []
+    env = {}
+
+    # Optionally register zstd on the path if the toolchain is available
+    zstd_toolchain = ctx.toolchains[zstd_lib.toolchain_type]
+    if zstd_toolchain != None:
+        zstd_bin = zstd_toolchain.zstdinfo.binary
+        tools.append(zstd_bin)
+        env["PATH"] = "{}:{}".format("$PATH", zstd_bin.dirname)
+
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
         inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + [
@@ -156,6 +167,8 @@ def _tar_impl(ctx):
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
+        env = env,
+        tools = tools,
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
@@ -266,5 +279,8 @@ tar = rule(
     doc = "Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rather than load this directly.",
     implementation = tar_lib.implementation,
     attrs = tar_lib.attrs,
-    toolchains = [tar_lib.toolchain_type],
+    toolchains = [
+        tar_lib.toolchain_type,
+        config_common.toolchain_type(zstd_lib.toolchain_type, mandatory = False),
+    ],
 )

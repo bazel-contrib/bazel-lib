@@ -1,5 +1,7 @@
 "Provide access to ZSTD"
 
+ZSTD_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:zstd_toolchain_type"
+
 ZSTD_PLATFORMS = {
     "darwin_amd64": struct(
         compatible_with = [
@@ -174,4 +176,8 @@ zstd_toolchains_repo = repository_rule(
     attrs = {
         "user_repository_name": attr.string(doc = "Base name for toolchains repository"),
     },
+)
+
+zstd_lib = struct(
+    toolchain_type = ZSTD_TOOLCHAIN_TYPE,
 )

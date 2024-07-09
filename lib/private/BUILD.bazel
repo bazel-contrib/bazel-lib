@@ -276,7 +276,10 @@ bzl_library(
     name = "tar",
     srcs = ["tar.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = ["@aspect_bazel_lib//lib:paths"],
+    deps = [
+        ":zstd_toolchain",
+        "@aspect_bazel_lib//lib:paths",
+    ],
 )
 
 bzl_library(
