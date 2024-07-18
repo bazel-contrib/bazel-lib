@@ -336,8 +336,8 @@ assert_tar_listing(
 mtree_mutate(
     name = "modified1",
     mtree = "source-casync.mtree",
-    strip_prefix = "xattr",
     package_dir = "test",
+    strip_prefix = "xattr",
 )
 
 diff_test(
