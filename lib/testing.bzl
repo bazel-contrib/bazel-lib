@@ -5,9 +5,8 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:jq.bzl", "jq")
 load("//lib:params_file.bzl", "params_file")
-load("//lib:utils.bzl", "default_timeout")
 
-def assert_contains(name, actual, expected, size = None, timeout = None, **kwargs):
+def assert_contains(name, actual, expected, size = "small", **kwargs):
     """Generates a test target which fails if the file doesn't contain the string.
 
     Depends on bash, as it creates an sh_test target.
@@ -16,8 +15,7 @@ def assert_contains(name, actual, expected, size = None, timeout = None, **kwarg
         name: target to create
         actual: Label of a file
         expected: a string which should appear in the file
-        size: the size attribute of the test target
-        timeout: the timeout attribute of the test target
+        size: standard attribute for tests
         **kwargs: additional named arguments for the resulting sh_test
     """
 
@@ -45,7 +43,6 @@ def assert_contains(name, actual, expected, size = None, timeout = None, **kwarg
         srcs = [test_sh],
         args = ["$(rootpath %s)" % expected_file, "$(rootpath %s)" % actual],
         size = size,
-        timeout = default_timeout(size, timeout),
         data = [actual, expected_file],
         **kwargs
     )
