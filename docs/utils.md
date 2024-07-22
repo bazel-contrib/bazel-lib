@@ -23,10 +23,10 @@ user's workspace name (`ctx.workspace_name`).
 **PARAMETERS**
 
 
-| Name                                         | Description       | Default Value |
-| :------------------------------------------- | :---------------- | :------------ |
-| <a id="consistent_label_str-ctx"></a>ctx     | The rule context. | none          |
-| <a id="consistent_label_str-label"></a>label | A Label.          | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="consistent_label_str-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="consistent_label_str-label"></a>label |  A Label.   |  none |
 
 **RETURNS**
 
@@ -66,10 +66,10 @@ This function can be used in a macro which wraps a testing rule.
 **PARAMETERS**
 
 
-| Name                                        | Description                            | Default Value |
-| :------------------------------------------ | :------------------------------------- | :------------ |
-| <a id="default_timeout-size"></a>size       | the size attribute of a test target    | none          |
-| <a id="default_timeout-timeout"></a>timeout | the timeout attribute of a test target | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="default_timeout-size"></a>size |  the size attribute of a test target   |  none |
+| <a id="default_timeout-timeout"></a>timeout |  the timeout attribute of a test target   |  none |
 
 **RETURNS**
 
@@ -93,9 +93,9 @@ This can only be called during the loading phase, not from a rule implementation
 **PARAMETERS**
 
 
-| Name                              | Description                                                   | Default Value |
-| :-------------------------------- | :------------------------------------------------------------ | :------------ |
-| <a id="file_exists-path"></a>path | a label, or a string which is a path relative to this package | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="file_exists-path"></a>path |  a label, or a string which is a path relative to this package   |  none |
 
 
 <a id="glob_directories"></a>
@@ -111,10 +111,10 @@ glob_directories(<a href="#glob_directories-include">include</a>, <a href="#glob
 **PARAMETERS**
 
 
-| Name                                         | Description               | Default Value |
-| :------------------------------------------- | :------------------------ | :------------ |
-| <a id="glob_directories-include"></a>include | <p align="center"> - </p> | none          |
-| <a id="glob_directories-kwargs"></a>kwargs   | <p align="center"> - </p> | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="glob_directories-include"></a>include |  <p align="center"> - </p>   |  none |
+| <a id="glob_directories-kwargs"></a>kwargs |  <p align="center"> - </p>   |  none |
 
 
 <a id="is_bazel_6_or_greater"></a>
@@ -221,9 +221,9 @@ Returns True if the given Label (or stringy version of a label) represents a tar
 **PARAMETERS**
 
 
-| Name                                      | Description       | Default Value |
-| :---------------------------------------- | :---------------- | :------------ |
-| <a id="is_external_label-param"></a>param | a string or label | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="is_external_label-param"></a>param |  a string or label   |  none |
 
 **RETURNS**
 
@@ -274,9 +274,9 @@ maybe(
 **PARAMETERS**
 
 
-| Name                                         | Description                                   | Default Value |
-| :------------------------------------------- | :-------------------------------------------- | :------------ |
-| <a id="maybe_http_archive-kwargs"></a>kwargs | all arguments to pass-forward to http_archive | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="maybe_http_archive-kwargs"></a>kwargs |  all arguments to pass-forward to http_archive   |  none |
 
 
 <a id="path_to_workspace_root"></a>
@@ -313,9 +313,9 @@ https://bazel.build/reference/be/common-definitions#common-attributes-binary
 **PARAMETERS**
 
 
-| Name                                                            | Description                  | Default Value |
-| :-------------------------------------------------------------- | :--------------------------- | :------------ |
-| <a id="propagate_common_binary_rule_attributes-attrs"></a>attrs | Dict of parameters to filter | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -339,9 +339,9 @@ https://bazel.build/reference/be/common-definitions#common-attributes
 **PARAMETERS**
 
 
-| Name                                                     | Description                  | Default Value |
-| :------------------------------------------------------- | :--------------------------- | :------------ |
-| <a id="propagate_common_rule_attributes-attrs"></a>attrs | Dict of parameters to filter | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_common_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -366,9 +366,9 @@ https://bazel.build/reference/be/common-definitions#common-attributes-tests
 **PARAMETERS**
 
 
-| Name                                                          | Description                  | Default Value |
-| :------------------------------------------------------------ | :--------------------------- | :------------ |
-| <a id="propagate_common_test_rule_attributes-attrs"></a>attrs | Dict of parameters to filter | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_common_test_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -393,9 +393,9 @@ https://docs.bazel.build/versions/main/be/common-definitions.html#common-attribu
 **PARAMETERS**
 
 
-| Name                                            | Description            | Default Value   |
-| :---------------------------------------------- | :--------------------- | :-------------- |
-| <a id="propagate_well_known_tags-tags"></a>tags | List of tags to filter | <code>[]</code> |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="propagate_well_known_tags-tags"></a>tags |  List of tags to filter   |  <code>[]</code> |
 
 **RETURNS**
 
@@ -415,9 +415,9 @@ Converts a string to a Label. If Label is supplied, the same label is returned.
 **PARAMETERS**
 
 
-| Name                             | Description                              | Default Value |
-| :------------------------------- | :--------------------------------------- | :------------ |
-| <a id="to_label-param"></a>param | a string representing a label or a Label | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="to_label-param"></a>param |  a string representing a label or a Label   |  none |
 
 **RETURNS**
 
@@ -456,10 +456,10 @@ This function can be used in a macro which wraps a testing rule.
 **PARAMETERS**
 
 
-| Name                                              | Description                            | Default Value |
-| :------------------------------------------------ | :------------------------------------- | :------------ |
-| <a id="utils.default_timeout-size"></a>size       | the size attribute of a test target    | none          |
-| <a id="utils.default_timeout-timeout"></a>timeout | the timeout attribute of a test target | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.default_timeout-size"></a>size |  the size attribute of a test target   |  none |
+| <a id="utils.default_timeout-timeout"></a>timeout |  the timeout attribute of a test target   |  none |
 
 **RETURNS**
 
@@ -483,9 +483,9 @@ This can only be called during the loading phase, not from a rule implementation
 **PARAMETERS**
 
 
-| Name                                    | Description                                                   | Default Value |
-| :-------------------------------------- | :------------------------------------------------------------ | :------------ |
-| <a id="utils.file_exists-path"></a>path | a label, or a string which is a path relative to this package | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.file_exists-path"></a>path |  a label, or a string which is a path relative to this package   |  none |
 
 
 <a id="utils.glob_directories"></a>
@@ -501,10 +501,10 @@ utils.glob_directories(<a href="#utils.glob_directories-include">include</a>, <a
 **PARAMETERS**
 
 
-| Name                                               | Description               | Default Value |
-| :------------------------------------------------- | :------------------------ | :------------ |
-| <a id="utils.glob_directories-include"></a>include | <p align="center"> - </p> | none          |
-| <a id="utils.glob_directories-kwargs"></a>kwargs   | <p align="center"> - </p> | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.glob_directories-include"></a>include |  <p align="center"> - </p>   |  none |
+| <a id="utils.glob_directories-kwargs"></a>kwargs |  <p align="center"> - </p>   |  none |
 
 
 <a id="utils.is_bazel_6_or_greater"></a>
@@ -611,9 +611,9 @@ Returns True if the given Label (or stringy version of a label) represents a tar
 **PARAMETERS**
 
 
-| Name                                            | Description       | Default Value |
-| :---------------------------------------------- | :---------------- | :------------ |
-| <a id="utils.is_external_label-param"></a>param | a string or label | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.is_external_label-param"></a>param |  a string or label   |  none |
 
 **RETURNS**
 
@@ -664,9 +664,9 @@ maybe(
 **PARAMETERS**
 
 
-| Name                                               | Description                                   | Default Value |
-| :------------------------------------------------- | :-------------------------------------------- | :------------ |
-| <a id="utils.maybe_http_archive-kwargs"></a>kwargs | all arguments to pass-forward to http_archive | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.maybe_http_archive-kwargs"></a>kwargs |  all arguments to pass-forward to http_archive   |  none |
 
 
 <a id="utils.path_to_workspace_root"></a>
@@ -703,9 +703,9 @@ https://docs.bazel.build/versions/main/be/common-definitions.html#common-attribu
 **PARAMETERS**
 
 
-| Name                                                  | Description            | Default Value   |
-| :---------------------------------------------------- | :--------------------- | :-------------- |
-| <a id="utils.propagate_well_known_tags-tags"></a>tags | List of tags to filter | <code>[]</code> |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.propagate_well_known_tags-tags"></a>tags |  List of tags to filter   |  <code>[]</code> |
 
 **RETURNS**
 
@@ -729,9 +729,9 @@ https://bazel.build/reference/be/common-definitions#common-attributes
 **PARAMETERS**
 
 
-| Name                                                           | Description                  | Default Value |
-| :------------------------------------------------------------- | :--------------------------- | :------------ |
-| <a id="utils.propagate_common_rule_attributes-attrs"></a>attrs | Dict of parameters to filter | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.propagate_common_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -756,9 +756,9 @@ https://bazel.build/reference/be/common-definitions#common-attributes-tests
 **PARAMETERS**
 
 
-| Name                                                                | Description                  | Default Value |
-| :------------------------------------------------------------------ | :--------------------------- | :------------ |
-| <a id="utils.propagate_common_test_rule_attributes-attrs"></a>attrs | Dict of parameters to filter | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.propagate_common_test_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -783,9 +783,9 @@ https://bazel.build/reference/be/common-definitions#common-attributes-binary
 **PARAMETERS**
 
 
-| Name                                                                  | Description                  | Default Value |
-| :-------------------------------------------------------------------- | :--------------------------- | :------------ |
-| <a id="utils.propagate_common_binary_rule_attributes-attrs"></a>attrs | Dict of parameters to filter | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
@@ -805,9 +805,9 @@ Converts a string to a Label. If Label is supplied, the same label is returned.
 **PARAMETERS**
 
 
-| Name                                   | Description                              | Default Value |
-| :------------------------------------- | :--------------------------------------- | :------------ |
-| <a id="utils.to_label-param"></a>param | a string representing a label or a Label | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.to_label-param"></a>param |  a string representing a label or a Label   |  none |
 
 **RETURNS**
 
@@ -835,12 +835,14 @@ user's workspace name (`ctx.workspace_name`).
 **PARAMETERS**
 
 
-| Name                                               | Description       | Default Value |
-| :------------------------------------------------- | :---------------- | :------------ |
-| <a id="utils.consistent_label_str-ctx"></a>ctx     | The rule context. | none          |
-| <a id="utils.consistent_label_str-label"></a>label | A Label.          | none          |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.consistent_label_str-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="utils.consistent_label_str-label"></a>label |  A Label.   |  none |
 
 **RETURNS**
 
 String representation of the label including the repository name if the label is from an
   external repository. For labels in the user's repository the label will start with `@//`.
+
+
