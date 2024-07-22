@@ -104,7 +104,7 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
         "stamp_substitutions": attr.string_dict(
             doc = """Mapping of strings to substitutions.
 
-            There are overlayed on top of substitutions when stamping is enabled
+            There are overlaid on top of substitutions when stamping is enabled
             for the target.
 
             Substitutions can contain $(execpath :target) and $(rootpath :target)

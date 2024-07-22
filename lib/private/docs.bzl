@@ -9,7 +9,7 @@ def stardoc_with_diff_test(
         **kwargs):
     """Creates a stardoc target that can be auto-detected by update_docs to write the generated doc to the source tree and test that it's up to date.
 
-    This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
+    This is helpful for minimizing boilerplate in repos with lots of stardoc targets.
 
     Args:
         name: the name of the stardoc file to be written to the current source directory (.md will be appended to the name). Call bazel run on this target to update the file.
