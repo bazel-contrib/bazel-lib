@@ -9,7 +9,7 @@ docs/*.md linguist-generated=true
 lib/tests export-ignore
 
 # Omit the .bazeliskrc file for the smoke test that runs on the Bazel Central
-# Regsitry ci because we test on Windows but do not publish Aspect CLI Windows
+# Registry ci because we test on Windows but do not publish Aspect CLI Windows
 # binaries.
 e2e/smoke/.bazeliskrc export-ignore
 

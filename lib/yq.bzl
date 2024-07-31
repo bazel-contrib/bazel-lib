@@ -115,7 +115,7 @@ def yq(name, srcs, expression = ".", args = [], outs = None, **kwargs):
             is handled automatically based on the number `srcs`. Passing the output format or the parse format
             is optional as these can be guessed based on the file extensions in `srcs` and `outs`.
         outs: Name of the output files. Defaults to a single output with the name plus a ".yaml" extension, or
-            the extension corresponding to a passed output argment (e.g., "-o=json"). For split operations you
+            the extension corresponding to a passed output argument (e.g., "-o=json"). For split operations you
             must declare all outputs as the name of the output files depends on the expression.
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """

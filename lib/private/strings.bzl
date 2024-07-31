@@ -559,13 +559,13 @@ def _to_char(n):
     return alpha[n]
 
 def hex(number):
-    """Format integer to hexdecimal representation
+    """Format integer to hexadecimal representation
 
     Args:
         number: number to format
 
     Returns:
-        hexdecimal representation of the number argument
+        hexadecimal representation of the number argument
     """
 
     hex_string = ""

@@ -1,0 +1,2 @@
+[default.extend-identifiers]
+MODULEs = "MODULEs"  # Else it becomes MODULEEs

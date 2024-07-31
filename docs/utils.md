@@ -303,7 +303,7 @@ Path to the workspace root
 propagate_common_binary_rule_attributes(<a href="#propagate_common_binary_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all binary rules
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all binary rules
 
 These are listed in Bazel's documentation:
 https://bazel.build/reference/be/common-definitions#common-attributes
@@ -330,7 +330,7 @@ The dict of parameters, containing only common binary attributes
 propagate_common_rule_attributes(<a href="#propagate_common_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all rules
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all rules
 
 These are listed in Bazel's documentation:
 https://bazel.build/reference/be/common-definitions#common-attributes
@@ -356,7 +356,7 @@ The dict of parameters, containing only common attributes
 propagate_common_test_rule_attributes(<a href="#propagate_common_test_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all test rules
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all test rules
 
 These are listed in Bazel's documentation:
 https://bazel.build/reference/be/common-definitions#common-attributes
@@ -720,7 +720,7 @@ List of tags that only contains the well known set
 utils.propagate_common_rule_attributes(<a href="#utils.propagate_common_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all rules
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all rules
 
 These are listed in Bazel's documentation:
 https://bazel.build/reference/be/common-definitions#common-attributes
@@ -746,7 +746,7 @@ The dict of parameters, containing only common attributes
 utils.propagate_common_test_rule_attributes(<a href="#utils.propagate_common_test_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all test rules
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all test rules
 
 These are listed in Bazel's documentation:
 https://bazel.build/reference/be/common-definitions#common-attributes
@@ -773,7 +773,7 @@ The dict of parameters, containing only common test attributes
 utils.propagate_common_binary_rule_attributes(<a href="#utils.propagate_common_binary_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all binary rules
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all binary rules
 
 These are listed in Bazel's documentation:
 https://bazel.build/reference/be/common-definitions#common-attributes

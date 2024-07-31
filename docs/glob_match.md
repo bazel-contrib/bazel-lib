@@ -41,7 +41,7 @@ True if the path matches the glob expression
 is_glob(<a href="#is_glob-expr">expr</a>)
 </pre>
 
-Determine if the passed string is a globa expression
+Determine if the passed string is a global expression
 
 **PARAMETERS**
 
@@ -52,6 +52,6 @@ Determine if the passed string is a globa expression
 
 **RETURNS**
 
-True if the passed string is a globa expression
+True if the passed string is a global expression
 
 

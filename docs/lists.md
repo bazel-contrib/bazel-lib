@@ -67,7 +67,7 @@ find(<a href="#find-f">f</a>, <a href="#find-arr">arr</a>)
 Find a particular item from list `arr` by a given function `f`.
 
 Unlike `pick`, the `find` method returns a tuple of the index and the value of first item passing by `f`.
-Furhermore `find` does not fail if no item passes `f`.
+Furthermore `find` does not fail if no item passes `f`.
 In this case `(-1, None)` is returned.
 
 

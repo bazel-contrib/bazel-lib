@@ -36,7 +36,7 @@ unicode string of the position
 hex(<a href="#hex-number">number</a>)
 </pre>
 
-Format integer to hexdecimal representation
+Format integer to hexadecimal representation
 
 **PARAMETERS**
 
@@ -47,7 +47,7 @@ Format integer to hexdecimal representation
 
 **RETURNS**
 
-hexdecimal representation of the number argument
+hexadecimal representation of the number argument
 
 
 <a id="ord"></a>

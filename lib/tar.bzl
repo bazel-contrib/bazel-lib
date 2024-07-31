@@ -110,7 +110,7 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
             template = ["#mtree", "{content}", ""],
             substitutions = {
-                # expand_template only expands strings in "substitions" dict. Here
+                # expand_template only expands strings in "substitutions" dict. Here
                 # we expand mtree and then replace the template with expanded mtree.
                 "{content}": "\n".join(mtree),
             },

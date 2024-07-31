@@ -12,7 +12,7 @@ stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href=
 
 Creates a stardoc target that can be auto-detected by update_docs to write the generated doc to the source tree and test that it's up to date.
 
-This is helpful for minimizing boilerplate in repos wih lots of stardoc targets.
+This is helpful for minimizing boilerplate in repos with lots of stardoc targets.
 
 
 **PARAMETERS**
