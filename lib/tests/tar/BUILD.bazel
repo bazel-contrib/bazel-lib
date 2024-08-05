@@ -2,17 +2,20 @@ load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing")
 
+# The examples below work with both source files and generated files.
+# Here we generate a file to use in the examples.
 write_file(
     name = "fixture1",
-    out = "a",
+    out = "generated.txt",
     content = ["hello a"],
 )
 
-# Case 1: Show that you can run any `tar` command you like, using a genrule.
+#############
+# Example 1: Show that you can run any `tar` command you like, using a genrule.
+# This is advanced, atypical usage where you need such a level of control and don't want to use the `tar` rule.
 genrule(
     name = "tar_genrule",
     srcs = [
@@ -33,15 +36,16 @@ assert_archive_contains(
     name = "test_genrule",
     archive = "1.tar",
     expected = [
-        "lib/tests/tar/a",
+        "lib/tests/tar/generated.txt",
         "lib/tests/tar/src_file",
     ],
 )
 
-# Case 2: demonstrate using a custom mtree formatted specification.
+#############
+# Example 2: exact control of the resulting tar file, using a custom specification in the "mtree" format.
 # Copied from the output of `man tar`:
-#    An input file in	mtree(5) format	 can  be  used	to  create  an	output
-#    archive with  arbitrary ownership, permissions, or names that	differ
+#    An input file in mtree(5) format can be used to create an output
+#    archive with arbitrary ownership, permissions, or names that differ
 #    from existing data on disk:
 #      $ cat input.mtree
 #      #mtree
@@ -66,10 +70,12 @@ assert_tar_listing(
     ],
 )
 
-# Case 3: compression
+#############
+# Example 3: compression.
+# This uses gzip, see the `compress` attribute documentation for other legal values.
 tar(
     name = "tar_compress",
-    srcs = ["a"],
+    srcs = ["generated.txt"],
     out = "3.tgz",
     compress = "gzip",
 )
@@ -77,11 +83,12 @@ tar(
 assert_archive_contains(
     name = "test_compress",
     archive = "3.tgz",
-    expected = ["lib/tests/tar/a"],
+    expected = ["lib/tests/tar/generated.txt"],
     type = "tar",
 )
 
-# Case 4: permit arbitrary flags
+#############
+# Example 4: you can pass arbitrary command-line flags to the bsdtar executable.
 write_file(
     name = "fixture4",
     out = ".git",
@@ -92,8 +99,8 @@ tar(
     name = "tar_flags",
     srcs = [
         ".git",
-        "a",
         "src_file",
+        ":fixture1",
     ],
     out = "4.tar",
     # Due to this argument, .git should not appear in the resulting tar
@@ -107,12 +114,14 @@ assert_tar_listing(
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/",
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/",
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/",
-        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 lib/tests/tar/a",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 lib/tests/tar/src_file",
+        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 lib/tests/tar/generated.txt",
     ],
 )
 
-# Case 5: strip_prefix
+#############
+# Example 5: features like `strip_prefix` are supported by `mtree_mutate`.
+# This lets you port code that used the `pkg_tar` rule from bazelbuild/rules_pkg.
 _SRCS5 = [
     ":fixture1",
     "src_file",
@@ -140,22 +149,13 @@ assert_tar_listing(
     name = "test_strip_prefix",
     actual = "tar_strip_prefix",
     expected = [
-        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 a",
+        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 generated.txt",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 src_file",
     ],
 )
 
-bzl_library(
-    name = "asserts",
-    srcs = ["asserts.bzl"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//lib:diff_test",
-        "@bazel_skylib//rules:write_file",
-    ],
-)
-
-# Case 6: Runfiles
+#############
+# Example 6: When archiving a binary, the "runfiles" are included.
 sh_binary(
     name = "cat_src_file",
     srcs = ["cat_src_file.sh"],
@@ -199,7 +199,9 @@ diff_test(
     file2 = "cat_src_file_output",
 )
 
-# Case 7: treeartifacts and source directories
+#############
+# Example 7: You can archive directories,
+# both those in the source tree and those produced by rules that understand "tree artifacts".
 copy_directory(
     name = "treeartifact",
     src = "srcdir",
@@ -209,7 +211,7 @@ copy_directory(
 tar(
     name = "dirs",
     # Note, testonly should be propagated, proven by
-    # % bazel query --output=label_kind 'attr("testonly", 1,lib/tests/tar:all)'
+    # % bazel query --output=label_kind 'attr("testonly", 1, lib/tests/tar:all)'
     # mtree_spec rule //lib/tests/tar:_dirs.mtree
     # tar rule //lib/tests/tar:dirs
     testonly = True,
@@ -217,8 +219,6 @@ tar(
         "treeartifact",
     ],
     out = "7.tar",
-    # When running remote, BB lays out files with inodes that mtree optimizes into a hardlink
-    tags = ["no-remote-exec"],
 )
 
 assert_tar_listing(
@@ -239,7 +239,10 @@ assert_tar_listing(
     ],
 )
 
-# Case 8: setting owner of files
+#############
+# Example 8: arbitrary mutations of the mtree spec can be performed.
+# Typically use the `mtree_mutate` rule which supports specific mutations using a more ergonomic API,
+# see Example 12 below.
 _SRCS8 = [
     ":fixture1",
     "src_file",
@@ -277,15 +280,15 @@ assert_tar_listing(
         "drwxr-xr-x  0 1000   500         0 Jan  1  2023 lib/",
         "drwxr-xr-x  0 1000   500         0 Jan  1  2023 lib/tests/",
         "drwxr-xr-x  0 1000   500         0 Jan  1  2023 lib/tests/tar/",
-        "-rwxr-xr-x  0 1000   500         7 Jan  1  2023 lib/tests/tar/a",
+        "-rwxr-xr-x  0 1000   500         7 Jan  1  2023 lib/tests/tar/generated.txt",
         "-rwxr-xr-x  0 1000   500        21 Jan  1  2023 lib/tests/tar/src_file",
     ],
 )
 
-# Case 9: Files from a different repository (#697)
+#############
+# Example 9: Files from a different repository (see #697)
 # Note: This test uses an exported file from skylib, so we do not need to create
 # an additional workspace just for this test.
-
 tar(
     name = "tar_different_repo",
     srcs = ["@bazel_skylib//:LICENSE"],
@@ -300,13 +303,14 @@ assert_archive_contains(
     ],
 )
 
-# Case 10: Can reference generated files
+#############
+# Example 10: Similar to Example 9, you can reference generated files in the `mtree` attribute as well.
 tar(
     name = "tar_location_expansion",
     srcs = ["@bazel_skylib//:LICENSE"],
     out = "10.tar",
     mtree = [
-        "a uid=0 gid=0 time=1672560000 mode=0755 type=file content=$(location @bazel_skylib//:LICENSE)",
+        "license uid=0 gid=0 time=1672560000 mode=0755 type=file content=$(location @bazel_skylib//:LICENSE)",
     ],
 )
 
@@ -314,11 +318,12 @@ assert_tar_listing(
     name = "test_tar_location_expansion",
     actual = "tar_location_expansion",
     expected = [
-        "-rwxr-xr-x  0 0      0       11358 Jan  1  2023 a",
+        "-rwxr-xr-x  0 0      0       11358 Jan  1  2023 license",
     ],
 )
 
-# Case 11: Can create tar without srcs
+#############
+# Example 11: You can create a tar without srcs, only empty directories
 tar(
     name = "create_tmp",
     mtree = ["./tmp time=1501783453.0 mode=1777 gid=0 uid=0 type=dir"],
@@ -332,7 +337,8 @@ assert_tar_listing(
     ],
 )
 
-# Case 12: arbitrary mtree modifications
+#############
+# Example 12: arbitrary mtree modifications
 mtree_mutate(
     name = "modified1",
     mtree = "source-casync.mtree",
@@ -360,14 +366,15 @@ diff_test(
     file2 = "expected2.mtree",
 )
 
-# Case 13: Ensure that multiple entries at the root directory are handled correctly (bug #851)
+#############
+# Example 13: Ensure that multiple entries at the root directory are handled correctly (bug #851)
 # NOTE: The mtree_spec part of this test is placed at the root BUILD.bazel because
 #       that's the only way to ensure that the mtree_spec generates single-component
 #       entries (which would trigger the bug).
 exports_files(["expected13.mtree"])
 
-# Case 14: Ensure mtree_mutate correctly handles prefix stripping for top-level directories (bug #851)
-
+#############
+# Example 14: Ensure mtree_mutate correctly handles prefix stripping for top-level directories (bug #851)
 write_file(
     name = "test14_main",
     out = "14project/__main__.py",
