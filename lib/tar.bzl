@@ -6,15 +6,18 @@ Unlike [pkg_tar from rules_pkg](https://github.com/bazelbuild/rules_pkg/blob/mai
 - The "manifest" specification is a mature public API and uses a compact tabular format, fixing
   https://github.com/bazelbuild/rules_pkg/pull/238
 - It doesn't rely custom program to produce the output, instead
-  we rely on a well-known C++ program called "tar".
+  we rely on the well-known C++ program called "tar".
   Specifically, we use the BSD variant of tar since it provides a means
   of controlling mtimes, uid, symlinks, etc.
 
 We also provide full control for tar'ring binaries including their runfiles.
 
+The `tar` binary is hermetic and fully statically-linked.
+It is fetched as a toolchain from https://github.com/aspect-build/bsdtar-prebuilt.
+
 ## Examples
 
-See the (`tar` tests)[/lib/tests/tar/BUILD.bazel] for examples of usage.
+See the [`tar` tests](/lib/tests/tar/BUILD.bazel) for examples of usage.
 
 ## Mutating the tar contents
 
