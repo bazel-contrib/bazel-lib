@@ -17,6 +17,9 @@ concurrency:
   group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
+env:
+  HEAD_REF: ${{ github.head_ref }}
+
 jobs:
   # Prepares dynamic test matrix values
   matrix-prep:
@@ -39,7 +42,7 @@ jobs:
         # Don't run RBE if there is no API key which is the case on forks.
         run: |
           a=( local )
-          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.head_ref }}" == *"rbe"* ]]; then
+          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "$HEAD_REF" == *"rbe"* ]]; then
             if [[ "${{ env.BUILDBUDDY_API_KEY }}" ]]; then
               a+=( rbe )
             fi
@@ -54,10 +57,10 @@ jobs:
         # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
         run: |
           a=( ubuntu )
-          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.head_ref }}" == *"macos"* ]]; then
+          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "$HEAD_REF" == *"macos"* ]]; then
             a+=( macos )
           fi
-          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.head_ref }}" == *"windows"* ]]; then
+          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "$HEAD_REF" == *"windows"* ]]; then
             a+=( windows )
           fi
           printf -v j '"%s",' "${a[@]}"
