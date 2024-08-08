@@ -18,8 +18,8 @@ Transitions the binary to use the provided platform.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="platform_transition_binary-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="platform_transition_binary-basename"></a>basename |  -   | String | optional | <code>""</code> |
-| <a id="platform_transition_binary-binary"></a>binary |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | optional | <code>None</code> |
+| <a id="platform_transition_binary-basename"></a>basename |  -   | String | optional |  `""`  |
+| <a id="platform_transition_binary-binary"></a>binary |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
 | <a id="platform_transition_binary-target_platform"></a>target_platform |  The target platform to transition the binary.   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
@@ -39,7 +39,7 @@ Transitions the srcs to use the provided platform. The filegroup will contain ar
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="platform_transition_filegroup-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="platform_transition_filegroup-srcs"></a>srcs |  The input to be transitioned to the target platform.   | <a href="https://bazel.build/concepts/labels">List of labels</a> | optional | <code>[]</code> |
+| <a id="platform_transition_filegroup-srcs"></a>srcs |  The input to be transitioned to the target platform.   | <a href="https://bazel.build/concepts/labels">List of labels</a> | optional |  `[]`  |
 | <a id="platform_transition_filegroup-target_platform"></a>target_platform |  The target platform to transition the srcs.   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
@@ -59,8 +59,8 @@ Transitions the test to use the provided platform.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="platform_transition_test-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="platform_transition_test-basename"></a>basename |  -   | String | optional | <code>""</code> |
-| <a id="platform_transition_test-binary"></a>binary |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | optional | <code>None</code> |
+| <a id="platform_transition_test-basename"></a>basename |  -   | String | optional |  `""`  |
+| <a id="platform_transition_test-binary"></a>binary |  -   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
 | <a id="platform_transition_test-target_platform"></a>target_platform |  The target platform to transition the binary.   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 

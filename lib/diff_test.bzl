@@ -19,6 +19,8 @@ but also supports comparing directories.
 
 The rule uses a Bash command (diff) on Linux/macOS/non-Windows, and a cmd.exe
 command (fc.exe) on Windows (no Bash is required).
+
+See also: [rules_diff](https://gitlab.arm.com/bazel/rules_diff)
 """
 
 load(

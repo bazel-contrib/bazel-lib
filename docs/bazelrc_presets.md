@@ -1,6 +1,8 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-Aspect bazelrc presets; see https://docs.aspect.build/guides/bazelrc
+'Presets' for bazelrc
+
+See https://docs.aspect.build/guides/bazelrc
 
 <a id="write_aspect_bazelrc_presets"></a>
 
@@ -16,9 +18,7 @@ This macro uses a [write_source_files](https://docs.aspect.build/rules/aspect_ba
 rule under the hood to keep your presets up-to-date.
 
 By default all presets are vendored but this list can be customized using
-the 'presets' attribute.
-
-See https://docs.aspect.build/guides/bazelrc for more info.
+the `presets` attribute.
 
 
 **PARAMETERS**
@@ -27,7 +27,7 @@ See https://docs.aspect.build/guides/bazelrc for more info.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="write_aspect_bazelrc_presets-name"></a>name |  a unique name for this target   |  none |
-| <a id="write_aspect_bazelrc_presets-presets"></a>presets |  a list of preset names to keep up-to-date<br><br>For example,<br><br><pre><code> write_aspect_bazelrc_presets(   name = "update_aspect_bazelrc_presets",   presets = [     "bazel6",     "bazel7",     "ci",     "convenience",     "correctness",     "debug",     "javascript",     "performance",   ], ) </code></pre>   |  <code>["bazel6", "bazel7", "ci", "convenience", "correctness", "debug", "javascript", "performance"]</code> |
-| <a id="write_aspect_bazelrc_presets-kwargs"></a>kwargs |  Additional arguments to pass to <code>write_source_files</code>   |  none |
+| <a id="write_aspect_bazelrc_presets-presets"></a>presets |  a list of preset names to keep up-to-date   |  `["bazel6", "bazel7", "ci", "convenience", "correctness", "debug", "javascript", "performance"]` |
+| <a id="write_aspect_bazelrc_presets-kwargs"></a>kwargs |  Additional arguments to pass to `write_source_files`   |  none |
 
 

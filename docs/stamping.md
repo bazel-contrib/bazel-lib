@@ -9,8 +9,8 @@ See [the Bazel workspace status docs](https://docs.bazel.build/versions/master/u
 
 To stamp a build, you pass the `--stamp` argument to Bazel.
 
-&gt; Note: https://github.com/bazelbuild/bazel/issues/14341 proposes that Bazel enforce this by
-&gt; only giving constant values to rule implementations when stamping isn't enabled.
+> Note: https://github.com/bazelbuild/bazel/issues/14341 proposes that Bazel enforce this by
+> only giving constant values to rule implementations when stamping isn't enabled.
 
 Stamping is typically performed on a later action in the graph, like on a linking or packaging rule (`pkg_*`).
 This means that a changed status variable only causes that action, not re-compilation and thus does not cause cascading re-builds.
@@ -32,13 +32,13 @@ The value of this flag is a path to a script that prints space-separated key/val
 #!/usr/bin/env bash
 echo STABLE_GIT_COMMIT $(git rev-parse HEAD)
 ```
-&gt; For a more full-featured script, take a look at this [example in Angular]
+> For a more full-featured script, take a look at this [example in Angular]
 
 Make sure you set the executable bit, eg. `chmod +x tools/bazel_stamp_vars.sh`.
 
-&gt; **NOTE** keys that start with `STABLE_` will cause a re-build when they change.
-&gt; Other keys will NOT cause a re-build, so stale values can appear in your app.
-&gt; Non-stable (volatile) keys should typically be things like timestamps that always vary between builds.
+> **NOTE** keys that start with `STABLE_` will cause a re-build when they change.
+> Other keys will NOT cause a re-build, so stale values can appear in your app.
+> Non-stable (volatile) keys should typically be things like timestamps that always vary between builds.
 
 You might like to encode your setup using an entry in `.bazelrc` such as:
 
@@ -88,7 +88,6 @@ my_stamp_aware_rule = rule(
     }, **STAMP_ATTRS),
 )
 ```
-
 
 <a id="maybe_stamp"></a>
 

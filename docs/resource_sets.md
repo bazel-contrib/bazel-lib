@@ -10,7 +10,6 @@ Rule authors who are ALSO the BUILD author might know better, and can
 write custom resource_set functions for use within their own repository.
 This seems to be the use case that Google engineers imagined.
 
-
 <a id="resource_set"></a>
 
 ## resource_set

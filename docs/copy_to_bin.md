@@ -8,7 +8,6 @@ command (fc.exe) on Windows (no Bash is required).
 Originally authored in rules_nodejs
 https://github.com/bazelbuild/rules_nodejs/blob/8b5d27400db51e7027fe95ae413eeabea4856f8e/internal/common/copy_to_bin.bzl
 
-
 <a id="copy_file_to_bin_action"></a>
 
 ## copy_file_to_bin_action
@@ -100,7 +99,7 @@ copy_to_bin(<a href="#copy_to_bin-name">name</a>, <a href="#copy_to_bin-srcs">sr
 
 Copies a source file to output tree at the same workspace-relative path.
 
-e.g. `&lt;execroot&gt;/path/to/file -&gt; &lt;execroot&gt;/bazel-out/&lt;platform&gt;/bin/path/to/file`
+e.g. `<execroot>/path/to/file -> <execroot>/bazel-out/<platform>/bin/path/to/file`
 
 If a file passed in is already in the output tree is then it is added directly to the
 DefaultInfo provided by the rule without a copy.
@@ -120,6 +119,6 @@ files are divided between the source tree and the output tree.
 | :------------- | :------------- | :------------- |
 | <a id="copy_to_bin-name"></a>name |  Name of the rule.   |  none |
 | <a id="copy_to_bin-srcs"></a>srcs |  A list of labels. File(s) to copy.   |  none |
-| <a id="copy_to_bin-kwargs"></a>kwargs |  further keyword arguments, e.g. <code>visibility</code>   |  none |
+| <a id="copy_to_bin-kwargs"></a>kwargs |  further keyword arguments, e.g. `visibility`   |  none |
 
 

@@ -1,4 +1,85 @@
-"Public API for write_source_files"
+"""write_source_files provides a workaround for the restriction that `bazel build` cannot write to the source tree.
+
+Read more about the philosophy of writing to the source tree: <https://blog.aspect.build/bazel-can-write-to-the-source-folder>
+
+## Usage
+
+```starlark
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+
+write_source_files(
+    name = "write_foobar",
+    files = {
+        "foobar.json": "//some/generated:file",
+    },
+)
+```
+
+To update the source file, run:
+
+```bash
+bazel run //:write_foobar
+```
+
+The generated `diff_test` will fail if the file is out of date and print out instructions on
+how to update it.
+
+If the file does not exist, Bazel will fail at analysis time and print out instructions on
+how to create it.
+
+You can declare a tree of generated source file targets:
+
+```starlark
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+
+write_source_files(
+    name = "write_all",
+    additional_update_targets = [
+        # Other write_source_files targets to run when this target is run
+        "//a/b/c:write_foo",
+        "//a/b:write_bar",
+    ]
+)
+```
+
+And update them with a single run:
+
+```bash
+bazel run //:write_all
+```
+
+When a file is out of date, you can leave a suggestion to run a target further up in the tree by specifying `suggested_update_target`.
+For example,
+
+```starlark
+write_source_files(
+    name = "write_foo",
+    files = {
+        "foo.json": ":generated-foo",
+    },
+    suggested_update_target = "//:write_all"
+)
+```
+
+A test failure from `foo.json` being out of date will yield the following message:
+
+```
+//a/b:c:foo.json is out of date. To update this and other generated files, run:
+
+    bazel run //:write_all
+
+To update *only* this file, run:
+
+    bazel run //a/b/c:write_foo
+```
+
+If you have many `write_source_files` targets that you want to update as a group, we recommend wrapping
+`write_source_files` in a macro that defaults `suggested_update_target` to the umbrella update target.
+
+NOTE: If you run formatters or linters on your codebase, it is advised that you exclude/ignore the outputs of this
+    rule from those formatters/linters so as to avoid causing collisions and failing tests.
+
+"""
 
 load(
     "//lib/private:write_source_file.bzl",
@@ -22,83 +103,6 @@ def write_source_files(
     By default, `diff_test` targets are generated that ensure the source tree files and/or directories to be written to
     are up to date and the rule also checks that all source tree files and/or directories to be written to exist.
     To disable the exists check and up-to-date tests set `diff_test` to `False`.
-
-    Usage:
-
-    ```starlark
-    load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
-
-    write_source_files(
-        name = "write_foobar",
-        files = {
-            "foobar.json": "//some/generated:file",
-        },
-    )
-    ```
-
-    To update the source file, run:
-
-    ```bash
-    bazel run //:write_foobar
-    ```
-
-    The generated `diff_test` will fail if the file is out of date and print out instructions on
-    how to update it.
-
-    If the file does not exist, Bazel will fail at analysis time and print out instructions on
-    how to create it.
-
-    You can declare a tree of generated source file targets:
-
-    ```starlark
-    load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
-
-    write_source_files(
-        name = "write_all",
-        additional_update_targets = [
-            # Other write_source_files targets to run when this target is run
-            "//a/b/c:write_foo",
-            "//a/b:write_bar",
-        ]
-    )
-    ```
-
-    And update them with a single run:
-
-    ```bash
-    bazel run //:write_all
-    ```
-
-    When a file is out of date, you can leave a suggestion to run a target further up in the tree by specifying `suggested_update_target`.
-    For example,
-
-    ```starlark
-    write_source_files(
-        name = "write_foo",
-        files = {
-            "foo.json": ":generated-foo",
-        },
-        suggested_update_target = "//:write_all"
-    )
-    ```
-
-    A test failure from `foo.json` being out of date will yield the following message:
-
-    ```
-    //a/b:c:foo.json is out of date. To update this and other generated files, run:
-
-        bazel run //:write_all
-
-    To update *only* this file, run:
-
-        bazel run //a/b/c:write_foo
-    ```
-
-    If you have many `write_source_files` targets that you want to update as a group, we recommend wrapping
-    `write_source_files` in a macro that defaults `suggested_update_target` to the umbrella update target.
-
-    NOTE: If you run formatters or linters on your codebase, it is advised that you exclude/ignore the outputs of this
-          rule from those formatters/linters so as to avoid causing collisions and failing tests.
 
     Args:
         name: Name of the runnable target that creates or updates the source tree files and/or directories.

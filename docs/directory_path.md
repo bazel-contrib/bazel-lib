@@ -3,7 +3,6 @@
 Rule and corresponding provider that joins a label pointing to a TreeArtifact
 with a path nested within that directory
 
-
 <a id="directory_path"></a>
 
 ## directory_path
@@ -60,10 +59,10 @@ Helper function to generate a directory_path target and return its label.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="make_directory_path-name"></a>name |  unique name for the generated <code>directory_path</code> target   |  none |
-| <a id="make_directory_path-directory"></a>directory |  <code>directory</code> attribute passed to generated <code>directory_path</code> target   |  none |
-| <a id="make_directory_path-path"></a>path |  <code>path</code> attribute passed to generated <code>directory_path</code> target   |  none |
-| <a id="make_directory_path-kwargs"></a>kwargs |  parameters to pass to generated <code>output_files</code> target   |  none |
+| <a id="make_directory_path-name"></a>name |  unique name for the generated `directory_path` target   |  none |
+| <a id="make_directory_path-directory"></a>directory |  `directory` attribute passed to generated `directory_path` target   |  none |
+| <a id="make_directory_path-path"></a>path |  `path` attribute passed to generated `directory_path` target   |  none |
+| <a id="make_directory_path-kwargs"></a>kwargs |  parameters to pass to generated `output_files` target   |  none |
 
 **RETURNS**
 
@@ -127,7 +126,7 @@ and the list of targets is returned,
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="make_directory_paths-name"></a>name |  The target name to use for the generated targets & labels.<br><br>The names are generated as zero-indexed <code>name + "_" + i</code>   |  none |
+| <a id="make_directory_paths-name"></a>name |  The target name to use for the generated targets & labels.<br><br>The names are generated as zero-indexed `name + "_" + i`   |  none |
 | <a id="make_directory_paths-dict"></a>dict |  The dictionary of directory keys to path or path list values.   |  none |
 | <a id="make_directory_paths-kwargs"></a>kwargs |  additional parameters to pass to each generated target   |  none |
 
