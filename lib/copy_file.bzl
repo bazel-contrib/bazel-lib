@@ -19,14 +19,14 @@
 
 """A rule that copies a file to another place.
 
-native.genrule() is sometimes used to copy files (often wishing to rename them).
-The 'copy_file' rule does this with a simpler interface than genrule.
+`native.genrule()` is sometimes used to copy files (often wishing to rename them).
+The `copy_file` rule does this with a simpler interface than genrule.
 
-The rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command
+The rule uses a Bash command on Linux/macOS/non-Windows, and a `cmd.exe` command
 on Windows (no Bash is required).
 
-This fork of bazel-skylib's copy_file adds DirectoryPathInfo support and allows multiple
-copy_file in the same package.
+This fork of bazel-skylib's copy_file adds `DirectoryPathInfo` support and allows multiple
+`copy_file` rules in the same package.
 """
 
 load(

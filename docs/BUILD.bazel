@@ -44,7 +44,6 @@ stardoc_with_diff_test(
 stardoc_with_diff_test(
     name = "params_file",
     bzl_library_target = "//lib:params_file",
-    func_template = "//docs/templates:func_html.vm",
 )
 
 stardoc_with_diff_test(
@@ -162,4 +161,6 @@ stardoc_with_diff_test(
     bzl_library_target = "//lib:resource_sets",
 )
 
-update_docs()
+update_docs(
+    tags = ["skip-on-bazel6"],
+)

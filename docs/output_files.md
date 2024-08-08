@@ -1,7 +1,8 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-A rule that provides file(s) specific via DefaultInfo from a given target's DefaultInfo or OutputGroupInfo
+A rule that provides file(s) specific via DefaultInfo from a given target's DefaultInfo or OutputGroupInfo.
 
+See also [select_file](https://github.com/bazelbuild/bazel-skylib/blob/main/docs/select_file_doc.md) from bazel-skylib.
 
 <a id="output_files"></a>
 
@@ -19,7 +20,7 @@ A rule that provides file(s) specific via DefaultInfo from a given target's Defa
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="output_files-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="output_files-output_group"></a>output_group |  if set, we look in the specified output group for paths instead of DefaultInfo   | String | optional | <code>""</code> |
+| <a id="output_files-output_group"></a>output_group |  if set, we look in the specified output group for paths instead of DefaultInfo   | String | optional |  `""`  |
 | <a id="output_files-paths"></a>paths |  the paths of the file(s), relative to their roots, to provide via DefaultInfo from the given target's DefaultInfo or OutputGroupInfo   | List of strings | required |  |
 | <a id="output_files-target"></a>target |  the target to look in for requested paths in its' DefaultInfo or OutputGroupInfo   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
@@ -39,10 +40,10 @@ Helper function to generate a output_files target and return its label.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="make_output_files-name"></a>name |  unique name for the generated <code>output_files</code> target   |  none |
-| <a id="make_output_files-target"></a>target |  <code>target</code> attribute passed to generated <code>output_files</code> target   |  none |
-| <a id="make_output_files-paths"></a>paths |  <code>paths</code> attribute passed to generated <code>output_files</code> target   |  none |
-| <a id="make_output_files-kwargs"></a>kwargs |  parameters to pass to generated <code>output_files</code> target   |  none |
+| <a id="make_output_files-name"></a>name |  unique name for the generated `output_files` target   |  none |
+| <a id="make_output_files-target"></a>target |  `target` attribute passed to generated `output_files` target   |  none |
+| <a id="make_output_files-paths"></a>paths |  `paths` attribute passed to generated `output_files` target   |  none |
+| <a id="make_output_files-kwargs"></a>kwargs |  parameters to pass to generated `output_files` target   |  none |
 
 **RETURNS**
 

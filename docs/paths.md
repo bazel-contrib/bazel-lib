@@ -1,6 +1,6 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-Public API
+Utilities for working with file paths.
 
 <a id="relative_file"></a>
 
@@ -40,14 +40,14 @@ The relative path from frm_file to to_file, including the file name
 to_output_relative_path(<a href="#to_output_relative_path-file">file</a>)
 </pre>
 
-    The relative path from bazel-out/[arch]/bin to the given File object
+The relative path from bazel-out/[arch]/bin to the given File object
 
 **PARAMETERS**
 
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="to_output_relative_path-file"></a>file |  a <code>File</code> object   |  none |
+| <a id="to_output_relative_path-file"></a>file |  a `File` object   |  none |
 
 **RETURNS**
 
@@ -75,7 +75,7 @@ rlocation path as it does not include the repository name if the `File` is from 
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="to_repository_relative_path-file"></a>file |  a <code>File</code> object   |  none |
+| <a id="to_repository_relative_path-file"></a>file |  a `File` object   |  none |
 
 **RETURNS**
 
@@ -96,20 +96,20 @@ This produces the same value as the `rlocationpath` predefined source/output pat
 
 From https://bazel.build/reference/be/make-variables#predefined_genrule_variables:
 
-&gt; `rlocationpath`: The path a built binary can pass to the `Rlocation` function of a runfiles
-&gt; library to find a dependency at runtime, either in the runfiles directory (if available)
-&gt; or using the runfiles manifest.
+> `rlocationpath`: The path a built binary can pass to the `Rlocation` function of a runfiles
+> library to find a dependency at runtime, either in the runfiles directory (if available)
+> or using the runfiles manifest.
 
-&gt; This is similar to root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path))
-&gt; in that it does not contain configuration prefixes, but differs in that it always starts with the
-&gt; name of the repository.
+> This is similar to root path (a.k.a. [short_path](https://bazel.build/rules/lib/File#short_path))
+> in that it does not contain configuration prefixes, but differs in that it always starts with the
+> name of the repository.
 
-&gt; The rlocation path of a `File` in an external repository repo will start with `repo/`, followed by the
-&gt; repository-relative path.
+> The rlocation path of a `File` in an external repository repo will start with `repo/`, followed by the
+> repository-relative path.
 
-&gt; Passing this path to a binary and resolving it to a file system path using the runfiles libraries
-&gt; is the preferred approach to find dependencies at runtime. Compared to root path, it has the
-&gt; advantage that it works on all platforms and even if the runfiles directory is not available.
+> Passing this path to a binary and resolving it to a file system path using the runfiles libraries
+> is the preferred approach to find dependencies at runtime. Compared to root path, it has the
+> advantage that it works on all platforms and even if the runfiles directory is not available.
 
 
 **PARAMETERS**
@@ -118,7 +118,7 @@ From https://bazel.build/reference/be/make-variables#predefined_genrule_variable
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="to_rlocation_path-ctx"></a>ctx |  starlark rule execution context   |  none |
-| <a id="to_rlocation_path-file"></a>file |  a <code>File</code> object   |  none |
+| <a id="to_rlocation_path-file"></a>file |  a `File` object   |  none |
 
 **RETURNS**
 

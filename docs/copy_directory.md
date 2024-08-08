@@ -5,7 +5,6 @@ A rule that copies a directory to another place.
 The rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command
 on Windows (no Bash is required).
 
-
 <a id="copy_directory"></a>
 
 ## copy_directory
@@ -33,8 +32,8 @@ for more context.
 | <a id="copy_directory-name"></a>name |  Name of the rule.   |  none |
 | <a id="copy_directory-src"></a>src |  The directory to make a copy of. Can be a source directory or TreeArtifact.   |  none |
 | <a id="copy_directory-out"></a>out |  Path of the output directory, relative to this package.   |  none |
-| <a id="copy_directory-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>Creating hardlinks is much faster than making copies of files with the caveat that hardlinks share file permissions with their source.<br><br>Since Bazel removes write permissions on files in the output tree after an action completes, hardlinks to source files within source directories is not recommended since write permissions will be inadvertently removed from sources files.<br><br>- "auto": hardlinks are used if src is a tree artifact already in the output tree - "off": files are always copied - "on": hardlinks are always used (not recommended)   |  <code>"auto"</code> |
-| <a id="copy_directory-kwargs"></a>kwargs |  further keyword arguments, e.g. <code>visibility</code>   |  none |
+| <a id="copy_directory-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>Creating hardlinks is much faster than making copies of files with the caveat that hardlinks share file permissions with their source.<br><br>Since Bazel removes write permissions on files in the output tree after an action completes, hardlinks to source files within source directories is not recommended since write permissions will be inadvertently removed from sources files.<br><br>- "auto": hardlinks are used if src is a tree artifact already in the output tree - "off": files are always copied - "on": hardlinks are always used (not recommended)   |  `"auto"` |
+| <a id="copy_directory-kwargs"></a>kwargs |  further keyword arguments, e.g. `visibility`   |  none |
 
 
 <a id="copy_directory_bin_action"></a>
@@ -63,7 +62,7 @@ within other rule implementations.
 | <a id="copy_directory_bin_action-src"></a>src |  The source directory to copy.   |  none |
 | <a id="copy_directory_bin_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
 | <a id="copy_directory_bin_action-copy_directory_bin"></a>copy_directory_bin |  Copy to directory tool binary.   |  none |
-| <a id="copy_directory_bin_action-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>See copy_directory rule documentation for more details.   |  <code>"auto"</code> |
-| <a id="copy_directory_bin_action-verbose"></a>verbose |  If true, prints out verbose logs to stdout   |  <code>False</code> |
+| <a id="copy_directory_bin_action-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>See copy_directory rule documentation for more details.   |  `"auto"` |
+| <a id="copy_directory_bin_action-verbose"></a>verbose |  If true, prints out verbose logs to stdout   |  `False` |
 
 
