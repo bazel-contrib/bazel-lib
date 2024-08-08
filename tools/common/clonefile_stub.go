@@ -3,5 +3,7 @@
 package common
 
 func cloneFile(src, dst string) (supported bool, err error) {
-	return false, nil
+	supported = false
+	err = nil
+	return
 }
