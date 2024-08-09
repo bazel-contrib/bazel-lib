@@ -17,20 +17,20 @@ def _validate_glob(expr):
     for i in range(expr_len):
         if expr[i] == "*" and i < expr_len - 1 and expr[i + 1] == "*":
             if i > 0 and expr[i - 1] != "/":
-                msg = "glob_match: `**` globstar in expression `{}` must be at the start of the expression or preceeded by `/`".format(expr)
+                msg = "glob_match: `**` globstar in expression `{}` must be at the start of the expression or preceded by `/`".format(expr)
                 fail(msg)
             if i < expr_len - 2 and expr[i + 2] != "/":
                 msg = "glob_match: `**` globstar in expression `{}` must be at the end of the expression or followed by `/`".format(expr)
                 fail(msg)
 
 def is_glob(expr):
-    """Determine if the passed string is a globa expression
+    """Determine if the passed string is a global expression
 
     Args:
         expr: the potential glob expression
 
     Returns:
-        True if the passed string is a globa expression
+        True if the passed string is a global expression
     """
 
     return expr.find("*") != -1 or expr.find("?") != -1
@@ -169,7 +169,7 @@ def glob_match(expr, path, match_path_separator = False):
                     super_continue = True
                     break
 
-            # Succesfully consumed a path segment
+            # Successfully consumed a path segment
             if super_continue:
                 continue
 

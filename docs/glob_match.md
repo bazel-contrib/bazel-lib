@@ -26,7 +26,7 @@ Test if the passed path matches the glob expression.
 | :------------- | :------------- | :------------- |
 | <a id="glob_match-expr"></a>expr |  the glob expression   |  none |
 | <a id="glob_match-path"></a>path |  the path against which to match the glob expression   |  none |
-| <a id="glob_match-match_path_separator"></a>match_path_separator |  whether or not to match the path separator '/' when matching <code>*</code> and <code>?</code> expressions   |  <code>False</code> |
+| <a id="glob_match-match_path_separator"></a>match_path_separator |  whether or not to match the path separator '/' when matching `*` and `?` expressions   |  `False` |
 
 **RETURNS**
 
@@ -41,7 +41,7 @@ True if the path matches the glob expression
 is_glob(<a href="#is_glob-expr">expr</a>)
 </pre>
 
-Determine if the passed string is a globa expression
+Determine if the passed string is a global expression
 
 **PARAMETERS**
 
@@ -52,6 +52,6 @@ Determine if the passed string is a globa expression
 
 **RETURNS**
 
-True if the passed string is a globa expression
+True if the passed string is a global expression
 
 

@@ -42,8 +42,8 @@ repos:
       - id: typos
         exclude: |
           (?x)^(
-            docs/|
-            lib/
+            lib/private/yq_toolchain.bzl|
+            lib/tests/glob_match_test.bzl
           )
   - repo: local
     hooks:

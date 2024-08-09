@@ -1,4 +1,6 @@
-"""A rule that provides file(s) specific via DefaultInfo from a given target's DefaultInfo or OutputGroupInfo
+"""A rule that provides file(s) specific via DefaultInfo from a given target's DefaultInfo or OutputGroupInfo.
+
+See also [select_file](https://github.com/bazelbuild/bazel-skylib/blob/main/docs/select_file_doc.md) from bazel-skylib.
 """
 
 load(

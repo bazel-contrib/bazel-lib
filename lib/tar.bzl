@@ -1,17 +1,23 @@
 """General-purpose rule to create tar archives.
 
-Unlike [pkg_tar from rules_pkg](https://github.com/bazelbuild/rules_pkg/blob/main/docs/latest.md#pkg_tar)
-this:
+Unlike [pkg_tar from rules_pkg](https://github.com/bazelbuild/rules_pkg/blob/main/docs/latest.md#pkg_tar):
 
-- Does not depend on any Python interpreter setup
+- It does not depend on any Python interpreter setup
 - The "manifest" specification is a mature public API and uses a compact tabular format, fixing
   https://github.com/bazelbuild/rules_pkg/pull/238
-- Does not have any custom program to produce the output, instead
-  we rely on a well-known C++ program called "tar".
+- It doesn't rely custom program to produce the output, instead
+  we rely on the well-known C++ program called "tar".
   Specifically, we use the BSD variant of tar since it provides a means
   of controlling mtimes, uid, symlinks, etc.
 
 We also provide full control for tar'ring binaries including their runfiles.
+
+The `tar` binary is hermetic and fully statically-linked.
+It is fetched as a toolchain from https://github.com/aspect-build/bsdtar-prebuilt.
+
+## Examples
+
+See the [`tar` tests](/lib/tests/tar/BUILD.bazel) for examples of usage.
 
 ## Mutating the tar contents
 
@@ -22,9 +28,11 @@ as the `mtree` attribute of the `tar` rule.
 For example, to set the owner uid of files in the tar, you could:
 
 ```starlark
+_TAR_SRCS = ["//some:files"]
+
 mtree_spec(
     name = "mtree",
-    srcs = ["//some:files"],
+    srcs = _TAR_SRCS,
 )
 
 mtree_mutate(
@@ -35,7 +43,7 @@ mtree_mutate(
 
 tar(
     name = "tar",
-    srcs = ["//some:files"],
+    srcs = _TAR_SRCS,
     mtree = "change_owner",
 )
 ```
@@ -110,7 +118,7 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
             # Ensure there's a trailing newline, as bsdtar will ignore a last line without one
             template = ["#mtree", "{content}", ""],
             substitutions = {
-                # expand_template only expands strings in "substitions" dict. Here
+                # expand_template only expands strings in "substitutions" dict. Here
                 # we expand mtree and then replace the template with expanded mtree.
                 "{content}": "\n".join(mtree),
             },

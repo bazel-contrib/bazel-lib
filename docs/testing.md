@@ -20,7 +20,7 @@ Assert that an archive file contains at least the given file entries.
 | <a id="assert_archive_contains-name"></a>name |  name of the resulting sh_test target   |  none |
 | <a id="assert_archive_contains-archive"></a>archive |  Label of the the .tar or .zip file   |  none |
 | <a id="assert_archive_contains-expected"></a>expected |  a (partial) file listing, either as a Label of a file containing it, or a list of strings   |  none |
-| <a id="assert_archive_contains-type"></a>type |  "tar" or "zip". If None, a type will be inferred from the filename.   |  <code>None</code> |
+| <a id="assert_archive_contains-type"></a>type |  "tar" or "zip". If None, a type will be inferred from the filename.   |  `None` |
 | <a id="assert_archive_contains-kwargs"></a>kwargs |  additional named arguments for the resulting sh_test   |  none |
 
 
@@ -45,7 +45,7 @@ Depends on bash, as it creates an sh_test target.
 | <a id="assert_contains-name"></a>name |  target to create   |  none |
 | <a id="assert_contains-actual"></a>actual |  Label of a file   |  none |
 | <a id="assert_contains-expected"></a>expected |  a string which should appear in the file   |  none |
-| <a id="assert_contains-size"></a>size |  standard attribute for tests   |  <code>"small"</code> |
+| <a id="assert_contains-size"></a>size |  standard attribute for tests   |  `"small"` |
 | <a id="assert_contains-kwargs"></a>kwargs |  additional named arguments for the resulting sh_test   |  none |
 
 
@@ -95,8 +95,8 @@ setup notes for the `jq` toolchain.
 | <a id="assert_json_matches-name"></a>name |  name of resulting diff_test target   |  none |
 | <a id="assert_json_matches-file1"></a>file1 |  a json file   |  none |
 | <a id="assert_json_matches-file2"></a>file2 |  another json file   |  none |
-| <a id="assert_json_matches-filter1"></a>filter1 |  a jq filter to apply to file1   |  <code>"."</code> |
-| <a id="assert_json_matches-filter2"></a>filter2 |  a jq filter to apply to file2   |  <code>"."</code> |
+| <a id="assert_json_matches-filter1"></a>filter1 |  a jq filter to apply to file1   |  `"."` |
+| <a id="assert_json_matches-filter2"></a>filter2 |  a jq filter to apply to file2   |  `"."` |
 | <a id="assert_json_matches-kwargs"></a>kwargs |  additional named arguments for the resulting diff_test   |  none |
 
 

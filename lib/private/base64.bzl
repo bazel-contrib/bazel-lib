@@ -9,12 +9,10 @@ the subset of python available in Starlark.
 load(":strings.bzl", "chr", "ord")
 
 def decode(data):
-    """Decode a Base64 encoded string.
-
-    See https://en.wikipedia.org/wiki/Base64.
+    """Decode a base64 encoded string.
 
     Args:
-        data: base64 encoded string
+        data: base64-encoded string
 
     Returns:
         A string containing the decoded data
@@ -40,13 +38,11 @@ def decode(data):
 def encode(data):
     """Base64 encode a string.
 
-    See https://en.wikipedia.org/wiki/Base64.
-
     Args:
         data: string to encode
 
     Returns:
-        The base64 encoded string
+        The base64-encoded string
     """
     padding = 0
     if len(data) % 3 != 0:

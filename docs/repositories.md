@@ -45,13 +45,13 @@ Registers bats toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_bats_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"bats"</code> |
-| <a id="register_bats_toolchains-core_version"></a>core_version |  bats-core version to use   |  <code>"v1.10.0"</code> |
-| <a id="register_bats_toolchains-support_version"></a>support_version |  bats-support version to use   |  <code>"v0.3.0"</code> |
-| <a id="register_bats_toolchains-assert_version"></a>assert_version |  bats-assert version to use   |  <code>"v2.1.0"</code> |
-| <a id="register_bats_toolchains-file_version"></a>file_version |  bats-file version to use   |  <code>"v0.4.0"</code> |
-| <a id="register_bats_toolchains-libraries"></a>libraries |  additional labels for libraries   |  <code>[]</code> |
-| <a id="register_bats_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_bats_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"bats"` |
+| <a id="register_bats_toolchains-core_version"></a>core_version |  bats-core version to use   |  `"v1.10.0"` |
+| <a id="register_bats_toolchains-support_version"></a>support_version |  bats-support version to use   |  `"v0.3.0"` |
+| <a id="register_bats_toolchains-assert_version"></a>assert_version |  bats-assert version to use   |  `"v2.1.0"` |
+| <a id="register_bats_toolchains-file_version"></a>file_version |  bats-file version to use   |  `"v0.4.0"` |
+| <a id="register_bats_toolchains-libraries"></a>libraries |  additional labels for libraries   |  `[]` |
+| <a id="register_bats_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_copy_directory_toolchains"></a>
@@ -69,8 +69,8 @@ Registers copy_directory toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_copy_directory_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"copy_directory"</code> |
-| <a id="register_copy_directory_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_copy_directory_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"copy_directory"` |
+| <a id="register_copy_directory_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_copy_to_directory_toolchains"></a>
@@ -88,8 +88,8 @@ Registers copy_to_directory toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_copy_to_directory_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"copy_to_directory"</code> |
-| <a id="register_copy_to_directory_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_copy_to_directory_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"copy_to_directory"` |
+| <a id="register_copy_to_directory_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_coreutils_toolchains"></a>
@@ -107,9 +107,9 @@ Registers coreutils toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_coreutils_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"coreutils"</code> |
-| <a id="register_coreutils_toolchains-version"></a>version |  the version of coreutils to execute (see https://github.com/uutils/coreutils/releases)   |  <code>"0.0.26"</code> |
-| <a id="register_coreutils_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_coreutils_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"coreutils"` |
+| <a id="register_coreutils_toolchains-version"></a>version |  the version of coreutils to execute (see https://github.com/uutils/coreutils/releases)   |  `"0.0.26"` |
+| <a id="register_coreutils_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_expand_template_toolchains"></a>
@@ -127,8 +127,8 @@ Registers expand_template toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_expand_template_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"expand_template"</code> |
-| <a id="register_expand_template_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_expand_template_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"expand_template"` |
+| <a id="register_expand_template_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_jq_toolchains"></a>
@@ -146,9 +146,9 @@ Registers jq toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_jq_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"jq"</code> |
-| <a id="register_jq_toolchains-version"></a>version |  the version of jq to execute (see https://github.com/stedolan/jq/releases)   |  <code>"1.7"</code> |
-| <a id="register_jq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_jq_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"jq"` |
+| <a id="register_jq_toolchains-version"></a>version |  the version of jq to execute (see https://github.com/stedolan/jq/releases)   |  `"1.7"` |
+| <a id="register_jq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_tar_toolchains"></a>
@@ -166,8 +166,8 @@ Registers bsdtar toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_tar_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"bsd_tar"</code> |
-| <a id="register_tar_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_tar_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"bsd_tar"` |
+| <a id="register_tar_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_yq_toolchains"></a>
@@ -185,9 +185,9 @@ Registers yq toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_yq_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"yq"</code> |
-| <a id="register_yq_toolchains-version"></a>version |  the version of yq to execute (see https://github.com/mikefarah/yq/releases)   |  <code>"4.25.2"</code> |
-| <a id="register_yq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_yq_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"yq"` |
+| <a id="register_yq_toolchains-version"></a>version |  the version of yq to execute (see https://github.com/mikefarah/yq/releases)   |  `"4.25.2"` |
+| <a id="register_yq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
 <a id="register_zstd_toolchains"></a>
@@ -205,7 +205,7 @@ Registers zstd toolchain and repositories
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="register_zstd_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  <code>"zstd"</code> |
-| <a id="register_zstd_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  <code>True</code> |
+| <a id="register_zstd_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"zstd"` |
+| <a id="register_zstd_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 

@@ -312,7 +312,7 @@ _COMMON_BINARY_RULE_ATTRIBUTES = _COMMON_RULE_ATTRIBUTES + [
 ]
 
 def _propagate_common_rule_attributes(attrs):
-    """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all rules
+    """Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all rules
 
     These are listed in Bazel's documentation:
     https://bazel.build/reference/be/common-definitions#common-attributes
@@ -331,7 +331,7 @@ def _propagate_common_rule_attributes(attrs):
     }
 
 def _propagate_common_test_rule_attributes(attrs):
-    """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all test rules
+    """Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all test rules
 
     These are listed in Bazel's documentation:
     https://bazel.build/reference/be/common-definitions#common-attributes
@@ -351,7 +351,7 @@ def _propagate_common_test_rule_attributes(attrs):
     }
 
 def _propagate_common_binary_rule_attributes(attrs):
-    """Returns a dict of rule parameters filtered from the input dict that only contains the onces that are common to all binary rules
+    """Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all binary rules
 
     These are listed in Bazel's documentation:
     https://bazel.build/reference/be/common-definitions#common-attributes
