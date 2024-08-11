@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 )
 
 // From https://opensource.com/article/18/6/copying-files-go
@@ -27,7 +28,7 @@ func CopyFile(src string, dst string) error {
 }
 
 func Copy(opts CopyOpts) {
-	if !opts.info.Mode().IsRegular() {
+	if !opts.srcInfo.Mode().IsRegular() {
 		log.Fatalf("%s is not a regular file", opts.src)
 	}
 
@@ -79,6 +80,14 @@ func Copy(opts CopyOpts) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if opts.preserveMTime {
+		accessTime := time.Now()
+		err := os.Chtimes(opts.dst, accessTime, opts.srcInfo.ModTime())
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 type CopyWorker struct {
@@ -97,12 +106,13 @@ func (w *CopyWorker) Run(wg *sync.WaitGroup) {
 }
 
 type CopyOpts struct {
-	src, dst string
-	info     fs.FileInfo
-	hardlink bool
-	verbose  bool
+	src, dst     string
+	srcInfo      fs.FileInfo
+	hardlink     bool
+	verbose      bool
+	preserveMTime bool
 }
 
-func NewCopyOpts(src string, dst string, info fs.FileInfo, hardlink bool, verbose bool) CopyOpts {
-	return CopyOpts{src: src, dst: dst, info: info, hardlink: hardlink, verbose: verbose}
+func NewCopyOpts(src string, dst string, srcInfo fs.FileInfo, hardlink bool, verbose bool, preserveMTime bool) CopyOpts {
+	return CopyOpts{src: src, dst: dst, srcInfo: srcInfo, hardlink: hardlink, verbose: verbose, preserveMTime: preserveMTime}
 }

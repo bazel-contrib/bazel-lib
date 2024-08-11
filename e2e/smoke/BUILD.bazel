@@ -99,3 +99,28 @@ bats_test(
         "basic.bats",
     ],
 )
+
+copy_to_directory(
+    name = "copy_to_directory_mtime_case",
+    srcs = ["d"],
+    out = "copy_to_directory_mtime_out",
+    preserve_mtime = True,
+)
+
+copy_directory(
+    name = "copy_directory_mtime_case",
+    src = "d",
+    out = "copy_directory_mtime_out",
+    preserve_mtime = True,
+)
+
+sh_test(
+    name = "test_preserve_mtime",
+    srcs = ["test_preserve_mtime.sh"],
+    data = [
+        "d",
+        ":copy_to_directory_mtime_case",
+        ":copy_directory_mtime_case",
+    ],
+    size = "small",
+)
