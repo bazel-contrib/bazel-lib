@@ -106,10 +106,10 @@ func (w *CopyWorker) Run(wg *sync.WaitGroup) {
 }
 
 type CopyOpts struct {
-	src, dst     string
-	srcInfo      fs.FileInfo
-	hardlink     bool
-	verbose      bool
+	src, dst      string
+	srcInfo       fs.FileInfo
+	hardlink      bool
+	verbose       bool
 	preserveMTime bool
 }
 

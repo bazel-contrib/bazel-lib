@@ -116,11 +116,11 @@ copy_directory(
 
 sh_test(
     name = "test_preserve_mtime",
+    size = "small",
     srcs = ["test_preserve_mtime.sh"],
     data = [
         "d",
-        ":copy_to_directory_mtime_case",
         ":copy_directory_mtime_case",
+        ":copy_to_directory_mtime_case",
     ],
-    size = "small",
 )
