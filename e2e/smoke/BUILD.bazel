@@ -123,10 +123,15 @@ sh_test(
         ":copy_directory_mtime_case",
         ":copy_to_directory_mtime_case",
     ],
-    # on macos, fails with
+    # FIXME(#898)
+    # On macos, fails with
     # stat: illegal option -- -
     # usage: stat [-FLnq] [-f format | -l | -r | -s | -x] [-t timefmt] [file ...]
-    # on windows, fails with
+    # On windows, fails with
     # stat: cannot stat 'd/1': No such file or directory
-    target_compatible_with = ["@platforms//os:linux"],
+    # On Linux, it's helplessly flaky, often failing in 2/2 attempts like
+    # Preserve mtime test failed. Modify times do not match for d/1 and copy_to_directory_mtime_out/d/1
+    # Original modify time: 2024-08-14 18:23:01.413642851 +0000
+    # Copied modify time:   2024-08-14 18:23:31.501819589 +0000
+    tags = ["manual"],
 )
