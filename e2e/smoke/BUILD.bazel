@@ -123,4 +123,10 @@ sh_test(
         ":copy_directory_mtime_case",
         ":copy_to_directory_mtime_case",
     ],
+    # on macos, fails with
+    # stat: illegal option -- -
+    # usage: stat [-FLnq] [-f format | -l | -r | -s | -x] [-t timefmt] [file ...]
+    # on windows, fails with
+    # stat: cannot stat 'd/1': No such file or directory
+    target_compatible_with = ["@platforms//os:linux"],
 )
