@@ -106,6 +106,7 @@ copy_to_directory(
     srcs = ["d"],
     out = "copy_to_directory_mtime_out",
     preserve_mtime = True,
+    tags = ["no-remote"],
 )
 
 copy_directory(
@@ -113,6 +114,7 @@ copy_directory(
     src = "d",
     out = "copy_directory_mtime_out",
     preserve_mtime = True,
+    tags = ["no-remote"],
 )
 
 go_test(
@@ -124,4 +126,5 @@ go_test(
         ":copy_directory_mtime_case",
         ":copy_to_directory_mtime_case",
     ],
+    tags = ["no-remote", "external"],
 )
