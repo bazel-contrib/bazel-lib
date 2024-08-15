@@ -100,7 +100,16 @@ _copy_directory = rule(
         ),
         "verbose": attr.bool(),
         "preserve_mtime": attr.bool(
-            doc = "If True, the last modified time of copied files is preserved.",
+            doc = """If True, the last modified time of copied files is preserved.
+
+There are two caveats to consider when using this feature:
+1. Remote Execution / Caching: These layers will reset the modify time and are
+incompatible with this feature. To avoid these failures the [no-remote tag](https://bazel.build/reference/be/common-definitions)
+can be added.
+2. Caching: Changes to only the modified time will not re-trigger cached actions. This can
+be worked around by using a clean build when these types of changes occur. For tests the
+[external tag](https://bazel.build/reference/be/common-definitions) can be used but this
+will result in tests never being cached.""",
             default = False,
         ),
         # use '_tool' attribute for development only; do not commit with this attribute active since it
@@ -149,6 +158,17 @@ def copy_directory(
         - "auto": hardlinks are used if src is a tree artifact already in the output tree
         - "off": files are always copied
         - "on": hardlinks are always used (not recommended)
+        
+      preserve_mtime: If True, the last modified time of copied files is preserved.
+
+        There are two caveats to consider when using this feature:
+        1. Remote Execution / Caching: These layers will reset the modify time and are
+           incompatible with this feature. To avoid these failures the [no-remote tag](https://bazel.build/reference/be/common-definitions)
+           can be added.
+        2. Caching: Changes to only the modified time will not re-trigger cached actions. This can
+           be worked around by using a clean build when these types of changes occur. For tests the
+           [external tag](https://bazel.build/reference/be/common-definitions) can be used but this
+           will result in tests never being cached.
 
       **kwargs: further keyword arguments, e.g. `visibility`
     """
