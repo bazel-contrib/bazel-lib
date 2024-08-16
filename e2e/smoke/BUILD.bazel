@@ -121,6 +121,9 @@ go_test(
     name = "test_preserve_mtime",
     size = "small",
     srcs = ["test_preserve_mtime.go"],
+    deps = [
+        "@io_bazel_rules_go//go/tools/bazel:go_default_library",
+    ],
     data = [
         "d",
         ":copy_directory_mtime_case",
