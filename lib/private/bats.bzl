@@ -41,7 +41,7 @@ def _bats_test_impl(ctx):
     for (key, value) in ctx.attr.env.items():
         envs.append(_ENV_SET.format(
             key = key,
-            value = " ".join([expand_variables(ctx, exp, attribute_name = "env") for exp in ctx.expand_location(value, targets = ctx.attr.data).split(" ")]),
+            value = expand_variables(ctx, ctx.expand_location(value, targets = ctx.attr.data), attribute_name = "env"),
         ))
 
     # See https://www.msys2.org/wiki/Porting/:

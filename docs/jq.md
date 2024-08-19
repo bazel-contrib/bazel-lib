@@ -144,7 +144,7 @@ Invoke jq with a filter on a set of json input files.
 | <a id="jq-args"></a>args |  Additional args to pass to jq   |  `[]` |
 | <a id="jq-out"></a>out |  Name of the output json file; defaults to the rule name plus ".json"   |  `None` |
 | <a id="jq-data"></a>data |  List of additional files. May be empty.   |  `[]` |
-| <a id="jq-expand_args"></a>expand_args |  Run bazel's location-expansion on the args.   |  `False` |
+| <a id="jq-expand_args"></a>expand_args |  Run bazel's location and make variable expansion on the args.   |  `False` |
 | <a id="jq-kwargs"></a>kwargs |  Other common named parameters such as `tags` or `visibility`   |  none |
 
 
