@@ -116,6 +116,7 @@ go_binary(
 
 go_test(
     name = "test_transition_test",
+    size = "small",
     srcs = ["simple_test.go"],
 )
 
@@ -155,6 +156,7 @@ platform_transition_test(
 
 sh_test(
     name = "test_go_binary_is_x86_64",
+    size = "small",
     srcs = ["test_file_type_contains.sh"],
     args = [
         "$(rootpath :transitioned_go_binary_x86_64)",
@@ -165,6 +167,7 @@ sh_test(
 
 sh_test(
     name = "test_go_binary_is_arm64",
+    size = "small",
     srcs = ["test_file_type_contains.sh"],
     args = [
         "$(rootpath :transitioned_go_binary_arm64)",
@@ -175,6 +178,7 @@ sh_test(
 
 sh_test(
     name = "test_go_test_is_x86_64",
+    size = "small",
     srcs = ["test_file_type_contains.sh"],
     args = [
         "$(rootpath :transitioned_go_test_x86_64)",
@@ -185,6 +189,7 @@ sh_test(
 
 sh_test(
     name = "test_go_test_is_arm64",
+    size = "small",
     srcs = ["test_file_type_contains.sh"],
     args = [
         "$(rootpath :transitioned_go_test_arm64)",
