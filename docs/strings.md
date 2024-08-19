@@ -80,3 +80,29 @@ Unicode replacement character, U+FFFD.
 codepoint of `c` argument.
 
 
+<a id="split_args"></a>
+
+## split_args
+
+<pre>
+split_args(<a href="#split_args-s">s</a>)
+</pre>
+
+Split a string into a list space separated arguments
+
+Unlike the naive `.split(" ")`, this function takes quoted strings
+and escapes into account.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="split_args-s"></a>s |  input string   |  none |
+
+**RETURNS**
+
+list of strings with each an argument found in the input string
+
+

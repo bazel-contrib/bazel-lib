@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:strings.bzl", "chr", "hex", "ord")
+load("//lib/private:strings.bzl", "chr", "hex", "ord", "split_args")
 
 def _ord_test_impl(ctx):
     env = unittest.begin(ctx)
@@ -56,10 +56,38 @@ def _hex_test_impl(ctx):
 
 hex_test = unittest.make(_hex_test_impl)
 
+def _split_args_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(env, ["a", "b", "c", "d"], split_args("a b c d"))
+
+    # sinle quotes
+    asserts.equals(env, ["a", "b c", "d"], split_args("a 'b c' d"))
+
+    # double quotes
+    asserts.equals(env, ["a", "b c", "d"], split_args("a \"b c\" d"))
+
+    # escaped single quotes
+    asserts.equals(env, ["a", "'b", "c'", "d"], split_args("a \\'b c\\' d"))
+
+    # escaped double quotes
+    asserts.equals(env, ["a", "\"b", "c\"", "d"], split_args("a \\\"b c\\\" d"))
+
+    # sinle quotes containing escaped quotes
+    asserts.equals(env, ["a", "b'\" c", "d"], split_args("a 'b\\'\\\" c' d"))
+
+    # double quotes containing escaped quotes
+    asserts.equals(env, ["a", "b'\" c", "d"], split_args("a \"b\\'\\\" c\" d"))
+
+    return unittest.end(env)
+
+split_args_test = unittest.make(_split_args_test_impl)
+
 def strings_test_suite():
     unittest.suite(
         "strings_tests",
         partial.make(ord_test, timeout = "short"),
         partial.make(chr_test, timeout = "short"),
         partial.make(hex_test, timeout = "short"),
+        partial.make(split_args_test, timeout = "short"),
     )

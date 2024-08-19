@@ -160,6 +160,8 @@ bzl_library(
     srcs = ["jq.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
+        ":expand_variables",
+        ":strings",
         "//lib:stamping",
     ],
 )
@@ -182,6 +184,10 @@ bzl_library(
     name = "params_file",
     srcs = ["params_file.bzl"],
     visibility = ["//lib:__subpackages__"],
+    deps = [
+        ":expand_variables",
+        ":strings",
+    ],
 )
 
 bzl_library(
@@ -204,6 +210,7 @@ bzl_library(
     visibility = ["//lib:__subpackages__"],
     deps = [
         ":expand_variables",
+        ":strings",
         "//lib:stamping",
         "@bazel_skylib//lib:dicts",
     ],

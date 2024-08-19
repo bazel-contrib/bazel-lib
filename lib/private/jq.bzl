@@ -1,6 +1,8 @@
 """Implementation for jq rule"""
 
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
+load(":expand_variables.bzl", "expand_variables")
+load(":strings.bzl", "split_args")
 
 _jq_attrs = dict({
     "srcs": attr.label_list(
@@ -22,12 +24,6 @@ _jq_attrs = dict({
     ),
 }, **STAMP_ATTRS)
 
-def _expand_locations(ctx, s):
-    # `.split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
-    # TODO: If the string has intentional spaces or if one or more of the expanded file
-    # locations has a space in the name, we will incorrectly split it into multiple arguments
-    return ctx.expand_location(s, targets = ctx.attr.data).split(" ")
-
 def _jq_impl(ctx):
     jq_bin = ctx.toolchains["@aspect_bazel_lib//lib:jq_toolchain_type"].jqinfo.bin
 
@@ -35,7 +31,7 @@ def _jq_impl(ctx):
     if ctx.attr.expand_args:
         args = []
         for a in ctx.attr.args:
-            args += _expand_locations(ctx, a)
+            args += split_args(expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.data), outs = [out]))
     else:
         args = ctx.attr.args
 
@@ -52,7 +48,7 @@ def _jq_impl(ctx):
         args = args + ["--null-input"]
 
     if ctx.attr.filter_file:
-        args = args + ["--from-file '%s'" % ctx.file.filter_file.path]
+        args = args + ["--from-file", ctx.file.filter_file.path]
         inputs.append(ctx.file.filter_file)
 
     stamp = maybe_stamp(ctx)
@@ -76,9 +72,16 @@ def _jq_impl(ctx):
 
         args = args + ["--slurpfile", "STAMP", stamp_json.path]
 
+    # quote args that contain spaces
+    quoted_args = []
+    for a in args:
+        if " " in a:
+            a = "'{}'".format(a)
+        quoted_args.append(a)
+
     cmd = "{jq} {args} {filter} {sources} > {out}".format(
         jq = jq_bin.path,
-        args = " ".join(args),
+        args = " ".join(quoted_args),
         filter = "'%s'" % ctx.attr.filter if ctx.attr.filter else "",
         sources = " ".join(["'%s'" % file.path for file in ctx.files.srcs]),
         out = out.path,

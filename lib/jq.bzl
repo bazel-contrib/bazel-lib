@@ -144,7 +144,7 @@ def jq(name, srcs, filter = None, filter_file = None, args = [], out = None, dat
 
         filter_file: File containing filter expression (alternative to `filter`)
         args: Additional args to pass to jq
-        expand_args: Run bazel's location-expansion on the args.
+        expand_args: Run bazel's location and make variable expansion on the args.
         out: Name of the output json file; defaults to the rule name plus ".json"
         **kwargs: Other common named parameters such as `tags` or `visibility`
     """
