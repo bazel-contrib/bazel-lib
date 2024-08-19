@@ -6,6 +6,7 @@ sh_library(
 
 sh_test(
     name = "assert_equal_test",
+    size = "small",
     srcs = ["assert_equal_test.sh"],
     deps = [
         ":assert_fail",
@@ -16,6 +17,7 @@ sh_test(
 
 sh_test(
     name = "assert_match_test",
+    size = "small",
     srcs = ["assert_match_test.sh"],
     deps = [
         ":assert_fail",
@@ -26,6 +28,7 @@ sh_test(
 
 sh_test(
     name = "assert_no_match_test",
+    size = "small",
     srcs = ["assert_no_match_test.sh"],
     deps = [
         ":assert_fail",
