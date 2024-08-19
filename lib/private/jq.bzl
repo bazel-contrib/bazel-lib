@@ -1,7 +1,6 @@
 """Implementation for jq rule"""
 
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
-load(":expand_locations.bzl", "expand_locations")
 
 _jq_attrs = dict({
     "srcs": attr.label_list(
@@ -27,7 +26,7 @@ def _expand_locations(ctx, s):
     # `.split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
     # TODO: If the string has intentional spaces or if one or more of the expanded file
     # locations has a space in the name, we will incorrectly split it into multiple arguments
-    return expand_locations(ctx, s, targets = ctx.attr.data).split(" ")
+    return ctx.expand_location(s, targets = ctx.attr.data).split(" ")
 
 def _jq_impl(ctx):
     jq_bin = ctx.toolchains["@aspect_bazel_lib//lib:jq_toolchain_type"].jqinfo.bin

@@ -1,7 +1,5 @@
 "params_file rule"
 
-load(":expand_locations.bzl", "expand_locations")
-
 _ATTRS = {
     "args": attr.string_list(),
     "data": attr.label_list(allow_files = True),
@@ -17,7 +15,7 @@ def _expand_locations(ctx, s):
     # `.split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
     # TODO: If the string has intentional spaces or if one or more of the expanded file
     # locations has a space in the name, we will incorrectly split it into multiple arguments
-    return expand_locations(ctx, s, targets = ctx.attr.data).split(" ")
+    return ctx.expand_location(s, targets = ctx.attr.data).split(" ")
 
 def _params_file_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])

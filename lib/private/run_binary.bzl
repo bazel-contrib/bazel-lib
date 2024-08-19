@@ -16,7 +16,6 @@
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
-load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
 
 def _run_binary_impl(ctx):
@@ -52,10 +51,10 @@ Possible fixes:
     # TODO: If the string has intentional spaces or if one or more of the expanded file
     # locations has a space in the name, we will incorrectly split it into multiple arguments
     for a in ctx.attr.args:
-        args.add_all([expand_variables(ctx, e, outs = outputs) for e in expand_locations(ctx, a, ctx.attr.srcs).split(" ")])
+        args.add_all([expand_variables(ctx, e, outs = outputs) for e in ctx.expand_location(a, targets = ctx.attr.srcs).split(" ")])
     envs = {}
     for k, v in ctx.attr.env.items():
-        envs[k] = " ".join([expand_variables(ctx, e, outs = outputs, attribute_name = "env") for e in expand_locations(ctx, v, ctx.attr.srcs).split(" ")])
+        envs[k] = " ".join([expand_variables(ctx, e, outs = outputs, attribute_name = "env") for e in ctx.expand_location(v, targets = ctx.attr.srcs).split(" ")])
 
     stamp = maybe_stamp(ctx)
     if stamp:
