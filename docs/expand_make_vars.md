@@ -48,6 +48,10 @@ The deprecated `$(location)` and `$(locations)` expansions returns either the ex
 
 The expanded path or the original path
 
+**DEPRECATED**
+
+Use vanilla `ctx.expand_location(input, targets = targets)` instead
+
 
 <a id="expand_variables"></a>
 

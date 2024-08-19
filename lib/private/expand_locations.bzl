@@ -32,6 +32,9 @@ def expand_locations(ctx, input, targets = []):
 
     Returns:
       The expanded path or the original path
+
+    Deprecated:
+      Use vanilla `ctx.expand_location(input, targets = targets)` instead
     """
 
     return ctx.expand_location(input, targets = targets)
