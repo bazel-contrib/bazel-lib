@@ -1,5 +1,6 @@
 """unit tests for lists"""
 
+load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//lib/private:lists.bzl", "every", "filter", "find", "map", "once", "pick", "some", "unique")
 
@@ -82,12 +83,12 @@ unique_test = unittest.make(_unique_test_impl)
 def lists_test_suite():
     unittest.suite(
         "lists_tests",
-        every_test,
-        filter_test,
-        find_test,
-        map_test,
-        once_test,
-        pick_test,
-        some_test,
-        unique_test,
+        partial.make(every_test, timeout = "short"),
+        partial.make(filter_test, timeout = "short"),
+        partial.make(find_test, timeout = "short"),
+        partial.make(map_test, timeout = "short"),
+        partial.make(once_test, timeout = "short"),
+        partial.make(pick_test, timeout = "short"),
+        partial.make(some_test, timeout = "short"),
+        partial.make(unique_test, timeout = "short"),
     )
