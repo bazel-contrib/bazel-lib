@@ -1,5 +1,6 @@
 """unit tests for base64"""
 
+load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//lib/private:base64.bzl", "decode", "encode")
 load("//lib/private:strings.bzl", "INT_TO_CHAR")
@@ -45,5 +46,5 @@ base64_test = unittest.make(_base64_test_impl)
 def base64_test_suite():
     unittest.suite(
         "base64_tests",
-        base64_test,
+        partial.make(base64_test, timeout = "short"),
     )

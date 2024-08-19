@@ -1,5 +1,6 @@
 """unit tests for string"""
 
+load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//lib/private:strings.bzl", "chr", "hex", "ord")
 
@@ -58,7 +59,7 @@ hex_test = unittest.make(_hex_test_impl)
 def strings_test_suite():
     unittest.suite(
         "strings_tests",
-        ord_test,
-        chr_test,
-        hex_test,
+        partial.make(ord_test, timeout = "short"),
+        partial.make(chr_test, timeout = "short"),
+        partial.make(hex_test, timeout = "short"),
     )
