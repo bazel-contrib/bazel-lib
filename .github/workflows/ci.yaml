@@ -112,6 +112,9 @@ jobs:
           # Don't test RBE with on Windows (not configured)
           - os: windows
             config: rbe
+          # Root workspace is bzlmod-only
+          - folder: .
+            bzlmod: 0
           # TODO: green up root Workspace on MacOS & Windows
           - folder: .
             os: macos

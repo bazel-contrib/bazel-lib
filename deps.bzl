@@ -1,7 +1,7 @@
 """This module contains the project repository dependencies.
 """
 
-load("@bazel_gazelle//:deps.bzl", "go_repository")
+load("@gazelle//:deps.bzl", "go_repository")
 
 def go_dependencies():
     """The Go dependencies.
