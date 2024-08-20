@@ -13,10 +13,12 @@ import (
 
 type pathSet map[string]bool
 
-var srcPaths = pathSet{}
-var hardlink = false
-var verbose = false
-var preserveMTime = false
+var (
+	srcPaths      = pathSet{}
+	hardlink      = false
+	verbose       = false
+	preserveMTime = false
+)
 
 type walker struct {
 	queue chan<- common.CopyOpts
