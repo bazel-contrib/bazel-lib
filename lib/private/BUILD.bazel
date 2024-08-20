@@ -265,12 +265,7 @@ bzl_library(
         "@host_platform//:constraints.bzl",  # keep
         "@local_config_platform//:constraints.bzl",  # keep
         "@platforms//host:constraints.bzl",  # keep
-    ] + (select({
-        "@aspect_bazel_lib//lib:bzlmod": [],
-        "//conditions:default": [
-            "@internal_platforms_do_not_use//host:constraints.bzl",  # keep
-        ],
-    }) if is_bazel_7_or_greater() else []),
+    ],
     visibility = ["//lib:__subpackages__"],
     deps = [],  # keep
 )
