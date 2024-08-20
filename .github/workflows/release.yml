@@ -2,12 +2,10 @@
 # You should use an annotated tag, like `git tag -a v1.2.3`
 # and put the release notes into the commit message for the tag.
 name: Release
-
 on:
   push:
     tags:
       - "v*.*.*"
-
 jobs:
   build:
     # Go cross-compilation works from linux -> any platform
@@ -28,7 +26,6 @@ jobs:
           name: artifacts
           path: artifacts/
           retention-days: 1
-
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -37,10 +34,8 @@ jobs:
       # Fetch the built artifacts from build jobs above and extract into
       # ${GITHUB_WORKSPACE}/artifacts/*
       - uses: actions/download-artifact@v4
-
       - name: Prepare workspace snippet
         run: .github/workflows/release_prep.sh > release_notes.txt
-
       - uses: softprops/action-gh-release@v2
         with:
           # Use GH feature to populate the changelog automatically

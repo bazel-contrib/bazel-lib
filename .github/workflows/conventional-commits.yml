@@ -1,15 +1,12 @@
 name: Verify PR title/description
-
 on:
   pull_request_target:
     types:
       - opened
       - edited
       - synchronize
-
 permissions:
   pull-requests: read
-
 jobs:
   check:
     runs-on: ubuntu-latest
