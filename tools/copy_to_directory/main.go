@@ -47,11 +47,15 @@ type config struct {
 	TargetWorkspace     *string
 }
 
-type copyMap map[string]fileInfo
-type pathSet map[string]bool
+type (
+	copyMap map[string]fileInfo
+	pathSet map[string]bool
+)
 
-var copySet = copyMap{}
-var mkdirSet = pathSet{}
+var (
+	copySet  = copyMap{}
+	mkdirSet = pathSet{}
+)
 
 func parseConfig(configPath string, wkspName *string) (*config, error) {
 	f, err := os.Open(configPath)

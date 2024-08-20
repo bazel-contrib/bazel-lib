@@ -2,11 +2,10 @@ load("@aspect_rules_lint//format:defs.bzl", "format_multirun")
 
 format_multirun(
     name = "format",
-    # TODO: enable formatters in follow-up PR
-    # go = "@aspect_rules_lint//format:gofumpt",
-    # shell = "@aspect_rules_lint//format:shfmt",
+    go = "@aspect_rules_lint//format:gofumpt",
+    shell = "@aspect_rules_lint//format:shfmt",
     starlark = "@buildifier_prebuilt//:buildifier",
     tags = ["manual"],
     visibility = ["//:__subpackages__"],
-    # yaml = "@aspect_rules_lint//format:yamlfmt",
+    yaml = "@aspect_rules_lint//format:yamlfmt",
 )

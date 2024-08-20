@@ -3,8 +3,9 @@
 package common
 
 import (
-	"golang.org/x/sys/unix"
 	"os"
+
+	"golang.org/x/sys/unix"
 )
 
 // https://keith.github.io/xcode-man-pages/clonefile.2.html

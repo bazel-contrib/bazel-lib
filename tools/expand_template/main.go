@@ -60,9 +60,9 @@ func main() {
 		content = strings.ReplaceAll(content, key, value)
 	}
 
-	var mode os.FileMode = 0666
+	var mode os.FileMode = 0o666
 	if executable {
-		mode = 0777
+		mode = 0o777
 	}
 	err = os.WriteFile(args[1], []byte(content), mode)
 	if err != nil {
@@ -89,5 +89,4 @@ func parseStatusFile(statusFilePath string) (map[string]string, error) {
 	}
 
 	return results, nil
-
 }
