@@ -9,7 +9,7 @@ module(
 
 # Lower-bounds (minimum) versions for direct runtime dependencies
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
-bazel_dep(name = "platforms", version = "0.0.8")
+bazel_dep(name = "platforms", version = "0.0.10")
 
 # 0.5.4 is the first version with bzlmod support
 bazel_dep(name = "stardoc", version = "0.6.2", repo_name = "io_bazel_stardoc")
@@ -72,6 +72,9 @@ use_repo(
 host = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "host", dev_dependency = True)
 host.host()
 use_repo(host, "aspect_bazel_lib_host")
+
+host_platform = use_extension("@platforms//host:extension.bzl", "host_platform", dev_dependency = True)
+use_repo(host_platform, "host_platform")
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
