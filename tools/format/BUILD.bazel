@@ -1,27 +1,12 @@
-load("@aspect_rules_lint//format:defs.bzl", "multi_formatter_binary")
+load("@aspect_rules_lint//format:defs.bzl", "format_multirun")
 
-sh_binary(
-    name = "noop",
-    srcs = ["noop.sh"],
-)
-
-alias(
-    name = "shfmt",
-    actual = select({
-        "@bazel_tools//src/conditions:darwin_arm64": "@shfmt_darwin_aarch64//file:shfmt",
-        "@bazel_tools//src/conditions:darwin_x86_64": "@shfmt_darwin_x86_64//file:shfmt",
-        "@bazel_tools//src/conditions:linux_aarch64": "@shfmt_linux_aarch64//file:shfmt",
-        "@bazel_tools//src/conditions:linux_x86_64": "@shfmt_linux_x86_64//file:shfmt",
-        "//conditions:default": ":noop",
-    }),
-    visibility = ["//:__subpackages__"],
-)
-
-multi_formatter_binary(
+format_multirun(
     name = "format",
-    go = "@go_sdk//:bin/gofmt",
-    sh = ":shfmt",
+    # TODO: enable formatters in follow-up PR
+    # go = "@aspect_rules_lint//format:gofumpt",
+    # shell = "@aspect_rules_lint//format:shfmt",
     starlark = "@buildifier_prebuilt//:buildifier",
     tags = ["manual"],
     visibility = ["//:__subpackages__"],
+    # yaml = "@aspect_rules_lint//format:yamlfmt",
 )

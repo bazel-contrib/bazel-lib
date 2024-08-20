@@ -24,7 +24,7 @@ bazel_lib_toolchains.tar()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq_toolchains", "yq_toolchains", "zstd_toolchains")
+use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
@@ -76,6 +76,7 @@ use_repo(host, "aspect_bazel_lib_host")
 host_platform = use_extension("@platforms//host:extension.bzl", "host_platform", dev_dependency = True)
 use_repo(host_platform, "host_platform")
 
+bazel_dep(name = "aspect_rules_lint", version = "1.0.0-rc8", dev_dependency = True)
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 bazel_dep(name = "bazel_features", version = "0.2.0", dev_dependency = True)
