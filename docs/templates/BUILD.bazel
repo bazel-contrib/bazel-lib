@@ -1,4 +1,0 @@
-exports_files([
-    "func_html.vm",
-    "rule_html.vm",
-])

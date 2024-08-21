@@ -3,9 +3,20 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "common",
     srcs = [
+        "clonefile_darwin.go",
+        "clonefile_stub.go",
         "copy.go",
         "file.go",
     ],
     importpath = "github.com/aspect-build/bazel-lib/tools/common",
     visibility = ["//visibility:public"],
+    deps = select({
+        "@io_bazel_rules_go//go/platform:darwin": [
+            "@org_golang_x_sys//unix",
+        ],
+        "@io_bazel_rules_go//go/platform:ios": [
+            "@org_golang_x_sys//unix",
+        ],
+        "//conditions:default": [],
+    }),
 )

@@ -5,9 +5,6 @@ common --repository_cache=~/.cache/bazel-repository-cache
 # Debug where options came from
 common --announce_rc
 
-# Allows tests to run bazelisk-in-bazel, since this is the cache folder used
-common --test_env=XDG_CACHE_HOME
-
 # Remote build execution
 build:rbe --extra_execution_platforms=@aspect_bazel_lib//platforms:x86_64_linux_remote
 build:rbe --host_platform=@aspect_bazel_lib//platforms:x86_64_linux_remote

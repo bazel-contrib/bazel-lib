@@ -13,9 +13,12 @@ import (
 
 type pathSet map[string]bool
 
-var srcPaths = pathSet{}
-var hardlink = false
-var verbose = false
+var (
+	srcPaths      = pathSet{}
+	hardlink      = false
+	verbose       = false
+	preserveMTime = false
+)
 
 type walker struct {
 	queue chan<- common.CopyOpts
@@ -68,13 +71,13 @@ func (w *walker) copyDir(src string, dst string) error {
 				return w.copyDir(linkPath, d)
 			} else {
 				// symlink points to a regular file
-				w.queue <- common.NewCopyOpts(linkPath, d, stat, hardlink, verbose)
+				w.queue <- common.NewCopyOpts(linkPath, d, stat, hardlink, verbose, preserveMTime)
 				return nil
 			}
 		}
 
 		// a regular file
-		w.queue <- common.NewCopyOpts(p, d, info, hardlink, verbose)
+		w.queue <- common.NewCopyOpts(p, d, info, hardlink, verbose, preserveMTime)
 		return nil
 	})
 }
@@ -83,7 +86,7 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) < 2 {
-		fmt.Println("Usage: copy_directory src dst [--hardlink] [--verbose]")
+		fmt.Println("Usage: copy_directory src dst [--hardlink] [--verbose] [--preserve-mtime]")
 		os.Exit(1)
 	}
 
@@ -96,6 +99,8 @@ func main() {
 				hardlink = true
 			} else if a == "--verbose" {
 				verbose = true
+			} else if a == "--preserve-mtime" {
+				preserveMTime = true
 			}
 		}
 	}

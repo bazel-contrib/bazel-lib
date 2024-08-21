@@ -16,8 +16,8 @@
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
-load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
+load(":strings.bzl", "split_args")
 
 def _run_binary_impl(ctx):
     args = ctx.actions.args()
@@ -47,15 +47,11 @@ Possible fixes:
             rule_kind = str(ctx.attr.tool.label),
         ))
 
-    # `expand_locations(...).split(" ")` is a work-around https://github.com/bazelbuild/bazel/issues/10309
-    # _expand_locations returns an array of args to support $(execpaths) expansions.
-    # TODO: If the string has intentional spaces or if one or more of the expanded file
-    # locations has a space in the name, we will incorrectly split it into multiple arguments
     for a in ctx.attr.args:
-        args.add_all([expand_variables(ctx, e, outs = outputs) for e in expand_locations(ctx, a, ctx.attr.srcs).split(" ")])
+        args.add_all(split_args(expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.srcs), outs = outputs)))
     envs = {}
     for k, v in ctx.attr.env.items():
-        envs[k] = " ".join([expand_variables(ctx, e, outs = outputs, attribute_name = "env") for e in expand_locations(ctx, v, ctx.attr.srcs).split(" ")])
+        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.srcs), outs = outputs, attribute_name = "env")
 
     stamp = maybe_stamp(ctx)
     if stamp:

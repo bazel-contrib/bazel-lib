@@ -1,6 +1,14 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-Public API
+General-purpose Starlark utility functions
+
+## Usage example
+
+```starlark
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
+out_label = utils.to_label(out_file)
+```
 
 <a id="consistent_label_str"></a>
 
@@ -46,15 +54,15 @@ Provide a sane default for *_test timeout attribute.
 
 The [test-encyclopedia](https://bazel.build/reference/test-encyclopedia) says:
 
-&gt; Tests may return arbitrarily fast regardless of timeout.
-&gt; A test is not penalized for an overgenerous timeout, although a warning may be issued:
-&gt; you should generally set your timeout as tight as you can without incurring any flakiness.
+> Tests may return arbitrarily fast regardless of timeout.
+> A test is not penalized for an overgenerous timeout, although a warning may be issued:
+> you should generally set your timeout as tight as you can without incurring any flakiness.
 
 However Bazel's default for timeout is medium, which is dumb given this guidance.
 
 It also says:
 
-&gt; Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
+> Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
 
 Therefore if size is specified, we should allow timeout to take its implied default.
 If neither is set, then we can fix Bazel's wrong default here to avoid warnings under
@@ -287,7 +295,7 @@ maybe(
 path_to_workspace_root()
 </pre>
 
- Returns the path to the workspace root under bazel
+Returns the path to the workspace root under bazel
 
 
 **RETURNS**
@@ -395,7 +403,7 @@ https://docs.bazel.build/versions/main/be/common-definitions.html#common-attribu
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="propagate_well_known_tags-tags"></a>tags |  List of tags to filter   |  <code>[]</code> |
+| <a id="propagate_well_known_tags-tags"></a>tags |  List of tags to filter   |  `[]` |
 
 **RETURNS**
 
@@ -424,6 +432,38 @@ Converts a string to a Label. If Label is supplied, the same label is returned.
 a Label
 
 
+<a id="utils.consistent_label_str"></a>
+
+## utils.consistent_label_str
+
+<pre>
+utils.consistent_label_str(<a href="#utils.consistent_label_str-ctx">ctx</a>, <a href="#utils.consistent_label_str-label">label</a>)
+</pre>
+
+Generate a consistent label string for all Bazel versions.
+
+Starting in Bazel 6, the workspace name is empty for the local workspace and there's no other
+way to determine it. This behavior differs from Bazel 5 where the local workspace name was fully
+qualified in str(label).
+
+This utility function is meant for use in rules and requires the rule context to determine the
+user's workspace name (`ctx.workspace_name`).
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="utils.consistent_label_str-ctx"></a>ctx |  The rule context.   |  none |
+| <a id="utils.consistent_label_str-label"></a>label |  A Label.   |  none |
+
+**RETURNS**
+
+String representation of the label including the repository name if the label is from an
+  external repository. For labels in the user's repository the label will start with `@//`.
+
+
 <a id="utils.default_timeout"></a>
 
 ## utils.default_timeout
@@ -436,15 +476,15 @@ Provide a sane default for *_test timeout attribute.
 
 The [test-encyclopedia](https://bazel.build/reference/test-encyclopedia) says:
 
-&gt; Tests may return arbitrarily fast regardless of timeout.
-&gt; A test is not penalized for an overgenerous timeout, although a warning may be issued:
-&gt; you should generally set your timeout as tight as you can without incurring any flakiness.
+> Tests may return arbitrarily fast regardless of timeout.
+> A test is not penalized for an overgenerous timeout, although a warning may be issued:
+> you should generally set your timeout as tight as you can without incurring any flakiness.
 
 However Bazel's default for timeout is medium, which is dumb given this guidance.
 
 It also says:
 
-&gt; Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
+> Tests which do not explicitly specify a timeout have one implied based on the test's size as follows
 
 Therefore if size is specified, we should allow timeout to take its implied default.
 If neither is set, then we can fix Bazel's wrong default here to avoid warnings under
@@ -677,7 +717,7 @@ maybe(
 utils.path_to_workspace_root()
 </pre>
 
- Returns the path to the workspace root under bazel
+Returns the path to the workspace root under bazel
 
 
 **RETURNS**
@@ -685,19 +725,19 @@ utils.path_to_workspace_root()
 Path to the workspace root
 
 
-<a id="utils.propagate_well_known_tags"></a>
+<a id="utils.propagate_common_binary_rule_attributes"></a>
 
-## utils.propagate_well_known_tags
+## utils.propagate_common_binary_rule_attributes
 
 <pre>
-utils.propagate_well_known_tags(<a href="#utils.propagate_well_known_tags-tags">tags</a>)
+utils.propagate_common_binary_rule_attributes(<a href="#utils.propagate_common_binary_rule_attributes-attrs">attrs</a>)
 </pre>
 
-Returns a list of tags filtered from the input set that only contains the ones that are considered "well known"
+Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all binary rules
 
 These are listed in Bazel's documentation:
-https://docs.bazel.build/versions/main/test-encyclopedia.html#tag-conventions
-https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes
+https://bazel.build/reference/be/common-definitions#common-attributes
+https://bazel.build/reference/be/common-definitions#common-attributes-binary
 
 
 **PARAMETERS**
@@ -705,11 +745,11 @@ https://docs.bazel.build/versions/main/be/common-definitions.html#common-attribu
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="utils.propagate_well_known_tags-tags"></a>tags |  List of tags to filter   |  <code>[]</code> |
+| <a id="utils.propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
 
 **RETURNS**
 
-List of tags that only contains the well known set
+The dict of parameters, containing only common binary attributes
 
 
 <a id="utils.propagate_common_rule_attributes"></a>
@@ -765,19 +805,19 @@ https://bazel.build/reference/be/common-definitions#common-attributes-tests
 The dict of parameters, containing only common test attributes
 
 
-<a id="utils.propagate_common_binary_rule_attributes"></a>
+<a id="utils.propagate_well_known_tags"></a>
 
-## utils.propagate_common_binary_rule_attributes
+## utils.propagate_well_known_tags
 
 <pre>
-utils.propagate_common_binary_rule_attributes(<a href="#utils.propagate_common_binary_rule_attributes-attrs">attrs</a>)
+utils.propagate_well_known_tags(<a href="#utils.propagate_well_known_tags-tags">tags</a>)
 </pre>
 
-Returns a dict of rule parameters filtered from the input dict that only contains the ones that are common to all binary rules
+Returns a list of tags filtered from the input set that only contains the ones that are considered "well known"
 
 These are listed in Bazel's documentation:
-https://bazel.build/reference/be/common-definitions#common-attributes
-https://bazel.build/reference/be/common-definitions#common-attributes-binary
+https://docs.bazel.build/versions/main/test-encyclopedia.html#tag-conventions
+https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes
 
 
 **PARAMETERS**
@@ -785,11 +825,11 @@ https://bazel.build/reference/be/common-definitions#common-attributes-binary
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="utils.propagate_common_binary_rule_attributes-attrs"></a>attrs |  Dict of parameters to filter   |  none |
+| <a id="utils.propagate_well_known_tags-tags"></a>tags |  List of tags to filter   |  `[]` |
 
 **RETURNS**
 
-The dict of parameters, containing only common binary attributes
+List of tags that only contains the well known set
 
 
 <a id="utils.to_label"></a>
@@ -812,37 +852,5 @@ Converts a string to a Label. If Label is supplied, the same label is returned.
 **RETURNS**
 
 a Label
-
-
-<a id="utils.consistent_label_str"></a>
-
-## utils.consistent_label_str
-
-<pre>
-utils.consistent_label_str(<a href="#utils.consistent_label_str-ctx">ctx</a>, <a href="#utils.consistent_label_str-label">label</a>)
-</pre>
-
-Generate a consistent label string for all Bazel versions.
-
-Starting in Bazel 6, the workspace name is empty for the local workspace and there's no other
-way to determine it. This behavior differs from Bazel 5 where the local workspace name was fully
-qualified in str(label).
-
-This utility function is meant for use in rules and requires the rule context to determine the
-user's workspace name (`ctx.workspace_name`).
-
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="utils.consistent_label_str-ctx"></a>ctx |  The rule context.   |  none |
-| <a id="utils.consistent_label_str-label"></a>label |  A Label.   |  none |
-
-**RETURNS**
-
-String representation of the label including the repository name if the label is from an
-  external repository. For labels in the user's repository the label will start with `@//`.
 
 

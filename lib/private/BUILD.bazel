@@ -122,7 +122,6 @@ bzl_library(
     srcs = ["expand_template.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        ":expand_locations",
         ":expand_variables",
         "//lib:stamping",
         "@bazel_skylib//lib:dicts",
@@ -161,7 +160,8 @@ bzl_library(
     srcs = ["jq.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        ":expand_locations",
+        ":expand_variables",
+        ":strings",
         "//lib:stamping",
     ],
 )
@@ -184,7 +184,10 @@ bzl_library(
     name = "params_file",
     srcs = ["params_file.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = [":expand_locations"],
+    deps = [
+        ":expand_variables",
+        ":strings",
+    ],
 )
 
 bzl_library(
@@ -206,8 +209,8 @@ bzl_library(
     srcs = ["run_binary.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        ":expand_locations",
         ":expand_variables",
+        ":strings",
         "//lib:stamping",
         "@bazel_skylib//lib:dicts",
     ],
@@ -259,7 +262,9 @@ bzl_library(
     name = "platform_utils",
     srcs = [
         "platform_utils.bzl",
+        "@host_platform//:constraints.bzl",  # keep
         "@local_config_platform//:constraints.bzl",  # keep
+        "@platforms//host:constraints.bzl",  # keep
     ],
     visibility = ["//lib:__subpackages__"],
     deps = [],  # keep
@@ -284,7 +289,6 @@ bzl_library(
     srcs = ["bats.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        ":expand_locations",
         ":expand_variables",
         "@aspect_bazel_lib//lib:paths",
         "@aspect_bazel_lib//lib:windows_utils",

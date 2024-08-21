@@ -2,7 +2,6 @@
 
 load("//lib:paths.bzl", "BASH_RLOCATION_FUNCTION", "to_rlocation_path")
 load("//lib:windows_utils.bzl", "create_windows_native_launcher_script")
-load(":expand_locations.bzl", "expand_locations")
 load(":expand_variables.bzl", "expand_variables")
 
 _LAUNCHER_TMPL = """#!/usr/bin/env bash
@@ -42,7 +41,7 @@ def _bats_test_impl(ctx):
     for (key, value) in ctx.attr.env.items():
         envs.append(_ENV_SET.format(
             key = key,
-            value = " ".join([expand_variables(ctx, exp, attribute_name = "env") for exp in expand_locations(ctx, value, ctx.attr.data).split(" ")]),
+            value = expand_variables(ctx, ctx.expand_location(value, targets = ctx.attr.data), attribute_name = "env"),
         ))
 
     # See https://www.msys2.org/wiki/Porting/:

@@ -1,4 +1,4 @@
-"Public API"
+"Utilities for working with file paths."
 
 load("//lib/private:paths.bzl", "paths")
 

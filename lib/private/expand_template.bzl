@@ -2,16 +2,12 @@
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
-load(":expand_locations.bzl", _expand_locations = "expand_locations")
-load(":expand_variables.bzl", _expand_variables = "expand_variables")
+load(":expand_variables.bzl", "expand_variables")
 
 def _expand_substitutions(ctx, output, substitutions):
     result = {}
     for k, v in substitutions.items():
-        result[k] = " ".join([
-            _expand_variables(ctx, e, outs = [output], attribute_name = "substitutions")
-            for e in _expand_locations(ctx, v, ctx.attr.data).split(" ")
-        ])
+        result[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.data), outs = [output], attribute_name = "substitutions")
     return result
 
 def _expand_template_impl(ctx):

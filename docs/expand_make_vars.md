@@ -29,8 +29,8 @@ This is of the format:
 - `./file`
 - `path/to/file`
 - `external/external_repo/path/to/file`
-- `&lt;bin_dir&gt;/path/to/file`
-- `&lt;bin_dir&gt;/external/external_repo/path/to/file`
+- `<bin_dir>/path/to/file`
+- `<bin_dir>/external/external_repo/path/to/file`
 
 The deprecated `$(location)` and `$(locations)` expansions returns either the execpath or rootpath depending on the context.
 
@@ -42,11 +42,15 @@ The deprecated `$(location)` and `$(locations)` expansions returns either the ex
 | :------------- | :------------- | :------------- |
 | <a id="expand_locations-ctx"></a>ctx |  context   |  none |
 | <a id="expand_locations-input"></a>input |  String to be expanded   |  none |
-| <a id="expand_locations-targets"></a>targets |  List of targets for additional lookup information.   |  <code>[]</code> |
+| <a id="expand_locations-targets"></a>targets |  List of targets for additional lookup information.   |  `[]` |
 
 **RETURNS**
 
 The expanded path or the original path
+
+**DEPRECATED**
+
+Use vanilla `ctx.expand_location(input, targets = targets)` instead
 
 
 <a id="expand_variables"></a>
@@ -103,8 +107,8 @@ for more information of how these special variables are expanded.
 | :------------- | :------------- | :------------- |
 | <a id="expand_variables-ctx"></a>ctx |  starlark rule context   |  none |
 | <a id="expand_variables-s"></a>s |  expression to expand   |  none |
-| <a id="expand_variables-outs"></a>outs |  declared outputs of the rule, for expanding references to outputs   |  <code>[]</code> |
-| <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression. Used for error reporting.   |  <code>"args"</code> |
+| <a id="expand_variables-outs"></a>outs |  declared outputs of the rule, for expanding references to outputs   |  `[]` |
+| <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression. Used for error reporting.   |  `"args"` |
 
 **RETURNS**
 

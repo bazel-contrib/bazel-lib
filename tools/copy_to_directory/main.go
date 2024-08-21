@@ -40,17 +40,22 @@ type config struct {
 	IncludeSrcsPatterns         []string          `json:"include_srcs_patterns"`
 	ReplacePrefixes             map[string]string `json:"replace_prefixes"`
 	RootPaths                   []string          `json:"root_paths"`
+	PreserveMTime               bool              `json:"preserve_mtime"`
 	Verbose                     bool              `json:"verbose"`
 
 	ReplacePrefixesKeys []string
 	TargetWorkspace     *string
 }
 
-type copyMap map[string]fileInfo
-type pathSet map[string]bool
+type (
+	copyMap map[string]fileInfo
+	pathSet map[string]bool
+)
 
-var copySet = copyMap{}
-var mkdirSet = pathSet{}
+var (
+	copySet  = copyMap{}
+	mkdirSet = pathSet{}
+)
 
 func parseConfig(configPath string, wkspName *string) (*config, error) {
 	f, err := os.Open(configPath)
@@ -317,7 +322,7 @@ func (w *walker) copyPath(cfg *config, file fileInfo, outputPath string) error {
 
 	if !cfg.AllowOverwrites {
 		// if we don't allow overwrites then we can start copying as soon as a copy is calculated
-		w.queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose)
+		w.queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, cfg.PreserveMTime)
 	}
 
 	return nil
@@ -419,7 +424,7 @@ func main() {
 		// if we allow overwrites then we must wait until all copy paths are calculated before starting
 		// any copy operations
 		for outputPath, file := range copySet {
-			queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose)
+			queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, cfg.PreserveMTime)
 		}
 	}
 

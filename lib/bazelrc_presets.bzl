@@ -1,4 +1,7 @@
-"Aspect bazelrc presets; see https://docs.aspect.build/guides/bazelrc"
+"""'Presets' for bazelrc
+
+See https://docs.aspect.build/guides/bazelrc
+"""
 
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
@@ -23,33 +26,11 @@ def write_aspect_bazelrc_presets(
     rule under the hood to keep your presets up-to-date.
 
     By default all presets are vendored but this list can be customized using
-    the 'presets' attribute.
-
-    See https://docs.aspect.build/guides/bazelrc for more info.
+    the `presets` attribute.
 
     Args:
         name: a unique name for this target
-
         presets: a list of preset names to keep up-to-date
-
-          For example,
-
-          ```
-          write_aspect_bazelrc_presets(
-            name = "update_aspect_bazelrc_presets",
-            presets = [
-              "bazel6",
-              "bazel7",
-              "ci",
-              "convenience",
-              "correctness",
-              "debug",
-              "javascript",
-              "performance",
-            ],
-          )
-          ```
-
         **kwargs: Additional arguments to pass to `write_source_files`
     """
 

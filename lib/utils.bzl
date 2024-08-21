@@ -1,4 +1,14 @@
-"Public API"
+"""General-purpose Starlark utility functions
+
+## Usage example
+
+```starlark
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
+out_label = utils.to_label(out_file)
+```
+
+"""
 
 load("//lib/private:utils.bzl", _utils = "utils")
 

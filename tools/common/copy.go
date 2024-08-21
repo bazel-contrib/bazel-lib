@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 )
 
 // From https://opensource.com/article/18/6/copying-files-go
@@ -27,32 +28,62 @@ func CopyFile(src string, dst string) error {
 }
 
 func Copy(opts CopyOpts) {
-	if !opts.info.Mode().IsRegular() {
+	if !opts.srcInfo.Mode().IsRegular() {
 		log.Fatalf("%s is not a regular file", opts.src)
 	}
+
+	opModifier := ""
+	const fallback = " (fallback)"
+
 	if opts.hardlink {
 		// hardlink this file
 		if opts.verbose {
-			fmt.Printf("hardlink %v => %v\n", opts.src, opts.dst)
+			fmt.Printf("hardlink%s %v => %v\n", opModifier, opts.src, opts.dst)
 		}
 		err := os.Link(opts.src, opts.dst)
 		if err != nil {
-			// fallback to copy
 			if opts.verbose {
 				fmt.Printf("hardlink failed: %v\n", err)
-				fmt.Printf("copy (fallback) %v => %v\n", opts.src, opts.dst)
+				opModifier = fallback
 			}
-			err = CopyFile(opts.src, opts.dst)
-			if err != nil {
-				log.Fatal(err)
-			}
+			// fallback to clonefile or copy
+		} else {
+			return
 		}
-	} else {
-		// copy this file
+	}
+
+	// clone this file
+	if opts.verbose {
+		fmt.Printf("clonefile%s %v => %v\n", opModifier, opts.src, opts.dst)
+	}
+	switch supported, err := cloneFile(opts.src, opts.dst); {
+	case !supported:
 		if opts.verbose {
-			fmt.Printf("copy %v => %v\n", opts.src, opts.dst)
+			fmt.Print("clonefile skipped: not supported by platform\n")
 		}
-		err := CopyFile(opts.src, opts.dst)
+		// fallback to copy
+	case supported && err == nil:
+		return
+	case supported && err != nil:
+		if opts.verbose {
+			fmt.Printf("clonefile failed: %v\n", err)
+			opModifier = fallback
+		}
+		// fallback to copy
+	}
+
+	// copy this file
+	if opts.verbose {
+		fmt.Printf("copy%s %v => %v\n", opModifier, opts.src, opts.dst)
+	}
+	err := CopyFile(opts.src, opts.dst)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if opts.preserveMTime {
+		accessTime := time.Now()
+		err := os.Chtimes(opts.dst, accessTime, opts.srcInfo.ModTime())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -75,12 +106,13 @@ func (w *CopyWorker) Run(wg *sync.WaitGroup) {
 }
 
 type CopyOpts struct {
-	src, dst string
-	info     fs.FileInfo
-	hardlink bool
-	verbose  bool
+	src, dst      string
+	srcInfo       fs.FileInfo
+	hardlink      bool
+	verbose       bool
+	preserveMTime bool
 }
 
-func NewCopyOpts(src string, dst string, info fs.FileInfo, hardlink bool, verbose bool) CopyOpts {
-	return CopyOpts{src: src, dst: dst, info: info, hardlink: hardlink, verbose: verbose}
+func NewCopyOpts(src string, dst string, srcInfo fs.FileInfo, hardlink bool, verbose bool, preserveMTime bool) CopyOpts {
+	return CopyOpts{src: src, dst: dst, srcInfo: srcInfo, hardlink: hardlink, verbose: verbose, preserveMTime: preserveMTime}
 }

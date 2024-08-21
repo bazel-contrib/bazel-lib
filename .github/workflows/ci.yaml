@@ -1,5 +1,4 @@
 name: CI
-
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -7,19 +6,15 @@ on:
     branches: [main, 1.x]
   pull_request:
     branches: [main, 1.x]
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 concurrency:
   # Cancel previous actions from the same PR or branch except 'main' branch.
   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
   group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
-
 env:
   HEAD_REF: ${{ github.head_ref }}
-
 jobs:
   # Prepares dynamic test matrix values
   matrix-prep:
@@ -69,7 +64,6 @@ jobs:
       bazel-version: ${{ steps.bazel-version.outputs.res }}
       config: ${{ steps.config.outputs.res }}
       os: ${{ steps.os.outputs.res }}
-
   test:
     runs-on: ${{ matrix.os }}-latest
     needs:
@@ -90,6 +84,9 @@ jobs:
           - "e2e/smoke"
           - "e2e/write_source_files"
         exclude:
+          # Root workspace is only bzlmod
+          - folder: .
+            bzlmod: 0
           # Don't test MacOS and Windows against secondary bazel version to minimize minutes (billed at 10X and 2X respectively)
           # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
           - os: macos
@@ -112,25 +109,24 @@ jobs:
           # Don't test RBE with on Windows (not configured)
           - os: windows
             config: rbe
+          # Root workspace is bzlmod-only
+          - folder: .
+            bzlmod: 0
           # TODO: green up root Workspace on MacOS & Windows
           - folder: .
             os: macos
           - folder: .
             os: windows
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Mount bazel caches
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/bazel-disk-cache
             ~/.cache/bazel-repository-cache
-            ~/.cache/xdg-cache
           key: bazel-cache-${{ matrix.bazel-version.version }}-${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}-${{ hashFiles('.bazelrc', '.bazelversion', '.bazeliskrc', '**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'WORKSPACE.bazel', 'WORKSPACE.bzlmod', 'MODULE.bazel') }}
           restore-keys: bazel-cache-${{ matrix.bazel-version.version }}-${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}-
-
       - name: Configure Bazel version
         working-directory: ${{ matrix.folder }}
         shell: bash
@@ -144,7 +140,6 @@ jobs:
           # root .bazelrc brings these in with try-imports. In this CI workflows, we explicitly
           # bring in the version specific bazelrc file with --bazelrc when we invoke bazel.
           rm ${GITHUB_WORKSPACE//\\/\/}/.aspect/bazelrc/local/*.bazelrc
-
       - name: Write rbe credentials
         if: ${{ matrix.config == 'rbe' }}
         working-directory: ${{ matrix.folder }}
@@ -154,14 +149,12 @@ jobs:
           echo "build --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY" > $HOME/.bazelrc
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
-
       # TODO: remove this block once we have Aspect CLI Windows releases
       - name: Don't use Aspect CLI on Windows
         if: matrix.os == 'windows'
         working-directory: ${{ matrix.folder }}
         shell: bash
         run: rm -f .bazeliskrc
-
       - name: bazel test //...
         working-directory: ${{ matrix.folder }}
         shell: bash
@@ -176,15 +169,11 @@ jobs:
             --build_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
             --enable_bzlmod=${{ matrix.bzlmod }} \
             //...
-        env:
-          XDG_CACHE_HOME: ~/.cache/xdg-cache # bazelisk will download bazel to here
-
       - name: Integration tests
         # Don't run integration tests on Windows since they are bash scripts and Windows runs Powershell
         if: matrix.folder == '.' && matrix.os != 'windows' && matrix.bazel-version.major != '6'
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
         run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && BZLMOD_FLAG=${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} "$0" || kill $PPID' \{\} \;
-
       - name: Verify bcr patches
         if: matrix.folder == '.' && matrix.bzlmod == '1' && matrix.os == 'ubuntu' && matrix.bazel-version.major != '6'
         run: patch --dry-run -p1 < .bcr/patches/*.patch
