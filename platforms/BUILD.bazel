@@ -1,3 +1,29 @@
+load("//platforms/config:defs.bzl", "platforms")
+
+[platform(
+    name = "{}_{}".format(
+        p.os,
+        p.cpu,
+    ),
+    constraint_values = [
+        "@platforms//os:{}".format(p.os),
+        "@platforms//cpu:{}".format(p.cpu),
+    ],
+    visibility = ["//visibility:public"],
+) for p in platforms]
+
+alias(
+    name = "linux_amd64",
+    actual = ":linux_x86_64",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "linux_arm64",
+    actual = ":linux_aarch64",
+    visibility = ["//visibility:public"],
+)
+
 platform(
     name = "x86_64_linux_remote",
     constraint_values = [

@@ -34,3 +34,10 @@ def go_dependencies():
         sum = "h1:dGoOF9QVLYng8IHTm7BAyWqCqSheQ5pYWGhzW00YJr0=",
         version = "v0.14.0",
     )
+    go_repository(
+        name = "org_golang_x_sys",
+        build_file_proto_mode = "disable_global",
+        importpath = "golang.org/x/sys",
+        sum = "h1:Twjiwq9dn6R1fQcyiK+wQyHWfaz/BJB+YIpzU/Cv3Xg=",
+        version = "v0.24.0",
+    )
