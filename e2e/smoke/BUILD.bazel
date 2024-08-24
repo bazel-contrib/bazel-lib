@@ -130,7 +130,7 @@ go_test(
         ":copy_to_directory_mtime_case",
     ],
     # Note: This test is marked as manual as it is not reliable in the CI environment. The reason for is that changes
-    # changes to only the modify time do not invalidate the Bazel cache. These failures can be reproduced by:
+    # to only the modify time do not invalidate the Bazel cache. These failures can be reproduced by:
     #   bazel clean --expunge
     #   bazel test :test_preserve_mtime # This test should pass
     #   touch d/1 # Update the mtime, in the CI environment this is done with the SCM integration.
