@@ -1,8 +1,18 @@
 queue: bazel-lib-default
+bazel:
+  flags:
+    - --config=aspect_rbe
 workspaces:
   .:
     tasks:
       - test:
+          targets:
+            - //...
+            - -//lib/tests/coreutils:ls_test # Broken on workflows CI & RBE
+            - -//lib/tests/tar:test_dirs # Broken on workflows CI & RBE
+      - configure:
+          bazel:
+            flags: [] # TODO: Aspect CLI does not support --config for configure cmd
   e2e/copy_action:
     icon: bazel
     tasks:
