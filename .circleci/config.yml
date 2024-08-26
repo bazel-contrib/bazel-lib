@@ -16,13 +16,13 @@ workflows:
     - aw-buildifier:
         context: []
         workspace: .
-    - aw-configure:
-        context: []
-        workspace: .
     - aw-format:
         context: []
         workspace: .
     - aw-gazelle:
+        context: []
+        workspace: .
+    - aw-root_workspace_configure:
         context: []
         workspace: .
     - aw-root_workspace_test:
@@ -199,46 +199,6 @@ jobs:
     - run:
         command: rosetta run buildifier --workspace << parameters.workspace >>
         name: Buildifier
-        no_output_timeout: 180m
-    - store_artifacts:
-        path: /workflows/artifacts
-    - run:
-        command: rosetta run finalization
-        name: Finalization
-        no_output_timeout: 10m
-        when: always
-    working_directory: /mnt/ephemeral/workdir
-  aw-configure:
-    environment:
-      ASPECT_WORKFLOWS_CIRCLE_PIPELINE_NUMBER: << pipeline.number >>
-      ASPECT_WORKFLOWS_CIRCLE_PIPELINE_PROJECT_TYPE: << pipeline.project.type >>
-      ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
-      ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
-      ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
-      XDG_CACHE_HOME: /mnt/ephemeral/caches
-    machine: true
-    parameters:
-      delivery_manifest:
-        default: true
-        type: boolean
-      workspace:
-        type: string
-    resource_class: aspect-build/bazel-lib-small
-    steps:
-    - run:
-        command: /etc/aspect/workflows/bin/configure_workflows_env
-        name: Workflows environment
-    - checkout
-    - run:
-        command: rm -rf /workflows/artifacts /workflows/testlogs
-        name: Prepare archive directories
-    - run:
-        command: /etc/aspect/workflows/bin/agent_health_check
-        name: Agent health check
-        no_output_timeout: 180m
-    - run:
-        command: rosetta run configure --workspace << parameters.workspace >>
-        name: Configure
         no_output_timeout: 180m
     - store_artifacts:
         path: /workflows/artifacts
@@ -665,6 +625,46 @@ jobs:
         command: rosetta run delivery
         name: Delivery
         no_output_timeout: 180m
+    working_directory: /mnt/ephemeral/workdir
+  aw-root_workspace_configure:
+    environment:
+      ASPECT_WORKFLOWS_CIRCLE_PIPELINE_NUMBER: << pipeline.number >>
+      ASPECT_WORKFLOWS_CIRCLE_PIPELINE_PROJECT_TYPE: << pipeline.project.type >>
+      ASPECT_WORKFLOWS_CIRCLE_WORKFLOW_BASE_NAME: aspect-workflows
+      ASPECT_WORKFLOWS_CONFIG: .aspect/workflows/config.yaml
+      ASPECT_WORKFLOWS_WORKSPACE: << parameters.workspace >>
+      XDG_CACHE_HOME: /mnt/ephemeral/caches
+    machine: true
+    parameters:
+      delivery_manifest:
+        default: true
+        type: boolean
+      workspace:
+        type: string
+    resource_class: aspect-build/bazel-lib-small
+    steps:
+    - run:
+        command: /etc/aspect/workflows/bin/configure_workflows_env
+        name: Workflows environment
+    - checkout
+    - run:
+        command: rm -rf /workflows/artifacts /workflows/testlogs
+        name: Prepare archive directories
+    - run:
+        command: /etc/aspect/workflows/bin/agent_health_check
+        name: Agent health check
+        no_output_timeout: 180m
+    - run:
+        command: rosetta run configure --workspace << parameters.workspace >>
+        name: Configure
+        no_output_timeout: 180m
+    - store_artifacts:
+        path: /workflows/artifacts
+    - run:
+        command: rosetta run finalization
+        name: Finalization
+        no_output_timeout: 10m
+        when: always
     working_directory: /mnt/ephemeral/workdir
   aw-root_workspace_test:
     environment:
