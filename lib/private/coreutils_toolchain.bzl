@@ -34,8 +34,6 @@ COREUTILS_PLATFORMS = {
     ),
 }
 
-DEFAULT_COREUTILS_VERSION = "0.0.27"
-
 # https://github.com/uutils/coreutils/releases
 #
 # The integrity hashes can be automatically fetched for the coreutils releases by running
@@ -63,7 +61,33 @@ COREUTILS_VERSIONS = {
             "sha256": "sha256-tM+hJd16cCjflJyMwsCaevPYZMiBkIKZJm7/XC+760w=",
         },
     },
+    "0.0.26": {
+        "darwin_arm64": {
+            "filename": "coreutils-0.0.26-aarch64-apple-darwin.tar.gz",
+            "sha256": "sha256-/A6CNYWmvOwPW443pH+wO+VtzDFgussN1hRGuANnFOU=",
+        },
+        "linux_arm64": {
+            "filename": "coreutils-0.0.26-aarch64-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-9zGLFOMDjUDbraDY/hrE5zFJ0O+QYrvx2wHk3Gw3q/A=",
+        },
+        "darwin_amd64": {
+            # TODO: remove this version_override hack once 0.0.27 is releases and contains a darwin arm binary
+            "version_override": "0.0.23",
+            "filename": "coreutils-0.0.23-x86_64-apple-darwin.tar.gz",
+            "sha256": "sha256-SswetVAuK/hMK1r9uBvNnKj5JpSgD0bzkbsHTxOabCo=",
+        },
+        "windows_amd64": {
+            "filename": "coreutils-0.0.26-x86_64-pc-windows-msvc.zip",
+            "sha256": "sha256-6qPkqxQZM4XBBBJ80t1uvzfZiz0gBeT/zoCdfqOO3uk=",
+        },
+        "linux_amd64": {
+            "filename": "coreutils-0.0.26-x86_64-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-QpGVp3wmHqpt5Brd/bdj7pyMQNftcihOtaRI8z2uhp0=",
+        },
+    },
 }
+
+DEFAULT_COREUTILS_VERSION = COREUTILS_VERSIONS.keys()[0]
 
 CoreUtilsInfo = provider(
     doc = "Provide info for executing coreutils",
