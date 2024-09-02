@@ -1,8 +1,8 @@
-# How to Contribute
+# How to contribute
 
 ## Formatting
 
-Starlark files should be formatted by buildifier.
+Starlark files should be formatted by Buildifier.
 We suggest using a pre-commit hook to automate this.
 First [install pre-commit](https://pre-commit.com/#installation) (>= v3.2.0),
 then run

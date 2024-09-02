@@ -25,7 +25,7 @@ if [[ -z "${DEST:-}" ]]; then
   exit 1
 fi
 
-cd $BUILD_WORKSPACE_DIRECTORY
+cd "$BUILD_WORKSPACE_DIRECTORY"
 for arg in "$@"; do
-  cp -pv "$(rlocation $arg)" $DEST
+  cp -pv "$(rlocation "$arg")" "$DEST"
 done

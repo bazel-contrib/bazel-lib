@@ -15,7 +15,7 @@ load("//:deps.bzl", "go_dependencies")
 go_dependencies()
 
 ############################################
-# Aspect Workflows
-load("//.aspect/workflows:deps.bzl", "fetch_workflows_deps")
+# Lint
+load("@aspect_rules_lint//lint:vale.bzl", "fetch_vale")
 
-fetch_workflows_deps()
+fetch_vale()
