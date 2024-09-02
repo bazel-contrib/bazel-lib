@@ -48,7 +48,6 @@ jobs:
           echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
     outputs:
       bazel-version: ${{ steps.bazel-version.outputs.res }}
-      config: ${{ steps.config.outputs.res }}
       os: ${{ steps.os.outputs.res }}
   test:
     runs-on: ${{ matrix.os }}-latest
@@ -60,7 +59,6 @@ jobs:
         bazel-version: ${{ fromJSON(needs.matrix-prep.outputs.bazel-version) }}
         bzlmod: [1, 0]
         os: ${{ fromJSON(needs.matrix-prep.outputs.os) }}
-        config: ${{ fromJSON(needs.matrix-prep.outputs.config) }}
         folder:
           - "."
           - "e2e/copy_action"
@@ -70,7 +68,7 @@ jobs:
           - "e2e/smoke"
           - "e2e/write_source_files"
         exclude:
-          # Root workspace is only bzlmod
+          # Root workspace is bzlmod-only
           - folder: .
             bzlmod: 0
           # Don't test MacOS and Windows against secondary bazel version to minimize minutes (billed at 10X and 2X respectively)
@@ -85,9 +83,6 @@ jobs:
           - bazel-version:
               major: 6
             bzlmod: 1
-          # Root workspace is bzlmod-only
-          - folder: .
-            bzlmod: 0
           # TODO: green up root Workspace on MacOS & Windows
           - folder: .
             os: macos
@@ -131,7 +126,6 @@ jobs:
             --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.aspect/bazelrc/ci.bazelrc \
             --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.github/workflows/ci.bazelrc \
             test \
-            --config=${{ matrix.config }} \
             --test_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
             --build_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
             --enable_bzlmod=${{ matrix.bzlmod }} \
