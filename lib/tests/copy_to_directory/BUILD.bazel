@@ -273,7 +273,7 @@ copy_directory(
 )
 
 # Case 11: two inputs with same subfolders
-# regression test for https://github.com/aspect-build/bazel-lib/issues/133
+# regression test for https://github.com/bazel-contrib/bazel-lib/issues/133
 copy_to_directory(
     name = "case_11",
     srcs = [

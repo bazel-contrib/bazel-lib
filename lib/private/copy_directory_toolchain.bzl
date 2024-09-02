@@ -1,6 +1,6 @@
 "Setup copy_directory toolchain repositories and rules"
 
-# https://github.com/aspect-build/bazel-lib/releases
+# https://github.com/bazel-contrib/bazel-lib/releases
 load("//tools:integrity.bzl", "RELEASED_BINARY_INTEGRITY")
 load("//tools:version.bzl", "VERSION")
 
@@ -153,8 +153,8 @@ def _copy_directory_platform_repo_impl(rctx):
     release_platform = meta.release_platform if hasattr(meta, "release_platform") else rctx.attr.platform
     release_file = "copy_directory-{}{}".format(release_platform, ".exe" if is_windows else "")
 
-    # https://github.com/aspect-build/bazel-lib/releases/download/v1.19.0/copy_directory-linux_amd64
-    url = "https://github.com/aspect-build/bazel-lib/releases/download/v{}/{}".format(
+    # https://github.com/bazel-contrib/bazel-lib/releases/download/v1.19.0/copy_directory-linux_amd64
+    url = "https://github.com/bazel-contrib/bazel-lib/releases/download/v{}/{}".format(
         VERSION,
         release_file,
     )

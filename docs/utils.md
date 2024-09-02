@@ -142,7 +142,7 @@ Unlike the undocumented `native.bazel_version`, which only works in WORKSPACE an
 be used in rules and BUILD files.
 
 An alternate approach to make the Bazel version available in BUILD files and rules would be to
-use the [host_repo](https://github.com/aspect-build/bazel-lib/blob/main/docs/host_repo.md) repository rule
+use the [host_repo](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/host_repo.md) repository rule
 which contains the bazel_version in the exported `host` struct:
 
 WORKSPACE:
@@ -180,7 +180,7 @@ Unlike the undocumented `native.bazel_version`, which only works in WORKSPACE an
 be used in rules and BUILD files.
 
 An alternate approach to make the Bazel version available in BUILD files and rules would be to
-use the [host_repo](https://github.com/aspect-build/bazel-lib/blob/main/docs/host_repo.md) repository rule
+use the [host_repo](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/host_repo.md) repository rule
 which contains the bazel_version in the exported `host` struct:
 
 WORKSPACE:
@@ -564,7 +564,7 @@ Unlike the undocumented `native.bazel_version`, which only works in WORKSPACE an
 be used in rules and BUILD files.
 
 An alternate approach to make the Bazel version available in BUILD files and rules would be to
-use the [host_repo](https://github.com/aspect-build/bazel-lib/blob/main/docs/host_repo.md) repository rule
+use the [host_repo](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/host_repo.md) repository rule
 which contains the bazel_version in the exported `host` struct:
 
 WORKSPACE:
@@ -602,7 +602,7 @@ Unlike the undocumented `native.bazel_version`, which only works in WORKSPACE an
 be used in rules and BUILD files.
 
 An alternate approach to make the Bazel version available in BUILD files and rules would be to
-use the [host_repo](https://github.com/aspect-build/bazel-lib/blob/main/docs/host_repo.md) repository rule
+use the [host_repo](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/host_repo.md) repository rule
 which contains the bazel_version in the exported `host` struct:
 
 WORKSPACE:

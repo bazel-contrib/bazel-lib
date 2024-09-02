@@ -13,7 +13,7 @@ load("//lib:yq.bzl", "yq")
 
 exports_files([".shellcheckrc"])
 
-# gazelle:prefix github.com/aspect-build/bazel-lib
+# gazelle:prefix github.com/bazel-contrib/bazel-lib
 
 gazelle_binary(
     name = "gazelle_bin",

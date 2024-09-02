@@ -20,7 +20,7 @@ build --noexperimental_action_cache_store_output_metadata
 # when local debugging.
 # Docs: https://github.com/bazelbuild/bazel/blob/1af61b21df99edc2fc66939cdf14449c2661f873/src/main/java/com/google/devtools/build/lib/pkgcache/PackageOptions.java#L185
 # NB: This flag is in bazel6.bazelrc as when used in Bazel 7 is has been observed to break
-# "build without the bytes" --remote_download_outputs=toplevel. See https://github.com/aspect-build/bazel-lib/pull/711
+# "build without the bytes" --remote_download_outputs=toplevel. See https://github.com/bazel-contrib/bazel-lib/pull/711
 # for more info.
 build --noexperimental_check_output_files
 fetch --noexperimental_check_output_files

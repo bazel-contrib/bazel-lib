@@ -27,7 +27,7 @@ lib(
     others = [
         "1",
         # also pass in a copy_to_bin copy of "1" to spice things up;
-        # this case is handled in the fix in https://github.com/aspect-build/bazel-lib/pull/205
+        # this case is handled in the fix in https://github.com/bazel-contrib/bazel-lib/pull/205
         "copy_1",
         "2",
         "d",
