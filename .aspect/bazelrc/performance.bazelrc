@@ -21,4 +21,4 @@ build --nolegacy_external_runfiles
 
 # Avoid creating the runfiles tree for binaries until it is needed.
 # See https://github.com/bazelbuild/bazel/issues/6627
-build --nobuild_runfiles_links
+build --nobuild_runfile_links
