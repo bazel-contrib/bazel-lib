@@ -4,7 +4,7 @@ This rule copies a directory to another location using Bash (on Linux/macOS) or
 cmd.exe (on Windows).
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 
 def copy_directory_bin_action(
         ctx,
@@ -60,7 +60,7 @@ def copy_directory_bin_action(
         executable = copy_directory_bin,
         arguments = args,
         mnemonic = "CopyDirectory",
-        progress_message = "Copying directory %s" % _progress_path(src),
+        progress_message = "Copying directory %{input}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 

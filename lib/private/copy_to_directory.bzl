@@ -1,6 +1,6 @@
 "copy_to_directory implementation"
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":paths.bzl", "paths")
 
@@ -497,7 +497,7 @@ def copy_to_directory_bin_action(
         executable = copy_to_directory_bin,
         arguments = [config_file.path, ctx.label.workspace_name],
         mnemonic = "CopyToDirectory",
-        progress_message = "Copying files to directory %s" % _progress_path(dst),
+        progress_message = "Copying files to directory %{output}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 

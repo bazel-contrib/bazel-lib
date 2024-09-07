@@ -12,15 +12,3 @@ COPY_EXECUTION_REQUIREMENTS = {
     # output file/directory so little room for non-hermetic inputs to sneak in to the execution.
     "no-sandbox": "1",
 }
-
-def progress_path(f):
-    """
-    Convert a file to an appropriate string to display in an action progress message.
-
-    Args:
-        f: a file to show as a path in a progress message
-
-    Returns:
-        The path formatted for use in a progress message
-    """
-    return f.short_path.removeprefix("../")
