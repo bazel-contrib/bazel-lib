@@ -147,12 +147,19 @@ def _tar_impl(ctx):
     args.add(ctx.file.mtree, format = "@%s")
     inputs.append(ctx.file.mtree)
 
+    src_runfiles = []
+    for src in ctx.attr.srcs:
+        src_di = src[DefaultInfo]
+        if getattr(src_di.files_to_run, "repo_mapping_manifest", None) != None:
+            src_runfiles.append(depset(
+                direct = [src_di.files_to_run.repo_mapping_manifest],
+                transitive = [src_di.default_runfiles.files],
+            ))
+        else:
+            src_runfiles.append(src_di.default_runfiles.files)
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
-        inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + [
-            src[DefaultInfo].default_runfiles.files
-            for src in ctx.attr.srcs
-        ]),
+        inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + src_runfiles),
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
@@ -234,6 +241,8 @@ def _mtree_impl(ctx):
         workspace_name = str(ctx.workspace_name)
 
         content.add(_mtree_line(runfiles_dir, type = "dir"))
+        if getattr(default_info.files_to_run, "repo_mapping_manifest", None) != None:
+            content.add(_mtree_line("{}/_repo_mapping".format(runfiles_dir), type = "file", content = default_info.files_to_run.repo_mapping_manifest.path))
         content.add_all(
             s.default_runfiles.files,
             expand_directories = True,
