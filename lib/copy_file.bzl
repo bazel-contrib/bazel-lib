@@ -22,8 +22,7 @@
 `native.genrule()` is sometimes used to copy files (often wishing to rename them).
 The `copy_file` rule does this with a simpler interface than genrule.
 
-The rule uses a Bash command on Linux/macOS/non-Windows, and a `cmd.exe` command
-on Windows (no Bash is required).
+This rule uses a hermetic uutils/coreutils `cp` binary, no shell is required.
 
 This fork of bazel-skylib's copy_file adds `DirectoryPathInfo` support and allows multiple
 `copy_file` rules in the same package.

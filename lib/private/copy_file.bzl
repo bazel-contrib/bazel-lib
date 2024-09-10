@@ -12,19 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# LOCAL MODIFICATIONS
-# this has a PR patched in on top of the original
-# https://github.com/bazelbuild/bazel-skylib/blob/7b859037a673db6f606661323e74c5d4751595e6/rules/private/copy_file_private.bzl
-# https://github.com/bazelbuild/bazel-skylib/pull/324
-
 """Implementation of copy_file macro and underlying rules.
 
-These rules copy a file to another location using Bash (on Linux/macOS) or
-cmd.exe (on Windows). `_copy_xfile` marks the resulting file executable,
-`_copy_file` does not.
+These rules copy a file to another location using hermetic uutils/coreutils `cp`.
+`_copy_xfile` marks the resulting file executable, `_copy_file` does not.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
 _COREUTILS_TOOLCHAIN = "@aspect_bazel_lib//lib:coreutils_toolchain_type"
@@ -89,7 +83,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
         inputs = [src],
         outputs = [dst],
         mnemonic = "CopyFile",
-        progress_message = "Copying file %s" % _progress_path(src),
+        progress_message = "Copying file %{input}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
@@ -152,7 +146,7 @@ def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kw
 
     `native.genrule()` is sometimes used to copy files (often wishing to rename them). The 'copy_file' rule does this with a simpler interface than genrule.
 
-    This rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command on Windows (no Bash is required).
+    This rule uses a hermetic uutils/coreutils `cp` binary, no shell is required.
 
     If using this rule with source directories, it is recommended that you use the
     `--host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=1` startup option so that changes
@@ -178,9 +172,7 @@ def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kw
       **kwargs: further keyword arguments, e.g. `visibility`
     """
 
-    copy_file_impl = _copy_file
-    if is_executable:
-        copy_file_impl = _copy_xfile
+    copy_file_impl = _copy_xfile if is_executable else _copy_file
 
     copy_file_impl(
         name = name,

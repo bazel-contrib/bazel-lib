@@ -1,10 +1,9 @@
 """Implementation of copy_directory macro and underlying rules.
 
-This rule copies a directory to another location using Bash (on Linux/macOS) or
-cmd.exe (on Windows).
+This rule copies a directory to another location using a precompiled binary.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS", _progress_path = "progress_path")
+load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 
 def copy_directory_bin_action(
         ctx,
@@ -60,7 +59,7 @@ def copy_directory_bin_action(
         executable = copy_directory_bin,
         arguments = args,
         mnemonic = "CopyDirectory",
-        progress_message = "Copying directory %s" % _progress_path(src),
+        progress_message = "Copying directory %{input}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
     )
 
@@ -123,7 +122,7 @@ def copy_directory(
         **kwargs):
     """Copies a directory to another location.
 
-    This rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command on Windows (no Bash is required).
+    This rule uses a precompiled binary to perform the copy, so no shell is required.
 
     If using this rule with source directories, it is recommended that you use the
     `--host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=1` startup option so that changes
