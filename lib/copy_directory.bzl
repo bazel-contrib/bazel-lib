@@ -1,7 +1,6 @@
 """A rule that copies a directory to another place.
 
-The rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command
-on Windows (no Bash is required).
+The rule uses a precompiled binary to perform the copy, so no shell is required.
 """
 
 load(
