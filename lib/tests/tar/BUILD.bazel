@@ -98,9 +98,9 @@ write_file(
 tar(
     name = "tar_flags",
     srcs = [
-        ".git",
         "src_file",
         ":fixture1",
+        ":fixture4",
     ],
     out = "4.tar",
     # Due to this argument, .git should not appear in the resulting tar
