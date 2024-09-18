@@ -206,15 +206,8 @@ removed from sources files.
 - `on`: hardlinks are used for all files (not recommended)
     """,
     "preserve_mtime": """If True, the last modified time of copied files is preserved.
-
-There are two caveats to consider when using this feature:
-1. Remote Execution / Caching: These layers will reset the modify time and are
-incompatible with this feature. To avoid these failures the [no-remote tag](https://bazel.build/reference/be/common-definitions)
-can be added.
-2. Caching: Changes to only the modified time will not re-trigger cached actions. This can
-be worked around by using a clean build when these types of changes occur. For tests the
-[external tag](https://bazel.build/reference/be/common-definitions) can be used but this
-will result in tests never being cached.""",
+    See the [caveats on copy_directory](/docs/copy_directory.md#preserving-modification-times)
+    about interactions with remote execution and caching.""",
     # verbose
     "verbose": """If true, prints out verbose logs to stdout""",
 }

@@ -4,6 +4,19 @@ A rule that copies a directory to another place.
 
 The rule uses a precompiled binary to perform the copy, so no shell is required.
 
+## Preserving modification times
+
+`copy_directory` and `copy_to_directory` have a `preserve_mtime` attribute, however
+there are two caveats to consider when using this feature:
+
+1. Remote Execution / Caching: These layers will reset the modify time and are
+    incompatible with this feature. To avoid these failures the [no-remote tag](https://bazel.build/reference/be/common-definitions)
+    can be added.
+2. Caching: Changes to only the modified time will not re-trigger cached actions. This can
+    be worked around by using a clean build when these types of changes occur. For tests the
+    [external tag](https://bazel.build/reference/be/common-definitions) can be used but this
+    will result in tests never being cached.
+
 <a id="copy_directory"></a>
 
 ## copy_directory
@@ -62,7 +75,7 @@ within other rule implementations.
 | <a id="copy_directory_bin_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
 | <a id="copy_directory_bin_action-copy_directory_bin"></a>copy_directory_bin |  Copy to directory tool binary.   |  none |
 | <a id="copy_directory_bin_action-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>See copy_directory rule documentation for more details.   |  `"auto"` |
-| <a id="copy_directory_bin_action-verbose"></a>verbose |  If true, prints out verbose logs to stdout   |  `False` |
-| <a id="copy_directory_bin_action-preserve_mtime"></a>preserve_mtime |  If true, preserve the modified time from the source.   |  `False` |
+| <a id="copy_directory_bin_action-verbose"></a>verbose |  print verbose logs to stdout   |  `False` |
+| <a id="copy_directory_bin_action-preserve_mtime"></a>preserve_mtime |  preserve the modified time from the source. See the caveats above about interactions with remote execution and caching.   |  `False` |
 
 
