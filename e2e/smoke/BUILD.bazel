@@ -6,6 +6,7 @@ load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:yq.bzl", "yq")
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
 
 # Validate that JQ works and resolves its toolchain
 jq(
@@ -105,6 +106,7 @@ copy_to_directory(
     srcs = ["d"],
     out = "copy_to_directory_mtime_out",
     preserve_mtime = True,
+    tags = ["no-remote"],
 )
 
 copy_directory(
@@ -112,26 +114,26 @@ copy_directory(
     src = "d",
     out = "copy_directory_mtime_out",
     preserve_mtime = True,
+    tags = ["no-remote"],
 )
 
-sh_test(
+go_test(
     name = "test_preserve_mtime",
     size = "small",
-    srcs = ["test_preserve_mtime.sh"],
+    srcs = ["test_preserve_mtime.go"],
+    deps = [
+        "@io_bazel_rules_go//go/tools/bazel:go_default_library",
+    ],
     data = [
         "d",
         ":copy_directory_mtime_case",
         ":copy_to_directory_mtime_case",
     ],
-    # FIXME(#898)
-    # On macos, fails with
-    # stat: illegal option -- -
-    # usage: stat [-FLnq] [-f format | -l | -r | -s | -x] [-t timefmt] [file ...]
-    # On windows, fails with
-    # stat: cannot stat 'd/1': No such file or directory
-    # On Linux, it's helplessly flaky, often failing in 2/2 attempts like
-    # Preserve mtime test failed. Modify times do not match for d/1 and copy_to_directory_mtime_out/d/1
-    # Original modify time: 2024-08-14 18:23:01.413642851 +0000
-    # Copied modify time:   2024-08-14 18:23:31.501819589 +0000
-    tags = ["manual"],
+    # Note: This test is marked as manual as it is not reliable in the CI environment. The reason for is that changes
+    # to only the modify time do not invalidate the Bazel cache. These failures can be reproduced by:
+    #   bazel clean --expunge
+    #   bazel test :test_preserve_mtime # This test should pass
+    #   touch d/1 # Update the mtime, in the CI environment this is done with the SCM integration.
+    #   bazel test :test_preserve_mtime # This test now fails
+    tags = ["no-remote", "external", "manual"],
 )

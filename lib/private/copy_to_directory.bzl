@@ -205,7 +205,9 @@ removed from sources files.
 - `off`: all files are copied
 - `on`: hardlinks are used for all files (not recommended)
     """,
-    "preserve_mtime": """If True, the last modified time of copied files is preserved.""",
+    "preserve_mtime": """If True, the last modified time of copied files is preserved.
+    See the [caveats on copy_directory](/docs/copy_directory.md#preserving-modification-times)
+    about interactions with remote execution and caching.""",
     # verbose
     "verbose": """If true, prints out verbose logs to stdout""",
 }

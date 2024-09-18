@@ -34,9 +34,11 @@ def copy_directory_bin_action(
 
             See copy_directory rule documentation for more details.
 
-        verbose: If true, prints out verbose logs to stdout
+        verbose: print verbose logs to stdout
 
-        preserve_mtime: If true, preserve the modified time from the source.
+        preserve_mtime: preserve the modified time from the source.
+            See the caveats above about interactions with remote execution and caching.
+
     """
     args = [
         src.path,
@@ -100,7 +102,7 @@ _copy_directory = rule(
         ),
         "verbose": attr.bool(),
         "preserve_mtime": attr.bool(
-            doc = "If True, the last modified time of copied files is preserved.",
+            doc = """If True, the last modified time of copied files is preserved. Note the caveats on copy_directory.""",
             default = False,
         ),
         # use '_tool' attribute for development only; do not commit with this attribute active since it
