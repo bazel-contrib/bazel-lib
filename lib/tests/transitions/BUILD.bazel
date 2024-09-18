@@ -201,6 +201,6 @@ sh_test(
 go_library(
     name = "transitions_lib",
     srcs = ["main.go"],
-    importpath = "github.com/aspect-build/bazel-lib/lib/tests/transitions",
+    importpath = "github.com/bazel-contrib/bazel-lib/lib/tests/transitions",
     visibility = ["//visibility:private"],
 )

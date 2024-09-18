@@ -164,7 +164,7 @@ _write_source_file_attrs = {
     # out_file in the list of source file deps. ibazel uses this query to determine
     # which source files to watch so if the out_file is returned then ibazel watches
     # and it goes into an infinite update, notify loop when running this target.
-    # See https://github.com/aspect-build/bazel-lib/pull/52 for more context.
+    # See https://github.com/bazel-contrib/bazel-lib/pull/52 for more context.
     "out_file": attr.string(mandatory = False),
     "executable": attr.bool(),
     # buildifier: disable=attr-cfg

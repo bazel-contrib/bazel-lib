@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "copy_to_directory_lib",
     srcs = ["main.go"],
-    importpath = "github.com/aspect-build/bazel-lib/tools/copy_to_directory",
+    importpath = "github.com/bazel-contrib/bazel-lib/tools/copy_to_directory",
     visibility = ["//visibility:public"],
     deps = [
         "//tools/common",

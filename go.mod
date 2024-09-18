@@ -1,4 +1,4 @@
-module github.com/aspect-build/bazel-lib
+module github.com/bazel-contrib/bazel-lib
 
 go 1.19
 

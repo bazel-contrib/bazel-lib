@@ -8,7 +8,7 @@ go_library(
         "copy.go",
         "file.go",
     ],
-    importpath = "github.com/aspect-build/bazel-lib/tools/common",
+    importpath = "github.com/bazel-contrib/bazel-lib/tools/common",
     visibility = ["//visibility:public"],
     deps = select({
         "@io_bazel_rules_go//go/platform:darwin": [

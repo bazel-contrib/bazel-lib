@@ -17,10 +17,10 @@ This performs a simple search over the template file for the keys in substitutio
 and replaces them with the corresponding values.
 
 Values may also use location templates as documented in
-[expand_locations](https://github.com/aspect-build/bazel-lib/blob/main/docs/expand_make_vars.md#expand_locations)
+[expand_locations](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/expand_make_vars.md#expand_locations)
 as well as [configuration variables](https://docs.bazel.build/versions/main/skylark/lib/ctx.html#var)
 such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
-[expand_variables](https://github.com/aspect-build/bazel-lib/blob/main/docs/expand_make_vars.md#expand_variables).
+[expand_variables](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/expand_make_vars.md#expand_variables).
 
 **ATTRIBUTES**
 

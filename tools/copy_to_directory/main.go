@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aspect-build/bazel-lib/tools/common"
+	"github.com/bazel-contrib/bazel-lib/tools/common"
 	"github.com/bmatcuk/doublestar/v4"
 	"golang.org/x/exp/maps"
 )

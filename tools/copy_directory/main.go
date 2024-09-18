@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/aspect-build/bazel-lib/tools/common"
+	"github.com/bazel-contrib/bazel-lib/tools/common"
 )
 
 type pathSet map[string]bool
