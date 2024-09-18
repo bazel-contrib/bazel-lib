@@ -235,11 +235,18 @@ def _mtree_impl(ctx):
 
         content.add(_mtree_line(runfiles_dir, type = "dir"))
         content.add_all(
+            s.default_runfiles.empty_filenames,
+            format_each = "{}/%s".format(runfiles_dir),
+            # be careful about what you pass to map_each as it will carry the data structures over to execution phase.
+            map_each = lambda f, e: _mtree_line(_vis_encode(f.removeprefix("external/") if f.startswith("external/") else workspace_name + "/" + f), "file"),
+            allow_closure = True,
+        )
+        content.add_all(
             s.default_runfiles.files,
             expand_directories = True,
             uniquify = True,
             format_each = "{}/%s".format(runfiles_dir),
-            # be careful about what you pass to _expand_for_runfiles as it will carry the data structures over to execution phase.
+            # be careful about what you pass to map_each as it will carry the data structures over to execution phase.
             map_each = lambda f, e: _expand(f, e, lambda f: _to_rlocation_path(f, workspace_name)),
             allow_closure = True,
         )
