@@ -52,8 +52,8 @@ BSDTAR_PREBUILT = {
         "aa760c25a5445320bb3cde06e60c99ebc95fb29f330af0212bd099dd24e1cc54",
     ),
     "windows_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5/tar_windows_amd64.exe",
-        "80c109b9477ed44e9f8626cd9d8a635c8761c4506030c91f46b289798c7a22b6",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5-1/tar_windows_x86_64.exe",
+        "2650c428fbe37276d4ffa3386d55b69f06fb4611e25ff05db5f011c389c3e952",
     ),
 }
 
