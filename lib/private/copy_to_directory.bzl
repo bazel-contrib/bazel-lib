@@ -51,7 +51,7 @@ _copy_to_directory_attr_doc = {
 
 If not set, the name of the target is used.
 """,
-    "add_directory_to_runfiles": """Whether to add the outputted directory to the target's runfiles. Defaults to True.""",
+    "add_directory_to_runfiles": """Whether to add the outputted directory to the target's runfiles.""",
     # root_paths
     "root_paths": """List of paths (with glob support) that are roots in the output directory.
 
