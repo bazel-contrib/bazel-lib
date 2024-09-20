@@ -27,3 +27,4 @@ build --nolegacy_external_runfiles
 # outside of `bazel run`. In those cases, the script will need to call
 # `bazel build --build_runfile_links //my/binary:target` and then execute the resulting program.
 build --nobuild_runfile_links
+coverage --build_runfile_links # However, the above breaks a fetch of the gcov tool, see #922
