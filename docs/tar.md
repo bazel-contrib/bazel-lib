@@ -119,7 +119,7 @@ Modify metadata in an mtree file.
 | <a id="mtree_mutate-mtime"></a>mtime |  new modification time for all entries.   |  `None` |
 | <a id="mtree_mutate-owner"></a>owner |  new uid for all entries.   |  `None` |
 | <a id="mtree_mutate-ownername"></a>ownername |  new uname for all entries.   |  `None` |
-| <a id="mtree_mutate-awk_script"></a>awk_script |  may be overridden to change the script containing the modification logic.   |  `"@aspect_bazel_lib//lib/private:modify_mtree.awk"` |
+| <a id="mtree_mutate-awk_script"></a>awk_script |  may be overridden to change the script containing the modification logic.   |  `Label("@aspect_bazel_lib//lib/private:modify_mtree.awk")` |
 | <a id="mtree_mutate-kwargs"></a>kwargs |  additional named parameters to genrule   |  none |
 
 
