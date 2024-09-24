@@ -27,3 +27,7 @@ build --nolegacy_external_runfiles
 # outside of `bazel run`. In those cases, the script will need to call
 # `bazel build --build_runfile_links //my/binary:target` and then execute the resulting program.
 build --nobuild_runfile_links
+
+# Needed prior to Bazel 8; see
+# https://github.com/bazelbuild/bazel/issues/20577
+coverage --build_runfile_links
