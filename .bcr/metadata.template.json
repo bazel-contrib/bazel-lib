@@ -12,7 +12,7 @@
       "github": "kormide"
     }
   ],
-  "repository": ["github:aspect-build/bazel-lib"],
+  "repository": ["github:bazel-contrib/bazel-lib"],
   "versions": [],
   "yanked_versions": {}
 }
