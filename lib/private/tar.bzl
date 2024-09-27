@@ -1,5 +1,6 @@
 "Implementation of tar rule"
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("//lib:paths.bzl", "to_repository_relative_path")
 
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
@@ -84,6 +85,7 @@ _tar_attrs = {
         doc = "Compress the archive file with a supported algorithm.",
         values = _ACCEPTED_COMPRESSION_TYPES,
     ),
+    "_compute_unused_inputs": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
 }
 
 _mtree_attrs = {
@@ -125,6 +127,89 @@ def _calculate_runfiles_dir(default_info):
         return manifest.short_path[:-9]
     fail("manifest path {} seems malformed".format(manifest.short_path))
 
+def _fmt_all_inputs_line(file):
+    # The tar.all_inputs.txt file has a two columns:
+    #   1. vis-encoded paths of the files, used in comparison
+    #   2. un-vis-encoded paths of the files, used for reporting back to Bazel after filtering
+    path = file.path
+    return _vis_encode(path) + " " + path
+
+def _fmt_keep_inputs_line(file):
+    # The tar.keep_inputs.txt file has a single column of vis-encoded paths of the files to keep.
+    return _vis_encode(file.path)
+
+def _configured_unused_inputs_file(ctx, srcs, keep):
+    """
+    Compute the unused_inputs_list, if configured.
+
+    Args:
+        ctx: `tar` rule context. Must provide `mtree` and `_compute_unused_inputs` attrs , and a `coreutils_toolchain_type` toolchain.
+        srcs: sequence or depset. The set of all input sources being provided to the `tar` rule.
+        keep: sequence or depset. A hardcoded set of sources to consider "used" regardless of whether or not they appear in the mtree.
+
+    Returns: file or None. List of inputs unused by the `Tar` action.
+    """
+    if not ctx.attr._compute_unused_inputs[BuildSettingInfo].value:
+        return None
+
+    coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"].coreutils_info.bin
+
+    all_inputs = ctx.actions.declare_file(ctx.attr.name + ".all_inputs.txt")
+    keep_inputs = ctx.actions.declare_file(ctx.attr.name + ".keep_inputs.txt")
+    unused_inputs = ctx.actions.declare_file(ctx.attr.name + ".unused_inputs.txt")
+
+    ctx.actions.write(
+        output = all_inputs,
+        content = ctx.actions.args()
+            .set_param_file_format("multiline")
+            .add_all(
+            srcs,
+            map_each = _fmt_all_inputs_line,
+        ),
+    )
+    ctx.actions.write(
+        output = keep_inputs,
+        content = ctx.actions.args()
+            .set_param_file_format("multiline")
+            .add_all(
+            keep,
+            map_each = _fmt_keep_inputs_line,
+        ),
+    )
+
+    # Unused inputs are inputs that:
+    #   * are in the set of ALL_INPUTS
+    #   * are not found in any content= keyword in the MTREE
+    #   * are not in the hardcoded KEEP_INPUTS set
+    #
+    # Comparison and filtering of ALL_INPUTS is performed in the vis-encoded representation, stored in field 1,
+    # before being written out in the un-vis-encoded form Bazel understands, from field 2.
+    ctx.actions.run_shell(
+        outputs = [unused_inputs],
+        inputs = [all_inputs, keep_inputs, ctx.file.mtree],
+        tools = [coreutils],
+        command = '''
+            "$COREUTILS" join -v 1                                                  \\
+                <("$COREUTILS" sort -u "$ALL_INPUTS")                               \\
+                <("$COREUTILS" sort -u                                              \\
+                    <(grep -o '\\bcontent=\\S*' "$MTREE" | "$COREUTILS" cut -c 9-)  \\
+                    "$KEEP_INPUTS"                                                  \\
+                )                                                                   \\
+                | "$COREUTILS" cut -d' ' -f 2-                                      \\
+                > "$UNUSED_INPUTS"
+        ''',
+        env = {
+            "COREUTILS": coreutils.path,
+            "ALL_INPUTS": all_inputs.path,
+            "KEEP_INPUTS": keep_inputs.path,
+            "MTREE": ctx.file.mtree.path,
+            "UNUSED_INPUTS": unused_inputs.path,
+        },
+        mnemonic = "UnusedTarInputs",
+    )
+
+    return unused_inputs
+
 def _tar_impl(ctx):
     bsdtar = ctx.toolchains[TAR_TOOLCHAIN_TYPE]
     inputs = ctx.files.srcs[:]
@@ -151,17 +236,29 @@ def _tar_impl(ctx):
         src[DefaultInfo].files_to_run.repo_mapping_manifest
         for src in ctx.attr.srcs
     ]
-    inputs.extend([m for m in repo_mappings if m != None])
+    repo_mappings = [m for m in repo_mappings if m != None] 
+    inputs.extend(repo_mappings)
+
+    srcs_runfiles = [
+        src[DefaultInfo].default_runfiles.files
+        for src in ctx.attr.srcs
+    ]
+
+    unused_inputs_file = _configured_unused_inputs_file(
+        ctx,
+        srcs = depset(direct = ctx.files.srcs + repo_mappings, transitive = srcs_runfiles),
+        keep = [ctx.file.mtree, bsdtar.tarinfo.binary],
+    )
+    if unused_inputs_file:
+        inputs.append(unused_inputs_file)
 
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
-        inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + [
-            src[DefaultInfo].default_runfiles.files
-            for src in ctx.attr.srcs
-        ]),
+        inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + srcs_runfiles),
         outputs = [out],
         arguments = [args],
         mnemonic = "Tar",
+        unused_inputs_list = unused_inputs_file,
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
@@ -284,5 +381,8 @@ tar = rule(
     doc = "Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rather than load this directly.",
     implementation = tar_lib.implementation,
     attrs = tar_lib.attrs,
-    toolchains = [tar_lib.toolchain_type],
+    toolchains = [
+        tar_lib.toolchain_type,
+        "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+    ],
 )
