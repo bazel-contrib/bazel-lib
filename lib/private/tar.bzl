@@ -259,7 +259,7 @@ def _mtree_impl(ctx):
         )
         if repo_mapping != None:
             content.add(
-                _mtree_line(_vis_encode(runfiles_dir + "/_repo_mapping"), "file", content = _vis_encode(repo_mapping.path))
+                _mtree_line(_vis_encode(runfiles_dir + "/_repo_mapping"), "file", content = _vis_encode(repo_mapping.path)),
             )
 
     ctx.actions.write(out, content = content)
