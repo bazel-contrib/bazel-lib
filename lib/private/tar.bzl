@@ -147,6 +147,12 @@ def _tar_impl(ctx):
     args.add(ctx.file.mtree, format = "@%s")
     inputs.append(ctx.file.mtree)
 
+    repo_mappings = [
+        src[DefaultInfo].files_to_run.repo_mapping_manifest
+        for src in ctx.attr.srcs
+    ]
+    inputs.extend([m for m in repo_mappings if m != None])
+
     ctx.actions.run(
         executable = bsdtar.tarinfo.binary,
         inputs = depset(direct = inputs, transitive = [bsdtar.default.files] + [
@@ -228,6 +234,7 @@ def _mtree_impl(ctx):
             continue
 
         runfiles_dir = _calculate_runfiles_dir(default_info)
+        repo_mapping = default_info.files_to_run.repo_mapping_manifest
 
         # copy workspace name here just in case to prevent ctx
         # to be transferred to execution phase.
@@ -250,6 +257,10 @@ def _mtree_impl(ctx):
             map_each = lambda f, e: _expand(f, e, lambda f: _to_rlocation_path(f, workspace_name)),
             allow_closure = True,
         )
+        if repo_mapping != None:
+            content.add(
+                _mtree_line(_vis_encode(runfiles_dir + "/_repo_mapping"), "file", content = _vis_encode(repo_mapping.path))
+            )
 
     ctx.actions.write(out, content = content)
 
