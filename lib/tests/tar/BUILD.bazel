@@ -185,8 +185,6 @@ genrule(
         # requires runfiles tree, otherwise get
         # ERROR: cannot find bazel_tools/tools/bash/runfiles/runfiles.bash
         "@platforms//os:windows": ["@platforms//:incompatible"],
-        # TODO(sahin): incompatible with bzlmod
-        "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
         "//conditions:default": [],
     }),
     toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
