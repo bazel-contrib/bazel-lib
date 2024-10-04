@@ -142,7 +142,7 @@ def mtree_mutate(
         mtime = None,
         owner = None,
         ownername = None,
-        awk_script = "@aspect_bazel_lib//lib/private:modify_mtree.awk",
+        awk_script = Label("@aspect_bazel_lib//lib/private:modify_mtree.awk"),
         **kwargs):
     """Modify metadata in an mtree file.
 
