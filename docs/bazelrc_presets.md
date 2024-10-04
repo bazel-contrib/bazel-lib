@@ -27,7 +27,7 @@ the `presets` attribute.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="write_aspect_bazelrc_presets-name"></a>name |  a unique name for this target   |  none |
-| <a id="write_aspect_bazelrc_presets-presets"></a>presets |  a list of preset names to keep up-to-date   |  `["bazel6", "bazel7", "ci", "convenience", "correctness", "debug", "javascript", "performance"]` |
+| <a id="write_aspect_bazelrc_presets-presets"></a>presets |  a list of preset names to keep up-to-date   |  `["bazel6", "bazel7", "ci", "convenience", "correctness", "debug", "java", "javascript", "performance"]` |
 | <a id="write_aspect_bazelrc_presets-kwargs"></a>kwargs |  Additional arguments to pass to `write_source_files`   |  none |
 
 
