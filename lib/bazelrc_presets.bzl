@@ -12,6 +12,7 @@ ALL_PRESETS = [
     "convenience",
     "correctness",
     "debug",
+    "java",
     "javascript",
     "performance",
 ]
