@@ -247,7 +247,7 @@ def _tar_impl(ctx):
     unused_inputs_file = _configured_unused_inputs_file(
         ctx,
         srcs = depset(direct = ctx.files.srcs + repo_mappings, transitive = srcs_runfiles),
-        keep = [ctx.file.mtree, bsdtar.tarinfo.binary],
+        keep = depset(direct = [ctx.file.mtree, bsdtar.tarinfo.binary], transitive = [bsdtar.default.files]),
     )
     if unused_inputs_file:
         inputs.append(unused_inputs_file)
