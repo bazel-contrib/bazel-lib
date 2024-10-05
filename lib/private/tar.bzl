@@ -234,6 +234,9 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
     #
     # Comparison and filtering of ALL_INPUTS is performed in the vis-encoded representation, stored in field 1,
     # before being written out in the un-vis-encoded form Bazel understands, from field 2.
+    #
+    # TODO: Make comparison exact by converting all inputs to a canonical vis-encoded form before comparing.
+    #       See also: https://github.com/bazel-contrib/bazel-lib/issues/794
     ctx.actions.run_shell(
         outputs = [unused_inputs],
         inputs = [all_inputs, keep_inputs, ctx.file.mtree],
