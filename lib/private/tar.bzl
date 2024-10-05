@@ -99,7 +99,7 @@ Benefits: pruning unused input files can reduce the amount of work the build sys
 perform. Pruned files are not included in the action cache key; changes to them do not
 invalidate the cache entry, which can lead to higher cache hit rates. Actions do not need
 to block on the availability of pruned inputs, which can increase the available
-parallelism of builds. Pruned files do not need to be transfered to remote-execution
+parallelism of builds. Pruned files do not need to be transferred to remote-execution
 workers, which can reduce network costs.
 
 Risks: pruning an actually-used input file can lead to unexpected, incorrect results. The
@@ -286,7 +286,7 @@ def _tar_impl(ctx):
         src[DefaultInfo].files_to_run.repo_mapping_manifest
         for src in ctx.attr.srcs
     ]
-    repo_mappings = [m for m in repo_mappings if m != None] 
+    repo_mappings = [m for m in repo_mappings if m != None]
     inputs.extend(repo_mappings)
 
     srcs_runfiles = [
