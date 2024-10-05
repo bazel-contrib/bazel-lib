@@ -85,7 +85,40 @@ _tar_attrs = {
         doc = "Compress the archive file with a supported algorithm.",
         values = _ACCEPTED_COMPRESSION_TYPES,
     ),
-    "_compute_unused_inputs": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
+    "compute_unused_inputs": attr.int(
+        doc = """
+Whether to discover and prune input files that will not contribute to the archive.
+
+Unused inputs are discovered by comparing the set of input files in `srcs` to the set
+of files referenced by `mtree`. Files not used for content by the mtree specification
+will not be read by the `tar` tool when creating the archive and can be pruned from the
+input set using the `unused_inputs_list`
+[mechanism](https://bazel.build/contribute/codebase#input-discovery).
+
+Benefits: pruning unused input files can reduce the amount of work the build system must
+perform. Pruned files are not included in the action cache key; changes to them do not
+invalidate the cache entry, which can lead to higher cache hit rates. Actions do not need
+to block on the availability of pruned inputs, which can increase the available
+parallelism of builds. Pruned files do not need to be transfered to remote-execution
+workers, which can reduce network costs.
+
+Risks: pruning an actually-used input file can lead to unexpected, incorrect results. The
+comparison performed between `srcs` and `mtree` is currently inexact and may fail to
+handle handwritten or externally-derived mtree specifications. However, it is safe to use
+this feature when the lines found in `mtree` are derived from one or more `mtree_spec`
+rules, filtered and/or merged on whole-line basis only.
+
+Possible values:
+
+    - `compute_unused_inputs = 1`: Always perform unused input discovery and pruning.
+    - `compute_unused_inputs = 0`: Never discover or prune unused inputs.
+    - `stamp = -1`: Discovery and pruning of unused inputs is controlled by the
+        --[no]@aspect_bazel_lib//lib:tar_compute_unused_inputs flag.
+        """,
+        default = -1,
+        values = [-1, 0, 1],
+    ),
+    "_compute_unused_inputs_flag": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
 }
 
 _mtree_attrs = {
@@ -127,6 +160,23 @@ def _calculate_runfiles_dir(default_info):
         return manifest.short_path[:-9]
     fail("manifest path {} seems malformed".format(manifest.short_path))
 
+def _is_unused_inputs_enabled(attr):
+    """Determine whether or not to compute unused inputs.
+
+    Args:
+        attr: `tar` rule ctx.attr struct. Must provide `_tar_attrs`.
+
+    Returns: bool. Whether the unused_inputs_list file should be computed.
+    """
+    if attr.compute_unused_inputs == 1:
+        return True
+    elif attr.compute_unused_inputs == 0:
+        return False
+    elif attr.compute_unused_inputs == -1:
+        return attr._compute_unused_inputs_flag[BuildSettingInfo].value
+    else:
+        fail("Unexpected `compute_unused_inputs` value: {}".format(attr.compute_unused_inputs))
+
 def _fmt_all_inputs_line(file):
     # The tar.all_inputs.txt file has a two columns:
     #   1. vis-encoded paths of the files, used in comparison
@@ -143,13 +193,13 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
     Compute the unused_inputs_list, if configured.
 
     Args:
-        ctx: `tar` rule context. Must provide `mtree` and `_compute_unused_inputs` attrs , and a `coreutils_toolchain_type` toolchain.
+        ctx: `tar` rule context. Must provide `_tar_attrs` and a `coreutils_toolchain_type` toolchain.
         srcs: sequence or depset. The set of all input sources being provided to the `tar` rule.
         keep: sequence or depset. A hardcoded set of sources to consider "used" regardless of whether or not they appear in the mtree.
 
     Returns: file or None. List of inputs unused by the `Tar` action.
     """
-    if not ctx.attr._compute_unused_inputs[BuildSettingInfo].value:
+    if not _is_unused_inputs_enabled(ctx.attr):
         return None
 
     coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"].coreutils_info.bin
