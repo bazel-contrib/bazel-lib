@@ -229,11 +229,14 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
 
     # Unused inputs are inputs that:
     #   * are in the set of ALL_INPUTS
-    #   * are not found in any content= keyword in the MTREE
+    #   * are not found in any content= or contents= keyword in the MTREE
     #   * are not in the hardcoded KEEP_INPUTS set
     #
     # Comparison and filtering of ALL_INPUTS is performed in the vis-encoded representation, stored in field 1,
     # before being written out in the un-vis-encoded form Bazel understands, from field 2.
+    #
+    # Note: bsdtar (libarchive) accepts both content= and contents= to identify source file:
+    # ref https://github.com/libarchive/libarchive/blob/a90e9d84ec147be2ef6a720955f3b315cb54bca3/libarchive/archive_read_support_format_mtree.c#L1640
     #
     # TODO: Make comparison exact by converting all inputs to a canonical vis-encoded form before comparing.
     #       See also: https://github.com/bazel-contrib/bazel-lib/issues/794
@@ -242,13 +245,13 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
         inputs = [all_inputs, keep_inputs, ctx.file.mtree],
         tools = [coreutils],
         command = '''
-            "$COREUTILS" join -v 1                                                  \\
-                <("$COREUTILS" sort -u "$ALL_INPUTS")                               \\
-                <("$COREUTILS" sort -u                                              \\
-                    <(grep -o '\\bcontent=\\S*' "$MTREE" | "$COREUTILS" cut -c 9-)  \\
-                    "$KEEP_INPUTS"                                                  \\
-                )                                                                   \\
-                | "$COREUTILS" cut -d' ' -f 2-                                      \\
+            "$COREUTILS" join -v 1                                                            \\
+                <("$COREUTILS" sort -u "$ALL_INPUTS")                                         \\
+                <("$COREUTILS" sort -u                                                        \\
+                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE" | "$COREUTILS" cut -d'=' -f 2-)  \\
+                    "$KEEP_INPUTS"                                                            \\
+                )                                                                             \\
+                | "$COREUTILS" cut -d' ' -f 2-                                                \\
                 > "$UNUSED_INPUTS"
         ''',
         env = {
