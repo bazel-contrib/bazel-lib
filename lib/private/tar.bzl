@@ -314,7 +314,18 @@ def _tar_impl(ctx):
         unused_inputs_list = unused_inputs_file,
     )
 
-    return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
+    # TODO(3.0): Always return a list of providers.
+    default_info = DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
+    if unused_inputs_file:
+        return [
+            default_info,
+            OutputGroupInfo(
+                # exposed for testing
+                _unused_inputs_file = depset([unused_inputs_file]),
+            ),
+        ]
+    else:
+        return default_info
 
 def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     spec = [
