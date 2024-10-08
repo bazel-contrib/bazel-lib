@@ -25,3 +25,11 @@ build --noexperimental_action_cache_store_output_metadata
 build --noexperimental_check_output_files
 fetch --noexperimental_check_output_files
 query --noexperimental_check_output_files
+
+# Don't apply `--noremote_upload_local_results` and `--noremote_accept_cached` to the disk cache.
+# If you have both `--noremote_upload_local_results` and `--disk_cache`, then this fixes a bug where
+# Bazel doesn't write to the local disk cache as it treats as a remote cache.
+# Docs: https://bazel.build/reference/command-line-reference#flag--incompatible_remote_results_ignore_disk
+# NB: This flag is in bazel6.bazelrc because it became a no-op in Bazel 7 and has been removed
+# in Bazel 8.
+build --incompatible_remote_results_ignore_disk
