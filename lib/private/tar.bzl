@@ -112,7 +112,7 @@ Possible values:
 
     - `compute_unused_inputs = 1`: Always perform unused input discovery and pruning.
     - `compute_unused_inputs = 0`: Never discover or prune unused inputs.
-    - `stamp = -1`: Discovery and pruning of unused inputs is controlled by the
+    - `compute_unused_inputs = -1`: Discovery and pruning of unused inputs is controlled by the
         --[no]@aspect_bazel_lib//lib:tar_compute_unused_inputs flag.
         """,
         default = -1,
