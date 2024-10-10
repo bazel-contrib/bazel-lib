@@ -27,6 +27,10 @@ For example to use commit `abc123`:
 
 # Public API
 
+## Packaging
+
+- [tar](docs/tar.md) Run BSD `tar` to produce archives.
+
 ## Copying files
 
 - [copy_directory](docs/copy_directory.md) Copies directories to another package.
