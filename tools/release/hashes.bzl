@@ -21,6 +21,7 @@ def _hash(ctx, algo, file):
             basename = file.basename,
             out = out.path,
         ),
+        toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
     )
     return out
 

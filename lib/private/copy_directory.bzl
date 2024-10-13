@@ -10,6 +10,7 @@ def copy_directory_bin_action(
         src,
         dst,
         copy_directory_bin,
+        copy_directory_toolchain = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
         hardlink = "auto",
         verbose = False,
         preserve_mtime = False):
@@ -29,6 +30,8 @@ def copy_directory_bin_action(
         dst: The directory to copy to. Must be a TreeArtifact.
 
         copy_directory_bin: Copy to directory tool binary.
+
+        copy_directory_toolchain: The toolchain type for Auto Exec Groups. The default is probably what you want.
 
         hardlink: Controls when to use hardlinks to files instead of making copies.
 
@@ -63,6 +66,7 @@ def copy_directory_bin_action(
         mnemonic = "CopyDirectory",
         progress_message = "Copying directory %{input}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        toolchain = copy_directory_toolchain,
     )
 
 def _copy_directory_impl(ctx):

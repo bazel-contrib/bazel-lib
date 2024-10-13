@@ -70,10 +70,11 @@ for more information on supported globbing patterns.
 ## copy_to_directory_bin_action
 
 <pre>
-copy_to_directory_bin_action(<a href="#copy_to_directory_bin_action-ctx">ctx</a>, <a href="#copy_to_directory_bin_action-name">name</a>, <a href="#copy_to_directory_bin_action-dst">dst</a>, <a href="#copy_to_directory_bin_action-copy_to_directory_bin">copy_to_directory_bin</a>, <a href="#copy_to_directory_bin_action-files">files</a>, <a href="#copy_to_directory_bin_action-targets">targets</a>, <a href="#copy_to_directory_bin_action-root_paths">root_paths</a>,
-                             <a href="#copy_to_directory_bin_action-include_external_repositories">include_external_repositories</a>, <a href="#copy_to_directory_bin_action-include_srcs_packages">include_srcs_packages</a>,
-                             <a href="#copy_to_directory_bin_action-exclude_srcs_packages">exclude_srcs_packages</a>, <a href="#copy_to_directory_bin_action-include_srcs_patterns">include_srcs_patterns</a>, <a href="#copy_to_directory_bin_action-exclude_srcs_patterns">exclude_srcs_patterns</a>,
-                             <a href="#copy_to_directory_bin_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_bin_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_bin_action-hardlink">hardlink</a>, <a href="#copy_to_directory_bin_action-preserve_mtime">preserve_mtime</a>, <a href="#copy_to_directory_bin_action-verbose">verbose</a>)
+copy_to_directory_bin_action(<a href="#copy_to_directory_bin_action-ctx">ctx</a>, <a href="#copy_to_directory_bin_action-name">name</a>, <a href="#copy_to_directory_bin_action-dst">dst</a>, <a href="#copy_to_directory_bin_action-copy_to_directory_bin">copy_to_directory_bin</a>, <a href="#copy_to_directory_bin_action-copy_to_directory_toolchain">copy_to_directory_toolchain</a>,
+                             <a href="#copy_to_directory_bin_action-files">files</a>, <a href="#copy_to_directory_bin_action-targets">targets</a>, <a href="#copy_to_directory_bin_action-root_paths">root_paths</a>, <a href="#copy_to_directory_bin_action-include_external_repositories">include_external_repositories</a>,
+                             <a href="#copy_to_directory_bin_action-include_srcs_packages">include_srcs_packages</a>, <a href="#copy_to_directory_bin_action-exclude_srcs_packages">exclude_srcs_packages</a>, <a href="#copy_to_directory_bin_action-include_srcs_patterns">include_srcs_patterns</a>,
+                             <a href="#copy_to_directory_bin_action-exclude_srcs_patterns">exclude_srcs_patterns</a>, <a href="#copy_to_directory_bin_action-replace_prefixes">replace_prefixes</a>, <a href="#copy_to_directory_bin_action-allow_overwrites">allow_overwrites</a>, <a href="#copy_to_directory_bin_action-hardlink">hardlink</a>,
+                             <a href="#copy_to_directory_bin_action-preserve_mtime">preserve_mtime</a>, <a href="#copy_to_directory_bin_action-verbose">verbose</a>)
 </pre>
 
 Factory function to copy files to a directory using a tool binary.
@@ -94,6 +95,7 @@ other rule implementations where additional_files can also be passed in.
 | <a id="copy_to_directory_bin_action-name"></a>name |  Name of target creating this action used for config file generation.   |  none |
 | <a id="copy_to_directory_bin_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
 | <a id="copy_to_directory_bin_action-copy_to_directory_bin"></a>copy_to_directory_bin |  Copy to directory tool binary.   |  none |
+| <a id="copy_to_directory_bin_action-copy_to_directory_toolchain"></a>copy_to_directory_toolchain |  The toolchain type for Auto Exec Groups. The default is probably what you want.   |  `"@aspect_bazel_lib//lib:copy_to_directory_toolchain_type"` |
 | <a id="copy_to_directory_bin_action-files"></a>files |  List of files to copy into the output directory.   |  `[]` |
 | <a id="copy_to_directory_bin_action-targets"></a>targets |  List of targets that provide `DirectoryPathInfo` to copy into the output directory.   |  `[]` |
 | <a id="copy_to_directory_bin_action-root_paths"></a>root_paths |  List of paths that are roots in the output directory.<br><br>See copy_to_directory rule documentation for more details.   |  `["."]` |

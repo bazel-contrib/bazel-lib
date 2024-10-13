@@ -53,7 +53,8 @@ for more context.
 ## copy_directory_bin_action
 
 <pre>
-copy_directory_bin_action(<a href="#copy_directory_bin_action-ctx">ctx</a>, <a href="#copy_directory_bin_action-src">src</a>, <a href="#copy_directory_bin_action-dst">dst</a>, <a href="#copy_directory_bin_action-copy_directory_bin">copy_directory_bin</a>, <a href="#copy_directory_bin_action-hardlink">hardlink</a>, <a href="#copy_directory_bin_action-verbose">verbose</a>, <a href="#copy_directory_bin_action-preserve_mtime">preserve_mtime</a>)
+copy_directory_bin_action(<a href="#copy_directory_bin_action-ctx">ctx</a>, <a href="#copy_directory_bin_action-src">src</a>, <a href="#copy_directory_bin_action-dst">dst</a>, <a href="#copy_directory_bin_action-copy_directory_bin">copy_directory_bin</a>, <a href="#copy_directory_bin_action-copy_directory_toolchain">copy_directory_toolchain</a>, <a href="#copy_directory_bin_action-hardlink">hardlink</a>,
+                          <a href="#copy_directory_bin_action-verbose">verbose</a>, <a href="#copy_directory_bin_action-preserve_mtime">preserve_mtime</a>)
 </pre>
 
 Factory function that creates an action to copy a directory from src to dst using a tool binary.
@@ -74,6 +75,7 @@ within other rule implementations.
 | <a id="copy_directory_bin_action-src"></a>src |  The source directory to copy.   |  none |
 | <a id="copy_directory_bin_action-dst"></a>dst |  The directory to copy to. Must be a TreeArtifact.   |  none |
 | <a id="copy_directory_bin_action-copy_directory_bin"></a>copy_directory_bin |  Copy to directory tool binary.   |  none |
+| <a id="copy_directory_bin_action-copy_directory_toolchain"></a>copy_directory_toolchain |  The toolchain type for Auto Exec Groups. The default is probably what you want.   |  `"@aspect_bazel_lib//lib:copy_directory_toolchain_type"` |
 | <a id="copy_directory_bin_action-hardlink"></a>hardlink |  Controls when to use hardlinks to files instead of making copies.<br><br>See copy_directory rule documentation for more details.   |  `"auto"` |
 | <a id="copy_directory_bin_action-verbose"></a>verbose |  print verbose logs to stdout   |  `False` |
 | <a id="copy_directory_bin_action-preserve_mtime"></a>preserve_mtime |  preserve the modified time from the source. See the caveats above about interactions with remote execution and caching.   |  `False` |
