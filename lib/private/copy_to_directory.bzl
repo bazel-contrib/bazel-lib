@@ -224,7 +224,7 @@ _copy_to_directory_attr = {
         doc = _copy_to_directory_attr_doc["out"],
     ),
     # TODO(3.0): Remove this attribute and do not add directory to runfiles by default.
-    # https://github.com/aspect-build/bazel-lib/issues/748
+    # https://github.com/bazel-contrib/bazel-lib/issues/748
     "add_directory_to_runfiles": attr.bool(
         default = True,
         doc = _copy_to_directory_attr_doc["add_directory_to_runfiles"],

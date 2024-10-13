@@ -20,7 +20,7 @@ load("//lib/private:paths.bzl", "paths")
 # Equivalent of the BASH_RLOCATION_FUNCTION in paths.bzl.
 # Use this to write actions that don't require bash.
 # Originally by @meteorcloudy in
-# https://github.com/bazelbuild/rules_nodejs/commit/f06553a
+# https://github.com/bazel-contrib/rules_nodejs/commit/f06553a
 BATCH_RLOCATION_FUNCTION = r"""
 rem Usage of rlocation function:
 rem        call :rlocation <runfile_path> <abs_path>
