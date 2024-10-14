@@ -2,6 +2,8 @@
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("//lib:paths.bzl", "to_repository_relative_path")
+load(":strings.bzl", str_translate = "translate")
+load(":vis_escape_ascii.bzl", "VIS_ESCAPE_ASCII")
 
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
@@ -278,7 +280,6 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
 
     return unused_inputs
 
-
 # TODO(3.0): Access field directly after minimum bazel_compatibility advanced to or beyond v7.0.0.
 def _repo_mapping_manifest(files_to_run):
     return getattr(files_to_run, "repo_mapping_manifest", None)
@@ -373,7 +374,7 @@ def _to_rlocation_path(file, workspace):
 
 def _vis_encode(filename):
     # TODO(#794): correctly encode all filenames by using vis(3) (or porting it)
-    return filename.replace(" ", "\\040")
+    return str_translate(filename, VIS_ESCAPE_ASCII)
 
 def _expand(file, expander, transform = to_repository_relative_path):
     expanded = expander.expand(file)

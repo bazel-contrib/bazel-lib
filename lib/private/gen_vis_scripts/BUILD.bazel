@@ -1,0 +1,30 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("//lib:run_binary.bzl", "run_binary")
+load("//lib:write_source_files.bzl", "write_source_files")
+
+go_binary(
+    name = "gen_vis_scripts",
+    srcs = ["gen_vis_scripts.go"],
+)
+
+run_binary(
+    name = "run_gen_vis_scripts",
+    outs = [
+        "vis_escape_ascii.bzl",
+    ],
+    args = [
+        "vis_escape_ascii.bzl=$(location vis_escape_ascii.bzl)",
+    ],
+    tool = ":gen_vis_scripts",
+)
+
+write_source_files(
+    name = "write_vis_scripts",
+
+    # Required to support cross-package references.
+    check_that_out_file_exists = False,
+    #
+    files = {
+        "//lib/private:vis_escape_ascii.bzl": ":vis_escape_ascii.bzl",
+    },
+)
