@@ -1,5 +1,7 @@
 "String utilities"
 
+load("@bazel_skylib//lib:types.bzl", "types")
+
 CHAR_TO_INT = {
     "\0": 0,
     "\1": 1,
@@ -653,3 +655,104 @@ def split_args(s):
     if arg != "":
         args.append(arg)
     return args
+
+def maketrans(x):
+    """
+    Return a translation table usable with translate().
+
+    Subset of Python [builtin](https://docs.python.org/3.10/library/stdtypes.html#str.maketrans)
+    of the same name.
+
+    Translation of Unicode codepoints outside of U+0000..U+00FF (Basic Latin + Latin-1) is currently not
+    possible. Entries for characters outside this range will trigger a failure.
+
+    Args:
+        x: dictionary mapping Unicode ordinals (integers) or characters (length-1 strings)
+           to Unicode ordinals, strings, or None. Character keys will be converted to ordinals.
+
+    Returns:
+        dict. The translation table.
+    """
+
+    if not types.is_dict(x):
+        fail("if you give only one argument to maketrans it must be a dict")
+
+    table = {}
+
+    for (k, v) in x.items():
+        if types.is_int(k):
+            if k > 0xFF:
+                fail("most Unicode is unsupported")
+            table[k] = v
+        elif types.is_string(k):
+            if len(k) != 1:
+                fail("string keys in translate table must be of length 1")
+            codepoint = ord(k)
+            if codepoint == None:
+                fail("could not compute ord('{}'), most Unicode is unsupported".format(k))
+            table[codepoint] = v
+        else:
+            fail("keys in translate table must be strings or integers")
+
+    return table
+
+def translate(s, table):
+    """
+    Replace characters a string according to a translation table.
+
+    Subset of Python [builtin](https://docs.python.org/3.10/library/stdtypes.html#str.translate)
+    of the same name.
+
+    Characters with entries in the table are replaced in the output.
+    Characters mapped to None are deleted.
+    Characters absent from the table are mirrored to the output untouched.
+
+    Translation of Unicode codepoints outside of U+0000..U+00FF (Basic Latin + Latin-1) is currently not
+    possible. Characters outside this range will be silently mirrored to the output without consulting
+    the translation table.
+
+    Args:
+        s: str. Input string upon which to perform replacements.
+        table: dict. Translation table. Maps from Unicode ordinals (ints) keys to other Unicode ordinals, strings, or None.
+
+    Returns:
+        str. Output string derived from input string with substitutions and deletions applied from table.
+    """
+
+    if not types.is_string(s):
+        fail("first argument to translate must be a string")
+    if not types.is_dict(table):
+        fail("second argument to translate must be a dict")
+
+    parts = []
+    lit_start = None  # Index of start of current run of literal (i.e. no-op translation) content, or None.
+    for (i, c) in enumerate(s.elems()):
+        codepoint = ord(c)
+        if codepoint != None and codepoint in table:
+            # Terminate the current literal run, if any.
+            if lit_start != None:
+                parts.append(s[lit_start:i])
+                lit_start = None
+
+            replacement = table[codepoint]
+            if replacement == None:
+                pass
+            elif types.is_int(replacement):
+                parts.append(chr(replacement))
+            elif types.is_string(replacement):
+                parts.append(replacement)
+            else:
+                fail("character mapping must return integer, None or str")
+
+        else:  # No entry in translation table.
+            if lit_start == None:
+                lit_start = i
+
+    # Flush the caudal literal run, if any.
+    if lit_start != None:
+        parts.append(s[lit_start:])
+        lit_start = None
+
+    if len(parts) == 1:
+        return parts[0]
+    return "".join(parts)

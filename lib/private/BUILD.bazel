@@ -362,6 +362,9 @@ bzl_library(
     name = "strings",
     srcs = ["strings.bzl"],
     visibility = ["//lib:__subpackages__"],
+    deps = [
+        "@bazel_skylib//lib:types",
+    ],
 )
 
 bzl_library(

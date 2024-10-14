@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//lib/private:strings.bzl", "chr", "hex", "ord", "split_args")
+load("//lib/private:strings.bzl", "chr", "hex", "maketrans", "ord", "split_args", "translate")
 
 def _ord_test_impl(ctx):
     env = unittest.begin(ctx)
@@ -83,6 +83,29 @@ def _split_args_test_impl(ctx):
 
 split_args_test = unittest.make(_split_args_test_impl)
 
+def _translate_test_impl(ctx):
+    env = unittest.begin(ctx)
+
+    table = maketrans({
+        "<": ">",
+        "!": None,
+    })
+
+    asserts.equals(env, "...", translate("...", table))
+    asserts.equals(env, ">..", translate("<..", table))
+    asserts.equals(env, ".>.", translate(".<.", table))
+    asserts.equals(env, "..>", translate("..<", table))
+    asserts.equals(env, "..", translate("!..", table))
+    asserts.equals(env, "..", translate(".!.", table))
+    asserts.equals(env, "..", translate("..!", table))
+    asserts.equals(env, ">>>", translate("<<<", table))
+    asserts.equals(env, "", translate("!!!", table))
+    asserts.equals(env, ".>", translate(".<!", table))
+
+    return unittest.end(env)
+
+translate_test = unittest.make(_translate_test_impl)
+
 def strings_test_suite():
     unittest.suite(
         "strings_tests",
@@ -90,4 +113,5 @@ def strings_test_suite():
         partial.make(chr_test, timeout = "short"),
         partial.make(hex_test, timeout = "short"),
         partial.make(split_args_test, timeout = "short"),
+        partial.make(translate_test, timeout = "short"),
     )
