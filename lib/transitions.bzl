@@ -52,7 +52,12 @@ def _platform_transition_binary_impl(ctx):
     # forwarding DefaultInfo.
 
     result = []
-    binary = ctx.attr.binary[0]
+
+    # ctx.attr.binary is a singleton list if this rule uses an outgoing transition.
+    if type(ctx.attr.binary) == type([]):
+        binary = ctx.attr.binary[0]
+    else:
+        binary = ctx.attr.binary
 
     default_info = binary[DefaultInfo]
     files = default_info.files
@@ -87,28 +92,36 @@ def _platform_transition_binary_impl(ctx):
 
     return result
 
-_platform_transition_attrs = {
-    "basename": attr.string(),
-    "binary": attr.label(allow_files = True, cfg = _transition_platform),
-    "target_platform": attr.label(
-        doc = "The target platform to transition the binary.",
-        mandatory = True,
-    ),
-    "_allowlist_function_transition": attr.label(
-        default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
-    ),
-}
+def _get_platform_transition_attrs(binary_cfg):
+    return {
+        "basename": attr.string(),
+        "binary": attr.label(allow_files = True, cfg = binary_cfg),
+        "target_platform": attr.label(
+            doc = "The target platform to transition the binary.",
+            mandatory = True,
+        ),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
+    }
 
 platform_transition_binary = rule(
     implementation = _platform_transition_binary_impl,
-    attrs = _platform_transition_attrs,
+    # Use an outgoing transition since the target platform of the
+    # platform_transition_binary doesn't matter and it results in a more
+    # intuitive output path (matching an untransitioned binary).
+    attrs = _get_platform_transition_attrs(binary_cfg = _transition_platform),
     executable = True,
     doc = "Transitions the binary to use the provided platform.",
 )
 
 platform_transition_test = rule(
     implementation = _platform_transition_binary_impl,
-    attrs = _platform_transition_attrs,
+    attrs = _get_platform_transition_attrs(binary_cfg = "target"),
+    # Use an incoming transition since the target platform of the
+    # platform_transition_test does matter for the exec platform resolution of
+    # the test action.
+    cfg = _transition_platform,
     test = True,
     doc = "Transitions the test to use the provided platform.",
 )
