@@ -85,6 +85,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
         mnemonic = "CopyFile",
         progress_message = "Copying file %{input}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
     )
 
 def _copy_file_impl(ctx):

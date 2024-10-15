@@ -330,6 +330,7 @@ def copy_to_directory_bin_action(
         name,
         dst,
         copy_to_directory_bin,
+        copy_to_directory_toolchain = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
         files = [],
         targets = [],
         root_paths = ["."],
@@ -359,6 +360,8 @@ def copy_to_directory_bin_action(
         dst: The directory to copy to. Must be a TreeArtifact.
 
         copy_to_directory_bin: Copy to directory tool binary.
+
+        copy_to_directory_toolchain: The toolchain type for Auto Exec Groups. The default is probably what you want.
 
         files: List of files to copy into the output directory.
 
@@ -510,6 +513,7 @@ def copy_to_directory_bin_action(
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %{output}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        toolchain = copy_to_directory_toolchain,
     )
 
 copy_to_directory_lib = struct(

@@ -67,6 +67,7 @@ def _jq_impl(ctx):
                 out = stamp_json.path,
             ),
             mnemonic = "ConvertStatusToJson",
+            toolchain = "@aspect_bazel_lib//lib:jq_toolchain_type",
         )
         inputs.append(stamp_json)
 
@@ -93,6 +94,7 @@ def _jq_impl(ctx):
         outputs = [out],
         command = cmd,
         mnemonic = "Jq",
+        toolchain = "@aspect_bazel_lib//lib:jq_toolchain_type",
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))

@@ -59,6 +59,7 @@ def _pkg_impl(ctx):
         files = ctx.files.srcs + symlinks + depset(transitive = additional_files_depsets).to_list(),
         dst = dst,
         copy_to_directory_bin = ctx.executable._tool,
+        copy_to_directory_toolchain = None,
         hardlink = "auto",
         verbose = True,
     )

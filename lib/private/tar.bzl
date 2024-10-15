@@ -273,6 +273,7 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
             "UNUSED_INPUTS": unused_inputs.path,
         },
         mnemonic = "UnusedTarInputs",
+        toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
     )
 
     return unused_inputs
@@ -326,6 +327,7 @@ def _tar_impl(ctx):
         arguments = [args],
         mnemonic = "Tar",
         unused_inputs_list = unused_inputs_file,
+        toolchain = "@aspect_bazel_lib//lib:tar_toolchain_type",
     )
 
     # TODO(3.0): Always return a list of providers.
