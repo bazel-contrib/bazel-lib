@@ -4,6 +4,7 @@ load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing", "assert_unused_listing")
+load(":node_modules_tree.bzl", "node_modules_tree")
 
 # The examples below work with both source files and generated files.
 # Here we generate a file to use in the examples.
@@ -464,4 +465,23 @@ assert_unused_listing(
         "lib/tests/tar/unused/pkg",
         "lib/tests/tar/unused/space in name.txt",
     ],
+)
+
+#############
+# Example 16: mtree_mutate preserves symlinks
+node_modules_tree(
+    name = "e16_node_modules",
+)
+
+mtree_spec(
+    name = "mtree16",
+    srcs = [
+        ":e16_node_modules",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_16_before_processing",
+    actual = ":mtree16",
+    expected = [],
 )
