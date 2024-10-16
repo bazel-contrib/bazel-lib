@@ -137,6 +137,8 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
 def mtree_mutate(
         name,
         mtree,
+        srcs = None,
+        preserve_symlinks = False,
         strip_prefix = None,
         package_dir = None,
         mtime = None,
@@ -148,6 +150,8 @@ def mtree_mutate(
 
     Args:
         name: name of the target, output will be `[name].mtree`.
+        srcs: source files to be used when resolving symlinks. required if `preserve_symlinks` is set to True.
+        preserve_symlinks: preserve symlinks
         mtree: input mtree file, typically created by `mtree_spec`.
         strip_prefix: prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.
         package_dir: directory prefix to add to all paths in the tar.
@@ -155,6 +159,7 @@ def mtree_mutate(
         owner: new uid for all entries.
         ownername: new uname for all entries.
         awk_script: may be overridden to change the script containing the modification logic.
+
         **kwargs: additional named parameters to genrule
     """
     vars = []
@@ -168,6 +173,10 @@ def mtree_mutate(
         vars.append("-v owner='{}'".format(owner))
     if ownername:
         vars.append("-v ownername='{}'".format(ownername))
+    if preserve_symlinks:
+        vars.append("-v preserve_symlinks=1")
+        if not srcs:
+            fail("preserve_symlinks requires srcs to be set in order to resolve symlinks")
 
     native.genrule(
         name = name,
