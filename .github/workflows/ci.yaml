@@ -80,7 +80,12 @@ jobs:
           - os: windows
             bazel-version:
               major: 6
-          # Don't run bzlmod tests with Bazel 6 to reduce the size of the test matrix
+          # Reduce size of the test matrix:
+          # Don't run workspace tests with Bazel 8
+          # Don't run bzlmod tests with Bazel 6
+          - bazel-version:
+              major: 8
+            bzlmod: 0
           - bazel-version:
               major: 6
             bzlmod: 1
