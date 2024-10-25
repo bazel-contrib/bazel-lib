@@ -72,6 +72,10 @@ jobs:
           # Root workspace is bzlmod-only
           - folder: .
             bzlmod: 0
+          # FIXME: root workspace not compatible with Bazel 8
+          - folder: .
+            bazel-version:
+              major: 8
           # Don't test MacOS and Windows against secondary bazel version to minimize minutes (billed at 10X and 2X respectively)
           # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
           - os: macos
