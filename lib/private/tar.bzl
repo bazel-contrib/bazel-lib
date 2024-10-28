@@ -278,6 +278,11 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
 
     return unused_inputs
 
+
+# TODO(3.0): Access field directly after minimum bazel_compatibility advanced to or beyond v7.0.0.
+def _repo_mapping_manifest(files_to_run):
+    return getattr(files_to_run, "repo_mapping_manifest", None)
+
 def _tar_impl(ctx):
     bsdtar = ctx.toolchains[TAR_TOOLCHAIN_TYPE]
     inputs = ctx.files.srcs[:]
@@ -301,7 +306,7 @@ def _tar_impl(ctx):
     inputs.append(ctx.file.mtree)
 
     repo_mappings = [
-        src[DefaultInfo].files_to_run.repo_mapping_manifest
+        _repo_mapping_manifest(src[DefaultInfo].files_to_run)
         for src in ctx.attr.srcs
     ]
     repo_mappings = [m for m in repo_mappings if m != None]
@@ -411,7 +416,7 @@ def _mtree_impl(ctx):
             continue
 
         runfiles_dir = _calculate_runfiles_dir(default_info)
-        repo_mapping = default_info.files_to_run.repo_mapping_manifest
+        repo_mapping = _repo_mapping_manifest(default_info.files_to_run)
 
         # copy workspace name here just in case to prevent ctx
         # to be transferred to execution phase.
