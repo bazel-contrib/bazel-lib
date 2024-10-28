@@ -33,3 +33,14 @@ query --noexperimental_check_output_files
 # NB: This flag is in bazel6.bazelrc because it became a no-op in Bazel 7 and has been removed
 # in Bazel 8.
 build --incompatible_remote_results_ignore_disk
+
+# Propagate tags from a target declaration to the actions' execution requirements.
+# Ensures that tags applied in your BUILD file, like `tags=["no-remote"]`
+# get propagated to actions created by the rule.
+# Without this option, you rely on rules authors to manually check the tags you passed
+# and apply relevant ones to the actions they create.
+# See https://github.com/bazelbuild/bazel/issues/8830 for details.
+# Docs: https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
+build --experimental_allow_tags_propagation
+fetch --experimental_allow_tags_propagation
+query --experimental_allow_tags_propagation
