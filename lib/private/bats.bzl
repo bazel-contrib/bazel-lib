@@ -27,7 +27,8 @@ export BATS_LIB_PATH=$(
 export BATS_TEST_TIMEOUT="$TEST_TIMEOUT"
 export BATS_TMPDIR="$TEST_TMPDIR"
 
-exec $bats {tests} $@
+ln -s "$XML_OUTPUT_FILE" "$(dirname "$XML_OUTPUT_FILE")/report.xml"
+exec $bats {tests} --report-formatter junit --output "$(dirname $XML_OUTPUT_FILE)" "$@"
 """
 
 _ENV_SET = """export {key}=\"{value}\""""
