@@ -121,6 +121,7 @@ Possible values:
         values = [-1, 0, 1],
     ),
     "_compute_unused_inputs_flag": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
+    "_vis_canonicalize": attr.label(allow_single_file = True, default = Label("//lib/private:vis_canonicalize.sed")),
     "_vis_escape_nonascii": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape_nonascii.sed")),
 }
 
@@ -252,18 +253,18 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
     #
     # Note: bsdtar (libarchive) accepts both content= and contents= to identify source file:
     # ref https://github.com/libarchive/libarchive/blob/a90e9d84ec147be2ef6a720955f3b315cb54bca3/libarchive/archive_read_support_format_mtree.c#L1640
-    #
-    # TODO: Make comparison exact by converting all inputs to a canonical vis-encoded form before comparing.
-    #       See also: https://github.com/bazel-contrib/bazel-lib/issues/794
     ctx.actions.run_shell(
         outputs = [unused_inputs],
-        inputs = [prunable_inputs, keep_inputs, ctx.file.mtree, ctx.file._vis_escape_nonascii],
+        inputs = [prunable_inputs, keep_inputs, ctx.file.mtree, ctx.file._vis_canonicalize, ctx.file._vis_escape_nonascii],
         tools = [coreutils],
         command = '''
             "$COREUTILS" join -v 1                                                            \\
                 <(sed -f "$VIS_ESCAPE_NONASCII" "$PRUNABLE_INPUTS" | "$COREUTILS" sort -u)    \\
                 <("$COREUTILS" sort -u                                                        \\
-                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE" | "$COREUTILS" cut -d'=' -f 2-)  \\
+                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE"                                  \\
+                        | "$COREUTILS" cut -d'=' -f 2-                                        \\
+                        | sed -Ef "$VIS_CANONICALIZE"                                         \\
+                    )                                                                         \\
                     <(sed -f "$VIS_ESCAPE_NONASCII" "$KEEP_INPUTS")                           \\
                 )                                                                             \\
                 | "$COREUTILS" cut -d' ' -f 2-                                                \\
@@ -275,6 +276,7 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
             "KEEP_INPUTS": keep_inputs.path,
             "MTREE": ctx.file.mtree.path,
             "UNUSED_INPUTS": unused_inputs.path,
+            "VIS_CANONICALIZE": ctx.file._vis_canonicalize.path,
             "VIS_ESCAPE_NONASCII": ctx.file._vis_escape_nonascii.path,
         },
         mnemonic = "UnusedTarInputs",

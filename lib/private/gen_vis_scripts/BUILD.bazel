@@ -10,10 +10,12 @@ go_binary(
 run_binary(
     name = "run_gen_vis_scripts",
     outs = [
+        "vis_canonicalize.sed",
         "vis_escape_ascii.bzl",
         "vis_escape_nonascii.sed",
     ],
     args = [
+        "vis_canonicalize.sed=$(location vis_canonicalize.sed)",
         "vis_escape_ascii.bzl=$(location vis_escape_ascii.bzl)",
         "vis_escape_nonascii.sed=$(location vis_escape_nonascii.sed)",
     ],
@@ -27,6 +29,7 @@ write_source_files(
     check_that_out_file_exists = False,
     #
     files = {
+        "//lib/private:vis_canonicalize.sed": ":vis_canonicalize.sed",
         "//lib/private:vis_escape_ascii.bzl": ":vis_escape_ascii.bzl",
         "//lib/private:vis_escape_nonascii.sed": ":vis_escape_nonascii.sed",
     },

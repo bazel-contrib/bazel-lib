@@ -8,6 +8,7 @@ exports_files(
         "modify_mtree.awk",
         "parse_status_file.jq",
         "parse_status_file.yq",
+        "vis_canonicalize.sed",
         "vis_escape_nonascii.sed",
     ],
     visibility = ["//visibility:public"],
