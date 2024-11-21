@@ -11,9 +11,11 @@ run_binary(
     name = "run_gen_vis_scripts",
     outs = [
         "vis_escape_ascii.bzl",
+        "vis_escape_nonascii.sed",
     ],
     args = [
         "vis_escape_ascii.bzl=$(location vis_escape_ascii.bzl)",
+        "vis_escape_nonascii.sed=$(location vis_escape_nonascii.sed)",
     ],
     tool = ":gen_vis_scripts",
 )
@@ -26,5 +28,6 @@ write_source_files(
     #
     files = {
         "//lib/private:vis_escape_ascii.bzl": ":vis_escape_ascii.bzl",
+        "//lib/private:vis_escape_nonascii.sed": ":vis_escape_nonascii.sed",
     },
 )
