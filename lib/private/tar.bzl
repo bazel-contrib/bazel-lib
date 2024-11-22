@@ -105,10 +105,8 @@ parallelism of builds. Pruned files do not need to be transferred to remote-exec
 workers, which can reduce network costs.
 
 Risks: pruning an actually-used input file can lead to unexpected, incorrect results. The
-comparison performed between `srcs` and `mtree` is currently inexact and may fail to
-handle handwritten or externally-derived mtree specifications. However, it is safe to use
-this feature when the lines found in `mtree` are derived from one or more `mtree_spec`
-rules, filtered and/or merged on whole-line basis only.
+comparison performed between `srcs` and `mtree` is exact. There are no known
+circumstances where incorrect results are anticipated.
 
 Possible values:
 
