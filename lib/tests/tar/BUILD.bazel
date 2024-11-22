@@ -469,3 +469,40 @@ assert_unused_listing(
         "lib/tests/tar/unused/space in name.txt",
     ],
 )
+
+#############
+# Example 16: custom mtree with alternate escape sequences
+# In explicit or externally-derived mtree specs,
+# there is no need to match the path encoding that would be produced by our mtree macro exactly.
+# All escape sequences supported by bsdtar / libarchive will be understood.
+# This includes \s for SPACE, octal encoding of characters that don't need it, and others.
+# These alternate forms are not necessarily recommended, but they will work.
+
+tar(
+    name = "tar16",
+    srcs = [":treeartifact"],
+    out = "16.tar",
+    compute_unused_inputs = 1,
+    mtree = [
+        r"info                uid=0 gid=0 time=1672560000 mode=0755 type=file content=$(location :treeartifact)/\151\156\146\157",
+        r"space\sin\sname.txt uid=0 gid=0 time=1672560000 mode=0755 type=file content=$(location :treeartifact)/space\sin\sname.txt",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_custom_mtree2",
+    actual = ":tar16",
+    expected = [
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 info",
+        "-rwxr-xr-x  0 0      0           1 Jan  1  2023 space in name.txt",
+    ],
+)
+
+assert_unused_listing(
+    name = "test_unused_inputs_listed2",
+    actual = ":tar16",
+    expected = [
+        "lib/tests/tar/treeartifact/Unicode® support?🤞",
+        "lib/tests/tar/treeartifact/pkg",
+    ],
+)
