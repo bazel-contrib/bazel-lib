@@ -13,7 +13,7 @@ def assert_tar_listing(name, actual, expected):
         srcs = [actual],
         testonly = True,
         outs = ["_{}.listing".format(name)],
-        cmd = "LC_ALL=C.UTF-8 $(BSDTAR_BIN) -tvf $(execpath {}) >$@".format(actual),
+        cmd = "LC_ALL=en_US $(BSDTAR_BIN) -tvf $(execpath {}) >$@".format(actual),
         toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
     )
 
