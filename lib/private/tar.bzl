@@ -393,7 +393,7 @@ def _expand(file, expander, transform = to_repository_relative_path):
             if i == 1:
                 parent += "/"
 
-            lines.append(_mtree_line(parent, "dir"))
+            lines.append(_mtree_line(_vis_encode(parent), "dir"))
 
         lines.append(_mtree_line(_vis_encode(path), "file", content = _vis_encode(e.path)))
     return lines
