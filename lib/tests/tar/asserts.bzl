@@ -13,7 +13,11 @@ def assert_tar_listing(name, actual, expected):
         srcs = [actual],
         testonly = True,
         outs = ["_{}.listing".format(name)],
+	# HACK: under default and POSIX locales, MacOS 15.1 and Ubuntu 22.04 disagree on how files with Unicode filenames should be printed.
+	#       LC_ALL=en_US may be inacurate, but by using a dense 8-bit, single-byte encoding,
+	#       we achieve the effect of leaving the bytes alone and producing a consistent output to assert against.
         cmd = "LC_ALL=en_US $(BSDTAR_BIN) -tvf $(execpath {}) >$@".format(actual),
+	#
         toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
     )
 
