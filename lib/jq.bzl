@@ -89,7 +89,7 @@ jq(
         "--raw-input",
         "--slurp",
     ],
-    filter = "{ deps: split(\"\\n\") | map(select(. | length > 0)) }",
+    filter = "{ deps: split(\\\"\\\\n\\\") | map(select(. | length > 0)) }",
 )
 ```
 
