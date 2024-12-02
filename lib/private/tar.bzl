@@ -170,12 +170,12 @@ def _is_unused_inputs_enabled(attr):
     """
     if attr.compute_unused_inputs == 1:
         return True
-    elif attr.compute_unused_inputs == 0:
+    if attr.compute_unused_inputs == 0:
         return False
-    elif attr.compute_unused_inputs == -1:
+    if attr.compute_unused_inputs == -1:
         return attr._compute_unused_inputs_flag[BuildSettingInfo].value
-    else:
-        fail("Unexpected `compute_unused_inputs` value: {}".format(attr.compute_unused_inputs))
+    
+    fail("Unexpected `compute_unused_inputs` value: {}".format(attr.compute_unused_inputs))
 
 def _is_unprunable(file):
     # Some input files cannot be pruned because their name will be misinterpreted by Bazel when reading the unused_inputs_list.
@@ -345,8 +345,7 @@ def _tar_impl(ctx):
                 _unused_inputs_file = depset([unused_inputs_file]),
             ),
         ]
-    else:
-        return default_info
+    return default_info
 
 def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "1672560000", mode = "0755"):
     spec = [
@@ -368,8 +367,7 @@ def _mtree_line(file, type, content = None, uid = "0", gid = "0", time = "167256
 def _to_rlocation_path(file, workspace):
     if file.short_path.startswith("../"):
         return file.short_path[3:]
-    else:
-        return workspace + "/" + file.short_path
+    return workspace + "/" + file.short_path
 
 def _vis_encode(filename):
     # TODO(#794): correctly encode all filenames by using vis(3) (or porting it)
