@@ -133,6 +133,7 @@ def _add_compression_args(compress, args):
         args.add("--compress")
     if compress == "gzip":
         args.add("--gzip")
+	args.add("--options=gzip:!timestamp")
     if compress == "lrzip":
         args.add("--lrzip")
     if compress == "lzma":
