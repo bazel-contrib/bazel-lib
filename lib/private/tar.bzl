@@ -133,7 +133,7 @@ def _add_compression_args(compress, args):
         args.add("--compress")
     if compress == "gzip":
         args.add("--gzip")
-	args.add("--options=gzip:!timestamp")
+        args.add("--options=gzip:!timestamp")
     if compress == "lrzip":
         args.add("--lrzip")
     if compress == "lzma":
@@ -278,7 +278,6 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
     )
 
     return unused_inputs
-
 
 # TODO(3.0): Access field directly after minimum bazel_compatibility advanced to or beyond v7.0.0.
 def _repo_mapping_manifest(files_to_run):
