@@ -221,21 +221,21 @@ mkdir -p "$(dirname "$out")"
 if [[ -f "$in" ]]; then
     echo "Copying file $in to $out in $PWD"
     # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
-    chmod -R ug+w "$out" > /dev/null 2>&1 || true
+    chmod -R +w "$out" > /dev/null 2>&1 || true
     rm -Rf "$out"
     cp -f "$in" "$out"
     # cp should make the file writable but call chmod anyway as a defense in depth
-    chmod ug+w "$out"
+    chmod +w "$out"
     # cp should make the file not-executable but set the desired execute bit in both cases as a defense in depth
     {executable_file}
 else
     echo "Copying directory $in to $out in $PWD"
     # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
-    chmod -R ug+w "$out" > /dev/null 2>&1 || true
+    chmod -R +w "$out" > /dev/null 2>&1 || true
     rm -Rf "$out"/{{*,.[!.]*}}
     mkdir -p "$out"
     cp -fRL "$in"/. "$out"
-    chmod -R ug+w "$out"
+    chmod -R +w "$out"
     {executable_dir}
 fi
 """.format(
