@@ -133,7 +133,7 @@ def _add_compression_args(compress, args):
         args.add("--compress")
     if compress == "gzip":
         args.add("--gzip")
-        args.add("--options=gzip:!timestamp")
+        args.add("--options=gzip:!timestamp")  # See https://datatracker.ietf.org/doc/html/rfc1952#page-5 why this option
     if compress == "lrzip":
         args.add("--lrzip")
     if compress == "lzma":

@@ -17,13 +17,6 @@ We also provide full control for tar'ring binaries including their runfiles.
 The `tar` binary is hermetic and fully statically-linked.
 It is fetched as a toolchain from https://github.com/aspect-build/bsdtar-prebuilt.
 
-## Important Note
-
-When using `compress = "gzip"` its important to disable the non-deterministic time header by providing the `--options=gzip:!timestamp` option.
-
-See: https://datatracker.ietf.org/doc/html/rfc1952#page-5
-See: https://github.com/bazel-contrib/bazel-lib/issues/783
-
 ## Examples
 
 See the [`tar` tests](/lib/tests/tar/BUILD.bazel) for examples of usage.
@@ -230,5 +223,3 @@ tar_lib.mtree_implementation(<a href="#tar_lib.mtree_implementation-ctx">ctx</a>
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="tar_lib.mtree_implementation-ctx"></a>ctx |  <p align="center"> - </p>   |  none |
-
-
