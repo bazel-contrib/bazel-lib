@@ -27,8 +27,9 @@ export BATS_LIB_PATH=$(
 export BATS_TEST_TIMEOUT="$TEST_TIMEOUT"
 export BATS_TMPDIR="$TEST_TMPDIR"
 
-ln -s "$XML_OUTPUT_FILE" "$(dirname "$XML_OUTPUT_FILE")/report.xml"
-exec $bats {tests} --report-formatter junit --output "$(dirname $XML_OUTPUT_FILE)" "$@"
+# Undocumented: bats can write the JUnit report to any file we specify:
+# https://github.com/bats-core/bats-core/blob/b640ec3cf2c7c9cfc9e6351479261186f76eeec8/libexec/bats-core/bats#L400
+BATS_REPORT_FILENAME="$(basename $XML_OUTPUT_FILE)" exec $bats {tests} --report-formatter junit --output "$(dirname $XML_OUTPUT_FILE)" "$@"
 """
 
 _ENV_SET = """export {key}=\"{value}\""""
