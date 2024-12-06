@@ -56,6 +56,11 @@ bazel_dep(
     # In released versions: dev_dependency = True
 )
 
+go_sdk = use_extension("@io_bazel_rules_go//go:extensions.bzl", "go_sdk")
+
+# Matches toolchain in go.mod
+go_sdk.download(version = "1.23.4")
+
 go_deps = use_extension(
     "@gazelle//:extensions.bzl",
     "go_deps",
