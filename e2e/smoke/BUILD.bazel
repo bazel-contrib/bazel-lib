@@ -6,7 +6,7 @@ load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_bazel_lib//lib:yq.bzl", "yq")
-load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("@rules_go//go:def.bzl", "go_test")
 
 # Validate that JQ works and resolves its toolchain
 jq(
@@ -121,9 +121,6 @@ go_test(
     name = "test_preserve_mtime",
     size = "small",
     srcs = ["test_preserve_mtime.go"],
-    deps = [
-        "@io_bazel_rules_go//go/tools/bazel:go_default_library",
-    ],
     data = [
         "d",
         ":copy_directory_mtime_case",
@@ -135,5 +132,12 @@ go_test(
     #   bazel test :test_preserve_mtime # This test should pass
     #   touch d/1 # Update the mtime, in the CI environment this is done with the SCM integration.
     #   bazel test :test_preserve_mtime # This test now fails
-    tags = ["no-remote", "external", "manual"],
+    tags = [
+        "external",
+        "manual",
+        "no-remote",
+    ],
+    deps = [
+        "@rules_go//go/tools/bazel:go_default_library",
+    ],
 )

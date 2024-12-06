@@ -1,7 +1,7 @@
 """This module provides the macros for performing a release.
 """
 
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@rules_go//go:def.bzl", "go_binary")
 load(":hashes.bzl", "hashes")
 
 PLATFORMS = [
