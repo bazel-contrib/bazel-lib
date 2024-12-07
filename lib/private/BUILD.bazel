@@ -19,10 +19,7 @@ exports_files(
 
 exports_files(
     glob(["*.bzl"]),
-    visibility = [
-        "//lib/private/docs:__pkg__",
-        "//lib/private/gen_vis_scripts:__pkg__",
-    ],
+    visibility = ["//lib/private/docs:__pkg__"],
 )
 
 bzl_library(
