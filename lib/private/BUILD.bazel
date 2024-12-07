@@ -1,5 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//lib:run_binary.bzl", "run_binary")
 load("//lib:utils.bzl", "is_bazel_7_or_greater")
+load("//lib:write_source_files.bzl", "write_source_files")
 
 exports_files(
     [
@@ -8,6 +10,9 @@ exports_files(
         "modify_mtree.awk",
         "parse_status_file.jq",
         "parse_status_file.yq",
+        "unvis_canonical.sed",
+        "vis_canonicalize.sed",
+        "vis_escape_nonascii.sed",
     ],
     visibility = ["//visibility:public"],
 )
@@ -279,9 +284,13 @@ bzl_library(
 
 bzl_library(
     name = "tar",
-    srcs = ["tar.bzl"],
+    srcs = [
+        "tar.bzl",
+        "vis_escape_ascii.bzl",
+    ],
     visibility = ["//lib:__subpackages__"],
     deps = [
+        ":strings.bzl",
         "@aspect_bazel_lib//lib:paths",
         "@bazel_skylib//rules:common_settings",
     ],
@@ -362,10 +371,40 @@ bzl_library(
     name = "strings",
     srcs = ["strings.bzl"],
     visibility = ["//lib:__subpackages__"],
+    deps = [
+        "@bazel_skylib//lib:types",
+    ],
 )
 
 bzl_library(
     name = "zstd_toolchain",
     srcs = ["zstd_toolchain.bzl"],
     visibility = ["//lib:__subpackages__"],
+)
+
+run_binary(
+    name = "run_gen_vis_scripts",
+    outs = [
+        "_unvis_canonical.sed",
+        "_vis_canonicalize.sed",
+        "_vis_escape_ascii.bzl",
+        "_vis_escape_nonascii.sed",
+    ],
+    args = [
+        "unvis_canonical.sed=$(location _unvis_canonical.sed)",
+        "vis_canonicalize.sed=$(location _vis_canonicalize.sed)",
+        "vis_escape_ascii.bzl=$(location _vis_escape_ascii.bzl)",
+        "vis_escape_nonascii.sed=$(location _vis_escape_nonascii.sed)",
+    ],
+    tool = "//tools/gen_vis_scripts",
+)
+
+write_source_files(
+    name = "write_vis_scripts",
+    files = {
+        "unvis_canonical.sed": ":_unvis_canonical.sed",
+        "vis_canonicalize.sed": ":_vis_canonicalize.sed",
+        "vis_escape_ascii.bzl": ":_vis_escape_ascii.bzl",
+        "vis_escape_nonascii.sed": ":_vis_escape_nonascii.sed",
+    },
 )

@@ -2,6 +2,8 @@
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("//lib:paths.bzl", "to_repository_relative_path")
+load(":strings.bzl", str_translate = "translate")
+load(":vis_escape_ascii.bzl", "VIS_ESCAPE_ASCII")
 
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
@@ -103,10 +105,8 @@ parallelism of builds. Pruned files do not need to be transferred to remote-exec
 workers, which can reduce network costs.
 
 Risks: pruning an actually-used input file can lead to unexpected, incorrect results. The
-comparison performed between `srcs` and `mtree` is currently inexact and may fail to
-handle handwritten or externally-derived mtree specifications. However, it is safe to use
-this feature when the lines found in `mtree` are derived from one or more `mtree_spec`
-rules, filtered and/or merged on whole-line basis only.
+comparison performed between `srcs` and `mtree` is exact. There are no known
+circumstances where incorrect results are anticipated.
 
 Possible values:
 
@@ -119,11 +119,15 @@ Possible values:
         values = [-1, 0, 1],
     ),
     "_compute_unused_inputs_flag": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
+    "_unvis_canonical": attr.label(allow_single_file = True, default = Label("//lib/private:unvis_canonical.sed")),
+    "_vis_canonicalize": attr.label(allow_single_file = True, default = Label("//lib/private:vis_canonicalize.sed")),
+    "_vis_escape_nonascii": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape_nonascii.sed")),
 }
 
 _mtree_attrs = {
     "srcs": attr.label_list(doc = "Files that are placed into the tar", allow_files = True),
     "out": attr.output(doc = "Resulting specification file to write"),
+    "_vis_escape_nonascii": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape_nonascii.sed")),
 }
 
 def _add_compression_args(compress, args):
@@ -189,15 +193,9 @@ def _is_unprunable(file):
 def _fmt_pruanble_inputs_line(file):
     if _is_unprunable(file):
         return None
-
-    # The tar.prunable_inputs.txt file has a two columns:
-    #   1. vis-encoded paths of the files, used in comparison
-    #   2. un-vis-encoded paths of the files, used for reporting back to Bazel after filtering
-    path = file.path
-    return _vis_encode(path) + " " + path
+    return _vis_encode(file.path)
 
 def _fmt_keep_inputs_line(file):
-    # The tar.keep_inputs.txt file has a single column of vis-encoded paths of the files to keep.
     return _vis_encode(file.path)
 
 def _configured_unused_inputs_file(ctx, srcs, keep):
@@ -244,26 +242,33 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
     #   * are not found in any content= or contents= keyword in the MTREE
     #   * are not in the hardcoded KEEP_INPUTS set
     #
-    # Comparison and filtering of PRUNABLE_INPUTS is performed in the vis-encoded representation, stored in field 1,
-    # before being written out in the un-vis-encoded form Bazel understands, from field 2.
+    # Comparison and filtering of PRUNABLE_INPUTS is performed in the vis-encoded representation
+    # before being written out in the un-vis-encoded form Bazel understands.
     #
     # Note: bsdtar (libarchive) accepts both content= and contents= to identify source file:
     # ref https://github.com/libarchive/libarchive/blob/a90e9d84ec147be2ef6a720955f3b315cb54bca3/libarchive/archive_read_support_format_mtree.c#L1640
-    #
-    # TODO: Make comparison exact by converting all inputs to a canonical vis-encoded form before comparing.
-    #       See also: https://github.com/bazel-contrib/bazel-lib/issues/794
     ctx.actions.run_shell(
         outputs = [unused_inputs],
-        inputs = [prunable_inputs, keep_inputs, ctx.file.mtree],
+        inputs = [
+            prunable_inputs,
+            keep_inputs,
+            ctx.file.mtree,
+            ctx.file._unvis_canonical,
+            ctx.file._vis_canonicalize,
+            ctx.file._vis_escape_nonascii,
+        ],
         tools = [coreutils],
         command = '''
             "$COREUTILS" join -v 1                                                            \\
-                <("$COREUTILS" sort -u "$PRUNABLE_INPUTS")                                    \\
+                <(sed -f "$VIS_ESCAPE_NONASCII" "$PRUNABLE_INPUTS" | "$COREUTILS" sort -u)    \\
                 <("$COREUTILS" sort -u                                                        \\
-                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE" | "$COREUTILS" cut -d'=' -f 2-)  \\
-                    "$KEEP_INPUTS"                                                            \\
+                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE"                                  \\
+                        | "$COREUTILS" cut -d'=' -f 2-                                        \\
+                        | sed -Ef "$VIS_CANONICALIZE"                                         \\
+                    )                                                                         \\
+                    <(sed -f "$VIS_ESCAPE_NONASCII" "$KEEP_INPUTS")                           \\
                 )                                                                             \\
-                | "$COREUTILS" cut -d' ' -f 2-                                                \\
+                | sed -f "$UNVIS_CANONICAL"                                                   \\
                 > "$UNUSED_INPUTS"
         ''',
         env = {
@@ -272,6 +277,9 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
             "KEEP_INPUTS": keep_inputs.path,
             "MTREE": ctx.file.mtree.path,
             "UNUSED_INPUTS": unused_inputs.path,
+            "UNVIS_CANONICAL": ctx.file._unvis_canonical.path,
+            "VIS_CANONICALIZE": ctx.file._vis_canonicalize.path,
+            "VIS_ESCAPE_NONASCII": ctx.file._vis_escape_nonascii.path,
         },
         mnemonic = "UnusedTarInputs",
         toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
@@ -370,8 +378,9 @@ def _to_rlocation_path(file, workspace):
     return workspace + "/" + file.short_path
 
 def _vis_encode(filename):
-    # TODO(#794): correctly encode all filenames by using vis(3) (or porting it)
-    return filename.replace(" ", "\\040")
+    # Escaping of non-ASCII bytes cannot be performed within Starlark.
+    # After writing content out, a second pass is performed with vis_escape_nonascii.sed.
+    return str_translate(filename, VIS_ESCAPE_ASCII)
 
 def _expand(file, expander, transform = to_repository_relative_path):
     expanded = expander.expand(file)
@@ -398,6 +407,7 @@ def _expand(file, expander, transform = to_repository_relative_path):
 
 def _mtree_impl(ctx):
     out = ctx.outputs.out or ctx.actions.declare_file(ctx.attr.name + ".spec")
+    unescaped = ctx.actions.declare_file(ctx.attr.name + ".spec.unescaped")
 
     content = ctx.actions.args()
     content.set_param_file_format("multiline")
@@ -442,7 +452,18 @@ def _mtree_impl(ctx):
                 _mtree_line(_vis_encode(runfiles_dir + "/_repo_mapping"), "file", content = _vis_encode(repo_mapping.path)),
             )
 
-    ctx.actions.write(out, content = content)
+    ctx.actions.write(unescaped, content = content)
+    ctx.actions.run_shell(
+        outputs = [out],
+        inputs = [unescaped, ctx.file._vis_escape_nonascii],
+        command = 'sed -f "$VIS_ESCAPE_NONASCII" "$UNESCAPED" > "$OUT"',
+        env = {
+            "VIS_ESCAPE_NONASCII": ctx.file._vis_escape_nonascii.path,
+            "UNESCAPED": unescaped.path,
+            "OUT": out.path,
+        },
+        mnemonic = "EscapeNonAscii",
+    )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
