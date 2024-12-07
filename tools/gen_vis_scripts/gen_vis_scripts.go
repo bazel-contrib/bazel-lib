@@ -114,10 +114,10 @@ s/\\v/\\013/g
 
 # NUL special form must be disambiguated from ordinary octal escape sequences.
 s/\\0([^0-7]|$|[0-7]([^0-7]|$))/\\000\1/g
-
-# Remove octal escaping from characters that don't need it.
 	`))
+	fmt.Fprintln(w, "")
 
+	fmt.Fprintln(w, "# Remove octal escaping from characters that don't need it.")
 	for i := 0; i <= 0xFF; i++ {
 		b := byte(i)
 		if shouldEscape(b) {
