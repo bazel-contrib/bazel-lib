@@ -121,6 +121,7 @@ assert_contains(
     name = "bazel_version_test",
     actual = ".bazelversion",
     expected = str(host.bazel_version),
+    target_compatible_with = [] if host.bazel_version.startswith("7") else ["@platforms//:incompatible"],
 )
 
 bzl_library(
