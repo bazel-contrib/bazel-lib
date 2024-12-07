@@ -399,7 +399,7 @@ run_binary(
         "vis_escape_ascii.bzl=$(location _vis_escape_ascii.bzl)",
         "vis_escape_nonascii.sed=$(location _vis_escape_nonascii.sed)",
     ],
-    tool = "//lib/private/gen_vis_scripts",
+    tool = "//tools/gen_vis_scripts",
 )
 
 write_source_files(
