@@ -465,3 +465,41 @@ assert_unused_listing(
         "lib/tests/tar/unused/space in name.txt",
     ],
 )
+
+#############
+# Example 16: Ensure that root directories are properly handled with strip_prefix (bug #978)
+# Don't assume that files or directories exist after stripping the prefix. See (bug #851)
+
+_SRCS16 = [
+    "src_file",
+    ":fixture1",
+]
+
+mtree_spec(
+    name = "mtree16",
+    srcs = _SRCS16,
+)
+
+mtree_mutate(
+    name = "strip_prefix16",
+    mtree = ":mtree16",
+    strip_prefix = "lib",
+)
+
+tar(
+    name = "tar_strip_prefix16",
+    srcs = _SRCS16,
+    out = "16.tar",
+    mtree = "strip_prefix16",
+)
+
+assert_tar_listing(
+    name = "test_strip_prefix16",
+    actual = "tar_strip_prefix16",
+    expected = [
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 tests/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 tests/tar/",
+        "-rwxr-xr-x  0 0      0          21 Jan  1  2023 tests/tar/src_file",
+        "-rwxr-xr-x  0 0      0           7 Jan  1  2023 tests/tar/generated.txt",
+    ],
+)

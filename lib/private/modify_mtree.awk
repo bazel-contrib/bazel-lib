@@ -16,7 +16,13 @@
             #       To avoid this, we append a slash to the directory path to make it a "full" entry.
             components = split($1, _, "/");
             if ($0 ~ /type=dir/ && components == 1) {
-                $1 = $1 "/";
+                if ($0 !~ /^ /) {
+                    $1 = $1 "/";
+                }
+                else {
+                    # this line is the root directory and only contains orphaned keywords, which will be discarded
+                    next;
+                }
             }
         } else {
             # this line declares some path under a parent directory, which will be discarded
