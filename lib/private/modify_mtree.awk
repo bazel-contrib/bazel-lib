@@ -1,5 +1,21 @@
 # Edits mtree files. See the modify_mtree macro in /lib/tar.bzl.
 {
+    if (preserve_symlink != "") {
+        # By default Bazel reports symlinks as regular file/dir therefore mtree_spec has no way of knowing that a file
+        # is a symlink. This is a problem when we want to preserve symlinks especially for symlink sensitive applications
+        # such as nodejs with pnpm. To work around this we need to determine if a file a symlink and if so, we need to
+        # determine where the symlink points to by calling readlink repeatedly until we get the final destination.
+        #
+        # We then need to decide if it's a symlink based on how many times we had to call readlink and where we ended up.
+        #
+        # Unlike Bazels own symlinks, which points out of the sandbox symlinks, symlinks created by ctx.actions.symlink
+        # stays within the bazel sandbox so it's possible to detect those.
+        #
+        # See https://github.com/bazelbuild/rules_pkg/pull/609
+        if ($0 ~ /type=file/) {
+
+        }
+    }
     if (strip_prefix != "") {
         if ($1 == strip_prefix) {
             # this line declares the directory which is now the root. It may be discarded.
