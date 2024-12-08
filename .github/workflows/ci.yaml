@@ -138,11 +138,16 @@ jobs:
       - name: Verify bcr patches
         if: matrix.folder == '.' && matrix.bzlmod == '1' && matrix.os == 'ubuntu' && matrix.bazel-version.major != '6'
         run: patch --dry-run -p1 < .bcr/patches/*.patch
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pre-commit/action@v3.0.1
 
   # For branch protection settings, this job provides a "stable" name that can be used to gate PR merges
   # on "all matrix jobs were successful".
   conclusion:
-    needs: test
+    needs: [test, pre-commit]
     runs-on: ubuntu-latest
     if: always()
     steps:
