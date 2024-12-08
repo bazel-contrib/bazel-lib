@@ -137,7 +137,10 @@ platform_transition_test(
     name = "transitioned_go_test_x86_64",
     binary = ":test_transition_test",
     # only run this test on an x86_64 host
-    target_compatible_with = [] if sorted(HOST_CONSTRAINTS) == ["@platforms//cpu:x86_64", "@platforms//os:linux"] else ["@platforms//:incompatible"],
+    target_compatible_with = [] if sorted(HOST_CONSTRAINTS) == [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ] else ["@platforms//:incompatible"],
     target_platform = "x86_64_linux",
 )
 
@@ -145,7 +148,10 @@ platform_transition_test(
     name = "transitioned_go_test_arm64",
     binary = ":test_transition_test",
     # only run this test on an x86_64 host
-    target_compatible_with = [] if sorted(HOST_CONSTRAINTS) == ["@platforms//cpu:aarch64", "@platforms//os:linux"] else ["@platforms//:incompatible"],
+    target_compatible_with = [] if sorted(HOST_CONSTRAINTS) == [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:linux",
+    ] else ["@platforms//:incompatible"],
     target_platform = "arm64_linux",
 )
 

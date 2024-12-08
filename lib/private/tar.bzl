@@ -175,7 +175,7 @@ def _is_unused_inputs_enabled(attr):
         return False
     if attr.compute_unused_inputs == -1:
         return attr._compute_unused_inputs_flag[BuildSettingInfo].value
-    
+
     fail("Unexpected `compute_unused_inputs` value: {}".format(attr.compute_unused_inputs))
 
 def _is_unprunable(file):

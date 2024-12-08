@@ -62,7 +62,7 @@ rebase
 mutex
 hotfix
 oncall
-poisioning
+poisoning
 statefulness
 teardown
 toolchain

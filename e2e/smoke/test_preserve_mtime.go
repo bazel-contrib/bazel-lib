@@ -26,7 +26,7 @@ func mtime(path string) (time.Time, error) {
 
 func (r runfilePath) osPath() (string, error) {
 	dirPath, err := bazel.Runfile(r.runfileDir)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	parts := append([]string{dirPath}, r.subPaths...)
@@ -34,28 +34,28 @@ func (r runfilePath) osPath() (string, error) {
 }
 
 func TestPreserveMTime(t *testing.T) {
-	cases := map[string]struct{
+	cases := map[string]struct {
 		original runfilePath
-		copied runfilePath
+		copied   runfilePath
 	}{
 		"copy_directory": {
 			original: runfilePath{
 				runfileDir: "d",
-				subPaths: []string{"1"},
+				subPaths:   []string{"1"},
 			},
 			copied: runfilePath{
 				runfileDir: "copy_directory_mtime_out",
-				subPaths: []string{"1"},
+				subPaths:   []string{"1"},
 			},
 		},
 		"copy_to_directory": {
 			original: runfilePath{
 				runfileDir: "d",
-				subPaths: []string{"1"},
+				subPaths:   []string{"1"},
 			},
 			copied: runfilePath{
 				runfileDir: "copy_to_directory_mtime_out",
-				subPaths: []string{"d", "1"},
+				subPaths:   []string{"d", "1"},
 			},
 		},
 	}
