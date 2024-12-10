@@ -6,6 +6,8 @@ import %workspace%/../../.aspect/bazelrc/debug.bazelrc
 import %workspace%/../../.aspect/bazelrc/javascript.bazelrc
 import %workspace%/../../.aspect/bazelrc/performance.bazelrc
 
+common --incompatible_use_plus_in_repo_names
+
 ### YOUR PROJECT SPECIFIC OPTIONS GO HERE ###
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.

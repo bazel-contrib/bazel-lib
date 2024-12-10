@@ -26,8 +26,9 @@ common:release -c opt
 # https://bazelbuild.slack.com/archives/C014RARENH0/p1691158021917459?thread_ts=1691156601.420349&cid=C014RARENH0
 common --check_direct_dependencies=off
 
-# Make sure we don't regress this.
+# Make sure we don't regress these.
 common --incompatible_auto_exec_groups
+common --incompatible_use_plus_in_repo_names
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
