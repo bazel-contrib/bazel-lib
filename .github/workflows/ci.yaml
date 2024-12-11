@@ -27,8 +27,8 @@ jobs:
           v=$(head -n 1 .bazelversion)
           m=${v::1}
           a=(
-            "major:8, version:\"last_rc\""
             "major:$m, version:\"$v\""
+            "major:7, version:\"7.4.1\""
             "major:6, version:\"6.5.0\""
           )
           printf -v j '{%s},' "${a[@]}"
