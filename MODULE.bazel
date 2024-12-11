@@ -8,6 +8,7 @@ module(
 )
 
 # Lower-bounds (minimum) versions for direct runtime dependencies
+bazel_dep(name = "bazel_features", version = "1.9.0")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "platforms", version = "0.0.10")
 
@@ -79,4 +80,3 @@ use_repo(host_platform, "host_platform")
 bazel_dep(name = "aspect_rules_lint", version = "1.0.0-rc10", dev_dependency = True)
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
-bazel_dep(name = "bazel_features", version = "0.2.0", dev_dependency = True)
