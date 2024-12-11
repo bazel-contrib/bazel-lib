@@ -5,7 +5,7 @@ bcr_test_module:
     bazel:
       - 6.x
       - 7.x
-      - last_rc # TODO(alexeagle): change to 8.x after release
+      - 8.x
   tasks:
     run_tests:
       name: "Run test module"
