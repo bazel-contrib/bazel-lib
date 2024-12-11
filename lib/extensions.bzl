@@ -25,6 +25,7 @@ load(
     "register_yq_toolchains",
     "register_zstd_toolchains",
 )
+load("@bazel_features//:features.bzl", "bazel_features")
 load("//lib/private:extension_utils.bzl", "extension_utils")
 load("//lib/private:host_repo.bzl", "host_repo")
 
@@ -116,6 +117,11 @@ def _toolchains_extension_impl(mctx):
         toolchain_repos_fn = lambda name, version: register_bats_toolchains(name = name, core_version = version, register = False),
         get_version_fn = lambda attr: attr.core_version,
     )
+
+    if bazel_features.external_deps.extension_metadata_has_reproducible:
+        return mctx.extension_metadata(reproducible = True)
+
+    return mctx.extension_metadata()
 
 toolchains = module_extension(
     implementation = _toolchains_extension_impl,
