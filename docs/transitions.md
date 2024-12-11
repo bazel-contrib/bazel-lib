@@ -10,7 +10,7 @@ Rules for working with transitions.
 platform_transition_binary(<a href="#platform_transition_binary-name">name</a>, <a href="#platform_transition_binary-basename">basename</a>, <a href="#platform_transition_binary-binary">binary</a>, <a href="#platform_transition_binary-target_platform">target_platform</a>)
 </pre>
 
-Transitions the binary to use the provided platform.
+Transitions the binary to use the provided platform. Will forward RunEnvironmentInfo
 
 **ATTRIBUTES**
 
@@ -51,7 +51,7 @@ Transitions the srcs to use the provided platform. The filegroup will contain ar
 platform_transition_test(<a href="#platform_transition_test-name">name</a>, <a href="#platform_transition_test-basename">basename</a>, <a href="#platform_transition_test-binary">binary</a>, <a href="#platform_transition_test-target_platform">target_platform</a>)
 </pre>
 
-Transitions the test to use the provided platform.
+Transitions the test to use the provided platform. Will forward RunEnvironmentInfo
 
 **ATTRIBUTES**
 

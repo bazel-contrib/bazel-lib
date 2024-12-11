@@ -90,6 +90,9 @@ def _platform_transition_binary_impl(ctx):
         ),
     )
 
+    if RunEnvironmentInfo in binary:
+        result.append(binary[RunEnvironmentInfo])
+
     return result
 
 def _get_platform_transition_attrs(binary_cfg):
@@ -112,7 +115,7 @@ platform_transition_binary = rule(
     # intuitive output path (matching an untransitioned binary).
     attrs = _get_platform_transition_attrs(binary_cfg = _transition_platform),
     executable = True,
-    doc = "Transitions the binary to use the provided platform.",
+    doc = "Transitions the binary to use the provided platform. Will forward RunEnvironmentInfo",
 )
 
 platform_transition_test = rule(
@@ -123,5 +126,5 @@ platform_transition_test = rule(
     # the test action.
     cfg = _transition_platform,
     test = True,
-    doc = "Transitions the test to use the provided platform.",
+    doc = "Transitions the test to use the provided platform. Will forward RunEnvironmentInfo",
 )
