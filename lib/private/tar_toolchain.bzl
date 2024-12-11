@@ -36,24 +36,24 @@ BSDTAR_PLATFORMS = {
 
 BSDTAR_PREBUILT = {
     "darwin_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.4-4/tar_darwin_amd64",
-        "a412e5a7b02979cee36dd6b05df62b8596e907c2d9b473786a5d9d5204a0b837",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5-2/tar_darwin_amd64",
+        "8a7a526045b4f91cc750639039a23b30a17698afe9c7459b244b6a4902289dee",
     ),
     "darwin_arm64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.4-4/tar_darwin_arm64",
-        "ad68a5f777d85032853883ee0d56ec8e26c01692e9ec843d82279d446214922b",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5-2/tar_darwin_arm64",
+        "dcb1da3d6945e703a9e1a6b7a2c8b9098e14600643cc26d5c7670b78ccc9b215",
     ),
     "linux_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.4-4/tar_linux_amd64",
-        "9dba82030199b2660086e458fa6481cf73089ee5c47d216e647bb2a6b0fae792",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5-2/tar_linux_amd64",
+        "91d1e47ccd0e99ec0cfdf0334725c0be6904eafd40d5b01b7482c063f246d83c",
     ),
     "linux_arm64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.4-4/tar_linux_arm64",
-        "105f91ad792fce13030bd249d8f9a14fd7ceaf908e1caeb99685b0b1fac44be2",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5-2/tar_linux_arm64",
+        "2bb6b5b2cb6b9b9eda0d8ab7cb1bd5c013e33a65470cba89b22efcabc497885b",
     ),
     "windows_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.4-4/tar_windows_x86_64.exe",
-        "8ccb320816f5bd018b6fd073f466800534b885a37ace656b0b4e0aff01c8ce65",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.5-2/tar_windows_x86_64.exe",
+        "1cb376b18dfaa81a4d0a1048119830e505ce3b319fe0cfb2ebae929543995157",
     ),
 }
 
