@@ -333,7 +333,7 @@ def _tar_impl(ctx):
         mnemonic = "Tar",
         unused_inputs_list = unused_inputs_file,
         toolchain = "@aspect_bazel_lib//lib:tar_toolchain_type",
-	# Allow users to set --action_env=LC_ALL=C.UTF-8 for example,
+        # Allow users to set --action_env=LC_ALL=C.UTF-8 for example,
         # on systems where default locale is wrong.
         # See https://github.com/bazelbuild/bazel-central-registry/issues/2256
         use_default_shell_env = True,
