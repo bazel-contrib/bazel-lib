@@ -94,6 +94,8 @@ my_stamp_aware_rule = rule(
 ## maybe_stamp
 
 <pre>
+load("@aspect_bazel_lib//lib:stamping.bzl", "maybe_stamp")
+
 maybe_stamp(<a href="#maybe_stamp-ctx">ctx</a>)
 </pre>
 

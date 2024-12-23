@@ -15,7 +15,9 @@ See also: [rules_diff](https://gitlab.arm.com/bazel/rules_diff)
 ## diff_test
 
 <pre>
-diff_test(<a href="#diff_test-name">name</a>, <a href="#diff_test-file1">file1</a>, <a href="#diff_test-file2">file2</a>, <a href="#diff_test-size">size</a>, <a href="#diff_test-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+
+diff_test(<a href="#diff_test-name">name</a>, <a href="#diff_test-file1">file1</a>, <a href="#diff_test-file2">file2</a>, <a href="#diff_test-size">size</a>, <a href="#diff_test-kwargs">**kwargs</a>)
 </pre>
 
 A test that compares two files.

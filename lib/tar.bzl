@@ -102,7 +102,7 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
         stamp: should mtree attribute be stamped
         **kwargs: additional named parameters to pass to `tar_rule`
     """
-    mtree_target = "_{}.mtree".format(name)
+    mtree_target = "{}_mtree".format(name)
     if mtree == "auto":
         mtree_spec(
             name = mtree_target,

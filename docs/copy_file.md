@@ -15,7 +15,9 @@ This fork of bazel-skylib's copy_file adds `DirectoryPathInfo` support and allow
 ## copy_file
 
 <pre>
-copy_file(<a href="#copy_file-name">name</a>, <a href="#copy_file-src">src</a>, <a href="#copy_file-out">out</a>, <a href="#copy_file-is_executable">is_executable</a>, <a href="#copy_file-allow_symlink">allow_symlink</a>, <a href="#copy_file-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
+
+copy_file(<a href="#copy_file-name">name</a>, <a href="#copy_file-src">src</a>, <a href="#copy_file-out">out</a>, <a href="#copy_file-is_executable">is_executable</a>, <a href="#copy_file-allow_symlink">allow_symlink</a>, <a href="#copy_file-kwargs">**kwargs</a>)
 </pre>
 
 Copies a file or directory to another location.
@@ -49,6 +51,8 @@ for more context.
 ## copy_file_action
 
 <pre>
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file_action")
+
 copy_file_action(<a href="#copy_file_action-ctx">ctx</a>, <a href="#copy_file_action-src">src</a>, <a href="#copy_file_action-dst">dst</a>, <a href="#copy_file_action-dir_path">dir_path</a>)
 </pre>
 

@@ -16,7 +16,7 @@ def expand_template(name, template, **kwargs):
         **kwargs: other named parameters to `expand_template_rule`.
     """
     if types.is_list(template):
-        write_target = "_{}.tmpl".format(name)
+        write_target = "{}_tmpl".format(name)
         write_file(
             name = write_target,
             out = "{}.txt".format(write_target),

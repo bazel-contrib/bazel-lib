@@ -7,6 +7,8 @@ Utilities for strings
 ## chr
 
 <pre>
+load("@aspect_bazel_lib//lib:strings.bzl", "chr")
+
 chr(<a href="#chr-i">i</a>)
 </pre>
 
@@ -33,6 +35,8 @@ unicode string of the position
 ## hex
 
 <pre>
+load("@aspect_bazel_lib//lib:strings.bzl", "hex")
+
 hex(<a href="#hex-number">number</a>)
 </pre>
 
@@ -55,6 +59,8 @@ hexadecimal representation of the number argument
 ## ord
 
 <pre>
+load("@aspect_bazel_lib//lib:strings.bzl", "ord")
+
 ord(<a href="#ord-c">c</a>)
 </pre>
 
@@ -85,6 +91,8 @@ codepoint of `c` argument.
 ## split_args
 
 <pre>
+load("@aspect_bazel_lib//lib:strings.bzl", "split_args")
+
 split_args(<a href="#split_args-s">s</a>)
 </pre>
 

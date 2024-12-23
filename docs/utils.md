@@ -15,6 +15,8 @@ out_label = utils.to_label(out_file)
 ## consistent_label_str
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "consistent_label_str")
+
 consistent_label_str(<a href="#consistent_label_str-ctx">ctx</a>, <a href="#consistent_label_str-label">label</a>)
 </pre>
 
@@ -47,6 +49,8 @@ String representation of the label including the repository name if the label is
 ## default_timeout
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "default_timeout")
+
 default_timeout(<a href="#default_timeout-size">size</a>, <a href="#default_timeout-timeout">timeout</a>)
 </pre>
 
@@ -89,6 +93,8 @@ This function can be used in a macro which wraps a testing rule.
 ## file_exists
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "file_exists")
+
 file_exists(<a href="#file_exists-path">path</a>)
 </pre>
 
@@ -111,7 +117,9 @@ This can only be called during the loading phase, not from a rule implementation
 ## glob_directories
 
 <pre>
-glob_directories(<a href="#glob_directories-include">include</a>, <a href="#glob_directories-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:utils.bzl", "glob_directories")
+
+glob_directories(<a href="#glob_directories-include">include</a>, <a href="#glob_directories-kwargs">**kwargs</a>)
 </pre>
 
 
@@ -130,6 +138,8 @@ glob_directories(<a href="#glob_directories-include">include</a>, <a href="#glob
 ## is_bazel_6_or_greater
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "is_bazel_6_or_greater")
+
 is_bazel_6_or_greater()
 </pre>
 
@@ -171,6 +181,8 @@ True if the Bazel version being used is greater than or equal to 6 (including pr
 ## is_bazel_7_or_greater
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "is_bazel_7_or_greater")
+
 is_bazel_7_or_greater()
 </pre>
 
@@ -209,6 +221,8 @@ True if the Bazel version being used is greater than or equal to 7 (including pr
 ## is_bzlmod_enabled
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "is_bzlmod_enabled")
+
 is_bzlmod_enabled()
 </pre>
 
@@ -221,6 +235,8 @@ Detect the value of the --enable_bzlmod flag
 ## is_external_label
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "is_external_label")
+
 is_external_label(<a href="#is_external_label-param">param</a>)
 </pre>
 
@@ -243,7 +259,9 @@ a bool
 ## maybe_http_archive
 
 <pre>
-maybe_http_archive(<a href="#maybe_http_archive-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:utils.bzl", "maybe_http_archive")
+
+maybe_http_archive(<a href="#maybe_http_archive-kwargs">**kwargs</a>)
 </pre>
 
 Adapts a maybe(http_archive, ...) to look like an http_archive.
@@ -292,6 +310,8 @@ maybe(
 ## path_to_workspace_root
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "path_to_workspace_root")
+
 path_to_workspace_root()
 </pre>
 
@@ -308,6 +328,8 @@ Path to the workspace root
 ## propagate_common_binary_rule_attributes
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_binary_rule_attributes")
+
 propagate_common_binary_rule_attributes(<a href="#propagate_common_binary_rule_attributes-attrs">attrs</a>)
 </pre>
 
@@ -335,6 +357,8 @@ The dict of parameters, containing only common binary attributes
 ## propagate_common_rule_attributes
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_rule_attributes")
+
 propagate_common_rule_attributes(<a href="#propagate_common_rule_attributes-attrs">attrs</a>)
 </pre>
 
@@ -361,6 +385,8 @@ The dict of parameters, containing only common attributes
 ## propagate_common_test_rule_attributes
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "propagate_common_test_rule_attributes")
+
 propagate_common_test_rule_attributes(<a href="#propagate_common_test_rule_attributes-attrs">attrs</a>)
 </pre>
 
@@ -388,6 +414,8 @@ The dict of parameters, containing only common test attributes
 ## propagate_well_known_tags
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "propagate_well_known_tags")
+
 propagate_well_known_tags(<a href="#propagate_well_known_tags-tags">tags</a>)
 </pre>
 
@@ -415,6 +443,8 @@ List of tags that only contains the well known set
 ## to_label
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "to_label")
+
 to_label(<a href="#to_label-param">param</a>)
 </pre>
 
@@ -437,6 +467,8 @@ a Label
 ## utils.consistent_label_str
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.consistent_label_str(<a href="#utils.consistent_label_str-ctx">ctx</a>, <a href="#utils.consistent_label_str-label">label</a>)
 </pre>
 
@@ -469,6 +501,8 @@ String representation of the label including the repository name if the label is
 ## utils.default_timeout
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.default_timeout(<a href="#utils.default_timeout-size">size</a>, <a href="#utils.default_timeout-timeout">timeout</a>)
 </pre>
 
@@ -511,6 +545,8 @@ This function can be used in a macro which wraps a testing rule.
 ## utils.file_exists
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.file_exists(<a href="#utils.file_exists-path">path</a>)
 </pre>
 
@@ -533,7 +569,9 @@ This can only be called during the loading phase, not from a rule implementation
 ## utils.glob_directories
 
 <pre>
-utils.glob_directories(<a href="#utils.glob_directories-include">include</a>, <a href="#utils.glob_directories-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
+utils.glob_directories(<a href="#utils.glob_directories-include">include</a>, <a href="#utils.glob_directories-kwargs">**kwargs</a>)
 </pre>
 
 
@@ -552,6 +590,8 @@ utils.glob_directories(<a href="#utils.glob_directories-include">include</a>, <a
 ## utils.is_bazel_6_or_greater
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.is_bazel_6_or_greater()
 </pre>
 
@@ -593,6 +633,8 @@ True if the Bazel version being used is greater than or equal to 6 (including pr
 ## utils.is_bazel_7_or_greater
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.is_bazel_7_or_greater()
 </pre>
 
@@ -631,6 +673,8 @@ True if the Bazel version being used is greater than or equal to 7 (including pr
 ## utils.is_bzlmod_enabled
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.is_bzlmod_enabled()
 </pre>
 
@@ -643,6 +687,8 @@ Detect the value of the --enable_bzlmod flag
 ## utils.is_external_label
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.is_external_label(<a href="#utils.is_external_label-param">param</a>)
 </pre>
 
@@ -665,7 +711,9 @@ a bool
 ## utils.maybe_http_archive
 
 <pre>
-utils.maybe_http_archive(<a href="#utils.maybe_http_archive-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
+utils.maybe_http_archive(<a href="#utils.maybe_http_archive-kwargs">**kwargs</a>)
 </pre>
 
 Adapts a maybe(http_archive, ...) to look like an http_archive.
@@ -714,6 +762,8 @@ maybe(
 ## utils.path_to_workspace_root
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.path_to_workspace_root()
 </pre>
 
@@ -730,6 +780,8 @@ Path to the workspace root
 ## utils.propagate_common_binary_rule_attributes
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.propagate_common_binary_rule_attributes(<a href="#utils.propagate_common_binary_rule_attributes-attrs">attrs</a>)
 </pre>
 
@@ -757,6 +809,8 @@ The dict of parameters, containing only common binary attributes
 ## utils.propagate_common_rule_attributes
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.propagate_common_rule_attributes(<a href="#utils.propagate_common_rule_attributes-attrs">attrs</a>)
 </pre>
 
@@ -783,6 +837,8 @@ The dict of parameters, containing only common attributes
 ## utils.propagate_common_test_rule_attributes
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.propagate_common_test_rule_attributes(<a href="#utils.propagate_common_test_rule_attributes-attrs">attrs</a>)
 </pre>
 
@@ -810,6 +866,8 @@ The dict of parameters, containing only common test attributes
 ## utils.propagate_well_known_tags
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.propagate_well_known_tags(<a href="#utils.propagate_well_known_tags-tags">tags</a>)
 </pre>
 
@@ -837,6 +895,8 @@ List of tags that only contains the well known set
 ## utils.to_label
 
 <pre>
+load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+
 utils.to_label(<a href="#utils.to_label-param">param</a>)
 </pre>
 

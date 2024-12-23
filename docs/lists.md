@@ -7,6 +7,8 @@ Functions for lists
 ## every
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "every")
+
 every(<a href="#every-f">f</a>, <a href="#every-arr">arr</a>)
 </pre>
 
@@ -34,6 +36,8 @@ True or False
 ## filter
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "filter")
+
 filter(<a href="#filter-f">f</a>, <a href="#filter-arr">arr</a>)
 </pre>
 
@@ -61,6 +65,8 @@ A new list containing items that passed the filter function.
 ## find
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "find")
+
 find(<a href="#find-f">f</a>, <a href="#find-arr">arr</a>)
 </pre>
 
@@ -89,6 +95,8 @@ Tuple (index, item)
 ## map
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "map")
+
 map(<a href="#map-f">f</a>, <a href="#map-arr">arr</a>)
 </pre>
 
@@ -116,6 +124,8 @@ A new list with all mapped items.
 ## once
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "once")
+
 once(<a href="#once-f">f</a>, <a href="#once-arr">arr</a>)
 </pre>
 
@@ -139,6 +149,8 @@ True or False
 ## pick
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "pick")
+
 pick(<a href="#pick-f">f</a>, <a href="#pick-arr">arr</a>)
 </pre>
 
@@ -166,6 +178,8 @@ item
 ## some
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "some")
+
 some(<a href="#some-f">f</a>, <a href="#some-arr">arr</a>)
 </pre>
 
@@ -193,6 +207,8 @@ True or False
 ## unique
 
 <pre>
+load("@aspect_bazel_lib//lib:lists.bzl", "unique")
+
 unique(<a href="#unique-arr">arr</a>)
 </pre>
 

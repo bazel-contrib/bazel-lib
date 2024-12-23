@@ -5,14 +5,14 @@ load("//lib:diff_test.bzl", "diff_test")
 
 # buildifier: disable=function-docstring
 def assert_tar_listing(name, actual, expected):
-    actual_listing = "_{}_listing".format(name)
-    expected_listing = "_{}_expected".format(name)
+    actual_listing = "{}_listing".format(name)
+    expected_listing = "{}_expected".format(name)
 
     native.genrule(
         name = actual_listing,
         srcs = [actual],
         testonly = True,
-        outs = ["_{}.listing".format(name)],
+        outs = ["{}.listing".format(name)],
         cmd = "$(BSDTAR_BIN) -tvf $(execpath {}) >$@".format(actual),
         toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
     )
@@ -20,7 +20,7 @@ def assert_tar_listing(name, actual, expected):
     write_file(
         name = expected_listing,
         testonly = True,
-        out = "_{}.expected".format(name),
+        out = "{}.expected".format(name),
         content = expected + [""],
         newline = "unix",
     )
@@ -34,11 +34,11 @@ def assert_tar_listing(name, actual, expected):
 
 # buildifier: disable=function-docstring
 def assert_unused_listing(name, actual, expected):
-    actual_listing = native.package_relative_label("_{}_actual_listing".format(name))
-    actual_shortnames = native.package_relative_label("_{}_actual_shortnames".format(name))
-    actual_shortnames_file = native.package_relative_label("_{}.actual_shortnames".format(name))
-    expected_listing = native.package_relative_label("_{}_expected".format(name))
-    expected_listing_file = native.package_relative_label("_{}.expected".format(name))
+    actual_listing = native.package_relative_label("{}_actual_listing".format(name))
+    actual_shortnames = native.package_relative_label("{}_actual_shortnames".format(name))
+    actual_shortnames_file = native.package_relative_label("{}.actual_shortnames".format(name))
+    expected_listing = native.package_relative_label("{}_expected".format(name))
+    expected_listing_file = native.package_relative_label("{}.expected".format(name))
 
     native.filegroup(
         name = actual_listing.name,
