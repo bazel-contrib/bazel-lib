@@ -35,6 +35,8 @@ run_binary(
     mnemonic = "SomeAction",
     out_dirs = ["dir_a_out"],
     progress_message = "doing some work to make %{output}",
+    # Tell Bazel to reserve more than the default 250MB of RAM
+    resource_set = "mem_512m",
     tool = ":make_dir_a",
 )
 

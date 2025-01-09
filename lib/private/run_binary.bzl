@@ -15,6 +15,7 @@
 """run_binary implementation"""
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("//lib:resource_sets.bzl", "resource_set", "resource_set_attr")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 load(":expand_variables.bzl", "expand_variables")
 load(":strings.bzl", "split_args")
@@ -66,6 +67,7 @@ Possible fixes:
         inputs = inputs,
         executable = ctx.executable.tool,
         arguments = [args],
+        resource_set = resource_set(ctx.attr),
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
         progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
         execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
@@ -79,7 +81,7 @@ Possible fixes:
 
 _run_binary = rule(
     implementation = _run_binary_impl,
-    attrs = dict({
+    attrs = dicts.add({
         "tool": attr.label(
             executable = True,
             allow_files = True,
@@ -97,7 +99,7 @@ _run_binary = rule(
         "progress_message": attr.string(),
         "execution_requirements": attr.string_dict(),
         "use_default_shell_env": attr.bool(),
-    }, **STAMP_ATTRS),
+    }, resource_set_attr, STAMP_ATTRS),
 )
 
 def run_binary(

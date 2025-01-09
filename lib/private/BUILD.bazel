@@ -211,6 +211,7 @@ bzl_library(
     deps = [
         ":expand_variables",
         ":strings",
+        "//lib:resource_sets",
         "//lib:stamping",
         "@bazel_skylib//lib:dicts",
     ],
