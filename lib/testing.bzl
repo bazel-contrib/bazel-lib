@@ -19,17 +19,17 @@ def assert_contains(name, actual, expected, size = "small", **kwargs):
         **kwargs: additional named arguments for the resulting sh_test
     """
 
-    test_sh = "_{}_test.sh".format(name)
-    expected_file = "_{}_expected.txt".format(name)
+    test_sh = "{}_test.sh".format(name)
+    expected_file = "{}_expected.txt".format(name)
 
     write_file(
-        name = "_%s_expected" % name,
+        name = "{}_expected".format(name),
         out = expected_file,
         content = [expected],
     )
 
     write_file(
-        name = "_" + name,
+        name = "{}_gen".format(name),
         out = test_sh,
         content = [
             "#!/usr/bin/env bash",
@@ -61,22 +61,22 @@ def assert_outputs(name, actual, expected, **kwargs):
         fail("expected should be a list of strings, not " + type(expected))
 
     params_file(
-        name = "_actual_" + name,
+        name = name + "_actual",
         data = [actual],
         args = ["$(rootpaths {})".format(actual)],
-        out = "_{}_outputs.txt".format(name),
+        out = "{}_outputs.txt".format(name),
     )
 
     write_file(
-        name = "_expected_ " + name,
+        name = name + "_expected",
         content = expected,
-        out = "_expected_{}.txt".format(name),
+        out = "{}_expected.txt".format(name),
     )
 
     diff_test(
         name = name,
-        file1 = "_expected_ " + name,
-        file2 = "_actual_" + name,
+        file1 = name + "_expected",
+        file2 = name + "_actual",
         **kwargs
     )
 
@@ -97,8 +97,8 @@ def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = ".", **kwar
         filter2: a jq filter to apply to file2
         **kwargs: additional named arguments for the resulting diff_test
     """
-    name1 = "_{}_jq1".format(name)
-    name2 = "_{}_jq2".format(name)
+    name1 = "{}_jq1".format(name)
+    name2 = "{}_jq2".format(name)
     jq(
         name = name1,
         srcs = [file1],
@@ -154,8 +154,8 @@ def assert_archive_contains(name, archive, expected, type = None, **kwargs):
     # -v: only print lines which don't match
     grep = "grep -F -x -v -f $actual"
 
-    script_name = "_gen_assert_" + name
-    expected_name = "_expected_" + name
+    script_name = name + "_gen_assert"
+    expected_name = name + "_expected"
 
     if types.is_list(expected):
         write_file(
@@ -207,8 +207,8 @@ def assert_directory_contains(name, directory, expected, **kwargs):
     # -v: only print lines which don't match
     grep = "grep -F -x -v -f $actual"
 
-    script_name = "_gen_assert_" + name
-    expected_name = "_expected_" + name
+    script_name = name + "_gen_assert"
+    expected_name = name + "_expected"
 
     if types.is_list(expected):
         write_file(
