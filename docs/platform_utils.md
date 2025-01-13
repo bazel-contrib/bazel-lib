@@ -7,8 +7,6 @@ Public API
 ## platform_utils.host_platform_is_darwin
 
 <pre>
-load("@aspect_bazel_lib//lib:platform_utils.bzl", "platform_utils")
-
 platform_utils.host_platform_is_darwin()
 </pre>
 
@@ -21,8 +19,6 @@ platform_utils.host_platform_is_darwin()
 ## platform_utils.host_platform_is_linux
 
 <pre>
-load("@aspect_bazel_lib//lib:platform_utils.bzl", "platform_utils")
-
 platform_utils.host_platform_is_linux()
 </pre>
 
@@ -35,8 +31,6 @@ platform_utils.host_platform_is_linux()
 ## platform_utils.host_platform_is_windows
 
 <pre>
-load("@aspect_bazel_lib//lib:platform_utils.bzl", "platform_utils")
-
 platform_utils.host_platform_is_windows()
 </pre>
 

@@ -7,9 +7,7 @@ Helpers for making test assertions
 ## assert_archive_contains
 
 <pre>
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
-
-assert_archive_contains(<a href="#assert_archive_contains-name">name</a>, <a href="#assert_archive_contains-archive">archive</a>, <a href="#assert_archive_contains-expected">expected</a>, <a href="#assert_archive_contains-type">type</a>, <a href="#assert_archive_contains-kwargs">**kwargs</a>)
+assert_archive_contains(<a href="#assert_archive_contains-name">name</a>, <a href="#assert_archive_contains-archive">archive</a>, <a href="#assert_archive_contains-expected">expected</a>, <a href="#assert_archive_contains-type">type</a>, <a href="#assert_archive_contains-kwargs">kwargs</a>)
 </pre>
 
 Assert that an archive file contains at least the given file entries.
@@ -31,9 +29,7 @@ Assert that an archive file contains at least the given file entries.
 ## assert_contains
 
 <pre>
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_contains")
-
-assert_contains(<a href="#assert_contains-name">name</a>, <a href="#assert_contains-actual">actual</a>, <a href="#assert_contains-expected">expected</a>, <a href="#assert_contains-size">size</a>, <a href="#assert_contains-kwargs">**kwargs</a>)
+assert_contains(<a href="#assert_contains-name">name</a>, <a href="#assert_contains-actual">actual</a>, <a href="#assert_contains-expected">expected</a>, <a href="#assert_contains-size">size</a>, <a href="#assert_contains-kwargs">kwargs</a>)
 </pre>
 
 Generates a test target which fails if the file doesn't contain the string.
@@ -58,9 +54,7 @@ Depends on bash, as it creates an sh_test target.
 ## assert_directory_contains
 
 <pre>
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_directory_contains")
-
-assert_directory_contains(<a href="#assert_directory_contains-name">name</a>, <a href="#assert_directory_contains-directory">directory</a>, <a href="#assert_directory_contains-expected">expected</a>, <a href="#assert_directory_contains-kwargs">**kwargs</a>)
+assert_directory_contains(<a href="#assert_directory_contains-name">name</a>, <a href="#assert_directory_contains-directory">directory</a>, <a href="#assert_directory_contains-expected">expected</a>, <a href="#assert_directory_contains-kwargs">kwargs</a>)
 </pre>
 
 Assert that a directory contains at least the given file entries.
@@ -81,9 +75,7 @@ Assert that a directory contains at least the given file entries.
 ## assert_json_matches
 
 <pre>
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_json_matches")
-
-assert_json_matches(<a href="#assert_json_matches-name">name</a>, <a href="#assert_json_matches-file1">file1</a>, <a href="#assert_json_matches-file2">file2</a>, <a href="#assert_json_matches-filter1">filter1</a>, <a href="#assert_json_matches-filter2">filter2</a>, <a href="#assert_json_matches-kwargs">**kwargs</a>)
+assert_json_matches(<a href="#assert_json_matches-name">name</a>, <a href="#assert_json_matches-file1">file1</a>, <a href="#assert_json_matches-file2">file2</a>, <a href="#assert_json_matches-filter1">filter1</a>, <a href="#assert_json_matches-filter2">filter2</a>, <a href="#assert_json_matches-kwargs">kwargs</a>)
 </pre>
 
 Assert that the given json files have the same semantic content.
@@ -113,9 +105,7 @@ setup notes for the `jq` toolchain.
 ## assert_outputs
 
 <pre>
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_outputs")
-
-assert_outputs(<a href="#assert_outputs-name">name</a>, <a href="#assert_outputs-actual">actual</a>, <a href="#assert_outputs-expected">expected</a>, <a href="#assert_outputs-kwargs">**kwargs</a>)
+assert_outputs(<a href="#assert_outputs-name">name</a>, <a href="#assert_outputs-actual">actual</a>, <a href="#assert_outputs-expected">expected</a>, <a href="#assert_outputs-kwargs">kwargs</a>)
 </pre>
 
 Assert that the default outputs of a target are the expected ones.

@@ -127,9 +127,7 @@ genrule(
 ## jq
 
 <pre>
-load("@aspect_bazel_lib//lib:jq.bzl", "jq")
-
-jq(<a href="#jq-name">name</a>, <a href="#jq-srcs">srcs</a>, <a href="#jq-filter">filter</a>, <a href="#jq-filter_file">filter_file</a>, <a href="#jq-args">args</a>, <a href="#jq-out">out</a>, <a href="#jq-data">data</a>, <a href="#jq-expand_args">expand_args</a>, <a href="#jq-kwargs">**kwargs</a>)
+jq(<a href="#jq-name">name</a>, <a href="#jq-srcs">srcs</a>, <a href="#jq-filter">filter</a>, <a href="#jq-filter_file">filter_file</a>, <a href="#jq-args">args</a>, <a href="#jq-out">out</a>, <a href="#jq-data">data</a>, <a href="#jq-expand_args">expand_args</a>, <a href="#jq-kwargs">kwargs</a>)
 </pre>
 
 Invoke jq with a filter on a set of json input files.

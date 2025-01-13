@@ -9,10 +9,8 @@ This fork of bazel-skylib's run_binary adds directory output support and better 
 ## run_binary
 
 <pre>
-load("@aspect_bazel_lib//lib:run_binary.bzl", "run_binary")
-
 run_binary(<a href="#run_binary-name">name</a>, <a href="#run_binary-tool">tool</a>, <a href="#run_binary-srcs">srcs</a>, <a href="#run_binary-args">args</a>, <a href="#run_binary-env">env</a>, <a href="#run_binary-outs">outs</a>, <a href="#run_binary-out_dirs">out_dirs</a>, <a href="#run_binary-mnemonic">mnemonic</a>, <a href="#run_binary-progress_message">progress_message</a>,
-           <a href="#run_binary-execution_requirements">execution_requirements</a>, <a href="#run_binary-use_default_shell_env">use_default_shell_env</a>, <a href="#run_binary-stamp">stamp</a>, <a href="#run_binary-kwargs">**kwargs</a>)
+           <a href="#run_binary-execution_requirements">execution_requirements</a>, <a href="#run_binary-use_default_shell_env">use_default_shell_env</a>, <a href="#run_binary-stamp">stamp</a>, <a href="#run_binary-kwargs">kwargs</a>)
 </pre>
 
 Runs a binary as a build action.

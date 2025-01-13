@@ -7,8 +7,6 @@ Public API
 ## host_repo
 
 <pre>
-load("@aspect_bazel_lib//lib:host_repo.bzl", "host_repo")
-
 host_repo(<a href="#host_repo-name">name</a>, <a href="#host_repo-repo_mapping">repo_mapping</a>)
 </pre>
 

@@ -7,9 +7,7 @@ Public API for docs helpers
 ## stardoc_with_diff_test
 
 <pre>
-load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test")
-
-stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href="#stardoc_with_diff_test-bzl_library_target">bzl_library_target</a>, <a href="#stardoc_with_diff_test-kwargs">**kwargs</a>)
+stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href="#stardoc_with_diff_test-bzl_library_target">bzl_library_target</a>, <a href="#stardoc_with_diff_test-kwargs">kwargs</a>)
 </pre>
 
 Creates a stardoc target that can be auto-detected by update_docs to write the generated doc to the source tree and test that it's up to date.
@@ -32,9 +30,7 @@ This is helpful for minimizing boilerplate in repos with lots of stardoc targets
 ## update_docs
 
 <pre>
-load("@aspect_bazel_lib//lib:docs.bzl", "update_docs")
-
-update_docs(<a href="#update_docs-name">name</a>, <a href="#update_docs-kwargs">**kwargs</a>)
+update_docs(<a href="#update_docs-name">name</a>, <a href="#update_docs-kwargs">kwargs</a>)
 </pre>
 
 Stamps an executable run for writing all stardocs declared with stardoc_with_diff_test to the source tree.

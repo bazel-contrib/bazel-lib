@@ -26,8 +26,6 @@ bats_test(
 ## bats_test
 
 <pre>
-load("@aspect_bazel_lib//lib:bats.bzl", "bats_test")
-
 bats_test(<a href="#bats_test-name">name</a>, <a href="#bats_test-srcs">srcs</a>, <a href="#bats_test-data">data</a>, <a href="#bats_test-env">env</a>)
 </pre>
 

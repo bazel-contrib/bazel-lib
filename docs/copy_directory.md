@@ -22,9 +22,7 @@ there are two caveats to consider when using this feature:
 ## copy_directory
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
-
-copy_directory(<a href="#copy_directory-name">name</a>, <a href="#copy_directory-src">src</a>, <a href="#copy_directory-out">out</a>, <a href="#copy_directory-hardlink">hardlink</a>, <a href="#copy_directory-kwargs">**kwargs</a>)
+copy_directory(<a href="#copy_directory-name">name</a>, <a href="#copy_directory-src">src</a>, <a href="#copy_directory-out">out</a>, <a href="#copy_directory-hardlink">hardlink</a>, <a href="#copy_directory-kwargs">kwargs</a>)
 </pre>
 
 Copies a directory to another location.
@@ -55,8 +53,6 @@ for more context.
 ## copy_directory_bin_action
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory_bin_action")
-
 copy_directory_bin_action(<a href="#copy_directory_bin_action-ctx">ctx</a>, <a href="#copy_directory_bin_action-src">src</a>, <a href="#copy_directory_bin_action-dst">dst</a>, <a href="#copy_directory_bin_action-copy_directory_bin">copy_directory_bin</a>, <a href="#copy_directory_bin_action-copy_directory_toolchain">copy_directory_toolchain</a>, <a href="#copy_directory_bin_action-hardlink">hardlink</a>,
                           <a href="#copy_directory_bin_action-verbose">verbose</a>, <a href="#copy_directory_bin_action-preserve_mtime">preserve_mtime</a>)
 </pre>

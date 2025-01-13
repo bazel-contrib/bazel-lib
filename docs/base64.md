@@ -9,8 +9,6 @@ See https://en.wikipedia.org/wiki/Base64.
 ## base64.decode
 
 <pre>
-load("@aspect_bazel_lib//lib:base64.bzl", "base64")
-
 base64.decode(<a href="#base64.decode-data">data</a>)
 </pre>
 
@@ -33,8 +31,6 @@ A string containing the decoded data
 ## base64.encode
 
 <pre>
-load("@aspect_bazel_lib//lib:base64.bzl", "base64")
-
 base64.encode(<a href="#base64.encode-data">data</a>)
 </pre>
 

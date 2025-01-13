@@ -13,8 +13,6 @@ https://github.com/bazel-contrib/rules_nodejs/blob/8b5d27400db51e7027fe95ae413ee
 ## copy_file_to_bin_action
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_file_to_bin_action")
-
 copy_file_to_bin_action(<a href="#copy_file_to_bin_action-ctx">ctx</a>, <a href="#copy_file_to_bin_action-file">file</a>)
 </pre>
 
@@ -66,8 +64,6 @@ A File in the output tree.
 ## copy_files_to_bin_actions
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_files_to_bin_actions")
-
 copy_files_to_bin_actions(<a href="#copy_files_to_bin_actions-ctx">ctx</a>, <a href="#copy_files_to_bin_actions-files">files</a>)
 </pre>
 
@@ -98,9 +94,7 @@ List of File objects in the output tree.
 ## copy_to_bin
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-
-copy_to_bin(<a href="#copy_to_bin-name">name</a>, <a href="#copy_to_bin-srcs">srcs</a>, <a href="#copy_to_bin-kwargs">**kwargs</a>)
+copy_to_bin(<a href="#copy_to_bin-name">name</a>, <a href="#copy_to_bin-srcs">srcs</a>, <a href="#copy_to_bin-kwargs">kwargs</a>)
 </pre>
 
 Copies a source file to output tree at the same workspace-relative path.

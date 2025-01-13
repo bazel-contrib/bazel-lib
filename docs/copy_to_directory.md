@@ -7,8 +7,6 @@ Copy files and directories to an output directory.
 ## copy_to_directory
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-
 copy_to_directory(<a href="#copy_to_directory-name">name</a>, <a href="#copy_to_directory-srcs">srcs</a>, <a href="#copy_to_directory-out">out</a>, <a href="#copy_to_directory-add_directory_to_runfiles">add_directory_to_runfiles</a>, <a href="#copy_to_directory-allow_overwrites">allow_overwrites</a>,
                   <a href="#copy_to_directory-exclude_srcs_packages">exclude_srcs_packages</a>, <a href="#copy_to_directory-exclude_srcs_patterns">exclude_srcs_patterns</a>, <a href="#copy_to_directory-hardlink">hardlink</a>,
                   <a href="#copy_to_directory-include_external_repositories">include_external_repositories</a>, <a href="#copy_to_directory-include_srcs_packages">include_srcs_packages</a>, <a href="#copy_to_directory-include_srcs_patterns">include_srcs_patterns</a>,
@@ -72,8 +70,6 @@ for more information on supported globbing patterns.
 ## copy_to_directory_bin_action
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory_bin_action")
-
 copy_to_directory_bin_action(<a href="#copy_to_directory_bin_action-ctx">ctx</a>, <a href="#copy_to_directory_bin_action-name">name</a>, <a href="#copy_to_directory_bin_action-dst">dst</a>, <a href="#copy_to_directory_bin_action-copy_to_directory_bin">copy_to_directory_bin</a>, <a href="#copy_to_directory_bin_action-copy_to_directory_toolchain">copy_to_directory_toolchain</a>,
                              <a href="#copy_to_directory_bin_action-files">files</a>, <a href="#copy_to_directory_bin_action-targets">targets</a>, <a href="#copy_to_directory_bin_action-root_paths">root_paths</a>, <a href="#copy_to_directory_bin_action-include_external_repositories">include_external_repositories</a>,
                              <a href="#copy_to_directory_bin_action-include_srcs_packages">include_srcs_packages</a>, <a href="#copy_to_directory_bin_action-exclude_srcs_packages">exclude_srcs_packages</a>, <a href="#copy_to_directory_bin_action-include_srcs_patterns">include_srcs_patterns</a>,
@@ -120,8 +116,6 @@ other rule implementations where additional_files can also be passed in.
 ## copy_to_directory_lib.impl
 
 <pre>
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory_lib")
-
 copy_to_directory_lib.impl(<a href="#copy_to_directory_lib.impl-ctx">ctx</a>)
 </pre>
 

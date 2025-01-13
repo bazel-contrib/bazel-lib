@@ -7,8 +7,6 @@ Rules for working with transitions.
 ## platform_transition_binary
 
 <pre>
-load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_binary")
-
 platform_transition_binary(<a href="#platform_transition_binary-name">name</a>, <a href="#platform_transition_binary-basename">basename</a>, <a href="#platform_transition_binary-binary">binary</a>, <a href="#platform_transition_binary-target_platform">target_platform</a>)
 </pre>
 
@@ -30,8 +28,6 @@ Transitions the binary to use the provided platform. Will forward RunEnvironment
 ## platform_transition_filegroup
 
 <pre>
-load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
-
 platform_transition_filegroup(<a href="#platform_transition_filegroup-name">name</a>, <a href="#platform_transition_filegroup-srcs">srcs</a>, <a href="#platform_transition_filegroup-target_platform">target_platform</a>)
 </pre>
 
@@ -52,8 +48,6 @@ Transitions the srcs to use the provided platform. The filegroup will contain ar
 ## platform_transition_test
 
 <pre>
-load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_test")
-
 platform_transition_test(<a href="#platform_transition_test-name">name</a>, <a href="#platform_transition_test-basename">basename</a>, <a href="#platform_transition_test-binary">binary</a>, <a href="#platform_transition_test-target_platform">target_platform</a>)
 </pre>
 

@@ -8,8 +8,6 @@ with a path nested within that directory
 ## directory_path
 
 <pre>
-load("@aspect_bazel_lib//lib:directory_path.bzl", "directory_path")
-
 directory_path(<a href="#directory_path-name">name</a>, <a href="#directory_path-directory">directory</a>, <a href="#directory_path-path">path</a>)
 </pre>
 
@@ -32,14 +30,13 @@ Otherwise there is no way to give a Bazel label for it.
 ## DirectoryPathInfo
 
 <pre>
-load("@aspect_bazel_lib//lib:directory_path.bzl", "DirectoryPathInfo")
-
 DirectoryPathInfo(<a href="#DirectoryPathInfo-directory">directory</a>, <a href="#DirectoryPathInfo-path">path</a>)
 </pre>
 
 Joins a label pointing to a TreeArtifact with a path nested within that directory.
 
 **FIELDS**
+
 
 | Name  | Description |
 | :------------- | :------------- |
@@ -52,9 +49,7 @@ Joins a label pointing to a TreeArtifact with a path nested within that director
 ## make_directory_path
 
 <pre>
-load("@aspect_bazel_lib//lib:directory_path.bzl", "make_directory_path")
-
-make_directory_path(<a href="#make_directory_path-name">name</a>, <a href="#make_directory_path-directory">directory</a>, <a href="#make_directory_path-path">path</a>, <a href="#make_directory_path-kwargs">**kwargs</a>)
+make_directory_path(<a href="#make_directory_path-name">name</a>, <a href="#make_directory_path-directory">directory</a>, <a href="#make_directory_path-path">path</a>, <a href="#make_directory_path-kwargs">kwargs</a>)
 </pre>
 
 Helper function to generate a directory_path target and return its label.
@@ -79,9 +74,7 @@ The label `name`
 ## make_directory_paths
 
 <pre>
-load("@aspect_bazel_lib//lib:directory_path.bzl", "make_directory_paths")
-
-make_directory_paths(<a href="#make_directory_paths-name">name</a>, <a href="#make_directory_paths-dict">dict</a>, <a href="#make_directory_paths-kwargs">**kwargs</a>)
+make_directory_paths(<a href="#make_directory_paths-name">name</a>, <a href="#make_directory_paths-dict">dict</a>, <a href="#make_directory_paths-kwargs">kwargs</a>)
 </pre>
 
 Helper function to convert a dict of directory to path mappings to directory_path targets and labels.

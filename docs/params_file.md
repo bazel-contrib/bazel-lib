@@ -7,9 +7,7 @@ params_file public API
 ## params_file
 
 <pre>
-load("@aspect_bazel_lib//lib:params_file.bzl", "params_file")
-
-params_file(<a href="#params_file-name">name</a>, <a href="#params_file-out">out</a>, <a href="#params_file-args">args</a>, <a href="#params_file-data">data</a>, <a href="#params_file-newline">newline</a>, <a href="#params_file-kwargs">**kwargs</a>)
+params_file(<a href="#params_file-name">name</a>, <a href="#params_file-out">out</a>, <a href="#params_file-args">args</a>, <a href="#params_file-data">data</a>, <a href="#params_file-newline">newline</a>, <a href="#params_file-kwargs">kwargs</a>)
 </pre>
 
 Generates a UTF-8 encoded params file from a list of arguments.

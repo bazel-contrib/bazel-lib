@@ -7,8 +7,6 @@ Utilities for working with file paths.
 ## relative_file
 
 <pre>
-load("@aspect_bazel_lib//lib:paths.bzl", "relative_file")
-
 relative_file(<a href="#relative_file-to_file">to_file</a>, <a href="#relative_file-frm_file">frm_file</a>)
 </pre>
 
@@ -39,8 +37,6 @@ The relative path from frm_file to to_file, including the file name
 ## to_output_relative_path
 
 <pre>
-load("@aspect_bazel_lib//lib:paths.bzl", "to_output_relative_path")
-
 to_output_relative_path(<a href="#to_output_relative_path-file">file</a>)
 </pre>
 
@@ -63,8 +59,6 @@ The output relative path for the `File`
 ## to_repository_relative_path
 
 <pre>
-load("@aspect_bazel_lib//lib:paths.bzl", "to_repository_relative_path")
-
 to_repository_relative_path(<a href="#to_repository_relative_path-file">file</a>)
 </pre>
 
@@ -93,8 +87,6 @@ The repository relative path for the `File`
 ## to_rlocation_path
 
 <pre>
-load("@aspect_bazel_lib//lib:paths.bzl", "to_rlocation_path")
-
 to_rlocation_path(<a href="#to_rlocation_path-ctx">ctx</a>, <a href="#to_rlocation_path-file">file</a>)
 </pre>
 
