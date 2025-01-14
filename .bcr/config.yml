@@ -1,4 +1,4 @@
 # See https://github.com/bazel-contrib/publish-to-bcr#a-note-on-release-automation
 fixedReleaser:
-  login: kormide
-  email: derek@aspect.dev
+  login: jbedard
+  email: jason@aspect.build
