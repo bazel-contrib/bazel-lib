@@ -73,6 +73,23 @@ To update *only* this file, run:
     bazel run //a/b/c:write_foo
 ```
 
+You can also add a more customized error message using the `diff_test_failure_message` argument:
+
+```starlark
+write_source_file(
+    name = "write_foo",
+    out_file = "foo.json",
+    in_file = ":generated-foo",
+    diff_test_failure_message = "Failed to build Foo; please run {{TARGET}} to update."
+)
+```
+
+A test failure from `foo.json` being out of date will then yield:
+
+```
+Failed to build Foo; please run //a/b/c:write_foo to update.
+```
+
 If you have many `write_source_files` targets that you want to update as a group, we recommend wrapping
 `write_source_files` in a macro that defaults `suggested_update_target` to the umbrella update target.
 
@@ -96,6 +113,8 @@ def write_source_files(
         additional_update_targets = [],
         suggested_update_target = None,
         diff_test = True,
+        diff_test_failure_message = "{{DEFAULT_MESSAGE}}",
+        file_missing_failure_message = "{{DEFAULT_MESSAGE}}",
         check_that_out_file_exists = True,
         **kwargs):
     """Write one or more files and/or directories to the source tree.
@@ -124,6 +143,23 @@ def write_source_files(
         suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
 
         diff_test: Test that the source tree files and/or directories exist and are up to date.
+
+        diff_test_failure_message: Text to print when the diff test fails, with templating options for
+            relevant targets.
+
+            Substitutions are performed on the failure message, with the following substitutions being available:
+
+            `{{DEFAULT_MESSAGE}}`: Prints the default error message, listing the target(s) that
+              may be run to update the file(s).
+
+            `{{TARGET}}`: The target to update the individual file that does not match in the
+              diff test.
+
+            `{{SUGGESTED_UPDATE_TARGET}}`: The suggested_update_target if specified, or the
+              target which will update all of the files which do not match.
+
+        file_missing_failure_message: Text to print when the output file is missing. Subject to the same
+             substitutions as diff_test_failure_message.
 
         check_that_out_file_exists: Test that each output file exists and print a helpful error message if it doesn't.
 
@@ -157,6 +193,8 @@ def write_source_files(
             additional_update_targets = additional_update_targets if single_update_target else [],
             suggested_update_target = this_suggested_update_target,
             diff_test = diff_test,
+            diff_test_failure_message = diff_test_failure_message,
+            file_missing_failure_message = file_missing_failure_message,
             check_that_out_file_exists = check_that_out_file_exists,
             **kwargs
         )

@@ -20,6 +20,8 @@ def write_source_file(
         additional_update_targets = [],
         suggested_update_target = None,
         diff_test = True,
+        diff_test_failure_message = "{{DEFAULT_MESSAGE}}",
+        file_missing_failure_message = "{{DEFAULT_MESSAGE}}",
         check_that_out_file_exists = True,
         **kwargs):
     """Write a file or directory to the source tree.
@@ -47,6 +49,22 @@ def write_source_file(
         suggested_update_target: Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.
 
         diff_test: Test that the source tree file or directory exist and is up to date.
+
+        diff_test_failure_message: Text to print when the diff test fails, with templating options for
+            relevant targets.
+
+            Substitutions are performed on the failure message, with the following substitutions being available:
+
+            `{{DEFAULT_MESSAGE}}`: Prints the default error message, listing the target(s) that
+              may be run to update the file(s).
+
+            `{{TARGET}}`: The target to update the individual file that does not match in the
+              diff test.
+
+            `{{SUGGESTED_UPDATE_TARGET}}`: The suggested_update_target if specified.
+
+        file_missing_failure_message: Text to print when the output file is missing. Subject to the same
+             substitutions as diff_test_failure_message.
 
         check_that_out_file_exists: Test that the output file exists and print a helpful error message if it doesn't.
 
@@ -92,17 +110,20 @@ def write_source_file(
     out_file_missing = check_that_out_file_exists and _is_file_missing(out_file)
     test_target_name = "%s_test" % name
 
+    update_target_string = "//%s:%s" % (native.package_name(), name)
+    suggested_update_target_string = str(utils.to_label(suggested_update_target)) if suggested_update_target else None
+
     if out_file_missing:
         if suggested_update_target == None:
-            message = """
+            default_message = """
 
 %s does not exist. To create & update this file, run:
 
-    bazel run //%s:%s
+    bazel run %s
 
-""" % (out_file, native.package_name(), name)
+""" % (out_file, update_target_string)
         else:
-            message = """
+            default_message = """
 
 %s does not exist. To create & update this and other generated files, run:
 
@@ -110,9 +131,11 @@ def write_source_file(
 
 To create an update *only* this file, run:
 
-    bazel run //%s:%s
+    bazel run %s
 
-""" % (out_file, utils.to_label(suggested_update_target), native.package_name(), name)
+""" % (out_file, suggested_update_target_string, update_target_string)
+
+        message = _do_diff_test_message_replacements(file_missing_failure_message, default_message, update_target_string, suggested_update_target_string)
 
         # Stamp out a test that fails with a helpful message when the source file doesn't exist.
         # Note that we cannot simply call fail() here since it will fail during the analysis
@@ -126,15 +149,15 @@ To create an update *only* this file, run:
         )
     else:
         if suggested_update_target == None:
-            message = """
+            default_message = """
 
 %s is out of date. To update this file, run:
 
-    bazel run //%s:%s
+    bazel run %s
 
-""" % (out_file, native.package_name(), name)
+""" % (out_file, update_target_string)
         else:
-            message = """
+            default_message = """
 
 %s is out of date. To update this and other generated files, run:
 
@@ -142,9 +165,11 @@ To create an update *only* this file, run:
 
 To update *only* this file, run:
 
-    bazel run //%s:%s
+    bazel run %s
 
-""" % (out_file, utils.to_label(suggested_update_target), native.package_name(), name)
+""" % (out_file, suggested_update_target_string, update_target_string)
+
+        message = _do_diff_test_message_replacements(diff_test_failure_message, default_message, update_target_string, suggested_update_target_string)
 
         # Stamp out a diff test the check that the source file is up to date
         _diff_test(
@@ -394,3 +419,16 @@ def _is_file_missing(label):
         subpackage_glob = native.subpackages(include = [file_rel], allow_empty = True)
 
     return len(file_glob) == 0 and len(subpackage_glob) == 0
+
+def _do_diff_test_message_replacements(message, default_message, target, suggested_update_target):
+    """Constructs the diff test failures message from the provided template.
+
+     Replaces the {{DEFAULT_MESSAGE}}, {{TARGET}}, and {{SUGGESTED_UPDATE_TARGET}} strings in
+     message with the corresponding arguments.
+
+     Args:
+         message: The user-provided message to do template replacement on.
+         default_message: The message to fill in for the {{DEFAULT_MESSAGE}} parameter.
+         target: The string to fill in for the {{TARGET}} parameter.
+         suggested_update_target: The string to fill in for the {{SUGGESTED_UPDATE_TARGET}} parameter."""
+    return message.replace("{{DEFAULT_MESSAGE}}", default_message).replace("{{TARGET}}", target).replace("{{SUGGESTED_UPDATE_TARGET}}", suggested_update_target if suggested_update_target else "")
