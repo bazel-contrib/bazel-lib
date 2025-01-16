@@ -264,7 +264,6 @@ bzl_library(
     srcs = [
         "platform_utils.bzl",
         "@host_platform//:constraints.bzl",  # keep
-        "@local_config_platform//:constraints.bzl",  # keep
         "@platforms//host:constraints.bzl",  # keep
     ],
     visibility = ["//lib:__subpackages__"],
