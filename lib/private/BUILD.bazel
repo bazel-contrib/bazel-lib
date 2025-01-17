@@ -104,6 +104,7 @@ bzl_library(
     deps = [
         ":directory_path",
         "//lib:utils",
+        "@bazel_skylib//lib:shell",
     ],
 )
 
