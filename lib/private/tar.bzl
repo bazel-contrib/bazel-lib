@@ -446,6 +446,71 @@ def _mtree_impl(ctx):
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
+def _mtree_mutate_impl(ctx):
+    srcs_runfiles = [
+        src[DefaultInfo].default_runfiles.files
+        for src in ctx.attr.srcs
+    ]
+    args = ctx.actions.args()
+    bsdtar = ctx.toolchains[TAR_TOOLCHAIN_TYPE]
+    mtree_generator = ctx.executable.mtree_generator.path
+
+    out_mtree = ctx.outputs.out
+    args.add("--input", ctx.file.mtree)
+    args.add("--output", out_mtree)
+    args.add("--bin_dir", ctx.bin_dir.path)
+
+    if ctx.attr.owner:
+        args.add("--owner", ctx.attr.owner)
+    if ctx.attr.ownername:
+        args.add("--ownername", ctx.attr.ownername)
+    if ctx.attr.strip_prefix:
+        args.add("--strip_prefix", ctx.attr.strip_prefix)
+    if ctx.attr.package_dir:
+        args.add("--package_dir", ctx.attr.package_dir)
+    if ctx.attr.mtime:
+        args.add("--mtime", ctx.attr.mtime)
+
+    #executable = bsdtar.tarinfo.binary,
+    inputs = ctx.files.srcs[:]
+    inputs.append(ctx.file.mtree)
+    ctx.actions.run(
+        executable = mtree_generator,
+        arguments = [args],
+        inputs = depset(
+            direct = inputs,
+            transitive = srcs_runfiles + [
+                ctx.attr.mtree_generator.default_runfiles.files,
+            ],
+        ),
+        outputs = [out_mtree],
+    )
+
+    return [DefaultInfo(files = depset([out_mtree]))]
+
+mtree_mutate = rule(
+    implementation = _mtree_mutate_impl,
+    attrs = {
+        "mtree": attr.label(allow_single_file = True),
+        "awk_script": attr.label(allow_single_file = True, default = "@aspect_bazel_lib//lib/private:modify_mtree.awk"),
+        "srcs": attr.label_list(allow_files = True),
+        "strip_prefix": attr.string(),
+        "package_dir": attr.string(),
+        "mtime": attr.string(),
+        "owner": attr.string(),
+        "ownername": attr.string(),
+        "out": attr.output(),
+        "mtree_generator": attr.label(
+            default = Label("//tools/mtree:mtree"),
+            executable = True,
+            cfg = "exec",
+        ),
+    },
+    toolchains = [
+        TAR_TOOLCHAIN_TYPE,
+        "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+    ],
+)
 tar_lib = struct(
     attrs = _tar_attrs,
     implementation = _tar_impl,

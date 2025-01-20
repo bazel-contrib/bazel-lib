@@ -4,6 +4,7 @@ load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing", "assert_unused_listing")
+load(":node_modules_tree.bzl", "node_modules_tree")
 
 # The examples below work with both source files and generated files.
 # Here we generate a file to use in the examples.
@@ -501,5 +502,76 @@ assert_tar_listing(
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 tests/tar/",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 tests/tar/src_file",
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 tests/tar/generated.txt",
+    ],
+)
+
+#############
+# Example 17: mtree_mutate preserves symlinks
+node_modules_tree(
+    name = "e17_node_modules",
+)
+
+mtree_spec(
+    name = "mtree17",
+    srcs = [
+        ":e17_node_modules",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_17_before_processing",
+    actual = ":mtree17",
+    expected = [
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/dir",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/dir/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/dir/b",
+    ],
+)
+
+mtree_mutate(
+    name = "resolve_symlinks",
+    srcs = [
+        ":e17_node_modules",
+    ],
+    mtree = ":mtree17",
+)
+
+assert_tar_listing(
+    name = "test_17_after_processing",
+    actual = ":resolve_symlinks",
+    expected = [
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a",
+        "l---------  0 0      0           0 Dec 31  1969 lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a/package.json -> lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/node_modules/a",
+        "l---------  0 0      0           0 Dec 31  1969 lib/tests/tar/node_modules/a/package.json -> lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/dir",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/dir/a",
+        "l---------  0 0      0           0 Dec 31  1969 lib/tests/tar/dir/b -> lib/tests/tar/dir/a",
     ],
 )
