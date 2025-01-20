@@ -61,7 +61,7 @@ def _split_args_test_impl(ctx):
 
     asserts.equals(env, ["a", "b", "c", "d"], split_args("a b c d"))
 
-    # sinle quotes
+    # single quotes
     asserts.equals(env, ["a", "b c", "d"], split_args("a 'b c' d"))
 
     # double quotes
@@ -73,7 +73,7 @@ def _split_args_test_impl(ctx):
     # escaped double quotes
     asserts.equals(env, ["a", "\"b", "c\"", "d"], split_args("a \\\"b c\\\" d"))
 
-    # sinle quotes containing escaped quotes
+    # single quotes containing escaped quotes
     asserts.equals(env, ["a", "b'\" c", "d"], split_args("a 'b\\'\\\" c' d"))
 
     # double quotes containing escaped quotes
