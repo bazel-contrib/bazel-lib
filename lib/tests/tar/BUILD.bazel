@@ -549,6 +549,7 @@ mtree_mutate(
         ":e17_node_modules",
     ],
     mtree = ":mtree17",
+    preserve_symlinks = True,
 )
 
 assert_tar_listing(

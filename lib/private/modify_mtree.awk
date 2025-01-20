@@ -45,5 +45,75 @@
     if (package_dir != "") {
         sub(/^/, package_dir "/")
     }
-    print;
+    if (preserve_symlinks != "") {
+        # By default Bazel reports symlinks as regular file/dir therefore mtree_spec has no way of knowing that a file
+        # is a symlink. This is a problem when we want to preserve symlinks especially for symlink sensitive applications
+        # such as nodejs with pnpm. To work around this we need to determine if a file a symlink and if so, we need to
+        # determine where the symlink points to by calling readlink repeatedly until we get the final destination.
+        #
+        # We then need to decide if it's a symlink based on how many times we had to call readlink and where we ended up.
+        #
+        # Unlike Bazels own symlinks, which points out of the sandbox symlinks, symlinks created by ctx.actions.symlink
+        # stays within the bazel sandbox so it's possible to detect those.
+        #
+        # See https://github.com/bazelbuild/rules_pkg/pull/609
+
+        symlink = ""
+        if ($0 ~ /type=file/ && $0 ~ /content=/) {
+            match($0, /content=[^ ]+/)
+            content_field = substr($0, RSTART, RLENGTH)
+            split(content_field, parts, "=")
+            path = parts[2]
+	    # Store paths for look up
+	    symlink_map[path] = $1
+	    # Resolve the symlink if it exists
+	    resolved_path = ""
+	    cmd = "readlink -f " path
+	    cmd | getline resolved_path
+	    close(cmd)
+
+	    if (resolved_path) {
+		if (resolved_path ~ bin_dir) {
+		    # Strip down the resolved path to start from bin_dir
+		    sub("^.*" bin_dir, bin_dir, resolved_path)
+		    if (path != resolved_path) {
+			# Replace the content field with the new path
+		        symlink = resolved_path
+		    }
+		}
+	    }
+        }
+	if (symlink != "") {
+	  line_array[NR] = $1 SUBSEP resolved_path
+	  }
+	else {
+	    line_array[NR] = $0  # Store other lines too, with an empty path
+	}
+    }
+
+    else {
+
+      print;  # Print immediately if symlinks are not preserved
+
+    }
+}
+END {
+    if (preserve_symlinks != "") {
+        # Process symlinks if needed
+        for (i = 1; i <= NR; i++) {
+            line = line_array[i]
+            if (index(line, SUBSEP) > 0) {  # Check if this path was a symlink
+	        split(line, fields, SUBSEP)
+		field0 = fields[1]
+		resolved_path = fields[2]
+                linked_to = symlink_map[resolved_path]
+                # Adjust the line for symlink using the map we created
+                new_line = field0 " type=link link=" linked_to
+                print new_line
+            } else {
+                # Print the original line if no symlink adjustment was needed
+                print line
+            }
+        }
+    }
 }
