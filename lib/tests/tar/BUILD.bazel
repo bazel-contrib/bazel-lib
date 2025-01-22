@@ -2,6 +2,7 @@ load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing", "assert_unused_listing")
 load(":node_modules_tree.bzl", "node_modules_tree")
@@ -511,10 +512,26 @@ node_modules_tree(
     name = "e17_node_modules",
 )
 
+write_file(
+    name = "executable",
+    out = "executable.sh",
+    content = [
+        "#!/usr/bin/env bash",
+    ],
+    is_executable = True,
+)
+
+native_binary(
+    name = "e17_binary",
+    src = ":executable",
+    out = "native_binary_bin",
+    data = [":e17_node_modules"],
+)
+
 mtree_spec(
     name = "mtree17",
     srcs = [
-        ":e17_node_modules",
+        ":e17_binary",
     ],
 )
 
@@ -546,7 +563,7 @@ assert_tar_listing(
 mtree_mutate(
     name = "resolve_symlinks",
     srcs = [
-        ":e17_node_modules",
+        ":e17_binary",
     ],
     mtree = ":mtree17",
     preserve_symlinks = True,
