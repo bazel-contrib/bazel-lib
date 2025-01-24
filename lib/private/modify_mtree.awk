@@ -68,16 +68,24 @@
 	    symlink_map[path] = $1
 	    # Resolve the symlink if it exists
 	    resolved_path = ""
-	    cmd = "readlink -f " path
+	    cmd = "readlink -f \"" path "\""
 	    cmd | getline resolved_path
 	    close(cmd)
+	    # If readlink -f fails use readlink for relative links
+	    if (resolved_path == "") {
+		cmd = "readlink \"" path "\""
+		cmd | getline resolved_path
+		close(cmd)
+	    }
+
 
 	    if (resolved_path) {
-		if (resolved_path ~ bin_dir) {
+		if (resolved_path ~ bin_dir || resolved_path ~ /\.\.\//) {
 		    # Strip down the resolved path to start from bin_dir
 		    sub("^.*" bin_dir, bin_dir, resolved_path)
-		    if (path != resolved_path) {
-			# Replace the content field with the new path
+		    # If the resolved path is different from the original path,
+		    # or if it's a relative path
+		    if (path != resolved_path || resolved_path ~ /\.\.\//) {
 		        symlink = resolved_path
 		    }
 		}
@@ -106,7 +114,12 @@ END {
 	        split(line, fields, SUBSEP)
 		field0 = fields[1]
 		resolved_path = fields[2]
-                linked_to = symlink_map[resolved_path]
+		if (resolved_path in symlink_map) {
+                   linked_to = symlink_map[resolved_path]
+	        }
+		else {
+		   linked_to = resolved_path
+	        }
                 # Adjust the line for symlink using the map we created
                 new_line = field0 " type=link link=" linked_to
                 print new_line

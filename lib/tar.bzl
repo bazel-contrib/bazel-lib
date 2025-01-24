@@ -152,7 +152,7 @@ def mtree_mutate(
         name: name of the target, output will be `[name].mtree`.
         mtree: input mtree file, typically created by `mtree_spec`.
         srcs: list of files to resolve symlinks for.
-        preserve_symlinks: whether to preserve symlinks in the tar.
+        preserve_symlinks: `EXPERIMENTAL!` We may remove or change it at any point without further notice. Flag to determine whether to preserve symlinks in the tar.
         strip_prefix: prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.
         package_dir: directory prefix to add to all paths in the tar.
         mtime: new modification time for all entries.
