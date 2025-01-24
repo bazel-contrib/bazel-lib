@@ -75,6 +75,23 @@ To update *only* this file, run:
     bazel run //a/b/c:write_foo
 ```
 
+You can also add a more customized error message using the `diff_test_failure_message` argument:
+
+```starlark
+write_source_file(
+    name = "write_foo",
+    out_file = "foo.json",
+    in_file = ":generated-foo",
+    diff_test_failure_message = "Failed to build Foo; please run {{TARGET}} to update."
+)
+```
+
+A test failure from `foo.json` being out of date will then yield:
+
+```
+Failed to build Foo; please run //a/b/c:write_foo to update.
+```
+
 If you have many `write_source_files` targets that you want to update as a group, we recommend wrapping
 `write_source_files` in a macro that defaults `suggested_update_target` to the umbrella update target.
 
@@ -105,7 +122,8 @@ Provider for write_source_file targets
 
 <pre>
 write_source_file(<a href="#write_source_file-name">name</a>, <a href="#write_source_file-in_file">in_file</a>, <a href="#write_source_file-out_file">out_file</a>, <a href="#write_source_file-executable">executable</a>, <a href="#write_source_file-additional_update_targets">additional_update_targets</a>,
-                  <a href="#write_source_file-suggested_update_target">suggested_update_target</a>, <a href="#write_source_file-diff_test">diff_test</a>, <a href="#write_source_file-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_file-kwargs">kwargs</a>)
+                  <a href="#write_source_file-suggested_update_target">suggested_update_target</a>, <a href="#write_source_file-diff_test">diff_test</a>, <a href="#write_source_file-diff_test_failure_message">diff_test_failure_message</a>,
+                  <a href="#write_source_file-file_missing_failure_message">file_missing_failure_message</a>, <a href="#write_source_file-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_file-kwargs">kwargs</a>)
 </pre>
 
 Write a file or directory to the source tree.
@@ -127,6 +145,8 @@ To disable the exists check and up-to-date test set `diff_test` to `False`.
 | <a id="write_source_file-additional_update_targets"></a>additional_update_targets |  List of other `write_source_files` or `write_source_file` targets to call in the same run.   |  `[]` |
 | <a id="write_source_file-suggested_update_target"></a>suggested_update_target |  Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.   |  `None` |
 | <a id="write_source_file-diff_test"></a>diff_test |  Test that the source tree file or directory exist and is up to date.   |  `True` |
+| <a id="write_source_file-diff_test_failure_message"></a>diff_test_failure_message |  Text to print when the diff test fails, with templating options for relevant targets.<br><br>Substitutions are performed on the failure message, with the following substitutions being available:<br><br>`{{DEFAULT_MESSAGE}}`: Prints the default error message, listing the target(s) that   may be run to update the file(s).<br><br>`{{TARGET}}`: The target to update the individual file that does not match in the   diff test.<br><br>`{{SUGGESTED_UPDATE_TARGET}}`: The suggested_update_target if specified.   |  `"{{DEFAULT_MESSAGE}}"` |
+| <a id="write_source_file-file_missing_failure_message"></a>file_missing_failure_message |  Text to print when the output file is missing. Subject to the same substitutions as diff_test_failure_message.   |  `"{{DEFAULT_MESSAGE}}"` |
 | <a id="write_source_file-check_that_out_file_exists"></a>check_that_out_file_exists |  Test that the output file exists and print a helpful error message if it doesn't.<br><br>If `True`, the output file or directory must be in the same containing Bazel package as the target since the underlying mechanism for this check is limited to files in the same Bazel package.   |  `True` |
 | <a id="write_source_file-kwargs"></a>kwargs |  Other common named parameters such as `tags` or `visibility`   |  none |
 
@@ -141,7 +161,8 @@ Name of the generated test target if requested, otherwise None.
 
 <pre>
 write_source_files(<a href="#write_source_files-name">name</a>, <a href="#write_source_files-files">files</a>, <a href="#write_source_files-executable">executable</a>, <a href="#write_source_files-additional_update_targets">additional_update_targets</a>, <a href="#write_source_files-suggested_update_target">suggested_update_target</a>,
-                   <a href="#write_source_files-diff_test">diff_test</a>, <a href="#write_source_files-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_files-kwargs">kwargs</a>)
+                   <a href="#write_source_files-diff_test">diff_test</a>, <a href="#write_source_files-diff_test_failure_message">diff_test_failure_message</a>, <a href="#write_source_files-file_missing_failure_message">file_missing_failure_message</a>,
+                   <a href="#write_source_files-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_files-kwargs">kwargs</a>)
 </pre>
 
 Write one or more files and/or directories to the source tree.
@@ -162,6 +183,8 @@ To disable the exists check and up-to-date tests set `diff_test` to `False`.
 | <a id="write_source_files-additional_update_targets"></a>additional_update_targets |  List of other `write_source_files` or `write_source_file` targets to call in the same run.   |  `[]` |
 | <a id="write_source_files-suggested_update_target"></a>suggested_update_target |  Label of the `write_source_files` or `write_source_file` target to suggest running when files are out of date.   |  `None` |
 | <a id="write_source_files-diff_test"></a>diff_test |  Test that the source tree files and/or directories exist and are up to date.   |  `True` |
+| <a id="write_source_files-diff_test_failure_message"></a>diff_test_failure_message |  Text to print when the diff test fails, with templating options for relevant targets.<br><br>Substitutions are performed on the failure message, with the following substitutions being available:<br><br>`{{DEFAULT_MESSAGE}}`: Prints the default error message, listing the target(s) that   may be run to update the file(s).<br><br>`{{TARGET}}`: The target to update the individual file that does not match in the   diff test.<br><br>`{{SUGGESTED_UPDATE_TARGET}}`: The suggested_update_target if specified, or the   target which will update all of the files which do not match.   |  `"{{DEFAULT_MESSAGE}}"` |
+| <a id="write_source_files-file_missing_failure_message"></a>file_missing_failure_message |  Text to print when the output file is missing. Subject to the same substitutions as diff_test_failure_message.   |  `"{{DEFAULT_MESSAGE}}"` |
 | <a id="write_source_files-check_that_out_file_exists"></a>check_that_out_file_exists |  Test that each output file exists and print a helpful error message if it doesn't.<br><br>If `True`, destination files and directories must be in the same containing Bazel package as the target since the underlying mechanism for this check is limited to files in the same Bazel package.   |  `True` |
 | <a id="write_source_files-kwargs"></a>kwargs |  Other common named parameters such as `tags` or `visibility`   |  none |
 

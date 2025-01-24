@@ -128,6 +128,8 @@ write_source_file_test(
 
 write_source_file(
     name = "e_dir_test",
+    diff_test_failure_message = "\nSample failure message for {{TARGET}}. Default message:\n{{DEFAULT_MESSAGE}}",
+    file_missing_failure_message = "\nSample failure message for a missing {{TARGET}}. Default message:\n{{DEFAULT_MESSAGE}}",
     in_file = ":e_dir-desired",
     out_file = "e_dir",
 )
@@ -161,6 +163,7 @@ write_source_files(
     additional_update_targets = [
         "//lib/tests/write_source_files/subdir:macro_smoke_test",
     ],
+    diff_test_failure_message = "\nSample failure message for {{TARGET}} of {{SUGGESTED_UPDATE_TARGET}}. Default message:\n{{DEFAULT_MESSAGE}}",
     files = {
         "a2.js": ":a-desired",
         "b2.js": ":b-desired",
