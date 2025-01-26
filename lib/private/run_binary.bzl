@@ -59,6 +59,8 @@ Possible fixes:
         inputs = ctx.files.srcs + [stamp.volatile_status_file, stamp.stable_status_file]
         envs["BAZEL_STABLE_STATUS_FILE"] = stamp.stable_status_file.path
         envs["BAZEL_VOLATILE_STATUS_FILE"] = stamp.volatile_status_file.path
+    elif ctx.attr.include_runfiles:
+        inputs = ctx.files.srcs + depset(transitive = [src[DefaultInfo].default_runfiles.files for src in ctx.attr.srcs]).to_list()
     else:
         inputs = ctx.files.srcs
 
@@ -92,6 +94,7 @@ _run_binary = rule(
         "srcs": attr.label_list(
             allow_files = True,
         ),
+        "include_runfiles": attr.bool(),
         "out_dirs": attr.string_list(),
         "outs": attr.output_list(),
         "args": attr.string_list(),
@@ -111,6 +114,7 @@ def run_binary(
         outs = [],
         out_dirs = [],
         mnemonic = "RunBinary",
+        include_runfiles = False,
         progress_message = None,
         execution_requirements = None,
         use_default_shell_env = False,
@@ -179,6 +183,11 @@ def run_binary(
 
             See https://docs.bazel.build/versions/main/be/common-definitions.html#common.tags for useful keys.
 
+        include_runfiles: Whether to include runfiles in the action's inputs.
+
+            If True, the runfiles of all sources are included in the action's inputs. This is useful
+            for bundlers that need to access the runfiles of their dependencies.
+
         use_default_shell_env: Passed to the underlying ctx.actions.run.
 
             May introduce non-determinism when True; use with care!
@@ -219,6 +228,7 @@ def run_binary(
         outs = outs,
         out_dirs = out_dirs,
         mnemonic = mnemonic,
+        include_runfiles = include_runfiles,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
         use_default_shell_env = use_default_shell_env,
