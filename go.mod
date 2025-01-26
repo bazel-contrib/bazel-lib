@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/bazelbuild/rules_go v0.52.0
-	github.com/bmatcuk/doublestar/v4 v4.7.1
+	github.com/bmatcuk/doublestar/v4 v4.8.1
 	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948
 	golang.org/x/sys v0.29.0
 )
