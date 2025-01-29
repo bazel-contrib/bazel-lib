@@ -121,7 +121,7 @@ END {
 		resolved_path = fields[2]
 		if (resolved_path in symlink_map) {
                    mapped_link = symlink_map[resolved_path]
-		   linked_to = make_relative_link(field0, mapped_link)
+		   linked_to = make_relative_link(resolved_path, mapped_link)
 	        }
 		else {
                   # Already a relative path
