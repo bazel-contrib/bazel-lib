@@ -1,4 +1,9 @@
 # Edits mtree files. See the modify_mtree macro in /lib/tar.bzl.
+function make_relative_link(symlink, target) {
+    command = "realpath -s --relative-to=\"" symlink "\" \"" target "\""
+    command | getline relative
+    return relative
+}
 {
     if (strip_prefix != "") {
         if ($1 == strip_prefix) {
@@ -115,9 +120,11 @@ END {
 		field0 = fields[1]
 		resolved_path = fields[2]
 		if (resolved_path in symlink_map) {
-                   linked_to = symlink_map[resolved_path]
+                   mapped_link = symlink_map[resolved_path]
+		   linked_to = make_relative_link(field0, mapped_link)
 	        }
 		else {
+                  # Already a relative path
 		   linked_to = resolved_path
 	        }
                 # Adjust the line for symlink using the map we created
