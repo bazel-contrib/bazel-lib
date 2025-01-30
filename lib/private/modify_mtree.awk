@@ -1,9 +1,46 @@
 # Edits mtree files. See the modify_mtree macro in /lib/tar.bzl.
-function make_relative_link(symlink, target) {
-    command = "realpath -s --relative-to=\"" symlink "\" \"" target "\""
-    command | getline relative
-    return relative
+function common_sections(path1, path2, i, segments1, segments2, min_length, common_path) {
+    # Normalize paths (remove leading/trailing slashes)
+    gsub(/^\/|\/$/, "", path1)
+    gsub(/^\/|\/$/, "", path2)
+
+    # Split paths into arrays
+    split(path1, segments1, "/")
+    split(path2, segments2, "/")
+
+    # Determine the shortest path length
+    min_length = (length(segments1) < length(segments2)) ? length(segments1) : length(segments2)
+
+    # Find common sections
+    common_path = ""
+    for (i = 1; i <= min_length; i++) {
+        if (segments1[i] != segments2[i]) {
+            break
+        }
+        common_path = (common_path == "" ? segments1[i] : common_path "/" segments1[i])
+    }
+
+    return common_path
 }
+function make_relative_link(path1, path2, i, common, target, relative_path, back_steps) {
+    # Find the common path
+    common = common_sections(path1, path2)
+
+    # Remove common prefix from both paths
+    target = substr(path1, length(common) + 2)  # "+2" to remove trailing "/"
+    relative_path = substr(path2, length(common) + 2)
+
+    # Count directories to go up from path2
+    back_steps = "../"
+    split(relative_path, path2_segments, "/")
+    for (i = 1; i < length(path2_segments); i++) {
+        back_steps = back_steps "../"
+    }
+
+    # Construct the relative symlink
+    return back_steps target
+}
+
 {
     if (strip_prefix != "") {
         if ($1 == strip_prefix) {
@@ -64,6 +101,7 @@ function make_relative_link(symlink, target) {
         # See https://github.com/bazelbuild/rules_pkg/pull/609
 
         symlink = ""
+	symlink_content = ""
         if ($0 ~ /type=file/ && $0 ~ /content=/) {
             match($0, /content=[^ ]+/)
             content_field = substr($0, RSTART, RLENGTH)
@@ -92,6 +130,7 @@ function make_relative_link(symlink, target) {
 		    # or if it's a relative path
 		    if (path != resolved_path || resolved_path ~ /\.\.\//) {
 		        symlink = resolved_path
+			symlink_content = path
 		    }
 		}
 	    }
@@ -121,7 +160,8 @@ END {
 		resolved_path = fields[2]
 		if (resolved_path in symlink_map) {
                    mapped_link = symlink_map[resolved_path]
-		   linked_to = make_relative_link(resolved_path, mapped_link)
+
+		   linked_to = make_relative_link(mapped_link, field0)
 	        }
 		else {
                   # Already a relative path
