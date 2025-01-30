@@ -114,6 +114,7 @@ def write_source_files(
         suggested_update_target = None,
         diff_test = True,
         diff_test_failure_message = "{{DEFAULT_MESSAGE}}",
+        diff_args = [],
         file_missing_failure_message = "{{DEFAULT_MESSAGE}}",
         check_that_out_file_exists = True,
         **kwargs):
@@ -158,6 +159,8 @@ def write_source_files(
             `{{SUGGESTED_UPDATE_TARGET}}`: The suggested_update_target if specified, or the
               target which will update all of the files which do not match.
 
+        diff_args: Arguments to pass to the `diff` command. (Ignored on Windows)
+
         file_missing_failure_message: Text to print when the output file is missing. Subject to the same
              substitutions as diff_test_failure_message.
 
@@ -194,6 +197,7 @@ def write_source_files(
             suggested_update_target = this_suggested_update_target,
             diff_test = diff_test,
             diff_test_failure_message = diff_test_failure_message,
+            diff_args = diff_args,
             file_missing_failure_message = file_missing_failure_message,
             check_that_out_file_exists = check_that_out_file_exists,
             **kwargs
