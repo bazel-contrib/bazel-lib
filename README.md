@@ -25,9 +25,9 @@ git_override(
     remote = "git@github.com:aspect-build/bazel-lib.git",
 )
 ```
- 
-Or in `WORKSPACE`
- 
+
+Or in `WORKSPACE`:
+
 1. Replace `url = "https://github.com/bazel-contrib/bazel-lib/releases/download/v0.1.0/bazel-lib-v0.1.0.tar.gz"`
    with a GitHub-provided source archive like
    `url = "https://github.com/bazel-contrib/bazel-lib/archive/abc123.tar.gz"`
