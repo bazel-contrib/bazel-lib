@@ -2,8 +2,10 @@ load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
 load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
 load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":asserts.bzl", "assert_tar_listing", "assert_unused_listing")
+load(":node_modules_tree.bzl", "node_modules_tree")
 
 # The examples below work with both source files and generated files.
 # Here we generate a file to use in the examples.
@@ -501,5 +503,111 @@ assert_tar_listing(
         "drwxr-xr-x  0 0      0           0 Jan  1  2023 tests/tar/",
         "-rwxr-xr-x  0 0      0          21 Jan  1  2023 tests/tar/src_file",
         "-rwxr-xr-x  0 0      0           7 Jan  1  2023 tests/tar/generated.txt",
+    ],
+)
+
+#############
+# Example 17: mtree_mutate preserves symlinks
+node_modules_tree(
+    name = "e17_node_modules",
+)
+
+write_file(
+    name = "executable",
+    out = "executable.sh",
+    content = [
+        "#!/usr/bin/env bash",
+    ],
+    is_executable = True,
+)
+
+native_binary(
+    name = "e17_binary",
+    src = ":executable",
+    out = "native_binary_bin",
+    data = [":e17_node_modules"],
+)
+
+mtree_spec(
+    name = "mtree17",
+    srcs = [
+        ":e17_binary",
+    ],
+)
+
+assert_tar_listing(
+    name = "test_17_before_processing",
+    actual = ":mtree17",
+    expected = [
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/dir",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/dir/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/dir/b",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/executable.sh",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/native_binary_bin",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_repo_mapping",
+    ],
+)
+
+mtree_mutate(
+    name = "resolve_symlinks",
+    srcs = [
+        ":e17_binary",
+    ],
+    mtree = ":mtree17",
+    preserve_symlinks = True,
+)
+
+assert_tar_listing(
+    name = "test_17_after_processing",
+    actual = ":resolve_symlinks",
+    expected = [
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar",
+        "lrwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin -> ../native_binary_bin.runfiles/_main/lib/tests/tar/executable.sh",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a",
+        "lrwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/.pnpm/b@0.0.0/node_modules/a/package.json -> ../../../../a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/a",
+        "lrwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/node_modules/a/package.json -> ../../.pnpm/a@0.0.0/node_modules/a/package.json",
+        "drwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/dir",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/dir/a",
+        "lrwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/dir/b -> ../a",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/executable.sh",
+        "lrwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_main/lib/tests/tar/native_binary_bin -> ../executable.sh",
+        "-rwxr-xr-x  0 0      0           0 Jan  1  2023 lib/tests/tar/native_binary_bin.runfiles/_repo_mapping",
     ],
 )

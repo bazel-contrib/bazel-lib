@@ -55,7 +55,7 @@ TODO:
 load("@bazel_skylib//lib:types.bzl", "types")
 load("//lib:expand_template.bzl", "expand_template")
 load("//lib:utils.bzl", "propagate_common_rule_attributes")
-load("//lib/private:tar.bzl", _tar = "tar", _tar_lib = "tar_lib")
+load("//lib/private:tar.bzl", _mutate_mtree = "mtree_mutate", _tar = "tar", _tar_lib = "tar_lib")
 
 mtree_spec = rule(
     doc = "Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)",
@@ -137,6 +137,8 @@ def tar(name, mtree = "auto", stamp = 0, **kwargs):
 def mtree_mutate(
         name,
         mtree,
+        srcs = None,
+        preserve_symlinks = False,
         strip_prefix = None,
         package_dir = None,
         mtime = None,
@@ -149,6 +151,8 @@ def mtree_mutate(
     Args:
         name: name of the target, output will be `[name].mtree`.
         mtree: input mtree file, typically created by `mtree_spec`.
+        srcs: list of files to resolve symlinks for.
+        preserve_symlinks: `EXPERIMENTAL!` We may remove or change it at any point without further notice. Flag to determine whether to preserve symlinks in the tar.
         strip_prefix: prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.
         package_dir: directory prefix to add to all paths in the tar.
         mtime: new modification time for all entries.
@@ -157,23 +161,23 @@ def mtree_mutate(
         awk_script: may be overridden to change the script containing the modification logic.
         **kwargs: additional named parameters to genrule
     """
-    vars = []
-    if strip_prefix:
-        vars.append("-v strip_prefix='{}'".format(strip_prefix))
-    if package_dir:
-        vars.append("-v package_dir='{}'".format(package_dir))
-    if mtime:
-        vars.append("-v mtime='{}'".format(mtime))
-    if owner:
-        vars.append("-v owner='{}'".format(owner))
-    if ownername:
-        vars.append("-v ownername='{}'".format(ownername))
+    if preserve_symlinks and not srcs:
+        fail("preserve_symlinks requires srcs to be set in order to resolve symlinks")
 
-    native.genrule(
+    # Check if srcs is of type list
+    if srcs and not types.is_list(srcs):
+        srcs = [srcs]
+    _mutate_mtree(
         name = name,
-        srcs = [mtree],
-        outs = [name + ".mtree"],
-        cmd = "awk {} -f $(execpath {}) <$< >$@".format(" ".join(vars), awk_script),
-        tools = [awk_script],
+        mtree = mtree,
+        srcs = srcs,
+        preserve_symlinks = preserve_symlinks,
+        strip_prefix = strip_prefix,
+        package_dir = package_dir,
+        mtime = str(mtime) if mtime else None,
+        owner = owner,
+        ownername = ownername,
+        awk_script = awk_script,
+        out = "{}.mtree".format(name),
         **kwargs
     )

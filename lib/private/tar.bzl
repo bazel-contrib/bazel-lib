@@ -126,6 +126,43 @@ _mtree_attrs = {
     "srcs": attr.label_list(doc = "Files that are placed into the tar", allow_files = True),
     "out": attr.output(doc = "Resulting specification file to write"),
 }
+_mutate_mtree_attrs = {
+    "mtree": attr.label(
+        allow_single_file = True,
+        doc = "Specifies the path to the mtree file, which describes the directory structure and metadata for the tar file. Must be a single file.",
+    ),
+    "awk_script": attr.label(
+        allow_single_file = True,
+        default = "@aspect_bazel_lib//lib/private:modify_mtree.awk",
+        doc = "Path to an AWK script used to modify the mtree file. By default, it uses the modify_mtree.awk script.",
+    ),
+    "srcs": attr.label_list(
+        allow_files = True,
+        doc = "Files, directories, or other targets whose default outputs will used to create symlinks",
+    ),
+    "preserve_symlinks": attr.bool(
+        default = False,
+        doc = "If True, symbolic links in the source files are preserved in the tar file. If False, the links are resolved to their actual targets.",
+    ),
+    "strip_prefix": attr.string(
+        doc = "A prefix to strip from the paths of files and directories when they are added to the tar file.",
+    ),
+    "package_dir": attr.string(
+        doc = "Specifies a base directory within the tar file where all files will be placed. Sets the root directory for the tar contents.",
+    ),
+    "mtime": attr.string(
+        doc = "Specifies the modification time (mtime) to be applied to all files in the tar file. Used for deterministic builds.",
+    ),
+    "owner": attr.string(
+        doc = "Specifies the numeric user ID (UID) for the owner of the files in the tar archive.",
+    ),
+    "ownername": attr.string(
+        doc = "Specifies the name of the owner of the files in the tar archive. Used alongside 'owner'.",
+    ),
+    "out": attr.output(
+        doc = "The output of the mutation, a new mtree file.",
+    ),
+}
 
 def _add_compression_args(compress, args):
     if compress == "bzip2":
@@ -446,6 +483,57 @@ def _mtree_impl(ctx):
     ctx.actions.write(out, content = content)
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
+
+def _mtree_mutate_impl(ctx):
+    srcs_runfiles = [
+        src[DefaultInfo].default_runfiles.files
+        for src in ctx.attr.srcs
+    ]
+    args = ctx.actions.args()
+
+    out_mtree = ctx.outputs.out
+
+    # Use bin directory to determine if symlink is within or outside the sandbox
+    args.add("-v bin_dir={}".format(ctx.bin_dir.path))
+
+    if ctx.attr.owner:
+        args.add("-v owner={}".format(ctx.attr.owner))
+    if ctx.attr.ownername:
+        args.add("-v ownername={}".format(ctx.attr.ownername))
+    if ctx.attr.strip_prefix:
+        args.add("-v strip_prefix={}".format(ctx.attr.strip_prefix))
+    if ctx.attr.package_dir:
+        args.add("-v package_dir={}".format(ctx.attr.package_dir))
+    if ctx.attr.mtime:
+        args.add("-v mtime={}".format(ctx.attr.mtime))
+    if ctx.attr.preserve_symlinks:
+        args.add("-v preserve_symlinks=1")
+
+    inputs = ctx.files.srcs[:]
+    inputs.append(ctx.file.mtree)
+    inputs.append(ctx.file.awk_script)
+    ctx.actions.run_shell(
+        command = """
+        awk $@ -f {awk_script} {mtree} > {out_mtree}
+        """.format(
+            awk_script = ctx.file.awk_script.path,
+            mtree = ctx.file.mtree.path,
+            out_mtree = out_mtree.path,
+        ),
+        arguments = [args],
+        inputs = depset(
+            direct = inputs,
+            transitive = srcs_runfiles,
+        ),
+        outputs = [out_mtree],
+    )
+
+    return [DefaultInfo(files = depset([out_mtree]))]
+
+mtree_mutate = rule(
+    implementation = _mtree_mutate_impl,
+    attrs = _mutate_mtree_attrs,
+)
 
 tar_lib = struct(
     attrs = _tar_attrs,
