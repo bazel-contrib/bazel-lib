@@ -23,6 +23,9 @@ function common_sections(path1, path2, i, segments1, segments2, min_length, comm
     return common_path
 }
 function make_relative_link(path1, path2, i, common, target, relative_path, back_steps) {
+    # A similar starlark implementation
+    # https://github.com/bazelbuild/bazel-skylib/blob/7209de9148e98dc20425cf83747613f23d40827b/lib/paths.bzl#L217
+
     # Find the common path
     common = common_sections(path1, path2)
 
@@ -136,7 +139,8 @@ function make_relative_link(path1, path2, i, common, target, relative_path, back
 	    }
         }
 	if (symlink != "") {
-	  line_array[NR] = $1 SUBSEP resolved_path
+	  # Store the original line with the resolved path
+	  line_array[NR] = $0 SUBSEP $1 SUBSEP resolved_path
 	  }
 	else {
 	    line_array[NR] = $0  # Store other lines too, with an empty path
@@ -156,8 +160,9 @@ END {
             line = line_array[i]
             if (index(line, SUBSEP) > 0) {  # Check if this path was a symlink
 	        split(line, fields, SUBSEP)
-		field0 = fields[1]
-		resolved_path = fields[2]
+		original_line = fields[1]
+		field0 = fields[2]
+		resolved_path = fields[3]
 		if (resolved_path in symlink_map) {
                    mapped_link = symlink_map[resolved_path]
 
@@ -168,8 +173,10 @@ END {
 		   linked_to = resolved_path
 	        }
                 # Adjust the line for symlink using the map we created
-                new_line = field0 " type=link link=" linked_to
-                print new_line
+		sub(/type=[^ ]+/, "type=link", original_line)
+		sub(/content=[^ ]+/, "link=" linked_to, original_line)
+                print original_line
+
             } else {
                 # Print the original line if no symlink adjustment was needed
                 print line
