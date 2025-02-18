@@ -12,6 +12,7 @@ load(":lists_test.bzl", "lists_test_suite")
 load(":paths_test.bzl", "paths_test_suite")
 load(":strings_tests.bzl", "strings_test_suite")
 load(":utils_test.bzl", "utils_test_suite")
+load("//lib:bats.bzl", "bats_test")
 
 exports_files(["a.js"])
 
@@ -75,4 +76,31 @@ bzl_library(
     name = "generate_outputs",
     srcs = ["generate_outputs.bzl"],
     visibility = ["//visibility:public"],
+)
+
+genrule(
+  name = "coreutils",
+  toolchains = [
+    "@coreutils_toolchains//:resolved_toolchain",
+  ],
+  outs = ["coreutils_bin"],
+  cmd = "cp $(COREUTILS_BIN) $@",
+)
+
+bats_test(
+  name = "vis_encoding",
+  srcs = ["vis_encoding.bats"],
+  size = "small",
+  data = [
+    "//lib/private:vis_escape_nonascii.sed",
+    "//lib/private:unvis_canonical.sed",
+    "//lib/private:vis_canonicalize.sed",
+    ":coreutils",
+  ],
+  env = {
+    "VIS_ESCAPE_NONASCII": "$(location //lib/private:vis_escape_nonascii.sed)",
+    "UNVIS_CANONICAL": "$(location //lib/private:unvis_canonical.sed)",
+    "VIS_CANONICALIZE": "$(location //lib/private:vis_canonicalize.sed)",
+    "COREUTILS": "$(rootpath :coreutils)",
+  }
 )
