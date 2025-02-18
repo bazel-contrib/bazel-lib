@@ -125,6 +125,8 @@ s/\\0([^0-7]|$|[0-7]([^0-7]|$))/\\000\1/g
 		}
 		if b == '/' {
 			fmt.Fprintf(w, `s:\\%03[1]o:%[1]c:g%[2]c`, b, newline)
+		} else if b == '&' {
+			fmt.Fprintf(w, `s:\\%03[1]o:\%[1]c:g%[2]c`, b, newline)
 		} else {
 			fmt.Fprintf(w, `s/\\%03[1]o/%[1]c/g%[2]c`, b, newline)
 		}
