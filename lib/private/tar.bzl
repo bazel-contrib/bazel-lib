@@ -2,8 +2,6 @@
 
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("//lib:paths.bzl", "to_repository_relative_path")
-load(":strings.bzl", str_translate = "translate")
-load(":vis_escape_ascii.bzl", "VIS_ESCAPE_ASCII")
 
 TAR_TOOLCHAIN_TYPE = "@aspect_bazel_lib//lib:tar_toolchain_type"
 
@@ -381,7 +379,7 @@ def _to_rlocation_path(file, workspace):
 def _vis_encode(filename):
     # Escaping of non-ASCII bytes cannot be performed within Starlark.
     # After writing content out, a second pass is performed with vis_escape_nonascii.sed.
-    return str_translate(filename, VIS_ESCAPE_ASCII)
+    return filename.replace("\\", "\\134").replace("\n", "\\012")
 
 def _expand(file, expander, transform = to_repository_relative_path):
     expanded = expander.expand(file)

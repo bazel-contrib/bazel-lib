@@ -286,7 +286,6 @@ bzl_library(
     name = "tar",
     srcs = [
         "tar.bzl",
-        "vis_escape_ascii.bzl",
     ],
     visibility = ["//lib:__subpackages__"],
     deps = [
@@ -387,13 +386,11 @@ run_binary(
     outs = [
         "_unvis_canonical.sed",
         "_vis_canonicalize.sed",
-        "_vis_escape_ascii.bzl",
         "_vis_escape_nonascii.sed",
     ],
     args = [
         "unvis_canonical.sed=$(location _unvis_canonical.sed)",
         "vis_canonicalize.sed=$(location _vis_canonicalize.sed)",
-        "vis_escape_ascii.bzl=$(location _vis_escape_ascii.bzl)",
         "vis_escape_nonascii.sed=$(location _vis_escape_nonascii.sed)",
     ],
     tool = "//tools/gen_vis_scripts",
@@ -404,7 +401,6 @@ write_source_files(
     files = {
         "unvis_canonical.sed": ":_unvis_canonical.sed",
         "vis_canonicalize.sed": ":_vis_canonicalize.sed",
-        "vis_escape_ascii.bzl": ":_vis_escape_ascii.bzl",
         "vis_escape_nonascii.sed": ":_vis_escape_nonascii.sed",
     },
 )
