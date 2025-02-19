@@ -39,7 +39,7 @@ Upstream encoders should escape the first two in content they feed to the genera
 These gaps enable our encoder to operate on newline-delimited records of vis-encoded content.
 EOF
 
-  gsed -f "$VIS_ESCAPE_NONASCII" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gsed -f "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   # Content chosen to pass through encoder unmodified... mostly (except spaces, which must be patched up).
   cp "$BATS_TEST_TMPDIR/input" "$BATS_TEST_TMPDIR/want"
@@ -71,7 +71,7 @@ E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
 F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
 EOF
 
-  gsed -f "$VIS_ESCAPE_NONASCII" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gsed -f "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   gawk -v FS='\n' -v RS='\n\n' '
     NR == rshift(0x00, 4) + 1  { for (i = NF; i > 0x0A; i--) $(i+1) = $(i); $(0x0A+1) = "" }            # Newline gap

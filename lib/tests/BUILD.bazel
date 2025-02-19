@@ -92,13 +92,13 @@ bats_test(
   srcs = ["vis_encoding.bats"],
   size = "small",
   data = [
-    "//lib/private:vis_escape_nonascii.sed",
+    "//lib/private:vis_escape.sed",
     "//lib/private:unvis.sed",
     "//lib/private:vis_canonicalize.sed",
     ":coreutils",
   ],
   env = {
-    "VIS_ESCAPE_NONASCII": "$(location //lib/private:vis_escape_nonascii.sed)",
+    "VIS_ESCAPE": "$(location //lib/private:vis_escape.sed)",
     "UNVIS": "$(location //lib/private:unvis.sed)",
     "VIS_CANONICALIZE": "$(location //lib/private:vis_canonicalize.sed)",
     "COREUTILS": "$(rootpath :coreutils)",

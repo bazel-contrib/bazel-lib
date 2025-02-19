@@ -12,7 +12,7 @@ exports_files(
         "parse_status_file.yq",
         "unvis.sed",
         "vis_canonicalize.sed",
-        "vis_escape_nonascii.sed",
+        "vis_escape.sed",
     ],
     visibility = ["//visibility:public"],
 )
@@ -386,12 +386,12 @@ run_binary(
     outs = [
         "_unvis.sed",
         "_vis_canonicalize.sed",
-        "_vis_escape_nonascii.sed",
+        "_vis_escape.sed",
     ],
     args = [
         "unvis.sed=$(location _unvis.sed)",
         "vis_canonicalize.sed=$(location _vis_canonicalize.sed)",
-        "vis_escape_nonascii.sed=$(location _vis_escape_nonascii.sed)",
+        "vis_escape.sed=$(location _vis_escape.sed)",
     ],
     tool = "//tools/gen_vis_scripts",
 )
@@ -401,6 +401,6 @@ write_source_files(
     files = {
         "unvis.sed": ":_unvis.sed",
         "vis_canonicalize.sed": ":_vis_canonicalize.sed",
-        "vis_escape_nonascii.sed": ":_vis_escape_nonascii.sed",
+        "vis_escape.sed": ":_vis_escape.sed",
     },
 )
