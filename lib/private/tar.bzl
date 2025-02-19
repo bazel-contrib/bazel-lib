@@ -117,7 +117,7 @@ Possible values:
         values = [-1, 0, 1],
     ),
     "_compute_unused_inputs_flag": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
-    "_unvis_canonical": attr.label(allow_single_file = True, default = Label("//lib/private:unvis_canonical.sed")),
+    "_unvis": attr.label(allow_single_file = True, default = Label("//lib/private:unvis.sed")),
     "_vis_canonicalize": attr.label(allow_single_file = True, default = Label("//lib/private:vis_canonicalize.sed")),
     "_vis_escape_nonascii": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape_nonascii.sed")),
 }
@@ -250,7 +250,7 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
             prunable_inputs,
             keep_inputs,
             ctx.file.mtree,
-            ctx.file._unvis_canonical,
+            ctx.file._unvis,
             ctx.file._vis_canonicalize,
             ctx.file._vis_escape_nonascii,
         ],
@@ -265,7 +265,7 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
                     )                                                                         \\
                     <(sed -f "$VIS_ESCAPE_NONASCII" "$KEEP_INPUTS")                           \\
                 )                                                                             \\
-                | sed -f "$UNVIS_CANONICAL"                                                   \\
+                | sed -f "$UNVIS"                                                             \\
                 > "$UNUSED_INPUTS"
         ''',
         env = {
@@ -274,7 +274,7 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
             "KEEP_INPUTS": keep_inputs.path,
             "MTREE": ctx.file.mtree.path,
             "UNUSED_INPUTS": unused_inputs.path,
-            "UNVIS_CANONICAL": ctx.file._unvis_canonical.path,
+            "UNVIS": ctx.file._unvis.path,
             "VIS_CANONICALIZE": ctx.file._vis_canonicalize.path,
             "VIS_ESCAPE_NONASCII": ctx.file._vis_escape_nonascii.path,
         },

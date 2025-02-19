@@ -10,7 +10,7 @@ exports_files(
         "modify_mtree.awk",
         "parse_status_file.jq",
         "parse_status_file.yq",
-        "unvis_canonical.sed",
+        "unvis.sed",
         "vis_canonicalize.sed",
         "vis_escape_nonascii.sed",
     ],
@@ -384,12 +384,12 @@ bzl_library(
 run_binary(
     name = "run_gen_vis_scripts",
     outs = [
-        "_unvis_canonical.sed",
+        "_unvis.sed",
         "_vis_canonicalize.sed",
         "_vis_escape_nonascii.sed",
     ],
     args = [
-        "unvis_canonical.sed=$(location _unvis_canonical.sed)",
+        "unvis.sed=$(location _unvis.sed)",
         "vis_canonicalize.sed=$(location _vis_canonicalize.sed)",
         "vis_escape_nonascii.sed=$(location _vis_escape_nonascii.sed)",
     ],
@@ -399,7 +399,7 @@ run_binary(
 write_source_files(
     name = "write_vis_scripts",
     files = {
-        "unvis_canonical.sed": ":_unvis_canonical.sed",
+        "unvis.sed": ":_unvis.sed",
         "vis_canonicalize.sed": ":_vis_canonicalize.sed",
         "vis_escape_nonascii.sed": ":_vis_escape_nonascii.sed",
     },

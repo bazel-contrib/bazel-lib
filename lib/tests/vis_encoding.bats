@@ -108,7 +108,7 @@ All text that is not an 3-digit octal escape sequence is passed through the deco
 This includes backslashes (\), even those part of special forms sometimes recognized elsewhere (e.g. \n, \r, \v, \0, etc.).
 EOF
 
-  gsed -f "$UNVIS_CANONICAL" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
+  gsed -f "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
 
   # Content chosen to pass through encoder unmodified.
   cp "$BATS_TEST_TMPDIR/input" "$BATS_TEST_TMPDIR/want"
@@ -137,7 +137,7 @@ E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
 F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
 EOF
 
-  gsed -f "$UNVIS_CANONICAL" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gsed -f "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   # Decoded content contains unprintable control characters. Diff the hexdump instead.
   od -Ax -tx1 <"$BATS_TEST_TMPDIR/output.raw" >"$BATS_TEST_TMPDIR/output"
@@ -186,7 +186,7 @@ EOF
 \360 \361 \362 \363 \364 \365 \366 \367 \370 \371 \372 \373 \374 \375 \376 \377
 EOF
 
-  gsed -f "$UNVIS_CANONICAL" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gsed -f "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   # Decoded content contains unprintable control characters. Diff the hexdump instead.
   od -Ax -tx1 <"$BATS_TEST_TMPDIR/output.raw" >"$BATS_TEST_TMPDIR/output"

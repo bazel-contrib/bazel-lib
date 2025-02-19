@@ -93,13 +93,13 @@ bats_test(
   size = "small",
   data = [
     "//lib/private:vis_escape_nonascii.sed",
-    "//lib/private:unvis_canonical.sed",
+    "//lib/private:unvis.sed",
     "//lib/private:vis_canonicalize.sed",
     ":coreutils",
   ],
   env = {
     "VIS_ESCAPE_NONASCII": "$(location //lib/private:vis_escape_nonascii.sed)",
-    "UNVIS_CANONICAL": "$(location //lib/private:unvis_canonical.sed)",
+    "UNVIS": "$(location //lib/private:unvis.sed)",
     "VIS_CANONICALIZE": "$(location //lib/private:vis_canonicalize.sed)",
     "COREUTILS": "$(rootpath :coreutils)",
   }
