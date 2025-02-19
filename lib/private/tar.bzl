@@ -187,7 +187,7 @@ def _is_unprunable(file):
     p = file.path
     return p[0].isspace() or p[-1].isspace() or "\n" in p or "\r" in p
 
-def _fmt_pruanble_inputs_line(file):
+def _fmt_prunable_inputs_line(file):
     if _is_unprunable(file):
         return None
     return _vis_encode(file.path)
@@ -221,7 +221,7 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
             .set_param_file_format("multiline")
             .add_all(
             srcs,
-            map_each = _fmt_pruanble_inputs_line,
+            map_each = _fmt_prunable_inputs_line,
         ),
     )
     ctx.actions.write(
