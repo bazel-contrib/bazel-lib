@@ -462,7 +462,7 @@ def _mtree_impl(ctx):
             "UNESCAPED": unescaped.path,
             "OUT": out.path,
         },
-        mnemonic = "EscapeNonAscii",
+        mnemonic = "VisEscape",
     )
 
     return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
