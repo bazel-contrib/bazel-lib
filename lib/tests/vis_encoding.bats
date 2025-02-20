@@ -26,13 +26,14 @@ paste() {
 
 @test "vis encode passthrough text" {
   cat <<'EOF' >"$BATS_TEST_TMPDIR/input"
-Newlines (\n), backslahes (\\), and graphical ASCII ([[:graph:]]) characters are passed through unencoded.
-Upstream encoders should escape the first two in content they feed to the general encoder.
+Newlines (\n), backslahes (\\), spaces (\s), and graphical ASCII ([[:graph:]]) characters are passed through unencoded.
+Upstream encoders should escape the first three in content they feed to the general encoder.
 
     Newline   => \012
     Backslash => \134
+    Space     => \040
 
-These gaps enable our encoder to operate on newline-delimited records of vis-encoded content.
+These gaps enable our encoder to operate on newline-delimited records of space-delimited fields of vis-encoded content.
 EOF
 
   gawk -bf "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
