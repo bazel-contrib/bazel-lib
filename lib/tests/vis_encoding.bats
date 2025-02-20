@@ -6,9 +6,8 @@
 
 # Try to use utilities from toolchains and avoid dependencies on system utilities as much as possible.
 # This gives us the greatest chance at consistency across platforms.
-gawk() {
-  # TODO: from toolchain
-  /opt/homebrew/bin/gawk "$@"
+basenc() {
+  "$COREUTILS" basenc "$@"
 }
 cat() {
   "$COREUTILS" cat "$@"
@@ -23,17 +22,18 @@ diff() {
   # No toolchain diff tool available; rely on system version. `diff` is part of POSIX; it should be available.
   $(which diff) "$@"
 }
-tr() {
-  "$COREUTILS" tr "$@"
-}
-basenc() {
-  "$COREUTILS" basenc "$@"
+gawk() {
+  # TODO: from toolchain
+  /opt/homebrew/bin/gawk "$@"
 }
 od() {
   "$COREUTILS" od "$@"
 }
 paste() {
   "$COREUTILS" paste "$@"
+}
+tr() {
+  "$COREUTILS" tr "$@"
 }
 
 @test "vis encode passthrough text" {
