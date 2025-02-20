@@ -20,7 +20,7 @@ cut() {
 }
 diff() {
   # No toolchain diff tool available; rely on system version. `diff` is part of POSIX; it should be available.
-  $(which diff) "$@"
+  "$(which diff)" "$@"
 }
 gawk() {
   # TODO: from toolchain
