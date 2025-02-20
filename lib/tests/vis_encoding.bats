@@ -4,6 +4,8 @@
 # For this reason, paragraph-delimited records of newline-delimited fields is a natural framing structure that will
 # be preserved through the encoding/decoding/canonicalizing transformation.
 
+# Try to use utilities from toolchains and avoid dependencies on system utilities as much as possible.
+# This gives us the greatest chance at consistency across platforms.
 gawk() {
   # TODO: from toolchain
   /opt/homebrew/bin/gawk "$@"
