@@ -8,10 +8,6 @@ gawk() {
   # TODO: from toolchain
   /opt/homebrew/bin/gawk "$@"
 }
-gsed() {
-  # TODO: replace with AWK
-  /opt/homebrew/bin/gsed "$@"
-}
 cat() {
   "$COREUTILS" cat "$@"
 }
@@ -39,7 +35,7 @@ Upstream encoders should escape the first two in content they feed to the genera
 These gaps enable our encoder to operate on newline-delimited records of vis-encoded content.
 EOF
 
-  gsed -f "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
+  gawk -bf "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
 
   # Content chosen to pass through encoder unmodified.
   cp "$BATS_TEST_TMPDIR/input" "$BATS_TEST_TMPDIR/want"
@@ -68,7 +64,7 @@ E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
 F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
 EOF
 
-  gsed -f "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gawk -bf "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   gawk -v FS='\n' -v RS='\n\n' '
     NR == rshift(0x00, 4) + 1  { for (i = NF; i > 0x0A; i--) $(i+1) = $(i); $(0x0A+1) = "" }            # Newline gap
@@ -105,7 +101,7 @@ All text that is not an 3-digit octal escape sequence is passed through the deco
 This includes backslashes (\), even those part of special forms sometimes recognized elsewhere (e.g. \n, \r, \v, \0, etc.).
 EOF
 
-  gsed -f "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
+  gawk -bf "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
 
   # Content chosen to pass through encoder unmodified.
   cp "$BATS_TEST_TMPDIR/input" "$BATS_TEST_TMPDIR/want"
@@ -134,7 +130,7 @@ E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
 F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
 EOF
 
-  gsed -f "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gawk -bf "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   # Decoded content contains unprintable control characters. Diff the hexdump instead.
   od -Ax -tx1 <"$BATS_TEST_TMPDIR/output.raw" >"$BATS_TEST_TMPDIR/output"
@@ -183,7 +179,7 @@ EOF
 \360 \361 \362 \363 \364 \365 \366 \367 \370 \371 \372 \373 \374 \375 \376 \377
 EOF
 
-  gsed -f "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gawk -bf "$UNVIS" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   # Decoded content contains unprintable control characters. Diff the hexdump instead.
   od -Ax -tx1 <"$BATS_TEST_TMPDIR/output.raw" >"$BATS_TEST_TMPDIR/output"
@@ -233,7 +229,7 @@ EOF
 EOF
   gawk -v OFS='\n' -v ORS='\n\n' '{ $1 = $1; print }' <"$BATS_TEST_TMPDIR/input.table" >"$BATS_TEST_TMPDIR/input"
 
-  gsed -Ef "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gawk -bf "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   gawk -v FS='\n' -v RS='\n\n' '
     { for (i = 1; i <= NF; i++) printf "%4s%s", $(i), i == NF ? ORS : OFS }  # Emit table with fixed-width columns.
@@ -256,7 +252,7 @@ EOF
 \160 \161 \162 \163 \164 \165 \166 \167 \170 \171 \172 \173 \174 \175 \176 
 EOF
 
-  gsed -Ef "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gawk -bf "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   gawk -v FS='\n' -v RS='\n\n' '
     NR == rshift(0x20 - 0x20, 4) + 1  { for (i = NF; i > 0x00; i--) $(i+1) = $(i); $(0x00+1) = "" }            # Space gap
@@ -298,7 +294,7 @@ E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
 F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
 EOF
 
-  gsed -Ef "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gawk -bf "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
 
   gawk -v FS='\n' -v RS='\n\n' '
     NR == rshift(0x00, 4) + 1  { for (i = NF; i > 0x0A; i--) $(i+1) = $(i); $(0x0A+1) = "" }            # Newline gap
@@ -344,7 +340,7 @@ EOF
 EOF
   cut -f1 <"$BATS_TEST_TMPDIR/input_want" >"$BATS_TEST_TMPDIR/input"
 
-  gsed -Ef "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
+  gawk -bf "$VIS_CANONICALIZE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
 
   paste "$BATS_TEST_TMPDIR/input" "$BATS_TEST_TMPDIR/output" >"$BATS_TEST_TMPDIR/input_output"
 

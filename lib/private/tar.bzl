@@ -117,15 +117,15 @@ Possible values:
         values = [-1, 0, 1],
     ),
     "_compute_unused_inputs_flag": attr.label(default = Label("//lib:tar_compute_unused_inputs")),
-    "_unvis": attr.label(allow_single_file = True, default = Label("//lib/private:unvis.sed")),
-    "_vis_canonicalize": attr.label(allow_single_file = True, default = Label("//lib/private:vis_canonicalize.sed")),
-    "_vis_escape": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape.sed")),
+    "_unvis": attr.label(allow_single_file = True, default = Label("//lib/private:unvis.gawk")),
+    "_vis_canonicalize": attr.label(allow_single_file = True, default = Label("//lib/private:vis_canonicalize.gawk")),
+    "_vis_escape": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape.gawk")),
 }
 
 _mtree_attrs = {
     "srcs": attr.label_list(doc = "Files that are placed into the tar", allow_files = True),
     "out": attr.output(doc = "Resulting specification file to write"),
-    "_vis_escape": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape.sed")),
+    "_vis_escape": attr.label(allow_single_file = True, default = Label("//lib/private:vis_escape.gawk")),
 }
 
 def _add_compression_args(compress, args):
@@ -256,16 +256,16 @@ def _configured_unused_inputs_file(ctx, srcs, keep):
         ],
         tools = [coreutils],
         command = '''
-            "$COREUTILS" join -v 1                                                 \\
-                <(sed -f "$VIS_ESCAPE" "$PRUNABLE_INPUTS" | "$COREUTILS" sort -u)  \\
-                <("$COREUTILS" sort -u                                             \\
-                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE"                       \\
-                        | "$COREUTILS" cut -d'=' -f 2-                             \\
-                        | sed -Ef "$VIS_CANONICALIZE"                              \\
-                    )                                                              \\
-                    <(sed -f "$VIS_ESCAPE" "$KEEP_INPUTS")                         \\
-                )                                                                  \\
-                | sed -f "$UNVIS"                                                  \\
+            "$COREUTILS" join -v 1                                                                     \\
+                <(/opt/homebrew/bin/gawk -bf "$VIS_ESCAPE" "$PRUNABLE_INPUTS" | "$COREUTILS" sort -u)  \\
+                <("$COREUTILS" sort -u                                                                 \\
+                    <(grep -o '\\bcontents\\?=\\S*' "$MTREE"                                           \\
+                        | "$COREUTILS" cut -d'=' -f 2-                                                 \\
+                        | /opt/homebrew/bin/gawk -bf "$VIS_CANONICALIZE"                               \\
+                    )                                                                                  \\
+                    <(/opt/homebrew/bin/gawk -bf "$VIS_ESCAPE" "$KEEP_INPUTS")                         \\
+                )                                                                                      \\
+                | /opt/homebrew/bin/gawk -bf "$UNVIS"                                                  \\
                 > "$UNUSED_INPUTS"
         ''',
         env = {
@@ -455,7 +455,7 @@ def _mtree_impl(ctx):
     ctx.actions.run_shell(
         outputs = [out],
         inputs = [unescaped, ctx.file._vis_escape],
-        command = 'sed -f "$VIS_ESCAPE" "$UNESCAPED" > "$OUT"',
+        command = '/opt/homebrew/bin/gawk -bf "$VIS_ESCAPE" "$UNESCAPED" > "$OUT"',
         env = {
             "VIS_ESCAPE": ctx.file._vis_escape.path,
             "UNESCAPED": unescaped.path,

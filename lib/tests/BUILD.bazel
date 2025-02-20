@@ -92,15 +92,15 @@ bats_test(
   srcs = ["vis_encoding.bats"],
   size = "small",
   data = [
-    "//lib/private:vis_escape.sed",
-    "//lib/private:unvis.sed",
-    "//lib/private:vis_canonicalize.sed",
+    "//lib/private:vis_escape.gawk",
+    "//lib/private:unvis.gawk",
+    "//lib/private:vis_canonicalize.gawk",
     ":coreutils",
   ],
   env = {
-    "VIS_ESCAPE": "$(location //lib/private:vis_escape.sed)",
-    "UNVIS": "$(location //lib/private:unvis.sed)",
-    "VIS_CANONICALIZE": "$(location //lib/private:vis_canonicalize.sed)",
+    "VIS_ESCAPE": "$(location //lib/private:vis_escape.gawk)",
+    "UNVIS": "$(location //lib/private:unvis.gawk)",
+    "VIS_CANONICALIZE": "$(location //lib/private:vis_canonicalize.gawk)",
     "COREUTILS": "$(rootpath :coreutils)",
   }
 )
