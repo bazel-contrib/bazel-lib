@@ -17,6 +17,10 @@ cp() {
 cut() {
   "$COREUTILS" cut "$@"
 }
+diff() {
+  # No toolchain diff tool available; rely on system version. `diff` is part of POSIX; it should be available.
+  diff "$@"
+}
 tr() {
   "$COREUTILS" tr "$@"
 }
