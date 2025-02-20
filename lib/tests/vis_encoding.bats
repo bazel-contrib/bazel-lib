@@ -11,6 +11,12 @@ gawk() {
 cat() {
   "$COREUTILS" cat "$@"
 }
+cp() {
+  "$COREUTILS" cp "$@"
+}
+cut() {
+  "$COREUTILS" cut "$@"
+}
 tr() {
   "$COREUTILS" tr "$@"
 }
