@@ -378,8 +378,8 @@ def _to_rlocation_path(file, workspace):
 
 def _vis_encode(filename):
     # Escaping of non-ASCII bytes cannot be performed within Starlark.
-    # After writing content out, a second pass is performed with vis_escape.sed.
-    return filename.replace("\\", "\\134").replace("\n", "\\012")
+    # After writing content out, a second pass is performed with vis_escape.gawk.
+    return filename.replace("\\", "\\134").replace("\n", "\\012").replace(" ", "\\040")
 
 def _expand(file, expander, transform = to_repository_relative_path):
     expanded = expander.expand(file)

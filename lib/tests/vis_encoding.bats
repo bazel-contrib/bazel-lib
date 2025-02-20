@@ -39,13 +39,10 @@ Upstream encoders should escape the first two in content they feed to the genera
 These gaps enable our encoder to operate on newline-delimited records of vis-encoded content.
 EOF
 
-  gsed -f "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output.raw"
+  gsed -f "$VIS_ESCAPE" <"$BATS_TEST_TMPDIR/input" >"$BATS_TEST_TMPDIR/output"
 
-  # Content chosen to pass through encoder unmodified... mostly (except spaces, which must be patched up).
+  # Content chosen to pass through encoder unmodified.
   cp "$BATS_TEST_TMPDIR/input" "$BATS_TEST_TMPDIR/want"
-
-  # Spaces _do_ get escaped; undo that so that text under comparison remains human-friendly.
-  gawk '{ gsub(/[\\]040/, " "); print }' <"$BATS_TEST_TMPDIR/output.raw" >"$BATS_TEST_TMPDIR/output"
 
   cd "$BATS_TEST_TMPDIR"
   diff -u want output
@@ -82,7 +79,7 @@ EOF
   cat <<'EOF' >"$BATS_TEST_TMPDIR/want"
 \000 \001 \002 \003 \004 \005 \006 \007 \010 \011      \013 \014 \015 \016 \017
 \020 \021 \022 \023 \024 \025 \026 \027 \030 \031 \032 \033 \034 \035 \036 \037
-\040    !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
+        !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
    0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
    @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
    P    Q    R    S    T    U    V    W    X    Y    Z    [         ]    ^    _
