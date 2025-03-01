@@ -36,7 +36,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/crate-ci/typos
-    rev: v1.29.5
+    rev: v1.30.0
     hooks:
       - id: typos
         exclude: |
