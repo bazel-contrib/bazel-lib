@@ -1,5 +1,7 @@
 "Provide access to a BSD tar"
 
+load(":utf8_environment.bzl", "Utf8EnvironmentInfo")
+
 BSDTAR_PLATFORMS = {
     "darwin_amd64": struct(
         compatible_with = [
@@ -87,7 +89,10 @@ bsdtar_binary_repo = repository_rule(
 TarInfo = provider(
     doc = "Provide info for executing BSD tar",
     fields = {
-        "binary": "bsdtar executable",
+        # environment appears on the toolchain since it's platform-specific, and we want to pair it with the tool.
+        # See https://github.com/aspect-build/rules_js/issues/2039
+        "default_env": "environment variables which should be set when spawning tar, to ensure reproducible results",
+        "binary": "tar executable",
     },
 )
 
@@ -104,6 +109,7 @@ def _tar_toolchain_impl(ctx):
         files = depset(ctx.files.binary + ctx.files.files),
     )
     tarinfo = TarInfo(
+        default_env = ctx.attr._utf8_environment[Utf8EnvironmentInfo].environment,
         binary = binary,
     )
 
@@ -124,6 +130,10 @@ tar_toolchain = rule(
             doc = "a command to find on the system path",
             allow_files = True,
             executable = True,
+            cfg = "exec",
+        ),
+        "_utf8_environment": attr.label(
+            default = ":utf8_environment",
             cfg = "exec",
         ),
         "files": attr.label_list(allow_files = True),
