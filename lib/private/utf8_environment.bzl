@@ -40,7 +40,7 @@ Utf8EnvironmentInfo = provider(
 _LOCALE_VAR = "LC_ALL"
 
 # The default UTF-8 locale on all recent Linux distributions. It is also available in Cygwin and
-# MSYS2, but doesn't matter for determining the JVM's platform encoding on Windows, which always
+# MSYS2, but doesn't matter for determining the bsdtar encoding on Windows, which always
 # uses the active code page.
 _DEFAULT = "C.UTF-8"
 
