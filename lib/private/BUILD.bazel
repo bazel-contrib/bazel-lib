@@ -282,7 +282,10 @@ bzl_library(
     name = "tar_toolchain",
     srcs = ["tar_toolchain.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = [":repo_utils"],
+    deps = [
+        "utf8_environment.bzl",
+        ":repo_utils",
+    ],
 )
 
 bzl_library(

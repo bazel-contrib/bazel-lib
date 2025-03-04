@@ -90,7 +90,8 @@ TarInfo = provider(
     doc = "Provide info for executing BSD tar",
     fields = {
         # environment appears on the toolchain since it's platform-specific, and we want to pair it with the tool.
-        # See https://github.com/aspect-build/rules_js/issues/2039
+        # Currently known to be required only for the extract mode; see
+        # https://github.com/bazelbuild/bazel-central-registry/issues/2256
         "default_env": "environment variables which should be set when spawning tar, to ensure reproducible results",
         "binary": "tar executable",
     },
