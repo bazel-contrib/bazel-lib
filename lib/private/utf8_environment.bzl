@@ -19,8 +19,6 @@
 Determines the environment required for actions to support UTF-8.
 """
 
-visibility("private")
-
 Utf8EnvironmentInfo = provider(
     doc = "The environment required for actions to support UTF-8.",
     fields = {
@@ -35,8 +33,9 @@ Utf8EnvironmentInfo = provider(
 # > the classification of characters (for example, alpha, digit, and so on),
 # > and the behavior of character classes.
 #
-# However libarchive only looks for LC_ALL
+# However libarchive only looks for LC_ALL, otherwise it spams warnings like "tar: Failed to set default locale"
 # https://github.com/libarchive/libarchive/blob/65196fdd1a385f22114f245a9002ee8dc899f2c4/tar/bsdtar.c#L192
+# Docs for LC_ALL:
 # > Overrides the value of the LANG environment variable and the values of any other LC_* environment variables.
 _LOCALE_VAR = "LC_ALL"
 
