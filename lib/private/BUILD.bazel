@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("//lib:utils.bzl", "is_bazel_7_or_greater")
+load(":utf8_environment.bzl", "utf8_environment")
 
 exports_files(
     [
@@ -15,6 +16,11 @@ exports_files(
 exports_files(
     glob(["*.bzl"]),
     visibility = ["//lib/private/docs:__pkg__"],
+)
+
+utf8_environment(
+    name = "utf8_environment",
+    visibility = ["//visibility:public"],
 )
 
 bzl_library(
@@ -276,7 +282,10 @@ bzl_library(
     name = "tar_toolchain",
     srcs = ["tar_toolchain.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = [":repo_utils"],
+    deps = [
+        "utf8_environment.bzl",
+        ":repo_utils",
+    ],
 )
 
 bzl_library(
