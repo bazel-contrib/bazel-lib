@@ -20,7 +20,7 @@ exports_files(
 
 utf8_environment(
     name = "utf8_environment",
-    visibility = ["//visibility:private"],
+    visibility = ["//visibility:public"],
 )
 
 bzl_library(
