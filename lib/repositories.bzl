@@ -5,6 +5,7 @@ load("//lib/private:bats_toolchain.bzl", "BATS_ASSERT_VERSIONS", "BATS_CORE_TEMP
 load("//lib/private:copy_directory_toolchain.bzl", "COPY_DIRECTORY_PLATFORMS", "copy_directory_platform_repo", "copy_directory_toolchains_repo")
 load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFORMS", "copy_to_directory_platform_repo", "copy_to_directory_toolchains_repo")
 load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION")
+load("//lib/private:diff_test_toolchain.bzl", "DIFFUTILS_PLATFORMS", "diffutils_platform_repo", "diffutils_toolchains_repo")
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
@@ -334,6 +335,29 @@ def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITOR
         user_repository_name = name,
     )
 
+DEFAULT_DIFFUTILS_REPOSITORY = "diffutils"
+
+def register_diffutils_toolchains(name = DEFAULT_DIFFUTILS_REPOSITORY, register = True):
+    """Registers expand_template toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    for [platform, _] in DIFFUTILS_PLATFORMS.items():
+        diffutils_platform_repo(
+            name = "%s_%s" % (name, platform),
+            platform = platform,
+        )
+        if register:
+            native.register_toolchains("@%s_%s//:diffutils_toolchain" % (name, platform))
+
+    diffutils_toolchains_repo(
+        name = "%s_toolchains" % name,
+        user_repository_name = name,
+    )
+
 # buildifier: disable=unnamed-macro
 def aspect_bazel_lib_register_toolchains():
     """Register all bazel-lib toolchains at their default versions.
@@ -350,3 +374,4 @@ def aspect_bazel_lib_register_toolchains():
     register_tar_toolchains()
     register_zstd_toolchains()
     register_bats_toolchains()
+    register_diffutils_toolchains()
