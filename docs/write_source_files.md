@@ -123,7 +123,8 @@ Provider for write_source_file targets
 <pre>
 write_source_file(<a href="#write_source_file-name">name</a>, <a href="#write_source_file-in_file">in_file</a>, <a href="#write_source_file-out_file">out_file</a>, <a href="#write_source_file-executable">executable</a>, <a href="#write_source_file-additional_update_targets">additional_update_targets</a>,
                   <a href="#write_source_file-suggested_update_target">suggested_update_target</a>, <a href="#write_source_file-diff_test">diff_test</a>, <a href="#write_source_file-diff_test_failure_message">diff_test_failure_message</a>,
-                  <a href="#write_source_file-file_missing_failure_message">file_missing_failure_message</a>, <a href="#write_source_file-diff_args">diff_args</a>, <a href="#write_source_file-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_file-kwargs">kwargs</a>)
+                  <a href="#write_source_file-file_missing_failure_message">file_missing_failure_message</a>, <a href="#write_source_file-diff_args">diff_args</a>, <a href="#write_source_file-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_file-verbosity">verbosity</a>,
+                  <a href="#write_source_file-kwargs">kwargs</a>)
 </pre>
 
 Write a file or directory to the source tree.
@@ -149,6 +150,7 @@ To disable the exists check and up-to-date test set `diff_test` to `False`.
 | <a id="write_source_file-file_missing_failure_message"></a>file_missing_failure_message |  Text to print when the output file is missing. Subject to the same substitutions as diff_test_failure_message.   |  `"{{DEFAULT_MESSAGE}}"` |
 | <a id="write_source_file-diff_args"></a>diff_args |  Arguments to pass to the `diff` command. (Ignored on Windows)   |  `[]` |
 | <a id="write_source_file-check_that_out_file_exists"></a>check_that_out_file_exists |  Test that the output file exists and print a helpful error message if it doesn't.<br><br>If `True`, the output file or directory must be in the same containing Bazel package as the target since the underlying mechanism for this check is limited to files in the same Bazel package.   |  `True` |
+| <a id="write_source_file-verbosity"></a>verbosity |  Verbosity of message when the copy target is run. One of `full`, `short`, `quiet`.   |  `"full"` |
 | <a id="write_source_file-kwargs"></a>kwargs |  Other common named parameters such as `tags` or `visibility`   |  none |
 
 **RETURNS**

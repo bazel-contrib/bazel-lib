@@ -24,6 +24,7 @@ def write_source_file(
         file_missing_failure_message = "{{DEFAULT_MESSAGE}}",
         diff_args = [],
         check_that_out_file_exists = True,
+        verbosity = "full",
         **kwargs):
     """Write a file or directory to the source tree.
 
@@ -74,6 +75,8 @@ def write_source_file(
             If `True`, the output file or directory must be in the same containing Bazel package as the target since the underlying mechanism
             for this check is limited to files in the same Bazel package.
 
+        verbosity: Verbosity of message when the copy target is run. One of `full`, `short`, `quiet`.
+
         **kwargs: Other common named parameters such as `tags` or `visibility`
 
     Returns:
@@ -104,6 +107,7 @@ def write_source_file(
         out_file = str(out_file) if out_file else None,
         executable = executable,
         additional_update_targets = additional_update_targets,
+        verbosity = verbosity,
         **kwargs
     )
 
@@ -206,6 +210,9 @@ _write_source_file_attrs = {
         mandatory = False,
         providers = [WriteSourceFileInfo],
     ),
+    "verbosity": attr.string(
+        values = ["full", "short", "quiet"],
+    ),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     "_macos_constraint": attr.label(default = "@platforms//os:macos"),
 }
@@ -241,6 +248,15 @@ fi"""]
             # Remove execute/search bit recursively from files bit not directories: https://superuser.com/a/434418
             executable_dir = "chmod -R -x+X \"$out\""
 
+    progress_message_dir = ""
+    progress_message_file = ""
+    if ctx.attr.verbosity == "full":
+        progress_message_dir = "echo \"Copying directory $in to $out in $PWD\""
+        progress_message_file = "echo \"Copying file $in to $out in $PWD\""
+    elif ctx.attr.verbosity == "short":
+        progress_message_dir = "echo \"Updating directory $out\""
+        progress_message_file = "echo \"Updating file $out\""
+
     for in_path, out_path in paths:
         contents.append("""
 in=$runfiles_dir/{in_path}
@@ -248,7 +264,7 @@ out={out_path}
 
 mkdir -p "$(dirname "$out")"
 if [[ -f "$in" ]]; then
-    echo "Copying file $in to $out in $PWD"
+    {progress_message_file}
     # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
     chmod -R +w "$out" > /dev/null 2>&1 || true
     rm -Rf "$out"
@@ -258,7 +274,7 @@ if [[ -f "$in" ]]; then
     # cp should make the file not-executable but set the desired execute bit in both cases as a defense in depth
     {executable_file}
 else
-    echo "Copying directory $in to $out in $PWD"
+    {progress_message_dir}
     # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
     chmod -R +w "$out" > /dev/null 2>&1 || true
     rm -Rf "$out"/{{*,.[!.]*}}
@@ -272,6 +288,8 @@ fi
             out_path = out_path,
             executable_file = executable_file,
             executable_dir = executable_dir,
+            progress_message_dir = progress_message_dir,
+            progress_message_file = progress_message_file,
         ))
 
     contents.extend([
@@ -308,6 +326,12 @@ if defined BUILD_WORKSPACE_DIRECTORY (
     cd %BUILD_WORKSPACE_DIRECTORY%
 )"""]
 
+    progress_message = ""
+    if ctx.attr.verbosity == "full":
+        progress_message = "echo Copying %in% to %out% in %cd%"
+    elif ctx.attr.verbosity == "short":
+        progress_message = "echo Updating %out%"
+
     for in_path, out_path in paths:
         contents.append("""
 set in=%runfiles_dir%\\{in_path}
@@ -321,7 +345,7 @@ if not defined BUILD_WORKSPACE_DIRECTORY (
     del %out%
 )
 
-echo Copying %in% to %out% in %cd%
+{progress_message}
 
 if exist "%in%\\*" (
     mkdir "%out%" >NUL 2>NUL
@@ -329,7 +353,11 @@ if exist "%in%\\*" (
 ) else (
     copy %in% %out% >NUL
 )
-""".format(in_path = in_path.replace("/", "\\"), out_path = out_path.replace("/", "\\")))
+""".format(
+            in_path = in_path.replace("/", "\\"),
+            out_path = out_path.replace("/", "\\"),
+            progress_message = progress_message,
+        ))
 
     contents.extend([
         "cd %runfiles_dir%",
