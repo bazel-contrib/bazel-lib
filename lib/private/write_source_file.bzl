@@ -75,7 +75,7 @@ def write_source_file(
             If `True`, the output file or directory must be in the same containing Bazel package as the target since the underlying mechanism
             for this check is limited to files in the same Bazel package.
 
-        verbosity: Verbosity of message being when the copy target is run. One of `full`, `brief`, `quiet`.
+        verbosity: Verbosity of message being when the copy target is run. One of `full`, `short`, `quiet`.
 
         **kwargs: Other common named parameters such as `tags` or `visibility`
 
