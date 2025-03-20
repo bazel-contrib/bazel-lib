@@ -79,6 +79,10 @@ function make_relative_link(path1, path2, i, common, target, relative_path, back
         sub(/time=[0-9\.]+/, "time=" mtime);
     }
 
+    if (file_mode != "" && $0 ~ /type=file/) {
+        sub(/mode=[0-9]+/, "mode=" file_mode)
+    }
+
     if (owner != "") {
         sub(/uid=[0-9\.]+/, "uid=" owner)
     }

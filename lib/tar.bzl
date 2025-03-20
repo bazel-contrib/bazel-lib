@@ -142,6 +142,7 @@ def mtree_mutate(
         strip_prefix = None,
         package_dir = None,
         mtime = None,
+        file_mode = None,
         owner = None,
         ownername = None,
         awk_script = Label("@aspect_bazel_lib//lib/private:modify_mtree.awk"),
@@ -156,6 +157,7 @@ def mtree_mutate(
         strip_prefix: prefix to remove from all paths in the tar. Files and directories not under this prefix are dropped.
         package_dir: directory prefix to add to all paths in the tar.
         mtime: new modification time for all entries.
+        file_mode: new mode for all file entries.
         owner: new uid for all entries.
         ownername: new uname for all entries.
         awk_script: may be overridden to change the script containing the modification logic.
@@ -175,6 +177,7 @@ def mtree_mutate(
         strip_prefix = strip_prefix,
         package_dir = package_dir,
         mtime = str(mtime) if mtime else None,
+        file_mode = str(file_mode) if file_mode else None,
         owner = owner,
         ownername = ownername,
         awk_script = awk_script,
