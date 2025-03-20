@@ -163,6 +163,9 @@ _mutate_mtree_attrs = {
     "mtime": attr.string(
         doc = "Specifies the modification time (mtime) to be applied to all files in the tar file. Used for deterministic builds.",
     ),
+    "file_mode": attr.string(
+        doc = "Specifies the file mode to be applied to all the files in the tar file.",
+    ),
     "owner": attr.string(
         doc = "Specifies the numeric user ID (UID) for the owner of the files in the tar archive.",
     ),
@@ -517,6 +520,8 @@ def _mtree_mutate_impl(ctx):
         args.add("-v package_dir={}".format(ctx.attr.package_dir))
     if ctx.attr.mtime:
         args.add("-v mtime={}".format(ctx.attr.mtime))
+    if ctx.attr.file_mode:
+        args.add("-v file_mode={}".format(ctx.attr.file_mode))
     if ctx.attr.preserve_symlinks:
         args.add("-v preserve_symlinks=1")
 
