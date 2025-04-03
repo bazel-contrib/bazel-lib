@@ -270,12 +270,9 @@ bzl_library(
     name = "platform_utils",
     srcs = [
         "platform_utils.bzl",
-        "@host_platform//:constraints.bzl",  # keep
-        "@local_config_platform//:constraints.bzl",  # keep
-        "@platforms//host:constraints.bzl",  # keep
+        "@local_config_platform//:constraints.bzl",
     ],
     visibility = ["//lib:__subpackages__"],
-    deps = [],  # keep
 )
 
 bzl_library(
