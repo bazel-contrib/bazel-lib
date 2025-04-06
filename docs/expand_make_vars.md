@@ -7,6 +7,8 @@ Public API for expanding variables
 ## expand_locations
 
 <pre>
+load("@aspect_bazel_lib//lib:expand_make_vars.bzl", "expand_locations")
+
 expand_locations(<a href="#expand_locations-ctx">ctx</a>, <a href="#expand_locations-input">input</a>, <a href="#expand_locations-targets">targets</a>)
 </pre>
 
@@ -58,6 +60,8 @@ Use vanilla `ctx.expand_location(input, targets = targets)` instead
 ## expand_variables
 
 <pre>
+load("@aspect_bazel_lib//lib:expand_make_vars.bzl", "expand_variables")
+
 expand_variables(<a href="#expand_variables-ctx">ctx</a>, <a href="#expand_variables-s">s</a>, <a href="#expand_variables-outs">outs</a>, <a href="#expand_variables-attribute_name">attribute_name</a>)
 </pre>
 

@@ -17,3 +17,8 @@ build --nobuild_runfile_links
 # Needed prior to Bazel 8; see
 # https://github.com/bazelbuild/bazel/issues/20577
 coverage --build_runfile_links
+
+# Never Compile protoc Again
+# Don't build protoc from the cc_binary, it's slow and spammy when cache miss
+common --per_file_copt=external/.*protobuf.*@--PROTOBUF_SHOULD_BE_PREBUILT
+common --host_per_file_copt=external/.*protobuf.*@--PROTOBUF_SHOULD_BE_PREBUILT

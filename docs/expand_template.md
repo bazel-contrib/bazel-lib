@@ -7,6 +7,8 @@ Public API for expand template
 ## expand_template_rule
 
 <pre>
+load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template_rule")
+
 expand_template_rule(<a href="#expand_template_rule-name">name</a>, <a href="#expand_template_rule-data">data</a>, <a href="#expand_template_rule-out">out</a>, <a href="#expand_template_rule-is_executable">is_executable</a>, <a href="#expand_template_rule-stamp">stamp</a>, <a href="#expand_template_rule-stamp_substitutions">stamp_substitutions</a>, <a href="#expand_template_rule-substitutions">substitutions</a>,
                      <a href="#expand_template_rule-template">template</a>)
 </pre>
@@ -42,7 +44,9 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
 ## expand_template
 
 <pre>
-expand_template(<a href="#expand_template-name">name</a>, <a href="#expand_template-template">template</a>, <a href="#expand_template-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
+
+expand_template(<a href="#expand_template-name">name</a>, <a href="#expand_template-template">template</a>, <a href="#expand_template-kwargs">**kwargs</a>)
 </pre>
 
 Wrapper macro for `expand_template_rule`.

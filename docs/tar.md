@@ -58,7 +58,9 @@ TODO:
 ## mtree_spec
 
 <pre>
-mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-out">out</a>, <a href="#mtree_spec-include_runfiles">include_runfiles</a>)
+load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec")
+
+mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-out">out</a>)
 </pre>
 
 Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)
@@ -79,6 +81,8 @@ Create an mtree specification to map a directory hierarchy. See https://man.free
 ## tar_rule
 
 <pre>
+load("@aspect_bazel_lib//lib:tar.bzl", "tar_rule")
+
 tar_rule(<a href="#tar_rule-name">name</a>, <a href="#tar_rule-srcs">srcs</a>, <a href="#tar_rule-out">out</a>, <a href="#tar_rule-args">args</a>, <a href="#tar_rule-compress">compress</a>, <a href="#tar_rule-compute_unused_inputs">compute_unused_inputs</a>, <a href="#tar_rule-mode">mode</a>, <a href="#tar_rule-mtree">mtree</a>)
 </pre>
 
@@ -104,8 +108,10 @@ Rule that executes BSD `tar`. Most users should use the [`tar`](#tar) macro, rat
 ## mtree_mutate
 
 <pre>
+load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate")
+
 mtree_mutate(<a href="#mtree_mutate-name">name</a>, <a href="#mtree_mutate-mtree">mtree</a>, <a href="#mtree_mutate-srcs">srcs</a>, <a href="#mtree_mutate-preserve_symlinks">preserve_symlinks</a>, <a href="#mtree_mutate-strip_prefix">strip_prefix</a>, <a href="#mtree_mutate-package_dir">package_dir</a>, <a href="#mtree_mutate-mtime">mtime</a>, <a href="#mtree_mutate-owner">owner</a>,
-             <a href="#mtree_mutate-ownername">ownername</a>, <a href="#mtree_mutate-awk_script">awk_script</a>, <a href="#mtree_mutate-kwargs">kwargs</a>)
+             <a href="#mtree_mutate-ownername">ownername</a>, <a href="#mtree_mutate-awk_script">awk_script</a>, <a href="#mtree_mutate-kwargs">**kwargs</a>)
 </pre>
 
 Modify metadata in an mtree file.
@@ -133,7 +139,9 @@ Modify metadata in an mtree file.
 ## tar
 
 <pre>
-tar(<a href="#tar-name">name</a>, <a href="#tar-mtree">mtree</a>, <a href="#tar-stamp">stamp</a>, <a href="#tar-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+
+tar(<a href="#tar-name">name</a>, <a href="#tar-mtree">mtree</a>, <a href="#tar-stamp">stamp</a>, <a href="#tar-kwargs">**kwargs</a>)
 </pre>
 
 Wrapper macro around [`tar_rule`](#tar_rule).
@@ -179,6 +187,8 @@ https://man.freebsd.org/cgi/man.cgi?mtree(8)
 ## tar_lib.common.add_compression_args
 
 <pre>
+load("@aspect_bazel_lib//lib:tar.bzl", "tar_lib")
+
 tar_lib.common.add_compression_args(<a href="#tar_lib.common.add_compression_args-compress">compress</a>, <a href="#tar_lib.common.add_compression_args-args">args</a>)
 </pre>
 
@@ -198,6 +208,8 @@ tar_lib.common.add_compression_args(<a href="#tar_lib.common.add_compression_arg
 ## tar_lib.implementation
 
 <pre>
+load("@aspect_bazel_lib//lib:tar.bzl", "tar_lib")
+
 tar_lib.implementation(<a href="#tar_lib.implementation-ctx">ctx</a>)
 </pre>
 
@@ -216,6 +228,8 @@ tar_lib.implementation(<a href="#tar_lib.implementation-ctx">ctx</a>)
 ## tar_lib.mtree_implementation
 
 <pre>
+load("@aspect_bazel_lib//lib:tar.bzl", "tar_lib")
+
 tar_lib.mtree_implementation(<a href="#tar_lib.mtree_implementation-ctx">ctx</a>)
 </pre>
 

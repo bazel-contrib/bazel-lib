@@ -99,7 +99,9 @@ yq(
 ## yq
 
 <pre>
-yq(<a href="#yq-name">name</a>, <a href="#yq-srcs">srcs</a>, <a href="#yq-expression">expression</a>, <a href="#yq-args">args</a>, <a href="#yq-outs">outs</a>, <a href="#yq-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:yq.bzl", "yq")
+
+yq(<a href="#yq-name">name</a>, <a href="#yq-srcs">srcs</a>, <a href="#yq-expression">expression</a>, <a href="#yq-args">args</a>, <a href="#yq-outs">outs</a>, <a href="#yq-kwargs">**kwargs</a>)
 </pre>
 
 Invoke yq with an expression on a set of input files.

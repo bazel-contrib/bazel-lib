@@ -7,6 +7,8 @@ Macros for loading dependencies and registering toolchains
 ## aspect_bazel_lib_dependencies
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
+
 aspect_bazel_lib_dependencies()
 </pre>
 
@@ -19,6 +21,8 @@ Load dependencies required by aspect rules
 ## aspect_bazel_lib_register_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_register_toolchains")
+
 aspect_bazel_lib_register_toolchains()
 </pre>
 
@@ -34,6 +38,8 @@ call the individual toolchain registration macros.
 ## register_bats_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_bats_toolchains")
+
 register_bats_toolchains(<a href="#register_bats_toolchains-name">name</a>, <a href="#register_bats_toolchains-core_version">core_version</a>, <a href="#register_bats_toolchains-support_version">support_version</a>, <a href="#register_bats_toolchains-assert_version">assert_version</a>, <a href="#register_bats_toolchains-file_version">file_version</a>,
                          <a href="#register_bats_toolchains-libraries">libraries</a>, <a href="#register_bats_toolchains-register">register</a>)
 </pre>
@@ -59,6 +65,8 @@ Registers bats toolchain and repositories
 ## register_copy_directory_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_copy_directory_toolchains")
+
 register_copy_directory_toolchains(<a href="#register_copy_directory_toolchains-name">name</a>, <a href="#register_copy_directory_toolchains-register">register</a>)
 </pre>
 
@@ -78,6 +86,8 @@ Registers copy_directory toolchain and repositories
 ## register_copy_to_directory_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_copy_to_directory_toolchains")
+
 register_copy_to_directory_toolchains(<a href="#register_copy_to_directory_toolchains-name">name</a>, <a href="#register_copy_to_directory_toolchains-register">register</a>)
 </pre>
 
@@ -97,6 +107,8 @@ Registers copy_to_directory toolchain and repositories
 ## register_coreutils_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+
 register_coreutils_toolchains(<a href="#register_coreutils_toolchains-name">name</a>, <a href="#register_coreutils_toolchains-version">version</a>, <a href="#register_coreutils_toolchains-register">register</a>)
 </pre>
 
@@ -117,6 +129,8 @@ Registers coreutils toolchain and repositories
 ## register_expand_template_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_expand_template_toolchains")
+
 register_expand_template_toolchains(<a href="#register_expand_template_toolchains-name">name</a>, <a href="#register_expand_template_toolchains-register">register</a>)
 </pre>
 
@@ -136,6 +150,8 @@ Registers expand_template toolchain and repositories
 ## register_jq_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
+
 register_jq_toolchains(<a href="#register_jq_toolchains-name">name</a>, <a href="#register_jq_toolchains-version">version</a>, <a href="#register_jq_toolchains-register">register</a>)
 </pre>
 
@@ -156,6 +172,8 @@ Registers jq toolchain and repositories
 ## register_tar_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_tar_toolchains")
+
 register_tar_toolchains(<a href="#register_tar_toolchains-name">name</a>, <a href="#register_tar_toolchains-register">register</a>)
 </pre>
 
@@ -175,6 +193,8 @@ Registers bsdtar toolchain and repositories
 ## register_yq_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
+
 register_yq_toolchains(<a href="#register_yq_toolchains-name">name</a>, <a href="#register_yq_toolchains-version">version</a>, <a href="#register_yq_toolchains-register">register</a>)
 </pre>
 
@@ -195,6 +215,8 @@ Registers yq toolchain and repositories
 ## register_zstd_toolchains
 
 <pre>
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_zstd_toolchains")
+
 register_zstd_toolchains(<a href="#register_zstd_toolchains-name">name</a>, <a href="#register_zstd_toolchains-register">register</a>)
 </pre>
 

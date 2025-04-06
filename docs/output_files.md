@@ -9,6 +9,8 @@ See also [select_file](https://github.com/bazelbuild/bazel-skylib/blob/main/docs
 ## output_files
 
 <pre>
+load("@aspect_bazel_lib//lib:output_files.bzl", "output_files")
+
 output_files(<a href="#output_files-name">name</a>, <a href="#output_files-output_group">output_group</a>, <a href="#output_files-paths">paths</a>, <a href="#output_files-target">target</a>)
 </pre>
 
@@ -30,7 +32,9 @@ A rule that provides file(s) specific via DefaultInfo from a given target's Defa
 ## make_output_files
 
 <pre>
-make_output_files(<a href="#make_output_files-name">name</a>, <a href="#make_output_files-target">target</a>, <a href="#make_output_files-paths">paths</a>, <a href="#make_output_files-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:output_files.bzl", "make_output_files")
+
+make_output_files(<a href="#make_output_files-name">name</a>, <a href="#make_output_files-target">target</a>, <a href="#make_output_files-paths">paths</a>, <a href="#make_output_files-kwargs">**kwargs</a>)
 </pre>
 
 Helper function to generate a output_files target and return its label.

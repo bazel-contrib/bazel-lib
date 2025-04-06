@@ -9,7 +9,9 @@ See https://docs.aspect.build/guides/bazelrc
 ## write_aspect_bazelrc_presets
 
 <pre>
-write_aspect_bazelrc_presets(<a href="#write_aspect_bazelrc_presets-name">name</a>, <a href="#write_aspect_bazelrc_presets-presets">presets</a>, <a href="#write_aspect_bazelrc_presets-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:bazelrc_presets.bzl", "write_aspect_bazelrc_presets")
+
+write_aspect_bazelrc_presets(<a href="#write_aspect_bazelrc_presets-name">name</a>, <a href="#write_aspect_bazelrc_presets-presets">presets</a>, <a href="#write_aspect_bazelrc_presets-kwargs">**kwargs</a>)
 </pre>
 
 Keeps your vendored copy of Aspect recommended `.bazelrc` presets up-to-date.
