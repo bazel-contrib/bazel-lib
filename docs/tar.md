@@ -58,7 +58,7 @@ TODO:
 ## mtree_spec
 
 <pre>
-mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-out">out</a>)
+mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-out">out</a>, <a href="#mtree_spec-include_runfiles">include_runfiles</a>)
 </pre>
 
 Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)
@@ -71,6 +71,7 @@ Create an mtree specification to map a directory hierarchy. See https://man.free
 | <a id="mtree_spec-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="mtree_spec-srcs"></a>srcs |  Files that are placed into the tar   | <a href="https://bazel.build/concepts/labels">List of labels</a> | optional |  `[]`  |
 | <a id="mtree_spec-out"></a>out |  Resulting specification file to write   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
+| <a id="mtree_spec-include_runfiles"></a>include_runfiles |  Include the runfiles tree in the resulting mtree for targets that are executable.<br><br>The runfiles are in the paths that Bazel uses. For example, for the target `//my_prog:foo`, we would see files under paths like `foo.runfiles/<repo name>/my_prog/<file>`   | Boolean | optional |  `True`  |
 
 
 <a id="tar_rule"></a>
