@@ -133,6 +133,7 @@ _mtree_attrs = {
         target `//my_prog:foo`, we would see files under paths like
         `foo.runfiles/<repo name>/my_prog/<file>`
         """,
+        default = True,
     ),
 }
 _mutate_mtree_attrs = {
