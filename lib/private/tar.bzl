@@ -492,12 +492,7 @@ def _mtree_impl(ctx):
 
     ctx.actions.write(out, content = content)
 
-    default_info = DefaultInfo(files = depset([out]))
-
-    if ctx.attr.include_runfiles:
-        default_info.runfiles = ctx.runfiles([out])
-
-    return default_info
+    return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
 
 def _mtree_mutate_impl(ctx):
     srcs_runfiles = [
