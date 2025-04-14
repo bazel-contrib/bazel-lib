@@ -127,7 +127,7 @@ _mtree_attrs = {
     "out": attr.output(doc = "Resulting specification file to write"),
     # Concept and documentation borrowed from `rules_pkg`.
     "include_runfiles": attr.bool(
-        doc = """Add runfiles for all srcs.
+        doc = """Include the runfiles tree in the resulting mtree for targets that are executable.
 
         The runfiles are in the paths that Bazel uses. For example, for the
         target `//my_prog:foo`, we would see files under paths like
