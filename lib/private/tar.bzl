@@ -125,6 +125,15 @@ Possible values:
 _mtree_attrs = {
     "srcs": attr.label_list(doc = "Files that are placed into the tar", allow_files = True),
     "out": attr.output(doc = "Resulting specification file to write"),
+    # Concept and documentation borrowed from `rules_pkg`.
+    "include_runfiles": attr.bool(
+        doc = """Add runfiles for all srcs.
+
+        The runfiles are in the paths that Bazel uses. For example, for the
+        target `//my_prog:foo`, we would see files under paths like
+        `foo.runfiles/<repo name>/my_prog/<file>`
+        """,
+    ),
 }
 _mutate_mtree_attrs = {
     "mtree": attr.label(
@@ -446,43 +455,49 @@ def _mtree_impl(ctx):
         uniquify = True,
     )
 
-    for s in ctx.attr.srcs:
-        default_info = s[DefaultInfo]
-        if not default_info.files_to_run.runfiles_manifest:
-            continue
+    if ctx.attr.include_runfiles:
+        for s in ctx.attr.srcs:
+            default_info = s[DefaultInfo]
+            if not default_info.files_to_run.runfiles_manifest:
+                continue
 
-        runfiles_dir = _calculate_runfiles_dir(default_info)
-        repo_mapping = _repo_mapping_manifest(default_info.files_to_run)
+            runfiles_dir = _calculate_runfiles_dir(default_info)
+            repo_mapping = _repo_mapping_manifest(default_info.files_to_run)
 
-        # copy workspace name here just in case to prevent ctx
-        # to be transferred to execution phase.
-        workspace_name = str(ctx.workspace_name)
+            # copy workspace name here just in case to prevent ctx
+            # to be transferred to execution phase.
+            workspace_name = str(ctx.workspace_name)
 
-        content.add(_mtree_line(runfiles_dir, type = "dir"))
-        content.add_all(
-            s.default_runfiles.empty_filenames,
-            format_each = "{}/%s".format(runfiles_dir),
-            # be careful about what you pass to map_each as it will carry the data structures over to execution phase.
-            map_each = lambda f, e: _mtree_line(_vis_encode(f.removeprefix("external/") if f.startswith("external/") else workspace_name + "/" + f), "file"),
-            allow_closure = True,
-        )
-        content.add_all(
-            s.default_runfiles.files,
-            expand_directories = True,
-            uniquify = True,
-            format_each = "{}/%s".format(runfiles_dir),
-            # be careful about what you pass to map_each as it will carry the data structures over to execution phase.
-            map_each = lambda f, e: _expand(f, e, lambda f: _to_rlocation_path(f, workspace_name)),
-            allow_closure = True,
-        )
-        if repo_mapping != None:
-            content.add(
-                _mtree_line(_vis_encode(runfiles_dir + "/_repo_mapping"), "file", content = _vis_encode(repo_mapping.path)),
+            content.add(_mtree_line(runfiles_dir, type = "dir"))
+            content.add_all(
+                s.default_runfiles.empty_filenames,
+                format_each = "{}/%s".format(runfiles_dir),
+                # be careful about what you pass to map_each as it will carry the data structures over to execution phase.
+                map_each = lambda f, e: _mtree_line(_vis_encode(f.removeprefix("external/") if f.startswith("external/") else workspace_name + "/" + f), "file"),
+                allow_closure = True,
             )
+            content.add_all(
+                s.default_runfiles.files,
+                expand_directories = True,
+                uniquify = True,
+                format_each = "{}/%s".format(runfiles_dir),
+                # be careful about what you pass to map_each as it will carry the data structures over to execution phase.
+                map_each = lambda f, e: _expand(f, e, lambda f: _to_rlocation_path(f, workspace_name)),
+                allow_closure = True,
+            )
+            if repo_mapping != None:
+                content.add(
+                    _mtree_line(_vis_encode(runfiles_dir + "/_repo_mapping"), "file", content = _vis_encode(repo_mapping.path)),
+                )
 
     ctx.actions.write(out, content = content)
 
-    return DefaultInfo(files = depset([out]), runfiles = ctx.runfiles([out]))
+    default_info = DefaultInfo(files = depset([out]))
+
+    if ctx.attr.include_runfiles:
+        default_info.runfiles = ctx.runfiles([out])
+
+    return default_info
 
 def _mtree_mutate_impl(ctx):
     srcs_runfiles = [
