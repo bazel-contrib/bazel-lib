@@ -60,7 +60,7 @@ TODO:
 <pre>
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_spec")
 
-mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-out">out</a>)
+mtree_spec(<a href="#mtree_spec-name">name</a>, <a href="#mtree_spec-srcs">srcs</a>, <a href="#mtree_spec-out">out</a>, <a href="#mtree_spec-include_runfiles">include_runfiles</a>)
 </pre>
 
 Create an mtree specification to map a directory hierarchy. See https://man.freebsd.org/cgi/man.cgi?mtree(8)
