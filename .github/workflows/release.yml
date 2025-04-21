@@ -35,7 +35,7 @@ jobs:
           subject-path: artifacts/*
   release:
     needs: build
-    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@443541da08f32816d70070ea30b5b0ee53d5e53d
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.1
     with:
       release_files: |
         artifacts/*
