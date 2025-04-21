@@ -120,7 +120,7 @@ bzl_library(
     visibility = ["//lib:__subpackages__"],
     deps = [
         "//lib:write_source_files",
-        "@io_bazel_stardoc//stardoc:stardoc_lib",  #keep
+        "@stardoc//stardoc:stardoc_lib",  #keep
     ],
 )
 

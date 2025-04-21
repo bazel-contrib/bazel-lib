@@ -7,6 +7,8 @@ Public API
 ## glob_match
 
 <pre>
+load("@aspect_bazel_lib//lib:glob_match.bzl", "glob_match")
+
 glob_match(<a href="#glob_match-expr">expr</a>, <a href="#glob_match-path">path</a>, <a href="#glob_match-match_path_separator">match_path_separator</a>)
 </pre>
 
@@ -38,6 +40,8 @@ True if the path matches the glob expression
 ## is_glob
 
 <pre>
+load("@aspect_bazel_lib//lib:glob_match.bzl", "is_glob")
+
 is_glob(<a href="#is_glob-expr">expr</a>)
 </pre>
 

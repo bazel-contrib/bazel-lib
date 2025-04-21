@@ -103,13 +103,14 @@ NOTE: If you run formatters or linters on your codebase, it is advised that you 
 ## WriteSourceFileInfo
 
 <pre>
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "WriteSourceFileInfo")
+
 WriteSourceFileInfo(<a href="#WriteSourceFileInfo-executable">executable</a>)
 </pre>
 
 Provider for write_source_file targets
 
 **FIELDS**
-
 
 | Name  | Description |
 | :------------- | :------------- |
@@ -121,10 +122,12 @@ Provider for write_source_file targets
 ## write_source_file
 
 <pre>
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
+
 write_source_file(<a href="#write_source_file-name">name</a>, <a href="#write_source_file-in_file">in_file</a>, <a href="#write_source_file-out_file">out_file</a>, <a href="#write_source_file-executable">executable</a>, <a href="#write_source_file-additional_update_targets">additional_update_targets</a>,
                   <a href="#write_source_file-suggested_update_target">suggested_update_target</a>, <a href="#write_source_file-diff_test">diff_test</a>, <a href="#write_source_file-diff_test_failure_message">diff_test_failure_message</a>,
                   <a href="#write_source_file-file_missing_failure_message">file_missing_failure_message</a>, <a href="#write_source_file-diff_args">diff_args</a>, <a href="#write_source_file-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_file-verbosity">verbosity</a>,
-                  <a href="#write_source_file-kwargs">kwargs</a>)
+                  <a href="#write_source_file-kwargs">**kwargs</a>)
 </pre>
 
 Write a file or directory to the source tree.
@@ -163,9 +166,11 @@ Name of the generated test target if requested, otherwise None.
 ## write_source_files
 
 <pre>
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+
 write_source_files(<a href="#write_source_files-name">name</a>, <a href="#write_source_files-files">files</a>, <a href="#write_source_files-executable">executable</a>, <a href="#write_source_files-additional_update_targets">additional_update_targets</a>, <a href="#write_source_files-suggested_update_target">suggested_update_target</a>,
                    <a href="#write_source_files-diff_test">diff_test</a>, <a href="#write_source_files-diff_test_failure_message">diff_test_failure_message</a>, <a href="#write_source_files-diff_args">diff_args</a>, <a href="#write_source_files-file_missing_failure_message">file_missing_failure_message</a>,
-                   <a href="#write_source_files-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_files-kwargs">kwargs</a>)
+                   <a href="#write_source_files-check_that_out_file_exists">check_that_out_file_exists</a>, <a href="#write_source_files-kwargs">**kwargs</a>)
 </pre>
 
 Write one or more files and/or directories to the source tree.

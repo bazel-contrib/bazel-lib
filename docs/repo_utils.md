@@ -7,6 +7,8 @@ Public API
 ## patch
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "patch")
+
 patch(<a href="#patch-ctx">ctx</a>, <a href="#patch-patches">patches</a>, <a href="#patch-patch_cmds">patch_cmds</a>, <a href="#patch-patch_cmds_win">patch_cmds_win</a>, <a href="#patch-patch_tool">patch_tool</a>, <a href="#patch-patch_args">patch_args</a>, <a href="#patch-auth">auth</a>, <a href="#patch-patch_directory">patch_directory</a>)
 </pre>
 
@@ -38,6 +40,8 @@ then they are taken from `ctx.attr`.
 ## repo_utils.get_env_var
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.get_env_var(<a href="#repo_utils.get_env_var-rctx">rctx</a>, <a href="#repo_utils.get_env_var-name">name</a>, <a href="#repo_utils.get_env_var-default">default</a>)
 </pre>
 
@@ -62,6 +66,8 @@ The environment variable value or the default if it is not set
 ## repo_utils.get_home_directory
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.get_home_directory(<a href="#repo_utils.get_home_directory-rctx">rctx</a>)
 </pre>
 
@@ -80,6 +86,8 @@ repo_utils.get_home_directory(<a href="#repo_utils.get_home_directory-rctx">rctx
 ## repo_utils.is_darwin
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.is_darwin(<a href="#repo_utils.is_darwin-rctx">rctx</a>)
 </pre>
 
@@ -98,6 +106,8 @@ Returns true if the host operating system is Darwin
 ## repo_utils.is_linux
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.is_linux(<a href="#repo_utils.is_linux-rctx">rctx</a>)
 </pre>
 
@@ -116,6 +126,8 @@ Returns true if the host operating system is Linux
 ## repo_utils.is_windows
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.is_windows(<a href="#repo_utils.is_windows-rctx">rctx</a>)
 </pre>
 
@@ -134,6 +146,8 @@ Returns true if the host operating system is Windows
 ## repo_utils.os
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.os(<a href="#repo_utils.os-rctx">rctx</a>)
 </pre>
 
@@ -156,6 +170,8 @@ The string "windows", "linux", "freebsd" or "darwin" that describes the host os
 ## repo_utils.platform
 
 <pre>
+load("@aspect_bazel_lib//lib:repo_utils.bzl", "repo_utils")
+
 repo_utils.platform(<a href="#repo_utils.platform-rctx">rctx</a>)
 </pre>
 

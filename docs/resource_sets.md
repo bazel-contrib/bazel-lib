@@ -15,6 +15,8 @@ This seems to be the use case that Google engineers imagined.
 ## resource_set
 
 <pre>
+load("@aspect_bazel_lib//lib:resource_sets.bzl", "resource_set")
+
 resource_set(<a href="#resource_set-attr">attr</a>)
 </pre>
 

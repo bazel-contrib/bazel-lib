@@ -7,7 +7,9 @@ Public API for docs helpers
 ## stardoc_with_diff_test
 
 <pre>
-stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href="#stardoc_with_diff_test-bzl_library_target">bzl_library_target</a>, <a href="#stardoc_with_diff_test-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test")
+
+stardoc_with_diff_test(<a href="#stardoc_with_diff_test-name">name</a>, <a href="#stardoc_with_diff_test-bzl_library_target">bzl_library_target</a>, <a href="#stardoc_with_diff_test-kwargs">**kwargs</a>)
 </pre>
 
 Creates a stardoc target that can be auto-detected by update_docs to write the generated doc to the source tree and test that it's up to date.
@@ -30,7 +32,9 @@ This is helpful for minimizing boilerplate in repos with lots of stardoc targets
 ## update_docs
 
 <pre>
-update_docs(<a href="#update_docs-name">name</a>, <a href="#update_docs-kwargs">kwargs</a>)
+load("@aspect_bazel_lib//lib:docs.bzl", "update_docs")
+
+update_docs(<a href="#update_docs-name">name</a>, <a href="#update_docs-kwargs">**kwargs</a>)
 </pre>
 
 Stamps an executable run for writing all stardocs declared with stardoc_with_diff_test to the source tree.
@@ -39,13 +43,10 @@ This is to be used in tandem with `stardoc_with_diff_test()` to produce a conven
 for generating, testing, and updating all doc files as follows:
 
 ``` bash
-bazel build //{docs_folder}/... && bazel test //{docs_folder}/... && bazel run //{docs_folder}:update
-```
-
-eg.
-
-``` bash
-bazel build //docs/... && bazel test //docs/... && bazel run //docs:update
+# on CI
+cd docs; bazel test :all
+# if it's out-of-date, then
+cd docs; bazel run update
 ```
 
 

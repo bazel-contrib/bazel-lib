@@ -98,6 +98,13 @@ jobs:
             os: macos
           - folder: .
             os: windows
+        include:
+          - folder: docs
+            bzlmod: 1
+            os: ubuntu
+            bazel-version:
+              major: 8
+              version: 8.1.1
     steps:
       - uses: actions/checkout@v4
       - name: Mount bazel caches

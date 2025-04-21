@@ -1,6 +1,6 @@
 "Helpers for generating stardoc documentation"
 
-load("@io_bazel_stardoc//stardoc:stardoc.bzl", _stardoc = "stardoc")
+load("@stardoc//stardoc:stardoc.bzl", _stardoc = "stardoc")
 load("//lib:write_source_files.bzl", "write_source_files")
 
 def stardoc_with_diff_test(
@@ -42,13 +42,10 @@ def update_docs(name = "update", **kwargs):
     for generating, testing, and updating all doc files as follows:
 
     ``` bash
-    bazel build //{docs_folder}/... && bazel test //{docs_folder}/... && bazel run //{docs_folder}:update
-    ```
-
-    eg.
-
-    ``` bash
-    bazel build //docs/... && bazel test //docs/... && bazel run //docs:update
+    # on CI
+    cd docs; bazel test :all
+    # if it's out-of-date, then
+    cd docs; bazel run update
     ```
 
     Args:
