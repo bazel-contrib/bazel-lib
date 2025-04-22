@@ -37,7 +37,6 @@ jobs:
     needs: build
     uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.1
     with:
-      bazel_test_command: BAZELISK_BASE_URL= USE_BAZEL_VERSION=7.4.1 bazel test //...
       release_files: |
         artifacts/*
         bazel-lib-*.tar.gz
