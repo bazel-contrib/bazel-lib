@@ -66,7 +66,7 @@ diff_test(
 copy_to_directory(
     name = "case_2",
     srcs = case_srcs,
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["external_test_repo?"],
     replace_prefixes = {
         # merge a, b, c, d into a new/abcd dest folder
         "a": "new/abcd",
@@ -95,7 +95,7 @@ diff_test(
 copy_to_directory(
     name = "case_3",
     srcs = case_srcs,
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["external_test_repo?"],
     root_paths = [],
     verbose = True,
 )
@@ -110,7 +110,7 @@ diff_test(
 copy_to_directory(
     name = "case_4",
     srcs = case_srcs,
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["external_test_repo?"],
     replace_prefixes = {
         # strip lib/tests from paths
         "lib/tests/": "",
@@ -131,7 +131,7 @@ diff_test(
 copy_to_directory(
     name = "case_5",
     srcs = case_srcs,
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["external_test_repo?"],
     root_paths = [
         package_name(),
         "%s/e" % package_name(),
@@ -149,7 +149,7 @@ diff_test(
 copy_to_directory(
     name = "case_6",
     srcs = case_srcs,
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["external_test_repo?"],
 )
 
 # TODO: This test is a false positive. sh_test always includes default
@@ -216,7 +216,7 @@ copy_to_directory(
             "@external_test_repo//:test_b": "test_b",
         },
     ),
-    include_external_repositories = ["external_test_repo"],
+    include_external_repositories = ["external_test_repo?"],
     replace_prefixes = {
         # merge a, b, c, d into a new/abcd dest folder
         "a/a": "new/abcd/a",
@@ -396,7 +396,7 @@ copy_to_directory(
     name = "case_18",
     srcs = case_srcs,
     exclude_srcs_packages = ["./*/**"],
-    include_external_repositories = ["e?ter*_test_repo"],
+    include_external_repositories = ["e?ter*_test_repo?"],
 )
 
 diff_test(
