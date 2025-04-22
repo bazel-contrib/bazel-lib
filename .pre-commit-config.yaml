@@ -44,10 +44,3 @@ repos:
             lib/private/yq_toolchain.bzl|
             lib/tests/glob_match_test.bzl
           )
-  - repo: local
-    hooks:
-      - id: aspect_rules_lint
-        name: Format
-        language: system
-        entry: bazel run //:format
-        files: .*
