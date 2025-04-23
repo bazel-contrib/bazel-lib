@@ -30,7 +30,7 @@ RELEASED_BINARY_INTEGRITY = $(
   jq \
     --from-file .github/workflows/integrity.jq \
     --slurp \
-    --raw-input artifacts/*.sha256
+    --raw-input binaries/*.sha256
 )
 EOF
 

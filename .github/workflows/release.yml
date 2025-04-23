@@ -19,6 +19,7 @@ jobs:
       - name: Build Go Binaries
         env:
           # NB: this variable is read by tools/release/copy_release_artifacts.sh
+          # and must match the path in release_prep.sh under RELEASED_BINARY_INTEGRITY
           DEST: binaries
         run: |
           rm -rf ${{ env.DEST }}
