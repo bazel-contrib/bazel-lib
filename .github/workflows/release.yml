@@ -35,7 +35,7 @@ jobs:
     uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.2
     with:
       release_files: |
-        binaries/*
+        go-binaries/*
         bazel-lib-*.tar.gz
       prerelease: false
       tag_name: ${{ github.ref_name }}
