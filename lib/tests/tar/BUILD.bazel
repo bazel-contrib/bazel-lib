@@ -358,6 +358,8 @@ mtree_mutate(
     mtree = "source-casync.mtree",
     owner = "123",
     ownername = "fred",
+    group = "1000",
+    groupname = "vbatts",
 )
 
 diff_test(
