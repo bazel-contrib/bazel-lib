@@ -509,6 +509,8 @@ def _mtree_mutate_impl(ctx):
 
     if ctx.attr.owner:
         args.add("-v owner={}".format(ctx.attr.owner))
+    if ctx.attr.group:
+        args.add("-v group={}".format(ctx.attr.group))
     if ctx.attr.ownername:
         args.add("-v ownername={}".format(ctx.attr.ownername))
     if ctx.attr.strip_prefix:
