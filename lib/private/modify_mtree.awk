@@ -87,6 +87,10 @@ function make_relative_link(path1, path2, i, common, target, relative_path, back
         sub(/uname=[^ ]+/, "uname=" ownername)
     }
 
+    if (group != "") {
+        sub(/uid=[0-9\.]+/, "uid=" group)
+    }
+
     if (package_dir != "") {
         sub(/^/, package_dir "/")
     }
