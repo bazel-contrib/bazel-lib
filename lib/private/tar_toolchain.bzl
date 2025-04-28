@@ -28,14 +28,12 @@ BSDTAR_PLATFORMS = {
         ],
     ),
     "windows_amd64": struct(
-        release_platform = "win64",
         compatible_with = [
             "@platforms//os:windows",
             "@platforms//cpu:x86_64",
         ],
     ),
     "windows_arm64": struct(
-        release_platform = "win64",
         compatible_with = [
             "@platforms//os:windows",
             "@platforms//cpu:aarch64",
