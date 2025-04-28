@@ -88,7 +88,7 @@ function make_relative_link(path1, path2, i, common, target, relative_path, back
     }
 
     if (group != "") {
-        sub(/uid=[0-9\.]+/, "uid=" group)
+        sub(/gid=[0-9\.]+/, "gid=" group)
     }
 
     if (package_dir != "") {
