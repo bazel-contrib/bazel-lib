@@ -354,12 +354,12 @@ diff_test(
 
 mtree_mutate(
     name = "modified2",
+    group = "1000",
+    groupname = "vbatts",
     mtime = 946684740,  # 1999-12-31, 23:59
     mtree = "source-casync.mtree",
     owner = "123",
     ownername = "fred",
-    group = "1000",
-    groupname = "vbatts",
 )
 
 diff_test(
