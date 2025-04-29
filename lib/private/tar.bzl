@@ -169,6 +169,12 @@ _mutate_mtree_attrs = {
     "ownername": attr.string(
         doc = "Specifies the name of the owner of the files in the tar archive. Used alongside 'owner'.",
     ),
+    "group": attr.string(
+        doc = "Specifies the numeric group ID (GID) for the group owner of the files in the tar archive.",
+    ),
+    "groupname": attr.string(
+        doc = "Specifies the name of the group of the files in the tar archive. Used alongside 'group'.",
+    ),
     "out": attr.output(
         doc = "The output of the mutation, a new mtree file.",
     ),
@@ -511,6 +517,10 @@ def _mtree_mutate_impl(ctx):
         args.add("-v owner={}".format(ctx.attr.owner))
     if ctx.attr.ownername:
         args.add("-v ownername={}".format(ctx.attr.ownername))
+    if ctx.attr.group:
+        args.add("-v group={}".format(ctx.attr.group))
+    if ctx.attr.groupname:
+        args.add("-v groupname={}".format(ctx.attr.groupname))
     if ctx.attr.strip_prefix:
         args.add("-v strip_prefix={}".format(ctx.attr.strip_prefix))
     if ctx.attr.package_dir:
