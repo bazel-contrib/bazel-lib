@@ -125,8 +125,9 @@ function make_relative_link(path1, path2, i, common, target, relative_path, back
 	    cmd = "readlink -f \"" path "\""
 	    cmd | getline resolved_path
 	    close(cmd)
-	    # If readlink -f fails use readlink for relative links
-	    if (resolved_path == "") {
+	    # 1. If readlink -f fails use readlink for relative links
+	    # 2. Make sure readlink -f doesn't escape BIN_DIR
+	    if (resolved_path == "" || !(resolved_path ~ bin_dir)) {
 		cmd = "readlink \"" path "\""
 		cmd | getline resolved_path
 		close(cmd)
