@@ -25,6 +25,12 @@ def aspect_bazel_lib_dependencies():
             "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz",
         ],
     )
+    http_archive(
+        name = "tar.bzl",
+        sha256 = "8710443803496e1b9b5b66f56ae55aa586338cb09a4ddeb9bb3d6df4e6da44c7",
+        strip_prefix = "tar.bzl-0.2.0",
+        url = "https://github.com/alexeagle/tar.bzl/releases/download/v0.2.0/tar.bzl-v0.2.0.tar.gz",
+    )
 
 DEFAULT_JQ_REPOSITORY = "jq"
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
