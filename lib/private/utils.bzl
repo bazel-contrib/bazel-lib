@@ -239,7 +239,7 @@ def _is_bazel_7_or_greater():
 
 def is_bzlmod_enabled():
     """Detect the value of the --enable_bzlmod flag"""
-    return str(Label("@//:BUILD.bazel")).startswith("@@")
+    return str(Label("//:BUILD.bazel")).startswith("@@")
 
 def _maybe_http_archive(**kwargs):
     """Adapts a maybe(http_archive, ...) to look like an http_archive.

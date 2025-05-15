@@ -1,6 +1,6 @@
 """Utility functions for platforms"""
 
-load("@local_config_platform//:constraints.bzl", "HOST_CONSTRAINTS")
+load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 
 def _host_platform_is_darwin():
     return "@platforms//os:osx" in HOST_CONSTRAINTS
