@@ -1,5 +1,6 @@
 "tests for copy_to_directory"
 
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:copy_directory.bzl", "copy_directory")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:diff_test.bzl", "diff_test")

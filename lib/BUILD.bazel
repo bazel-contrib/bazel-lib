@@ -236,6 +236,7 @@ bzl_library(
         ":utils",
         "@bazel_skylib//lib:types",
         "@bazel_skylib//rules:write_file",
+        "@rules_shell//shell:rules_bzl",
     ],
 )
 
