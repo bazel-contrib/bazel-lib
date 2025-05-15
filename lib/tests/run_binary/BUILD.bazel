@@ -1,6 +1,7 @@
 "tests for run_binary"
 
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:run_binary.bzl", "run_binary")

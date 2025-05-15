@@ -1,5 +1,6 @@
 "tests for copy_to_bin"
 
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//lib:output_files.bzl", "output_files")
 
