@@ -126,7 +126,7 @@ bzl_library(
     srcs = ["jq.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "//lib/private:jq",
+        "@jq.bzl//jq",
     ],
 )
 
