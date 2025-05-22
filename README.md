@@ -41,10 +41,6 @@ Or in `WORKSPACE`:
 
 # Public API
 
-## Packaging
-
-- [tar](docs/tar.md) Run BSD `tar` to produce archives.
-
 ## Copying files
 
 - [copy_directory](docs/copy_directory.md) Copies directories to another package.
@@ -55,7 +51,6 @@ Or in `WORKSPACE`:
 
 ## Transforming files
 
-- [jq](docs/jq.md) A toolchain and custom rule for running [jq](https://stedolan.github.io/jq/), a tool that is "like sed for json".
 - [yq](docs/yq.md) A toolchain and custom rule for running [yq](https://github.com/mikefarah/yq), a "YAML, JSON and XML processor".
 
 ## Manipulating paths
