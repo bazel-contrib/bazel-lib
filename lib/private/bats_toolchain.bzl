@@ -17,9 +17,9 @@ BATS_FILE_VERSIONS = {
 }
 
 BATS_CORE_TEMPLATE = """\
-load("@local_config_platform//:constraints.bzl", "HOST_CONSTRAINTS")
 load("@aspect_bazel_lib//lib/private:bats_toolchain.bzl", "bats_toolchain")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 
 copy_to_directory(
     name = "core",
