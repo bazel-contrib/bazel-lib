@@ -63,6 +63,7 @@ def _diff_test_impl(ctx):
         template = ctx.file._diff_test_tmpl_sh
 
     test_bin = ctx.actions.declare_file(ctx.label.name + test_suffix)
+    diff_bin = ctx.toolchains["@aspect_bazel_lib//lib:diffutils_toolchain_type"].diffinfo.bin
     ctx.actions.expand_template(
         template = template,
         output = test_bin,
@@ -76,6 +77,7 @@ def _diff_test_impl(ctx):
                 shell.quote(arg)
                 for arg in ctx.attr.diff_args
             ]),
+            "{diff}": diff_bin.short_path,
         },
         is_executable = True,
     )
@@ -83,7 +85,7 @@ def _diff_test_impl(ctx):
     return DefaultInfo(
         executable = test_bin,
         files = depset(direct = [test_bin]),
-        runfiles = ctx.runfiles(files = [test_bin, file1, file2]),
+        runfiles = ctx.runfiles(files = [test_bin, file1, file2, diff_bin]),
     )
 
 _diff_test = rule(
@@ -110,6 +112,7 @@ _diff_test = rule(
     },
     test = True,
     implementation = _diff_test_impl,
+    toolchains = ["@aspect_bazel_lib//lib:diffutils_toolchain_type"],
 )
 
 def diff_test(name, file1, file2, diff_args = [], size = "small", **kwargs):
