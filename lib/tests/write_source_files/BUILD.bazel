@@ -140,6 +140,13 @@ write_source_file(
     out_file = "es_dir",
 )
 
+write_source_file(
+    name = "es_dir_executable_test",
+    executable = True,
+    in_file = ":es_dir-desired",
+    out_file = "es_dir_executable",
+)
+
 write_source_file_test(
     name = "f_test",
     in_file = ":f-desired",

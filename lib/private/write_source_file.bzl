@@ -2,6 +2,7 @@
 
 load(":diff_test.bzl", _diff_test = "diff_test")
 load(":directory_path.bzl", "DirectoryPathInfo")
+load(":executable_test.bzl", _executable_test = "executable_test")
 load(":fail_with_message_test.bzl", "fail_with_message_test")
 load(":utils.bzl", "utils")
 
@@ -28,7 +29,8 @@ def write_source_file(
         **kwargs):
     """Write a file or directory to the source tree.
 
-    By default, a `diff_test` target ("{name}_test") is generated that ensure the source tree file or directory to be written to
+    By default, `diff_test` and `executable_test` targets ("{name}_diff_test" and "{name}_executable_test")
+    are generated that ensure the source tree file or directory to be written to
     is up to date and the rule also checks that the source tree file or directory to be written to exists.
     To disable the exists check and up-to-date test set `diff_test` to `False`.
 
@@ -80,7 +82,7 @@ def write_source_file(
         **kwargs: Other common named parameters such as `tags` or `visibility`
 
     Returns:
-        Name of the generated test target if requested, otherwise None.
+        Names of the generated test targets if requested, otherwise empty list.
     """
     if out_file:
         if not in_file:
@@ -112,10 +114,11 @@ def write_source_file(
     )
 
     if not in_file or not out_file or not diff_test:
-        return None
+        return []
 
     out_file_missing = check_that_out_file_exists and _is_file_missing(out_file)
-    test_target_name = "%s_test" % name
+    diff_test_target_name = "%s_diff_test" % name
+    executable_test_target_name = "%s_executable_test" % name
 
     update_target_string = "//%s:%s" % (native.package_name(), name)
     suggested_update_target_string = str(utils.to_label(suggested_update_target)) if suggested_update_target else None
@@ -148,23 +151,25 @@ To create an update *only* this file, run:
         # Note that we cannot simply call fail() here since it will fail during the analysis
         # phase and prevent the user from calling bazel run //update/the:file.
         fail_with_message_test(
-            name = test_target_name,
+            name = diff_test_target_name,
             message = message,
             visibility = kwargs.get("visibility"),
             tags = kwargs.get("tags"),
             size = "small",
         )
-    else:
-        if suggested_update_target == None:
-            default_message = """
+
+        return [diff_test_target_name]
+
+    if suggested_update_target == None:
+        default_message = """
 
 %s is out of date. To update this file, run:
 
     bazel run %s
 
 """ % (out_file, update_target_string)
-        else:
-            default_message = """
+    else:
+        default_message = """
 
 %s is out of date. To update this and other generated files, run:
 
@@ -176,19 +181,26 @@ To update *only* this file, run:
 
 """ % (out_file, suggested_update_target_string, update_target_string)
 
-        message = _do_diff_test_message_replacements(diff_test_failure_message, default_message, update_target_string, suggested_update_target_string)
+    message = _do_diff_test_message_replacements(diff_test_failure_message, default_message, update_target_string, suggested_update_target_string)
 
-        # Stamp out a diff test the check that the source file is up to date
-        _diff_test(
-            name = test_target_name,
-            file1 = in_file,
-            file2 = out_file,
-            failure_message = message,
-            diff_args = diff_args,
-            **kwargs
-        )
+    # Stamp out tests to check that the source file is up to date
+    _diff_test(
+        name = diff_test_target_name,
+        file1 = in_file,
+        file2 = out_file,
+        failure_message = message,
+        diff_args = diff_args,
+        **kwargs
+    )
+    _executable_test(
+        name = executable_test_target_name,
+        file = out_file,
+        executable = executable,
+        failure_message = message,
+        **kwargs
+    )
 
-    return test_target_name
+    return [diff_test_target_name, executable_test_target_name]
 
 _write_source_file_attrs = {
     "in_file": attr.label(allow_files = True, mandatory = False),

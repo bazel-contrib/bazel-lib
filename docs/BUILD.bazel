@@ -33,6 +33,11 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
+    name = "executable_test",
+    bzl_library_target = "@aspect_bazel_lib//lib:executable_test",
+)
+
+stardoc_with_diff_test(
     name = "expand_make_vars",
     bzl_library_target = "@aspect_bazel_lib//lib:expand_make_vars",
 )

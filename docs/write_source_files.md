@@ -23,7 +23,7 @@ To update the source file, run:
 bazel run //:write_foobar
 ```
 
-The generated `diff_test` will fail if the file is out of date and print out instructions on
+The generated tests will fail if the file is out of date and print out instructions on
 how to update it.
 
 If the file does not exist, Bazel will fail at analysis time and print out instructions on
@@ -132,7 +132,8 @@ write_source_file(<a href="#write_source_file-name">name</a>, <a href="#write_so
 
 Write a file or directory to the source tree.
 
-By default, a `diff_test` target ("{name}_test") is generated that ensure the source tree file or directory to be written to
+By default, `diff_test` and `executable_test` targets ("{name}_diff_test" and "{name}_executable_test")
+are generated that ensure the source tree file or directory to be written to
 is up to date and the rule also checks that the source tree file or directory to be written to exists.
 To disable the exists check and up-to-date test set `diff_test` to `False`.
 
@@ -158,7 +159,7 @@ To disable the exists check and up-to-date test set `diff_test` to `False`.
 
 **RETURNS**
 
-Name of the generated test target if requested, otherwise None.
+Names of the generated test targets if requested, otherwise empty list.
 
 
 <a id="write_source_files"></a>
@@ -175,7 +176,7 @@ write_source_files(<a href="#write_source_files-name">name</a>, <a href="#write_
 
 Write one or more files and/or directories to the source tree.
 
-By default, `diff_test` targets are generated that ensure the source tree files and/or directories to be written to
+By default, `diff_test` and `executable_test` targets are generated that ensure the source tree files and/or directories to be written to
 are up to date and the rule also checks that all source tree files and/or directories to be written to exist.
 To disable the exists check and up-to-date tests set `diff_test` to `False`.
 
