@@ -21,7 +21,7 @@ To update the source file, run:
 bazel run //:write_foobar
 ```
 
-The generated `diff_test` will fail if the file is out of date and print out instructions on
+The generated tests will fail if the file is out of date and print out instructions on
 how to update it.
 
 If the file does not exist, Bazel will fail at analysis time and print out instructions on
@@ -120,7 +120,7 @@ def write_source_files(
         **kwargs):
     """Write one or more files and/or directories to the source tree.
 
-    By default, `diff_test` targets are generated that ensure the source tree files and/or directories to be written to
+    By default, `diff_test` and `executable_test` targets are generated that ensure the source tree files and/or directories to be written to
     are up to date and the rule also checks that all source tree files and/or directories to be written to exist.
     To disable the exists check and up-to-date tests set `diff_test` to `False`.
 
@@ -188,7 +188,7 @@ def write_source_files(
                 this_suggested_update_target = name
 
         # Runnable target that writes to the out file to the source tree
-        test_target = _write_source_file(
+        new_test_targets = _write_source_file(
             name = update_target_name,
             in_file = in_file,
             out_file = out_file,
@@ -203,8 +203,8 @@ def write_source_files(
             **kwargs
         )
 
-        if test_target:
-            test_targets.append(test_target)
+        if new_test_targets:
+            test_targets.extend(new_test_targets)
 
     if len(test_targets) > 0:
         native.test_suite(

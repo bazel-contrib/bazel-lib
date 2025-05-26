@@ -173,6 +173,13 @@ bzl_library(
     deps = ["//lib/private:diff_test"],
 )
 
+#keep
+bzl_library(
+    name = "executable_test",
+    srcs = ["executable_test.bzl"],
+    deps = ["//lib/private:executable_test"],
+)
+
 bzl_library(
     name = "write_source_files",
     srcs = ["write_source_files.bzl"],

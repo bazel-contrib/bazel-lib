@@ -6,6 +6,8 @@ exports_files(
     [
         "diff_test_tmpl.sh",
         "diff_test_tmpl.bat",
+        "executable_test_tmpl.sh",
+        "executable_test_tmpl.bat",
         "modify_mtree.awk",
         "parse_status_file.jq",
         "parse_status_file.yq",
@@ -111,6 +113,16 @@ bzl_library(
         ":directory_path",
         "//lib:utils",
         "@bazel_skylib//lib:shell",
+    ],
+)
+
+#keep
+bzl_library(
+    name = "executable_test",
+    srcs = ["executable_test.bzl"],
+    visibility = ["//lib:__subpackages__"],
+    deps = [
+        ":directory_path",
     ],
 )
 
@@ -247,6 +259,7 @@ bzl_library(
     deps = [
         ":diff_test",
         ":directory_path",
+        ":executable_test",
         ":fail_with_message_test",
         ":utils",
     ],
