@@ -6,8 +6,6 @@ exports_files(
     [
         "diff_test_tmpl.sh",
         "diff_test_tmpl.bat",
-        "modify_mtree.awk",
-        "parse_status_file.jq",
         "parse_status_file.yq",
     ],
     visibility = ["//visibility:public"],
@@ -159,17 +157,6 @@ bzl_library(
     deps = [
         ":repo_utils",
         "@bazel_skylib//lib:versions",
-    ],
-)
-
-bzl_library(
-    name = "jq",
-    srcs = ["jq.bzl"],
-    visibility = ["//lib:__subpackages__"],
-    deps = [
-        ":expand_variables",
-        ":strings",
-        "//lib:stamping",
     ],
 )
 
