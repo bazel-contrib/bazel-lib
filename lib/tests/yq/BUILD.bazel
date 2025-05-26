@@ -116,7 +116,10 @@ diff_test(
 yq(
     name = "case_convert_json_to_yaml",
     srcs = ["//lib/tests/jq:a_pretty.json"],
-    args = ["-P"],
+    args = [
+        "-P",
+        "-oy",
+    ],
     expression = ".",
 )
 
@@ -129,7 +132,10 @@ diff_test(
 yq(
     name = "case_convert_json_to_yaml_otherextension",
     srcs = ["a.dealerschoice"],
-    args = ["-P"],
+    args = [
+        "-P",
+        "-oy",
+    ],
     expression = ".",
 )
 
@@ -361,7 +367,10 @@ yq(
         "//lib/tests/jq:a.json",
         "//lib/tests/jq:b.json",
     ],
-    args = ["-P"],
+    args = [
+        "-P",
+        "-oy",
+    ],
     expression = ". as $item ireduce ({}; . * $item )",
 )
 

@@ -21,7 +21,7 @@ chmod u+x extract-checksum.sh
 
 # Extract the checksums and output a starlark map entry
 echo "\"$version\": {"
-platforms=(darwin_{amd64,arm64} linux_{amd64,arm64,s390x,ppc64le} windows_amd64)
+platforms=(darwin_{amd64,arm64} linux_{amd64,arm64,s390x,riscv64,ppc64le} windows_amd64)
 for release in ${platforms[@]}; do
   artifact=$release
   if [[ $release == windows* ]]; then
