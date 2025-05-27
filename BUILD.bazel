@@ -8,7 +8,6 @@ load("@gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:testing.bzl", "assert_contains")
 load("//lib:write_source_files.bzl", "write_source_files")
-load("//lib:yq.bzl", "yq")
 
 exports_files([".shellcheckrc"])
 
@@ -87,13 +86,6 @@ write_source_files(
         "test-out/dist/write_source_file_root-test/test.txt": ":write_source_file_root",
         "test-out/dist/write_source_file_root-test_b/test.txt": ":write_source_file_root",
     },
-)
-
-# Test that yq works in the root package
-yq(
-    name = "yq_root-test",
-    srcs = ["//lib/tests/yq:a.yaml"],
-    expression = ".",
 )
 
 # Test case: diff_test with a file in a directory prefixed with "external"

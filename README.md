@@ -49,10 +49,6 @@ Or in `WORKSPACE`:
 - [copy_to_directory](docs/copy_to_directory.md) Copies and arranges files and directories into a new directory.
 - [write_source_files](docs/write_source_files.md) Write to one or more files or folders in the source tree. Stamp out tests that ensure the sources exist and are up to date.
 
-## Transforming files
-
-- [yq](docs/yq.md) A toolchain and custom rule for running [yq](https://github.com/mikefarah/yq), a "YAML, JSON and XML processor".
-
 ## Manipulating paths
 
 - [directory_path](docs/directory_path.md) Provide a label to reference some path within a directory, via DirectoryPathInfo.
