@@ -202,7 +202,7 @@ bzl_library(
 bzl_library(
     name = "yq",
     srcs = ["yq.bzl"],
-    deps = ["//lib/private:yq"],
+    deps = ["@yq.bzl//yq"],
 )
 
 bzl_library(

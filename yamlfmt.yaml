@@ -2,4 +2,3 @@ gitignore_excludes: true
 doublestar: true
 exclude:
   - .circleci/config.yml
-  - lib/tests/yq/empty.yaml

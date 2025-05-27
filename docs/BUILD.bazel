@@ -58,18 +58,8 @@ stardoc_with_diff_test(
 )
 
 stardoc_with_diff_test(
-    name = "tar",
-    bzl_library_target = "@aspect_bazel_lib//lib:tar",
-)
-
-stardoc_with_diff_test(
     name = "utils",
     bzl_library_target = "@aspect_bazel_lib//lib:utils",
-)
-
-stardoc_with_diff_test(
-    name = "jq",
-    bzl_library_target = "@aspect_bazel_lib//lib:jq",
 )
 
 stardoc_with_diff_test(
@@ -100,11 +90,6 @@ stardoc_with_diff_test(
 stardoc_with_diff_test(
     name = "repo_utils",
     bzl_library_target = "@aspect_bazel_lib//lib:repo_utils",
-)
-
-stardoc_with_diff_test(
-    name = "yq",
-    bzl_library_target = "@aspect_bazel_lib//lib:yq",
 )
 
 stardoc_with_diff_test(
