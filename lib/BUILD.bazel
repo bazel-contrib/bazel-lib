@@ -1,7 +1,12 @@
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("//:bzl_library.bzl", "bzl_library")
+load("//bazel-skylib/rules:common_settings.bzl", "bool_flag")
 load("//lib:utils.bzl", "is_bzlmod_enabled")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
+
+package(
+    default_applicable_licenses = ["//:license"],
+    default_visibility = ["//visibility:public"],
+)
 
 # Ensure that users building their own rules can dep on our bzl_library targets for their stardoc
 package(default_visibility = ["//visibility:public"])
@@ -323,4 +328,81 @@ bzl_library(
 bzl_library(
     name = "resource_sets",
     srcs = ["resource_sets.bzl"],
+)
+
+licenses(["notice"])
+
+# export bzl files for the documentation
+exports_files(
+    glob(["*.bzl"]),
+    visibility = ["//:__subpackages__"],
+)
+
+bzl_library(
+    name = "collections",
+    srcs = ["collections.bzl"],
+)
+
+bzl_library(
+    name = "dicts",
+    srcs = ["dicts.bzl"],
+)
+
+bzl_library(
+    name = "modules",
+    srcs = ["modules.bzl"],
+)
+
+bzl_library(
+    name = "partial",
+    srcs = ["partial.bzl"],
+)
+
+bzl_library(
+    name = "selects",
+    srcs = ["selects.bzl"],
+)
+
+bzl_library(
+    name = "sets",
+    srcs = ["sets.bzl"],
+    deps = [
+        ":dicts",
+    ],
+)
+
+bzl_library(
+    name = "shell",
+    srcs = ["shell.bzl"],
+)
+
+bzl_library(
+    name = "structs",
+    srcs = ["structs.bzl"],
+)
+
+bzl_library(
+    name = "subpackages",
+    srcs = ["subpackages.bzl"],
+)
+
+bzl_library(
+    name = "types",
+    srcs = ["types.bzl"],
+)
+
+bzl_library(
+    name = "unittest",
+    srcs = ["unittest.bzl"],
+    deps = [
+        ":new_sets",
+        ":partial",
+        ":sets",
+        ":types",
+    ],
+)
+
+bzl_library(
+    name = "versions",
+    srcs = ["versions.bzl"],
 )
