@@ -1,5 +1,5 @@
+load("//lib:diff_test.bzl", "diff_test")
 load("//lib:testing.bzl", "assert_contains")
-load("//lib/tests/jq:diff_test.bzl", "diff_test")
 
 genrule(
     name = "ls",
