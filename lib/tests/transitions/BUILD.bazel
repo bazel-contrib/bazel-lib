@@ -1,4 +1,3 @@
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
@@ -79,34 +78,22 @@ genrule(
     cmd = "echo $(rootpath :for_arm) > $@",
 )
 
-write_file(
-    name = "expected_x86_path",
-    out = "expected_x86_path.txt",
-    content = [
+diff_test(
+    name = "test_x86",
+    content2 = [
         "lib/tests/transitions/linux_x86.txt",
         "",
     ],
-)
-
-write_file(
-    name = "expected_arm_path",
-    out = "expected_arm_path.txt",
-    content = [
-        "lib/tests/transitions/linux_arm.txt",
-        "",
-    ],
-)
-
-diff_test(
-    name = "test_x86",
     file1 = ":for_x86_path",
-    file2 = ":expected_x86_path",
 )
 
 diff_test(
     name = "test_arm",
+    content2 = [
+        "lib/tests/transitions/linux_arm.txt",
+        "",
+    ],
     file1 = ":for_arm_path",
-    file2 = ":expected_arm_path",
 )
 
 go_binary(

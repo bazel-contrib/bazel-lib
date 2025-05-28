@@ -22,6 +22,7 @@ command (fc.exe) on Windows (no Bash is required).
 """
 
 load("@bazel_skylib//lib:shell.bzl", "shell")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
 def _runfiles_path(f):
@@ -112,7 +113,7 @@ _diff_test = rule(
     implementation = _diff_test_impl,
 )
 
-def diff_test(name, file1, file2, diff_args = [], size = "small", **kwargs):
+def diff_test(name, file1 = None, file2 = None, content2 = None, diff_args = [], size = "small", **kwargs):
     """A test that compares two files.
 
     The test succeeds if the files' contents match.
@@ -121,10 +122,22 @@ def diff_test(name, file1, file2, diff_args = [], size = "small", **kwargs):
       name: The name of the test rule.
       file1: Label of the file to compare to <code>file2</code>.
       file2: Label of the file to compare to <code>file1</code>.
+      content2: List of lines that should be written in place of file2
       diff_args: Arguments to pass to the `diff` command. (Ignored on Windows)
       size: standard attribute for tests
       **kwargs: The <a href="https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-tests">common attributes for tests</a>.
     """
+    if int(bool(file2)) + int(content2 != None) != 1:
+        fail("Exactly one of file1 or content2 should be set")
+    if content2 != None:
+        content2_target = name + "_content2"
+        write_file(
+            name = content2_target,
+            out = content2_target + ".txt",
+            content = content2,
+        )
+        file2 = content2_target
+
     _diff_test(
         name = name,
         file1 = file1,
