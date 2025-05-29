@@ -108,6 +108,8 @@ bzl_library(
         ":directory_path",
         "//lib:utils",
         "@bazel_skylib//lib:shell",
+        "@bazel_skylib//lib:types",
+        "@bazel_skylib//rules:write_file",
     ],
 )
 

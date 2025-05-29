@@ -32,7 +32,7 @@ The test succeeds if the files' contents match.
 | :------------- | :------------- | :------------- |
 | <a id="diff_test-name"></a>name |  The name of the test rule.   |  none |
 | <a id="diff_test-file1"></a>file1 |  Label of the file to compare to <code>file2</code>.   |  none |
-| <a id="diff_test-file2"></a>file2 |  Label of the file to compare to <code>file1</code>.   |  none |
+| <a id="diff_test-file2"></a>file2 |  Label of the file to compare to <code>file1</code>, or a list of strings which are the lines to expect <code>file1</code> to contain.   |  none |
 | <a id="diff_test-diff_args"></a>diff_args |  Arguments to pass to the `diff` command. (Ignored on Windows)   |  `[]` |
 | <a id="diff_test-size"></a>size |  standard attribute for tests   |  `"small"` |
 | <a id="diff_test-kwargs"></a>kwargs |  The <a href="https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-tests">common attributes for tests</a>.   |  none |

@@ -22,6 +22,8 @@ command (fc.exe) on Windows (no Bash is required).
 """
 
 load("@bazel_skylib//lib:shell.bzl", "shell")
+load("@bazel_skylib//lib:types.bzl", "types")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
 def _runfiles_path(f):
@@ -120,11 +122,20 @@ def diff_test(name, file1, file2, diff_args = [], size = "small", **kwargs):
     Args:
       name: The name of the test rule.
       file1: Label of the file to compare to <code>file2</code>.
-      file2: Label of the file to compare to <code>file1</code>.
+      file2: Label of the file to compare to <code>file1</code>, or a list of strings which are the lines to expect <code>file1</code> to contain.
       diff_args: Arguments to pass to the `diff` command. (Ignored on Windows)
       size: standard attribute for tests
       **kwargs: The <a href="https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-tests">common attributes for tests</a>.
     """
+    if types.is_list(file2):
+        write_file2_target = name + ".file2"
+        write_file(
+            name = write_file2_target,
+            out = write_file2_target + ".txt",
+            content = file2,
+        )
+        file2 = write_file2_target
+
     _diff_test(
         name = name,
         file1 = file1,
