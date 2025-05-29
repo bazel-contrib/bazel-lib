@@ -80,20 +80,20 @@ genrule(
 
 diff_test(
     name = "test_x86",
-    content2 = [
+    file1 = ":for_x86_path",
+    file2 = [
         "lib/tests/transitions/linux_x86.txt",
         "",
     ],
-    file1 = ":for_x86_path",
 )
 
 diff_test(
     name = "test_arm",
-    content2 = [
+    file1 = ":for_arm_path",
+    file2 = [
         "lib/tests/transitions/linux_arm.txt",
         "",
     ],
-    file1 = ":for_arm_path",
 )
 
 go_binary(
