@@ -4,17 +4,17 @@
 
 # Commitizen runs in commit-msg stage
 # but we don't want to run the other hooks on commit messages
-default_stages: [commit]
+default_stages: [pre-commit]
 repos:
   # Check formatting and lint for starlark code
   - repo: https://github.com/keith/pre-commit-buildifier
-    rev: 8.0.1
+    rev: 8.0.3
     hooks:
       - id: buildifier
       - id: buildifier-lint
   # Enforce that commit messages allow for later changelog generation
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.4.1
+    rev: v4.8.2
     hooks:
       # Requires that commitizen is already installed
       - id: commitizen
@@ -36,7 +36,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/crate-ci/typos
-    rev: v1.30.0
+    rev: v1.32.0
     hooks:
       - id: typos
         exclude: |
