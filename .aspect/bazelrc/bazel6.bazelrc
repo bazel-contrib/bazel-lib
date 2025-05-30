@@ -1,3 +1,5 @@
+# Not using common here because https://github.com/bazelbuild/bazel/pull/18609 was added in Bazel 6.3.0
+
 # Speed up all builds by not checking if external repository files have been modified.
 # Docs: https://github.com/bazelbuild/bazel/blob/1af61b21df99edc2fc66939cdf14449c2661f873/src/main/java/com/google/devtools/build/lib/bazel/repository/RepositoryOptions.java#L244
 build --noexperimental_check_external_repository_files
