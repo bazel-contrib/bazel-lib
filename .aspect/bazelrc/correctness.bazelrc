@@ -19,7 +19,7 @@ common --sandbox_default_allow_network=false
 # For instance, a test that normally executes in a minute or two should not have a timeout of
 # ETERNAL or LONG as these are much, much too generous.
 # Docs: https://bazel.build/docs/user-manual#test-verbose-timeout-warnings
-test --test_verbose_timeout_warnings
+common --test_verbose_timeout_warnings
 
 # Allow the Bazel server to check directory sources for changes. Ensures that the Bazel server
 # notices when a directory changes, if you have a directory listed in the srcs of some target.
@@ -33,7 +33,7 @@ startup --host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=1
 # Allow exclusive tests to run in the sandbox. Fixes a bug where Bazel doesn't enable sandboxing for
 # tests with `tags=["exclusive"]`.
 # Docs: https://bazel.build/reference/command-line-reference#flag--incompatible_exclusive_test_sandboxed
-test --incompatible_exclusive_test_sandboxed
+common --incompatible_exclusive_test_sandboxed
 
 # Use a static value for `PATH` and does not inherit `LD_LIBRARY_PATH`. Doesn't let environment
 # variables like `PATH` sneak into the build, which can cause massive cache misses when they change.
@@ -61,4 +61,4 @@ common --incompatible_disallow_empty_glob
 # to generate a full coverage report.
 # Docs: https://bazel.build/reference/command-line-reference#flag--experimental_fetch_all_coverage_outputs
 # ditching remote cache results
-test --experimental_fetch_all_coverage_outputs
+common --experimental_fetch_all_coverage_outputs
