@@ -9,6 +9,14 @@ aspect_bazel_lib_dependencies()
 
 aspect_bazel_lib_register_toolchains()
 
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load("@platforms//host:extension.bzl", "host_platform_repo")
+
+maybe(
+    host_platform_repo,
+    name = "host_platform",
+)
+
 # rules_go is needed to consume tools from sources
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
