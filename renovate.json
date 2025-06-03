@@ -12,6 +12,7 @@
   "packageRules": [
     {
       "matchFiles": ["MODULE.bazel"],
+      "matchPackageNames": ["pre-commit/mirrors-prettier"],
       "enabled": false
     }
   ],
