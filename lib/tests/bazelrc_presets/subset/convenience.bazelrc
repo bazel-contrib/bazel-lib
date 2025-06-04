@@ -6,7 +6,7 @@ common --keep_going
 # fail. This makes the log noisier in exchange for reducing the time-to-feedback on test failures for
 # users.
 # Docs: https://bazel.build/docs/user-manual#test-output
-test --test_output=errors
+common --test_output=errors
 
 # Show the output files created by builds that requested more than one target. This helps users
 # locate the build outputs in more cases
