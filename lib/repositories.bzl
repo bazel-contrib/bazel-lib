@@ -51,6 +51,12 @@ def aspect_bazel_lib_dependencies():
         strip_prefix = "yq.bzl-0.1.1",
         url = "https://github.com/bazel-contrib/yq.bzl/releases/download/v0.1.1/yq.bzl-v0.1.1.tar.gz",
     )
+    http_archive(
+        name = "rules_shell",
+        sha256 = "bc61ef94facc78e20a645726f64756e5e285a045037c7a61f65af2941f4c25e1",
+        strip_prefix = "rules_shell-0.4.1",
+        url = "https://github.com/bazelbuild/rules_shell/releases/download/v0.4.1/rules_shell-v0.4.1.tar.gz",
+    )
 
 DEFAULT_JQ_REPOSITORY = "jq"
 DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION

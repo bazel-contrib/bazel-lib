@@ -76,6 +76,13 @@ load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies",
 
 aspect_bazel_lib_dependencies()
 
+# Required rules_shell dependencies
+load("@rules_shell//shell:repositories.bzl", "rules_shell_dependencies", "rules_shell_toolchains")
+
+rules_shell_dependencies()
+
+rules_shell_toolchains()
+
 # Register bazel-lib toolchains
 
 aspect_bazel_lib_register_toolchains()
