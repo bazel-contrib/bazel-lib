@@ -6,6 +6,10 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_call:
+    secrets:
+      BCR_PUBLISH_TOKEN:
+        required: true
 permissions:
   id-token: write
   attestations: write
