@@ -21,3 +21,8 @@ common --reuse_sandbox_directories
 # author.
 # Docs: https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles
 common --nolegacy_external_runfiles
+
+# The maximum number of attempts to retry if the build encountered a transient remote cache error that would otherwise fail the build.
+# Using the same value here than what is the default in Bazel 8 to help with https://github.com/bazelbuild/bazel/issues/22387
+# Docs: https://bazel.build/reference/command-line-reference#build-flag--experimental_remote_cache_eviction_retries
+common --experimental_remote_cache_eviction_retries=5
