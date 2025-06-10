@@ -1,5 +1,9 @@
 # In code review, collapse generated files
-docs/*.md linguist-generated=true
+docs/*.md   linguist-generated=true
+docs/jq.md  linguist-generated=false
+docs/tar.md linguist-generated=false
+docs/yq.md  linguist-generated=false
+
 
 #################################
 # Configuration for 'git archive'
