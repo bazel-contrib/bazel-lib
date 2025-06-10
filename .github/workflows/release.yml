@@ -53,11 +53,11 @@ jobs:
         go-binaries/*
         bazel-lib-*.tar.gz
       prerelease: false
-      tag_name: ${{ github.ref_name }}
+      tag_name: ${{ inputs.tag_name || github.ref_name }}
   publish:
     needs: release
     uses: ./.github/workflows/publish.yaml
     with:
-      tag_name: ${{ github.ref_name }}
+      tag_name: ${{ inputs.tag_name || github.ref_name }}
     secrets:
       BCR_PUBLISH_TOKEN: ${{ secrets.BCR_PUBLISH_TOKEN }}
