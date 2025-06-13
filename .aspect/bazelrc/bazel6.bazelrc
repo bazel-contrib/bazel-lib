@@ -54,3 +54,10 @@ query --experimental_allow_tags_propagation
 # author.
 # Docs: https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles
 build --nolegacy_external_runfiles
+
+# The maximum number of attempts to retry a download error.
+# Using the default value from Bazel 8.
+# Docs: https://bazel.build/reference/command-line-reference#common_options-flag--experimental_repository_downloader_retries
+build --experimental_repository_downloader_retries=5
+fetch --experimental_repository_downloader_retries=5
+query --experimental_repository_downloader_retries=5
