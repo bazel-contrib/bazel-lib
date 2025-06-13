@@ -1,5 +1,5 @@
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("//:bzl_library.bzl", "bzl_library")
 load("//lib:utils.bzl", "is_bzlmod_enabled")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
 

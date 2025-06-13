@@ -1,10 +1,10 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@aspect_bazel_lib_host//:defs.bzl", "host")
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+load("//:bzl_library.bzl", "bzl_library")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:testing.bzl", "assert_contains")
 load("//lib:write_source_files.bzl", "write_source_files")
@@ -116,10 +116,20 @@ assert_contains(
 )
 
 bzl_library(
+    name = "bzl_library",
+    srcs = ["bzl_library.bzl"],
+    deps = ["@bazel_skylib//:bzl_library"],
+)
+
+bzl_library(
     name = "deps",
     srcs = ["deps.bzl"],
     visibility = ["//visibility:public"],
-    deps = ["@gazelle//:deps"],
+    deps = [
+        "@bazel_tools//tools/build_defs/repo:cache.bzl",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@gazelle//:deps",
+    ],
 )
 
 # Place the .vale.ini file in bazel-bin so the relative path it contains
