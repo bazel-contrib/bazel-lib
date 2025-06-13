@@ -1,4 +1,4 @@
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@aspect_bazel_lib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//lib:utils.bzl", "is_bzlmod_enabled")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
@@ -243,7 +243,12 @@ bzl_library(
 bzl_library(
     name = "extensions",
     srcs = ["extensions.bzl"],
-    deps = ["@aspect_bazel_lib//lib:repositories"],
+    deps = [
+        "//lib:repositories",
+        "//lib/private:extension_utils",
+        "//lib/private:host_repo",
+        "@bazel_features//:features",
+    ],
 )
 
 bzl_library(
