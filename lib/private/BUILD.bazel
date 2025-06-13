@@ -1,4 +1,4 @@
-load("//:bzl_library.bzl", "bzl_library")
+load("@aspect_bazel_lib//:bzl_library.bzl", "bzl_library")
 load("//lib:utils.bzl", "is_bazel_7_or_greater")
 load(":utf8_environment.bzl", "utf8_environment")
 

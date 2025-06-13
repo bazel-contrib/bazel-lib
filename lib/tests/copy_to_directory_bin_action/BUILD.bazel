@@ -1,4 +1,4 @@
-load("//:bzl_library.bzl", "bzl_library")
+load("@aspect_bazel_lib//:bzl_library.bzl", "bzl_library")
 load("//lib:copy_directory.bzl", "copy_directory")
 load("//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//lib:diff_test.bzl", "diff_test")

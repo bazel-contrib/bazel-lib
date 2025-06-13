@@ -68,11 +68,17 @@ def bzl_library(name, srcs = [], deps = [], **kwargs):
         **kwargs
     )
 
-    if hasattr(native, "starlark_doc_extract"):
+    # validate that public API docs have correct deps, by running the doc extractor over them.
+    # TODO(alexeagle): it would be better to attach this as a validation action in the bzl_library_rule
+    # but there's no tool available for that since the Java implementation code is only exposed as a
+    # native Bazel rule.
+    # See bazelbuild/bazel-skylib#568
+    if hasattr(native, "starlark_doc_extract") and "/private" not in native.package_name():
         for i, src in enumerate(srcs):
             native.starlark_doc_extract(
                 name = "{}.doc_extract{}".format(name, i if i > 0 else ""),
                 src = src,
                 deps = deps,
                 testonly = True,
+                visibility = ["//visibility:private"],
             )

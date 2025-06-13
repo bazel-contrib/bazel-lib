@@ -1,4 +1,4 @@
-load("//:bzl_library.bzl", "bzl_library")
+load("@aspect_bazel_lib//:bzl_library.bzl", "bzl_library")
 load(":write_aspect_bazelrc_presets.bzl", "write_aspect_bazelrc_presets")
 
 write_aspect_bazelrc_presets(name = "update_aspect_bazelrc_presets")
