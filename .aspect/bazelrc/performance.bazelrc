@@ -16,4 +16,4 @@ common --nobuild_runfile_links
 
 # Needed prior to Bazel 8; see
 # https://github.com/bazelbuild/bazel/issues/20577
-common --build_runfile_links
+coverage --build_runfile_links
