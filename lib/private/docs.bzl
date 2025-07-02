@@ -20,7 +20,7 @@ def stardoc_with_diff_test(
     target_compatible_with = kwargs.pop("target_compatible_with", select({
         # stardoc produces different line endings on Windows
         # which makes the diff_test fail
-        "@platforms//os:windows": ["@platforms//:incompatible"],
+        Label("@platforms//os:windows"): [Label("@platforms//:incompatible")],
         "//conditions:default": [],
     }))
 
