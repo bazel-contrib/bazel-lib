@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "write_source_files_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/bazel-contrib/bazel-lib/tools/write_source_files",
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "write_source_files",
+    embed = [":write_source_files_lib"],
+    visibility = ["//visibility:public"],
+)

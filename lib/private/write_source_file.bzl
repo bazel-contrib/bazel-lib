@@ -8,7 +8,7 @@ load(":utils.bzl", "utils")
 WriteSourceFileInfo = provider(
     "Provider for write_source_file targets",
     fields = {
-        "executable": "Executable that updates the source files",
+        "args": "Arguments to pass",
     },
 )
 
@@ -213,169 +213,21 @@ _write_source_file_attrs = {
     "verbosity": attr.string(
         values = ["full", "short", "quiet"],
     ),
-    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
-    "_macos_constraint": attr.label(default = "@platforms//os:macos"),
+    "_writer_bin": attr.label(
+        default = "//tools/write_source_files",
+        executable = True,
+        # Intentionally use the target platform since the target is always meant to be `bazel run`
+        # on the host machine but we don't want to transition it to the host platform and have the
+        # generated file rebuilt in a separate output tree. Target platform should always be equal
+        # to the host platform when using `write_source_files`.
+        cfg = "target",
+    ),
 }
 
-def _write_source_file_sh(ctx, paths):
-    is_macos = ctx.target_platform_has_constraint(ctx.attr._macos_constraint[platform_common.ConstraintValueInfo])
-
-    updater = ctx.actions.declare_file(
-        ctx.label.name + "_update.sh",
-    )
-
-    additional_update_scripts = []
-    for target in ctx.attr.additional_update_targets:
-        additional_update_scripts.append(target[WriteSourceFileInfo].executable)
-
-    contents = ["""#!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
-runfiles_dir=$PWD
-# BUILD_WORKSPACE_DIRECTORY not set when running as a test, uses the sandbox instead
-if [[ ! -z "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
-    cd "$BUILD_WORKSPACE_DIRECTORY"
-fi"""]
-
-    if ctx.attr.executable:
-        executable_file = "chmod +x \"$out\""
-        executable_dir = "chmod -R +x \"$out\""
-    else:
-        executable_file = "chmod -x \"$out\""
-        if is_macos:
-            # -x+X doesn't work on macos so we have to find files and remove the execute bits only from those
-            executable_dir = "find \"$out\" -type f | xargs chmod -x"
-        else:
-            # Remove execute/search bit recursively from files bit not directories: https://superuser.com/a/434418
-            executable_dir = "chmod -R -x+X \"$out\""
-
-    progress_message_dir = ""
-    progress_message_file = ""
-    if ctx.attr.verbosity == "full":
-        progress_message_dir = "echo \"Copying directory $in to $out in $PWD\""
-        progress_message_file = "echo \"Copying file $in to $out in $PWD\""
-    elif ctx.attr.verbosity == "short":
-        progress_message_dir = "echo \"Updating directory $out\""
-        progress_message_file = "echo \"Updating file $out\""
-
-    for in_path, out_path in paths:
-        contents.append("""
-in=$runfiles_dir/{in_path}
-out={out_path}
-
-mkdir -p "$(dirname "$out")"
-if [[ -f "$in" ]]; then
-    {progress_message_file}
-    # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
-    chmod -R +w "$out" > /dev/null 2>&1 || true
-    rm -Rf "$out"
-    cp -f "$in" "$out"
-    # cp should make the file writable but call chmod anyway as a defense in depth
-    chmod +w "$out"
-    # cp should make the file not-executable but set the desired execute bit in both cases as a defense in depth
-    {executable_file}
-else
-    {progress_message_dir}
-    # in case `cp` from previous command was terminated midway which can result in read-only files/dirs
-    chmod -R +w "$out" > /dev/null 2>&1 || true
-    rm -Rf "$out"/{{*,.[!.]*}}
-    mkdir -p "$out"
-    cp -fRL "$in"/. "$out"
-    chmod -R +w "$out"
-    {executable_dir}
-fi
-""".format(
-            in_path = in_path,
-            out_path = out_path,
-            executable_file = executable_file,
-            executable_dir = executable_dir,
-            progress_message_dir = progress_message_dir,
-            progress_message_file = progress_message_file,
-        ))
-
-    contents.extend([
-        "cd \"$runfiles_dir\"",
-        "# Run the update scripts for all write_source_file deps",
-    ])
-    for update_script in additional_update_scripts:
-        contents.append("./\"{update_script}\"".format(update_script = update_script.short_path))
-
-    ctx.actions.write(
-        output = updater,
-        is_executable = True,
-        content = "\n".join(contents),
-    )
-
-    return updater
-
-def _write_source_file_bat(ctx, paths):
-    updater = ctx.actions.declare_file(
-        ctx.label.name + "_update.bat",
-    )
-
-    additional_update_scripts = []
-    for target in ctx.attr.additional_update_targets:
-        if target[DefaultInfo].files_to_run and target[DefaultInfo].files_to_run.executable:
-            additional_update_scripts.append(target[DefaultInfo].files_to_run.executable)
-        else:
-            fail("additional_update_targets target %s does not provide an executable")
-
-    contents = ["""@rem @generated by @aspect_bazel_lib//:lib/private:write_source_file.bzl
-@echo off
-set runfiles_dir=%cd%
-if defined BUILD_WORKSPACE_DIRECTORY (
-    cd %BUILD_WORKSPACE_DIRECTORY%
-)"""]
-
-    progress_message = ""
-    if ctx.attr.verbosity == "full":
-        progress_message = "echo Copying %in% to %out% in %cd%"
-    elif ctx.attr.verbosity == "short":
-        progress_message = "echo Updating %out%"
-
-    for in_path, out_path in paths:
-        contents.append("""
-set in=%runfiles_dir%\\{in_path}
-set out={out_path}
-
-if not defined BUILD_WORKSPACE_DIRECTORY (
-    @rem Because there's no sandboxing in windows, if we copy over the target
-    @rem file's symlink it will get copied back into the source directory
-    @rem during tests. Work around this in tests by deleting the target file
-    @rem symlink before copying over it.
-    del %out%
-)
-
-{progress_message}
-
-if exist "%in%\\*" (
-    mkdir "%out%" >NUL 2>NUL
-    robocopy "%in%" "%out%" /E >NUL
-) else (
-    copy %in% %out% >NUL
-)
-""".format(
-            in_path = in_path.replace("/", "\\"),
-            out_path = out_path.replace("/", "\\"),
-            progress_message = progress_message,
-        ))
-
-    contents.extend([
-        "cd %runfiles_dir%",
-        "@rem Run the update scripts for all write_source_file deps",
-    ])
-    for update_script in additional_update_scripts:
-        contents.append("call {update_script}".format(update_script = update_script.short_path))
-
-    ctx.actions.write(
-        output = updater,
-        is_executable = True,
-        content = "\n".join(contents).replace("\n", "\r\n"),
-    )
-    return updater
+def _map_arg(item):
+    return [item[0], item[1], str(item[2])]
 
 def _write_source_file_impl(ctx):
-    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
-
     out_file = Label(ctx.attr.out_file) if ctx.attr.out_file else None
 
     if out_file and not ctx.attr.in_file:
@@ -383,7 +235,7 @@ def _write_source_file_impl(ctx):
     if ctx.attr.in_file and not out_file:
         fail("out_file must be specified if in_file is set")
 
-    paths = []
+    direct_args = []
     runfiles = []
 
     if ctx.attr.in_file and out_file:
@@ -403,12 +255,26 @@ def _write_source_file_impl(ctx):
             fail(msg)
 
         out_path = "/".join([out_file.package, out_file.name]) if out_file.package else out_file.name
-        paths.append((in_path, out_path))
+        direct_args.append((in_path, out_path, ctx.attr.executable))
 
-    if is_windows:
-        updater = _write_source_file_bat(ctx, paths)
-    else:
-        updater = _write_source_file_sh(ctx, paths)
+    arg_depset = depset(
+        direct_args,
+        transitive = [dep[WriteSourceFileInfo].args for dep in ctx.attr.additional_update_targets],
+    )
+
+    args = ctx.actions.args()
+    args.add_all(arg_depset, map_each = _map_arg)
+
+    updater = ctx.actions.declare_file(ctx.attr.name + "_updater")
+    ctx.actions.symlink(
+        output=updater,
+        target_file=ctx.executable._writer_bin,
+        is_executable = True,
+    )
+
+    args_file = ctx.actions.declare_file(ctx.attr.name + "_args")
+    ctx.actions.write(args_file, args)
+    runfiles.append(args_file)
 
     runfiles = ctx.runfiles(
         files = runfiles,
@@ -424,7 +290,12 @@ def _write_source_file_impl(ctx):
             runfiles = runfiles,
         ),
         WriteSourceFileInfo(
-            executable = updater,
+            args = arg_depset,
+        ),
+        RunEnvironmentInfo(
+            environment = {
+                "ARGS_PATH": args_file.short_path,
+            },
         ),
     ]
 
