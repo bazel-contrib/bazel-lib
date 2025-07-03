@@ -5,6 +5,7 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/bazel-contrib/bazel-lib/tools/write_source_files",
     visibility = ["//visibility:public"],
+    deps = ["//tools/common"],
 )
 
 go_binary(

@@ -124,7 +124,7 @@ func longestGlobMatch(g string, test string) (string, error) {
 }
 
 type walker struct {
-	queue chan<- common.CopyOpts
+	queue chan<- common.CopyFileOpts
 }
 
 func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
@@ -322,7 +322,9 @@ func (w *walker) copyPath(cfg *config, file fileInfo, outputPath string) error {
 
 	if !cfg.AllowOverwrites {
 		// if we don't allow overwrites then we can start copying as soon as a copy is calculated
-		w.queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, cfg.PreserveMTime)
+		w.queue <- common.NewCopyFileOpts(file.Path, outputPath, file.FileInfo,
+			common.CopyOpts{Hardlink: file.Hardlink, Verbose: cfg.Verbose, PreserveMTime: cfg.PreserveMTime},
+		)
 	}
 
 	return nil
@@ -406,7 +408,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	queue := make(chan common.CopyOpts, 100)
+	queue := make(chan common.CopyFileOpts, 100)
 	var wg sync.WaitGroup
 
 	const numWorkers = 10
@@ -424,7 +426,9 @@ func main() {
 		// if we allow overwrites then we must wait until all copy paths are calculated before starting
 		// any copy operations
 		for outputPath, file := range copySet {
-			queue <- common.NewCopyOpts(file.Path, outputPath, file.FileInfo, file.Hardlink, cfg.Verbose, cfg.PreserveMTime)
+			queue <- common.NewCopyFileOpts(file.Path, outputPath, file.FileInfo,
+				common.CopyOpts{Hardlink: file.Hardlink, Verbose: cfg.Verbose, PreserveMTime: cfg.PreserveMTime},
+			)
 		}
 	}
 

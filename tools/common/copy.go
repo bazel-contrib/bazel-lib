@@ -27,7 +27,7 @@ func CopyFile(src string, dst string) error {
 	return err
 }
 
-func Copy(opts CopyOpts) {
+func Copy(opts CopyFileOpts) {
 	if !opts.srcInfo.Mode().IsRegular() {
 		log.Fatalf("%s is not a regular file", opts.src)
 	}
@@ -35,14 +35,14 @@ func Copy(opts CopyOpts) {
 	opModifier := ""
 	const fallback = " (fallback)"
 
-	if opts.hardlink {
+	if opts.Hardlink {
 		// hardlink this file
-		if opts.verbose {
+		if opts.Verbose {
 			fmt.Printf("hardlink%s %v => %v\n", opModifier, opts.src, opts.dst)
 		}
 		err := os.Link(opts.src, opts.dst)
 		if err != nil {
-			if opts.verbose {
+			if opts.Verbose {
 				fmt.Printf("hardlink failed: %v\n", err)
 				opModifier = fallback
 			}
@@ -53,19 +53,19 @@ func Copy(opts CopyOpts) {
 	}
 
 	// clone this file
-	if opts.verbose {
+	if opts.Verbose {
 		fmt.Printf("clonefile%s %v => %v\n", opModifier, opts.src, opts.dst)
 	}
 	switch supported, err := cloneFile(opts.src, opts.dst); {
 	case !supported:
-		if opts.verbose {
+		if opts.Verbose {
 			fmt.Print("clonefile skipped: not supported by platform\n")
 		}
 		// fallback to copy
 	case supported && err == nil:
 		return
 	case supported && err != nil:
-		if opts.verbose {
+		if opts.Verbose {
 			fmt.Printf("clonefile failed: %v\n", err)
 			opModifier = fallback
 		}
@@ -73,7 +73,7 @@ func Copy(opts CopyOpts) {
 	}
 
 	// copy this file
-	if opts.verbose {
+	if opts.Verbose {
 		fmt.Printf("copy%s %v => %v\n", opModifier, opts.src, opts.dst)
 	}
 	err := CopyFile(opts.src, opts.dst)
@@ -81,7 +81,7 @@ func Copy(opts CopyOpts) {
 		log.Fatal(err)
 	}
 
-	if opts.preserveMTime {
+	if opts.PreserveMTime {
 		accessTime := time.Now()
 		err := os.Chtimes(opts.dst, accessTime, opts.srcInfo.ModTime())
 		if err != nil {
@@ -91,10 +91,10 @@ func Copy(opts CopyOpts) {
 }
 
 type CopyWorker struct {
-	queue <-chan CopyOpts
+	queue <-chan CopyFileOpts
 }
 
-func NewCopyWorker(queue <-chan CopyOpts) *CopyWorker {
+func NewCopyWorker(queue <-chan CopyFileOpts) *CopyWorker {
 	return &CopyWorker{queue: queue}
 }
 
@@ -106,13 +106,17 @@ func (w *CopyWorker) Run(wg *sync.WaitGroup) {
 }
 
 type CopyOpts struct {
-	src, dst      string
-	srcInfo       fs.FileInfo
-	hardlink      bool
-	verbose       bool
-	preserveMTime bool
+	Hardlink      bool
+	Verbose       bool
+	PreserveMTime bool
 }
 
-func NewCopyOpts(src string, dst string, srcInfo fs.FileInfo, hardlink bool, verbose bool, preserveMTime bool) CopyOpts {
-	return CopyOpts{src: src, dst: dst, srcInfo: srcInfo, hardlink: hardlink, verbose: verbose, preserveMTime: preserveMTime}
+type CopyFileOpts struct {
+	CopyOpts
+	src, dst string
+	srcInfo  fs.FileInfo
+}
+
+func NewCopyFileOpts(src string, dst string, srcInfo fs.FileInfo, copyOpts CopyOpts) CopyFileOpts {
+	return CopyFileOpts{src: src, dst: dst, srcInfo: srcInfo, CopyOpts: copyOpts}
 }
