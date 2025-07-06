@@ -25,6 +25,7 @@ run_binary(
     outs = ["expansions_out"],
     args = [
         "$@",
+        "$<",
         "$(@D)",
         "$(rootpath :gen_src_1)",
         "$(rootpaths :gen_src_1)",

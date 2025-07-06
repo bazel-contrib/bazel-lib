@@ -1,4 +1,5 @@
 bazel-out/PLATFORM-fastbuild/bin/lib/tests/run_binary_expansions/expansions_out
+bazel-out/PLATFORM-fastbuild/bin/lib/tests/run_binary_expansions/src_1
 bazel-out/PLATFORM-fastbuild/bin/lib/tests/run_binary_expansions
 lib/tests/run_binary_expansions/src_1
 lib/tests/run_binary_expansions/src_1

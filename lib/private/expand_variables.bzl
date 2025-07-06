@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:paths.bzl", _spaths = "paths")
 
-def expand_variables(ctx, s, outs = [], attribute_name = "args"):
+def expand_variables(ctx, s, outs = [], inputs = [], attribute_name = "args"):
     """Expand make variables and substitute like genrule does.
 
     Bazel [pre-defined variables](https://bazel.build/reference/be/make-variables#predefined_variables)
@@ -12,6 +12,8 @@ def expand_variables(ctx, s, outs = [], attribute_name = "args"):
 
     This function is the same as ctx.expand_make_variables with the additional
     genrule-like substitutions of:
+
+      - `$<`: The input file if it is a single file. Else triggers a build error.
 
       - `$@`: The output file if it is a single file. Else triggers a build error.
 
@@ -45,6 +47,7 @@ def expand_variables(ctx, s, outs = [], attribute_name = "args"):
         ctx: starlark rule context
         s: expression to expand
         outs: declared outputs of the rule, for expanding references to outputs
+        inputs: declared inputs of the rule, for expanding references to inputs
         attribute_name: name of the attribute containing the expression. Used for error reporting.
 
     Returns:
@@ -68,6 +71,13 @@ def expand_variables(ctx, s, outs = [], attribute_name = "args"):
             output_dir = outs[0].dirname
     else:
         output_dir = rule_dir
+
+    if s.find("$<") != -1 or s.find("$(<)") != -1:
+        if len(inputs) != 1:
+            fail("$< substitution may only be used with a single input.")
+        if inputs[0].is_directory:
+            fail("$< substitution may not be used with a directory input.")
+        additional_substitutions["<"] = inputs[0].path
 
     additional_substitutions["@D"] = output_dir
     additional_substitutions["RULEDIR"] = rule_dir
