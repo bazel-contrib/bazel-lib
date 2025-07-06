@@ -75,8 +75,6 @@ def expand_variables(ctx, s, outs = [], inputs = [], attribute_name = "args"):
     if s.find("$<") != -1 or s.find("$(<)") != -1:
         if len(inputs) != 1:
             fail("$< substitution may only be used with a single input.")
-        if inputs[0].is_directory:
-            fail("$< substitution may not be used with a directory input.")
         additional_substitutions["<"] = inputs[0].path
 
     additional_substitutions["@D"] = output_dir
