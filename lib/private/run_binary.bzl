@@ -49,10 +49,10 @@ Possible fixes:
         ))
 
     for a in ctx.attr.args:
-        args.add_all(split_args(expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.srcs), outs = outputs)))
+        args.add_all(split_args(expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs)))
     envs = {}
     for k, v in ctx.attr.env.items():
-        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.srcs), outs = outputs, attribute_name = "env")
+        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs, attribute_name = "env")
 
     stamp = maybe_stamp(ctx)
     if stamp:
