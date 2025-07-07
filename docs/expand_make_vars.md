@@ -62,7 +62,7 @@ Use vanilla `ctx.expand_location(input, targets = targets)` instead
 <pre>
 load("@aspect_bazel_lib//lib:expand_make_vars.bzl", "expand_variables")
 
-expand_variables(<a href="#expand_variables-ctx">ctx</a>, <a href="#expand_variables-s">s</a>, <a href="#expand_variables-outs">outs</a>, <a href="#expand_variables-attribute_name">attribute_name</a>)
+expand_variables(<a href="#expand_variables-ctx">ctx</a>, <a href="#expand_variables-s">s</a>, <a href="#expand_variables-outs">outs</a>, <a href="#expand_variables-inputs">inputs</a>, <a href="#expand_variables-attribute_name">attribute_name</a>)
 </pre>
 
 Expand make variables and substitute like genrule does.
@@ -74,6 +74,8 @@ are supported.
 
 This function is the same as ctx.expand_make_variables with the additional
 genrule-like substitutions of:
+
+  - `$<`: The input file if it is a single file. Else triggers a build error.
 
   - `$@`: The output file if it is a single file. Else triggers a build error.
 
@@ -112,6 +114,7 @@ for more information of how these special variables are expanded.
 | <a id="expand_variables-ctx"></a>ctx |  starlark rule context   |  none |
 | <a id="expand_variables-s"></a>s |  expression to expand   |  none |
 | <a id="expand_variables-outs"></a>outs |  declared outputs of the rule, for expanding references to outputs   |  `[]` |
+| <a id="expand_variables-inputs"></a>inputs |  declared inputs of the rule, for expanding references to inputs   |  `[]` |
 | <a id="expand_variables-attribute_name"></a>attribute_name |  name of the attribute containing the expression. Used for error reporting.   |  `"args"` |
 
 **RETURNS**
