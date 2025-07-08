@@ -32,7 +32,7 @@ def copy_file_to_bin_action(ctx, file):
     in your rule definition. For example:
 
     ```starlark
-    load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
+    load("@bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
 
     my_rule = rule(
         ...,
@@ -44,7 +44,7 @@ def copy_file_to_bin_action(ctx, file):
     WORKSPACE if you are not using bzlmod:
 
     ```starlark
-    load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+    load("@bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
 
     register_coreutils_toolchains()
     ```
@@ -102,7 +102,7 @@ target to {file_package} using:
 
     buildozer 'new copy_to_bin {target_name}' {file_package}:__pkg__
     buildozer 'add srcs {file_basename}' {file_package}:{target_name}
-    buildozer 'new_load @aspect_bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
+    buildozer 'new_load @bazel_lib//lib:copy_to_bin.bzl copy_to_bin' {file_package}:__pkg__
     buildozer 'add visibility {package}:__subpackages__' {file_package}:{target_name}
 
     """.format(

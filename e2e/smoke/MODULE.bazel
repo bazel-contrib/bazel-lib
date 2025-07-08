@@ -1,6 +1,6 @@
-bazel_dep(name = "aspect_bazel_lib", version = "0.0.0", dev_dependency = True)
+bazel_dep(name = "bazel_lib", version = "0.0.0", dev_dependency = True)
 local_path_override(
-    module_name = "aspect_bazel_lib",
+    module_name = "bazel_lib",
     path = "../..",
 )
 

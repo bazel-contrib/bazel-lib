@@ -1,11 +1,11 @@
 local_repository(
-    name = "aspect_bazel_lib",
+    name = "bazel_lib",
     path = "../..",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "aspect_bazel_lib_register_toolchains")
+load("@bazel_lib//lib:repositories.bzl", "bazel_lib_dependencies", "bazel_lib_register_toolchains")
 
-aspect_bazel_lib_dependencies()
+bazel_lib_dependencies()
 
 # Required rules_shell dependencies
 load("@rules_shell//shell:repositories.bzl", "rules_shell_dependencies", "rules_shell_toolchains")
@@ -14,7 +14,7 @@ rules_shell_dependencies()
 
 rules_shell_toolchains()
 
-aspect_bazel_lib_register_toolchains()
+bazel_lib_register_toolchains()
 
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("@platforms//host:extension.bzl", "host_platform_repo")
@@ -39,7 +39,7 @@ http_archive(
     urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.36.0/bazel-gazelle-v0.36.0.tar.gz"],
 )
 
-load("@aspect_bazel_lib//:deps.bzl", "go_dependencies")
+load("@bazel_lib//:deps.bzl", "go_dependencies")
 
 go_dependencies()
 

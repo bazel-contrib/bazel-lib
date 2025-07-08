@@ -5,7 +5,7 @@ Read more about the philosophy of writing to the source tree: <https://blog.aspe
 ## Usage
 
 ```starlark
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
 write_source_files(
     name = "write_foobar",
@@ -30,7 +30,7 @@ how to create it.
 You can declare a tree of generated source file targets:
 
 ```starlark
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
 write_source_files(
     name = "write_all",

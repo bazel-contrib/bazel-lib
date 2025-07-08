@@ -3,7 +3,7 @@
 ## Usage example
 
 ```starlark
-load("@aspect_bazel_lib//lib:utils.bzl", "utils")
+load("@bazel_lib//lib:utils.bzl", "utils")
 
 out_label = utils.to_label(out_file)
 ```

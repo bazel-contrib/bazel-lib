@@ -185,13 +185,13 @@ def _is_bazel_6_or_greater():
 
     WORKSPACE:
     ```
-    load("@aspect_bazel_lib//lib:host_repo.bzl", "host_repo")
-    host_repo(name = "aspect_bazel_lib_host")
+    load("@bazel_lib//lib:host_repo.bzl", "host_repo")
+    host_repo(name = "bazel_lib_host")
     ```
 
     BUILD.bazel:
     ```
-    load("@aspect_bazel_lib_host//:defs.bzl", "host")
+    load("@bazel_lib_host//:defs.bzl", "host")
     print(host.bazel_version)
     ```
 
@@ -217,13 +217,13 @@ def _is_bazel_7_or_greater():
 
     WORKSPACE:
     ```
-    load("@aspect_bazel_lib//lib:host_repo.bzl", "host_repo")
-    host_repo(name = "aspect_bazel_lib_host")
+    load("@bazel_lib//lib:host_repo.bzl", "host_repo")
+    host_repo(name = "bazel_lib_host")
     ```
 
     BUILD.bazel:
     ```
-    load("@aspect_bazel_lib_host//:defs.bzl", "host")
+    load("@bazel_lib_host//:defs.bzl", "host")
     print(host.bazel_version)
     ```
 

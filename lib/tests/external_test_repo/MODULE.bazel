@@ -1,7 +1,7 @@
 module(name = "external_test_repo")
 
-bazel_dep(name = "aspect_bazel_lib", version = "0.0.0")
+bazel_dep(name = "bazel_lib", version = "0.0.0")
 local_path_override(
-    module_name = "aspect_bazel_lib",
+    module_name = "bazel_lib",
     path = "../../..",
 )

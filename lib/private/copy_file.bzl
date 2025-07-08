@@ -21,7 +21,7 @@ These rules copy a file to another location using hermetic uutils/coreutils `cp`
 load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
-_COREUTILS_TOOLCHAIN = "@aspect_bazel_lib//lib:coreutils_toolchain_type"
+_COREUTILS_TOOLCHAIN = "@bazel_lib//lib:coreutils_toolchain_type"
 
 # Declare toolchains used by copy file actions so that downstream rulesets can pass it into
 # the `toolchains` attribute of their rule.
@@ -42,7 +42,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     in your rule definition. For example:
 
     ```starlark
-    load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
+    load("@bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
 
     my_rule = rule(
         ...,
@@ -54,7 +54,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
     WORKSPACE if you are not using bzlmod:
 
     ```starlark
-    load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+    load("@bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
 
     register_coreutils_toolchains()
     ```
@@ -85,7 +85,7 @@ def copy_file_action(ctx, src, dst, dir_path = None):
         mnemonic = "CopyFile",
         progress_message = "Copying file %{input}",
         execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
-        toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+        toolchain = "@bazel_lib//lib:coreutils_toolchain_type",
     )
 
 def _copy_file_impl(ctx):

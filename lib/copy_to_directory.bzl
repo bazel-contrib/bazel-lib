@@ -16,5 +16,5 @@ copy_to_directory = rule(
     implementation = _copy_to_directory_lib.impl,
     provides = _copy_to_directory_lib.provides,
     attrs = _copy_to_directory_lib.attrs,
-    toolchains = ["@aspect_bazel_lib//lib:copy_to_directory_toolchain_type"],
+    toolchains = ["@bazel_lib//lib:copy_to_directory_toolchain_type"],
 )

@@ -18,8 +18,8 @@ BATS_FILE_VERSIONS = {
 
 BATS_CORE_TEMPLATE = """\
 load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
-load("@aspect_bazel_lib//lib/private:bats_toolchain.bzl", "bats_toolchain")
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_lib//lib/private:bats_toolchain.bzl", "bats_toolchain")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
 copy_to_directory(
     name = "core",
@@ -41,12 +41,12 @@ toolchain(
     name = "bats_toolchain",
     exec_compatible_with = HOST_CONSTRAINTS,
     toolchain = ":toolchain",
-    toolchain_type = "@aspect_bazel_lib//lib:bats_toolchain_type",
+    toolchain_type = "@bazel_lib//lib:bats_toolchain_type",
 )
 """
 
 BATS_LIBRARY_TEMPLATE = """\
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
 copy_to_directory(
     name = "{name}",

@@ -20,9 +20,9 @@ For example to use commit `abc123` in `MODULE.bazel`:
 ```
 # Automatically picks up new Go dev dependencies
 git_override(
-    module_name = "aspect_bazel_lib",
+    module_name = "bazel_lib",
     commit = "abc123",
-    remote = "git@github.com:aspect-build/bazel-lib.git",
+    remote = "git@github.com:bazel-contrib/bazel-lib.git",
 )
 ```
 
@@ -34,7 +34,7 @@ Or in `WORKSPACE`:
 1. Replace `strip_prefix = "bazel-lib-0.1.0"` with `strip_prefix = "bazel-lib-abc123"`
 1. Update the `sha256`. The easiest way to do this is to comment out the line, then Bazel will
    print a message with the correct value.
-1. `load("@aspect_bazel_lib//:deps.bzl", "go_dependencies")` and then call `go_dependencies()`
+1. `load("@bazel_lib//:deps.bzl", "go_dependencies")` and then call `go_dependencies()`
 
 > Note that GitHub source archives don't have a strong guarantee on the sha256 stability, see
 > <https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes>

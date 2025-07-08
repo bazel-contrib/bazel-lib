@@ -1,5 +1,5 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_lib//lib:diff_test.bzl", "diff_test")
 
 # Test special cases of using "./**" and "./*/**" patterns in the root package
 

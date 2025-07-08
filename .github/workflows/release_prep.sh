@@ -51,10 +51,8 @@ cat <<EOF
 2. Add to your \`MODULE.bazel\` file:
 
 \`\`\`starlark
-bazel_dep(name = "aspect_bazel_lib", version = "${TAG:1}")
+bazel_dep(name = "bazel_lib", version = "${TAG:1}")
 \`\`\`
-
-> Read more about bzlmod: <https://blog.aspect.dev/bzlmod>
 
 ## Using WORKSPACE
 
@@ -64,17 +62,17 @@ Paste this snippet into your \`WORKSPACE\` file:
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
-    name = "aspect_bazel_lib",
+    name = "bazel_lib",
     sha256 = "${SHA}",
     strip_prefix = "${PREFIX}",
     url = "https://github.com/bazel-contrib/bazel-lib/releases/download/${TAG}/${ARCHIVE}",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "aspect_bazel_lib_register_toolchains")
+load("@bazel_lib//lib:repositories.bzl", "bazel_lib_dependencies", "bazel_lib_register_toolchains")
 
 # Required bazel-lib dependencies
 
-aspect_bazel_lib_dependencies()
+bazel_lib_dependencies()
 
 # Required rules_shell dependencies
 load("@rules_shell//shell:repositories.bzl", "rules_shell_dependencies", "rules_shell_toolchains")
@@ -85,7 +83,7 @@ rules_shell_toolchains()
 
 # Register bazel-lib toolchains
 
-aspect_bazel_lib_register_toolchains()
+bazel_lib_register_toolchains()
 
 # Create the host platform repository transitively required by bazel-lib
 

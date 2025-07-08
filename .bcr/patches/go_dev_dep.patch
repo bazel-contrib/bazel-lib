@@ -2,7 +2,7 @@ diff --git a/MODULE.bazel b/MODULE.bazel
 index e63fa5b..9d78a88 100644
 --- a/MODULE.bazel
 +++ b/MODULE.bazel
-@@ -50,19 +50,19 @@ use_repo(host, "aspect_bazel_lib_host")
+@@ -50,19 +50,19 @@ use_repo(host, "bazel_lib_host")
  bazel_dep(
      name = "gazelle",
      version = "0.40.0",

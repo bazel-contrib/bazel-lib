@@ -1,11 +1,11 @@
 local_repository(
-    name = "aspect_bazel_lib",
+    name = "bazel_lib",
     path = "../..",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
+load("@bazel_lib//lib:repositories.bzl", "bazel_lib_dependencies")
 
-aspect_bazel_lib_dependencies()
+bazel_lib_dependencies()
 
 load(":test_extension.bzl", "test_repo")
 

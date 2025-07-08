@@ -53,7 +53,7 @@ build:release --stamp --workspace_status_command=./tools/bazel_stamp_vars.sh
 First, load the helpers:
 
 ```starlark
-load("@aspect_bazel_lib//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
+load("@bazel_lib//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 ```
 
 In your rule implementation, call the `maybe_stamp` function.
