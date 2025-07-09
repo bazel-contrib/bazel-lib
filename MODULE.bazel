@@ -11,11 +11,6 @@ bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "stardoc", version = "0.6.2")
 bazel_dep(name = "rules_shell", version = "0.4.1")
 
-# TODO(3.0): remove this back-compat
-bazel_dep(name = "jq.bzl", version = "0.1.0")
-bazel_dep(name = "yq.bzl", version = "0.1.1")
-bazel_dep(name = "tar.bzl", version = "0.2.1")
-
 bazel_lib_toolchains = use_extension("@bazel_lib//lib:extensions.bzl", "toolchains")
 bazel_lib_toolchains.copy_directory()
 bazel_lib_toolchains.copy_to_directory()
