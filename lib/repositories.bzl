@@ -14,9 +14,8 @@ load("//lib/private:zstd_toolchain.bzl", "ZSTD_PLATFORMS", "zstd_binary_repo", "
 load("//tools:version.bzl", "IS_PRERELEASE")
 
 # buildifier: disable=unnamed-macro
-def aspect_bazel_lib_dependencies():
-    "Load dependencies required by aspect rules"
-
+def bazel_lib_dependencies():
+    "Load dependencies"
     http_archive(
         name = "bazel_skylib",
         sha256 = "bc283cdfcd526a52c3201279cda4bc298652efa898b10b4db0837dc51652756f",
@@ -274,10 +273,10 @@ def register_copy_directory_toolchains(name = DEFAULT_COPY_DIRECTORY_REPOSITORY,
     if IS_PRERELEASE:
         source_toolchains_repo(
             name = "%s_toolchains" % name,
-            toolchain_type = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
-            toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:copy_directory_toolchain.bzl",
+            toolchain_type = "@bazel_lib//lib:copy_directory_toolchain_type",
+            toolchain_rule_load_from = "@bazel_lib//lib/private:copy_directory_toolchain.bzl",
             toolchain_rule = "copy_directory_toolchain",
-            binary = "@aspect_bazel_lib//tools/copy_directory",
+            binary = "@bazel_lib//tools/copy_directory",
         )
         if register:
             native.register_toolchains("@%s_toolchains//:toolchain" % name)
@@ -309,10 +308,10 @@ def register_copy_to_directory_toolchains(name = DEFAULT_COPY_TO_DIRECTORY_REPOS
     if IS_PRERELEASE:
         source_toolchains_repo(
             name = "%s_toolchains" % name,
-            toolchain_type = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
-            toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:copy_to_directory_toolchain.bzl",
+            toolchain_type = "@bazel_lib//lib:copy_to_directory_toolchain_type",
+            toolchain_rule_load_from = "@bazel_lib//lib/private:copy_to_directory_toolchain.bzl",
             toolchain_rule = "copy_to_directory_toolchain",
-            binary = "@aspect_bazel_lib//tools/copy_to_directory",
+            binary = "@bazel_lib//tools/copy_to_directory",
         )
         if register:
             native.register_toolchains("@%s_toolchains//:toolchain" % name)
@@ -344,10 +343,10 @@ def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITOR
     if IS_PRERELEASE:
         source_toolchains_repo(
             name = "%s_toolchains" % name,
-            toolchain_type = "@aspect_bazel_lib//lib:expand_template_toolchain_type",
-            toolchain_rule_load_from = "@aspect_bazel_lib//lib/private:expand_template_toolchain.bzl",
+            toolchain_type = "@bazel_lib//lib:expand_template_toolchain_type",
+            toolchain_rule_load_from = "@bazel_lib//lib/private:expand_template_toolchain.bzl",
             toolchain_rule = "expand_template_toolchain",
-            binary = "@aspect_bazel_lib//tools/expand_template",
+            binary = "@bazel_lib//tools/expand_template",
         )
         if register:
             native.register_toolchains("@%s_toolchains//:toolchain" % name)
@@ -367,7 +366,7 @@ def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITOR
     )
 
 # buildifier: disable=unnamed-macro
-def aspect_bazel_lib_register_toolchains():
+def bazel_lib_register_toolchains():
     """Register all bazel-lib toolchains at their default versions.
 
     To be more selective about which toolchains and versions to register,

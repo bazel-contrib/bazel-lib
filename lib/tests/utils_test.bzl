@@ -51,7 +51,7 @@ def _is_external_label_test_impl(ctx):
     asserts.false(env, utils.is_external_label("//some/label"))
     asserts.false(env, utils.is_external_label(Label("//some/label")))
     asserts.false(env, utils.is_external_label("@//some/label"))
-    asserts.false(env, utils.is_external_label(Label("@aspect_bazel_lib//some/label")))
+    asserts.false(env, utils.is_external_label(Label("@bazel_lib//some/label")))
     asserts.false(env, ctx.attr.internal_with_workspace_as_string)
 
     # the "@@" repository name syntax applies to Bazel 6 or greater
@@ -133,7 +133,7 @@ def _consistent_label_str_impl(ctx):
 
     asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("//foo:bar")))
     asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@//foo:bar")))
-    asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@aspect_bazel_lib//foo:bar")))
+    asserts.equals(env, "@//foo:bar", utils.consistent_label_str(ctx, Label("@bazel_lib//foo:bar")))
     asserts.equals(env, "@bazel_skylib//foo:bar", utils.consistent_label_str(ctx, Label("@bazel_skylib//foo:bar")))
 
     return unittest.end(env)
@@ -186,7 +186,7 @@ def utils_test_suite():
         timeout = "short",
         # TODO: to_label tests don't work under bzlmod
         target_compatible_with = select({
-            "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+            "@bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
             "//conditions:default": [],
         }),
     )
@@ -194,7 +194,7 @@ def utils_test_suite():
     is_external_label_test(
         name = "is_external_label_tests",
         external_as_string = utils.is_external_label("@bazel_skylib//some/label"),
-        internal_with_workspace_as_string = utils.is_external_label("@aspect_bazel_lib//some/label"),
+        internal_with_workspace_as_string = utils.is_external_label("@bazel_lib//some/label"),
         timeout = "short",
     )
 
@@ -223,7 +223,7 @@ def utils_test_suite():
         timeout = "short",
         # TODO: consistent_label_str tests don't work under bzlmod
         target_compatible_with = select({
-            "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+            "@bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
             "//conditions:default": [],
         }),
     )

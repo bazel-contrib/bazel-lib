@@ -1,4 +1,4 @@
-load("@aspect_bazel_lib//lib:testing.bzl", "assert_archive_contains")
+load("@bazel_lib//lib:testing.bzl", "assert_archive_contains")
 
 # Case 1: Can decompress gzip archive
 genrule(

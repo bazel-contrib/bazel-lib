@@ -1,6 +1,6 @@
 """Test rule executing `copy_to_directory_bin_action`."""
 
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory_bin_action")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory_bin_action")
 
 def _directory_impl(ctx):
     dst = ctx.actions.declare_directory(ctx.attr.name)
@@ -26,7 +26,7 @@ directory = rule(
         "_tool": attr.label(
             executable = True,
             cfg = "exec",
-            default = "@aspect_bazel_lib//tools/copy_to_directory",
+            default = "@bazel_lib//tools/copy_to_directory",
         ),
     },
     doc = """

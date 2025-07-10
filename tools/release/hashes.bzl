@@ -7,7 +7,7 @@ Based on https://github.com/bazelbuild/examples/blob/main/rules/implicit_output/
 """
 
 def _hash(ctx, algo, file):
-    coreutils = ctx.toolchains["@aspect_bazel_lib//lib:coreutils_toolchain_type"]
+    coreutils = ctx.toolchains["@bazel_lib//lib:coreutils_toolchain_type"]
     out = ctx.actions.declare_file("{}.{}".format(file.basename, algo), sibling = file)
     ctx.actions.run_shell(
         outputs = [out],
@@ -21,7 +21,7 @@ def _hash(ctx, algo, file):
             basename = file.basename,
             out = out.path,
         ),
-        toolchain = "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+        toolchain = "@bazel_lib//lib:coreutils_toolchain_type",
     )
     return out
 
@@ -49,7 +49,7 @@ def _impl(ctx):
 _hashes = rule(
     implementation = _impl,
     toolchains = [
-        "@aspect_bazel_lib//lib:coreutils_toolchain_type",
+        "@bazel_lib//lib:coreutils_toolchain_type",
     ],
     attrs = {
         "src": attr.label(

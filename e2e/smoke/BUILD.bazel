@@ -1,11 +1,11 @@
-load("@aspect_bazel_lib//lib:bats.bzl", "bats_test")
-load("@aspect_bazel_lib//lib:copy_directory.bzl", "copy_directory")
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
-load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template")
-load("@aspect_bazel_lib//lib:jq.bzl", "jq")
-load("@aspect_bazel_lib//lib:tar.bzl", "tar")
-load("@aspect_bazel_lib//lib:yq.bzl", "yq")
+load("@bazel_lib//lib:bats.bzl", "bats_test")
+load("@bazel_lib//lib:copy_directory.bzl", "copy_directory")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@bazel_lib//lib:diff_test.bzl", "diff_test")
+load("@bazel_lib//lib:expand_template.bzl", "expand_template")
+load("@bazel_lib//lib:jq.bzl", "jq")
+load("@bazel_lib//lib:tar.bzl", "tar")
+load("@bazel_lib//lib:yq.bzl", "yq")
 load("@io_bazel_rules_go//go:def.bzl", "go_test")
 
 # Validate that JQ works and resolves its toolchain
@@ -82,7 +82,7 @@ diff_test(
     name = "a_stamp_test",
     file1 = ":a_stamp",
     file2 = select({
-        "@aspect_bazel_lib//lib:bzlmod": "a_stamp_expected_bzlmod",
+        "@bazel_lib//lib:bzlmod": "a_stamp_expected_bzlmod",
         "//conditions:default": "a_stamp_expected",
     }),
 )

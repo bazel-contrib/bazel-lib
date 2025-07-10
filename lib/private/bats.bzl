@@ -35,7 +35,7 @@ BATS_REPORT_FILENAME="$(basename $XML_OUTPUT_FILE)" exec $bats {tests} --report-
 _ENV_SET = """export {key}=\"{value}\""""
 
 def _bats_test_impl(ctx):
-    toolchain = ctx.toolchains["@aspect_bazel_lib//lib:bats_toolchain_type"]
+    toolchain = ctx.toolchains["@bazel_lib//lib:bats_toolchain_type"]
     batsinfo = toolchain.batsinfo
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
@@ -103,7 +103,7 @@ bats_test = rule(
         "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
     toolchains = [
-        "@aspect_bazel_lib//lib:bats_toolchain_type",
+        "@bazel_lib//lib:bats_toolchain_type",
         "@bazel_tools//tools/sh:toolchain_type",
     ],
     test = True,

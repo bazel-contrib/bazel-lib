@@ -10,13 +10,13 @@ def copy_directory_bin_action(
         src,
         dst,
         copy_directory_bin,
-        copy_directory_toolchain = "@aspect_bazel_lib//lib:copy_directory_toolchain_type",
+        copy_directory_toolchain = "@bazel_lib//lib:copy_directory_toolchain_type",
         hardlink = "auto",
         verbose = False,
         preserve_mtime = False):
     """Factory function that creates an action to copy a directory from src to dst using a tool binary.
 
-    The tool binary will typically be the `@aspect_bazel_lib//tools/copy_directory` `go_binary`
+    The tool binary will typically be the `@bazel_lib//tools/copy_directory` `go_binary`
     either built from source or provided by a toolchain.
 
     This helper is used by the copy_directory rule. It is exposed as a public API so it can be used
@@ -70,7 +70,7 @@ def copy_directory_bin_action(
     )
 
 def _copy_directory_impl(ctx):
-    copy_directory_bin = ctx.toolchains["@aspect_bazel_lib//lib:copy_directory_toolchain_type"].copy_directory_info.bin
+    copy_directory_bin = ctx.toolchains["@bazel_lib//lib:copy_directory_toolchain_type"].copy_directory_info.bin
 
     dst = ctx.actions.declare_directory(ctx.attr.out)
 
@@ -117,7 +117,7 @@ _copy_directory = rule(
         #     default = "//tools/copy_directory",
         # ),
     },
-    toolchains = ["@aspect_bazel_lib//lib:copy_directory_toolchain_type"],
+    toolchains = ["@bazel_lib//lib:copy_directory_toolchain_type"],
 )
 
 def copy_directory(

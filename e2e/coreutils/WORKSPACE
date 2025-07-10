@@ -1,10 +1,10 @@
 local_repository(
-    name = "aspect_bazel_lib",
+    name = "bazel_lib",
     path = "../..",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "register_coreutils_toolchains")
+load("@bazel_lib//lib:repositories.bzl", "bazel_lib_dependencies", "register_coreutils_toolchains")
 
-aspect_bazel_lib_dependencies()
+bazel_lib_dependencies()
 
 register_coreutils_toolchains()

@@ -1,6 +1,6 @@
 """Rule that uses copy actions"""
 
-load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS", "copy_file_action")
+load("@bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS", "copy_file_action")
 
 def _simple_copy_file_impl(ctx):
     if len(ctx.files.src) != 1:

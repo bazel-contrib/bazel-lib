@@ -278,7 +278,7 @@ _copy_to_directory_attr = {
 }
 
 def _copy_to_directory_impl(ctx):
-    copy_to_directory_bin = ctx.toolchains["@aspect_bazel_lib//lib:copy_to_directory_toolchain_type"].copy_to_directory_info.bin
+    copy_to_directory_bin = ctx.toolchains["@bazel_lib//lib:copy_to_directory_toolchain_type"].copy_to_directory_info.bin
 
     dst = ctx.actions.declare_directory(ctx.attr.out if ctx.attr.out else ctx.attr.name)
 
@@ -330,7 +330,7 @@ def copy_to_directory_bin_action(
         name,
         dst,
         copy_to_directory_bin,
-        copy_to_directory_toolchain = "@aspect_bazel_lib//lib:copy_to_directory_toolchain_type",
+        copy_to_directory_toolchain = "@bazel_lib//lib:copy_to_directory_toolchain_type",
         files = [],
         targets = [],
         root_paths = ["."],
@@ -346,7 +346,7 @@ def copy_to_directory_bin_action(
         verbose = False):
     """Factory function to copy files to a directory using a tool binary.
 
-    The tool binary will typically be the `@aspect_bazel_lib//tools/copy_to_directory` `go_binary`
+    The tool binary will typically be the `@bazel_lib//tools/copy_to_directory` `go_binary`
     either built from source or provided by a toolchain.
 
     This helper is used by copy_to_directory. It is exposed as a public API so it can be used within

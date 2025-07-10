@@ -50,7 +50,7 @@ bats_test(
     ],
     target_compatible_with = select({
         # TODO(thesayyn): incompatible with bzlmod
-        "@aspect_bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
+        "@bazel_lib//lib:bzlmod": ["@platforms//:incompatible"],
         "//conditions:default": [],
     }),
 )

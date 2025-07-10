@@ -1,4 +1,4 @@
-load("@aspect_bazel_lib//:bzl_library.bzl", "bzl_library")
+load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("//lib:run_binary.bzl", "run_binary")
 load(":stamp_aware_rule.bzl", "my_stamp_aware_rule")

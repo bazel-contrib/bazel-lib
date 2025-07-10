@@ -19,7 +19,7 @@ def _expand_template_impl(ctx):
             output = ctx.actions.declare_file(ctx.attr.name + ".txt")
 
     substitutions = _expand_substitutions(ctx, output, ctx.attr.substitutions)
-    expand_template_info = ctx.toolchains["@aspect_bazel_lib//lib:expand_template_toolchain_type"].expand_template_info
+    expand_template_info = ctx.toolchains["@bazel_lib//lib:expand_template_toolchain_type"].expand_template_info
     stamp = maybe_stamp(ctx)
     if stamp:
         substitutions = dicts.add(substitutions, _expand_substitutions(ctx, output, ctx.attr.stamp_substitutions))
@@ -49,7 +49,7 @@ def _expand_template_impl(ctx):
             outputs = [output],
             inputs = inputs,
             executable = expand_template_info.bin,
-            toolchain = "@aspect_bazel_lib//lib:expand_template_toolchain_type",
+            toolchain = "@bazel_lib//lib:expand_template_toolchain_type",
         )
     else:
         ctx.actions.expand_template(
@@ -76,7 +76,7 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
 [expand_variables](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/expand_make_vars.md#expand_variables).
 """,
     implementation = _expand_template_impl,
-    toolchains = ["@aspect_bazel_lib//lib:expand_template_toolchain_type"],
+    toolchains = ["@bazel_lib//lib:expand_template_toolchain_type"],
     attrs = dicts.add({
         "data": attr.label_list(
             doc = "List of targets for additional lookup information.",

@@ -1,5 +1,5 @@
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
-load("@aspect_bazel_lib//tools/release:hashes.bzl", "hashes")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
+load("@bazel_lib//tools/release:hashes.bzl", "hashes")
 
 genrule(
     name = "ls",

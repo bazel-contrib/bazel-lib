@@ -1,7 +1,8 @@
 "Module extensions for use with bzlmod"
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
-    "@aspect_bazel_lib//lib:repositories.bzl",
+    "@bazel_lib//lib:repositories.bzl",
     "DEFAULT_BATS_CORE_VERSION",
     "DEFAULT_BATS_REPOSITORY",
     "DEFAULT_COPY_DIRECTORY_REPOSITORY",
@@ -25,7 +26,6 @@ load(
     "register_yq_toolchains",
     "register_zstd_toolchains",
 )
-load("@bazel_features//:features.bzl", "bazel_features")
 load("//lib/private:extension_utils.bzl", "extension_utils")
 load("//lib/private:host_repo.bzl", "host_repo")
 
@@ -36,7 +36,7 @@ def _host_extension_impl(mctx):
             create_host_repo = True
 
     if create_host_repo:
-        host_repo(name = "aspect_bazel_lib_host")
+        host_repo(name = "bazel_lib_host")
 
 host = module_extension(
     implementation = _host_extension_impl,

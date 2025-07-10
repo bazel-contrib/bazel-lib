@@ -1,11 +1,11 @@
 local_repository(
-    name = "aspect_bazel_lib",
+    name = "bazel_lib",
     path = "../..",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies", "register_copy_to_directory_toolchains")
+load("@bazel_lib//lib:repositories.bzl", "bazel_lib_dependencies", "register_copy_to_directory_toolchains")
 
-aspect_bazel_lib_dependencies()
+bazel_lib_dependencies()
 
 register_copy_to_directory_toolchains()
 
@@ -26,7 +26,7 @@ http_archive(
     urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.36.0/bazel-gazelle-v0.36.0.tar.gz"],
 )
 
-load("@aspect_bazel_lib//:deps.bzl", "go_dependencies")
+load("@bazel_lib//:deps.bzl", "go_dependencies")
 
 go_dependencies()
 

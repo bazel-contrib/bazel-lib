@@ -2,7 +2,7 @@
 Test rule to create a pkg with DefaultInfo using copy_directory_bin_action
 """
 
-load("@aspect_bazel_lib//lib/private:copy_directory.bzl", "copy_directory_bin_action")
+load("@bazel_lib//lib/private:copy_directory.bzl", "copy_directory_bin_action")
 
 _attrs = {
     "src": attr.label(

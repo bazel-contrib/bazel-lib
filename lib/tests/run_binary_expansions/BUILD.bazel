@@ -1,6 +1,6 @@
 "tests for run_binary"
 
-load("@aspect_bazel_lib//lib:diff_test.bzl", "diff_test")
+load("@bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("//lib:run_binary.bzl", "run_binary")
@@ -41,9 +41,8 @@ run_binary(
         "$(BINDIR)",
         "$(GENDIR)",
         "$(TARGET_CPU)",
-        # Additional variables handled by aspect_bazel_lib expand_variables
+        # Additional variables handled by bazel_lib expand_variables
         # used by run_binary
-        # https://docs.aspect.build/rules/aspect_bazel_lib/docs/expand_expansions#expand_variables
         "$(BUILD_FILE_PATH)",
         "$(VERSION_FILE)",
         "$(INFO_FILE)",
@@ -64,7 +63,7 @@ diff_test(
     name = "expansions_golden_test",
     file1 = ":expansions_out",
     file2 = select({
-        "@aspect_bazel_lib//lib:bzlmod": "expansions_golden_bzlmod",
+        "@bazel_lib//lib:bzlmod": "expansions_golden_bzlmod",
         "//conditions:default": "expansions_golden",
     }),
 )
