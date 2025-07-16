@@ -43,28 +43,28 @@ BSDTAR_PLATFORMS = {
 
 BSDTAR_PREBUILT = {
     "darwin_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.9/tar_darwin_amd64",
-        "43707c7912ac1a0f6009ef3221d280eeaf340b6a8c43e9eae0c5cf5e8564be0a",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_darwin_amd64",
+        "921118f1d043aff08a8d7d7b477217781efb9dacad111646add724bc51575c6a",
     ),
     "darwin_arm64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.9/tar_darwin_arm64",
-        "8a9237203520abdedd8bcacf57f60f0c169d64c309b7b2a20ca216d66a559535",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_darwin_arm64",
+        "9e78a0b3e21bc05c67e54004e5b29c2b19c3a9f16ccec4de2a227b1e01aea5fd",
     ),
     "linux_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.9/tar_linux_amd64",
-        "8668782773c3d2337ebeaf212bb011c37c15462143c4ae9184a28c1d557c4455",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_linux_amd64",
+        "a703af6fc8df1a89f1ca864c651a9003b75069dd6b80bd32dcd94a7d255df07d",
     ),
     "linux_arm64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.9/tar_linux_arm64",
-        "0ef9cb4cb959fd451c79ee8b31b369efa15280902714da4c2043af1b0e0fddbb",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_linux_arm64",
+        "663f498baab2a9b7758e46d0c377b311c5b058758a37958372a0503c5dda4028",
     ),
     "windows_arm64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.9/tar_windows_arm64.exe",
-        "48fcc3074da03ac7b405361ed515d7abe9066351296f8a94dc3ecf697a66a1b7",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_windows_arm64.exe",
+        "1cb490a72385a394bc3643d8409717c544b7af11a24864dc7bf15f1f7333da22",
     ),
     "windows_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.7.9/tar_windows_x86_64.exe",
-        "c0ef7b000fda607b1becacde5345dfa1f22c1890cc2b3cd2ca8e3343b47a4243",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_windows_x86_64.exe",
+        "a548b165eea72e8b8b260b15f9f77625423a8f40c4e436dc235ad9e575b285e2",
     ),
 }
 
