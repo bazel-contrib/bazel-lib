@@ -88,4 +88,5 @@ def bzl_library(name, srcs = [], deps = [], **kwargs):
         native.filegroup(
             name = "{}.docs-as-proto".format(name),
             srcs = extract_targets,
+            testonly = True,
         )
