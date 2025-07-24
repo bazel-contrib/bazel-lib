@@ -74,11 +74,19 @@ def bzl_library(name, srcs = [], deps = [], **kwargs):
     # native Bazel rule.
     # See bazelbuild/bazel-skylib#568
     if hasattr(native, "starlark_doc_extract") and "/private" not in native.package_name():
+        extract_targets = []
         for i, src in enumerate(srcs):
+            extract_target = "{}.doc_extract{}".format(name, i if i > 0 else "")
             native.starlark_doc_extract(
-                name = "{}.doc_extract{}".format(name, i if i > 0 else ""),
+                name = extract_target,
                 src = src,
                 deps = deps,
                 testonly = True,
                 visibility = ["//visibility:private"],
             )
+            extract_targets.append(extract_target)
+        native.filegroup(
+            name = "{}.docs-as-proto".format(name),
+            srcs = extract_targets,
+            testonly = True,
+        )
