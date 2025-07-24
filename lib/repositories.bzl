@@ -8,7 +8,6 @@ load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
-load("//lib/private:tar_toolchain.bzl", "BSDTAR_PLATFORMS", "bsdtar_binary_repo", "tar_toolchains_repo")
 load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 load("//lib/private:zstd_toolchain.bzl", "ZSTD_PLATFORMS", "zstd_binary_repo", "zstd_toolchains_repo")
 load("//tools:version.bzl", "IS_PRERELEASE")
@@ -31,12 +30,6 @@ def bazel_lib_dependencies():
             "https://github.com/bazelbuild/platforms/releases/download/1.0.0/platforms-1.0.0.tar.gz",
         ],
         sha256 = "3384eb1c30762704fbe38e440204e114154086c8fc8a8c2e3e28441028c019a8",
-    )
-    http_archive(
-        name = "tar.bzl",
-        sha256 = "8710443803496e1b9b5b66f56ae55aa586338cb09a4ddeb9bb3d6df4e6da44c7",
-        strip_prefix = "tar.bzl-0.2.0",
-        url = "https://github.com/alexeagle/tar.bzl/releases/download/v0.2.0/tar.bzl-v0.2.0.tar.gz",
     )
     http_archive(
         name = "jq.bzl",
@@ -109,29 +102,6 @@ def register_yq_toolchains(name = DEFAULT_YQ_REPOSITORY, version = DEFAULT_YQ_VE
     yq_host_alias_repo(name = name)
 
     yq_toolchains_repo(
-        name = "%s_toolchains" % name,
-        user_repository_name = name,
-    )
-
-DEFAULT_TAR_REPOSITORY = "bsd_tar"
-
-def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
-    """Registers bsdtar toolchain and repositories
-
-    Args:
-        name: override the prefix for the generated toolchain repositories
-        register: whether to call through to native.register_toolchains.
-            Should be True for WORKSPACE users, but false when used under bzlmod extension
-    """
-    for [platform, _] in BSDTAR_PLATFORMS.items():
-        bsdtar_binary_repo(
-            name = "%s_%s" % (name, platform),
-            platform = platform,
-        )
-        if register:
-            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
-
-    tar_toolchains_repo(
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
@@ -378,6 +348,5 @@ def bazel_lib_register_toolchains():
     register_coreutils_toolchains()
     register_jq_toolchains()
     register_yq_toolchains()
-    register_tar_toolchains()
     register_zstd_toolchains()
     register_bats_toolchains()

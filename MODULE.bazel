@@ -7,6 +7,7 @@ module(
 # Lower-bounds (minimum) versions for direct runtime dependencies
 bazel_dep(name = "bazel_features", version = "1.9.0")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
+bazel_dep(name = "jq.bzl", version = "0.1.0")
 bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "stardoc", version = "0.6.2")
 bazel_dep(name = "rules_shell", version = "0.4.1")
@@ -17,11 +18,10 @@ bazel_lib_toolchains.copy_to_directory()
 bazel_lib_toolchains.jq()
 bazel_lib_toolchains.yq()
 bazel_lib_toolchains.coreutils()
-bazel_lib_toolchains.tar()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
+use_repo(bazel_lib_toolchains, "bats_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
@@ -31,7 +31,6 @@ register_toolchains(
     "@coreutils_toolchains//:all",
     "@expand_template_toolchains//:all",
     "@bats_toolchains//:all",
-    "@bsd_tar_toolchains//:all",
     "@zstd_toolchains//:all",
 )
 

@@ -7,8 +7,7 @@ genrule(
         "srcfile",
     ],
     outs = ["1.tar.gz"],
-    cmd = "$(BSDTAR_BIN) --create --gzip --dereference --file $@ -s '#$(BINDIR)##' $(execpath srcfile)",
-    toolchains = ["@bsd_tar_toolchains//:resolved_toolchain"],
+    cmd = "tar --create --gzip --dereference --file $@ -s '#$(BINDIR)##' $(execpath srcfile)",
 )
 
 genrule(
