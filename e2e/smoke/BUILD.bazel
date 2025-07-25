@@ -3,36 +3,7 @@ load("@bazel_lib//lib:copy_directory.bzl", "copy_directory")
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@bazel_lib//lib:expand_template.bzl", "expand_template")
-load("@bazel_lib//lib:jq.bzl", "jq")
-load("@bazel_lib//lib:tar.bzl", "tar")
-load("@bazel_lib//lib:yq.bzl", "yq")
 load("@io_bazel_rules_go//go:def.bzl", "go_test")
-
-# Validate that JQ works and resolves its toolchain
-jq(
-    name = "jq_case_no_sources",
-    srcs = [],
-    filter = ".",
-)
-
-diff_test(
-    name = "jq_test",
-    file1 = "jq_case_no_sources",
-    file2 = "expected_jq",
-)
-
-# Validate that YQ works and resolves its toolchain
-yq(
-    name = "yq_case_no_sources",
-    srcs = [],
-    expression = ".",
-)
-
-diff_test(
-    name = "yq_test",
-    file1 = "yq_case_no_sources",
-    file2 = "expected_yq",
-)
 
 # Validate that copy_directory works and resolves its toolchain
 copy_directory(
