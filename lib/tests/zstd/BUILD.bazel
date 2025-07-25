@@ -1,22 +1,21 @@
 load("@bazel_lib//lib:testing.bzl", "assert_archive_contains")
 
 # Case 1: Can decompress gzip archive
-genrule(
-    name = "tar",
-    srcs = [
-        "srcfile",
-    ],
-    outs = ["1.tar.gz"],
-    cmd = "tar --create --gzip --dereference --file $@ -s '#$(BINDIR)##' $(execpath srcfile)",
-)
+# Run with BSD tar to produce 1.tar.gz (checked into this folder)
+# genrule(
+#     name = "tar",
+#     srcs = [
+#         "srcfile",
+#     ],
+#     outs = ["1.tar.gz"],
+#     cmd = "tar --create --gzip --dereference --file $@ -s '#$(BINDIR)##' $(execpath srcfile)",
+# )
 
 genrule(
     name = "decompress_tar",
-    srcs = [
-        ":tar",
-    ],
+    srcs = ["1.tar.gz"],
     outs = ["1.tar"],
-    cmd = "$(ZSTD_BIN) -f --decompress $(execpath :tar) --stdout > $@",
+    cmd = "$(ZSTD_BIN) -f --decompress $(execpath 1.tar.gz) --stdout > $@",
     toolchains = ["@zstd_toolchains//:resolved_toolchain"],
 )
 
