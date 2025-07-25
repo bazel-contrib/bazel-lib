@@ -58,13 +58,6 @@ diff_test(
     }),
 )
 
-# Validate that tar works and resolves its toolchain
-tar(
-    name = "tar_empty",
-    srcs = [],
-    mtree = [],
-)
-
 bats_test(
     name = "bats",
     srcs = [

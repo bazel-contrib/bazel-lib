@@ -114,6 +114,7 @@ jobs:
             --test_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
             --build_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
             --enable_bzlmod=${{ matrix.bzlmod }} \
+            --enable_workspace=${{ ! matrix.bzlmod }} \
             //...
       - name: Integration tests
         # Don't run integration tests on Windows since they are bash scripts and Windows runs Powershell
