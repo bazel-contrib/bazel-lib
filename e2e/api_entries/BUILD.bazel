@@ -41,8 +41,6 @@ build_test(
         "@bazel_lib//lib:stamp_detect",
         "@bazel_lib//lib:stamping",
         "@bazel_lib//lib:strings",
-        "@bazel_lib//lib:tar",
-        "@bazel_lib//lib:tar_toolchain_type",
         "@bazel_lib//lib:testing",
         "@bazel_lib//lib:transitions",
         "@bazel_lib//lib:utils",
