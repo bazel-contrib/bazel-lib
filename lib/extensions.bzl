@@ -12,8 +12,6 @@ load(
     "DEFAULT_EXPAND_TEMPLATE_REPOSITORY",
     "DEFAULT_JQ_REPOSITORY",
     "DEFAULT_JQ_VERSION",
-    "DEFAULT_YQ_REPOSITORY",
-    "DEFAULT_YQ_VERSION",
     "DEFAULT_ZSTD_REPOSITORY",
     "register_bats_toolchains",
     "register_copy_directory_toolchains",
@@ -21,7 +19,6 @@ load(
     "register_coreutils_toolchains",
     "register_expand_template_toolchains",
     "register_jq_toolchains",
-    "register_yq_toolchains",
     "register_zstd_toolchains",
 )
 load("//lib/private:extension_utils.bzl", "extension_utils")
@@ -69,13 +66,6 @@ def _toolchains_extension_impl(mctx):
 
     extension_utils.toolchain_repos_bfs(
         mctx = mctx,
-        get_tag_fn = lambda tags: tags.yq,
-        toolchain_name = "yq",
-        toolchain_repos_fn = lambda name, version: register_yq_toolchains(name = name, version = version, register = False),
-    )
-
-    extension_utils.toolchain_repos_bfs(
-        mctx = mctx,
         get_tag_fn = lambda tags: tags.coreutils,
         toolchain_name = "coreutils",
         toolchain_repos_fn = lambda name, version: register_coreutils_toolchains(name = name, version = version, register = False),
@@ -118,7 +108,6 @@ toolchains = module_extension(
         "copy_directory": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_DIRECTORY_REPOSITORY)}),
         "copy_to_directory": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_TO_DIRECTORY_REPOSITORY)}),
         "jq": tag_class(attrs = {"name": attr.string(default = DEFAULT_JQ_REPOSITORY), "version": attr.string(default = DEFAULT_JQ_VERSION)}),
-        "yq": tag_class(attrs = {"name": attr.string(default = DEFAULT_YQ_REPOSITORY), "version": attr.string(default = DEFAULT_YQ_VERSION)}),
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),
         "zstd": tag_class(attrs = {"name": attr.string(default = DEFAULT_ZSTD_REPOSITORY)}),
         "expand_template": tag_class(attrs = {"name": attr.string(default = DEFAULT_EXPAND_TEMPLATE_REPOSITORY)}),
