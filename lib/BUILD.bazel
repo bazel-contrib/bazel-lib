@@ -44,10 +44,6 @@ toolchain_type(
 )
 
 toolchain_type(
-    name = "yq_toolchain_type",
-)
-
-toolchain_type(
     name = "copy_directory_toolchain_type",
 )
 
@@ -235,7 +231,6 @@ bzl_library(
         "//lib/private:expand_template_toolchain",
         "//lib/private:jq_toolchain",
         "//lib/private:source_toolchains_repo",
-        "//lib/private:yq_toolchain",
         "//lib/private:zstd_toolchain",
     ],
 )

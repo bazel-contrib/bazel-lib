@@ -8,7 +8,6 @@ load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
 load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
-load("//lib/private:yq_toolchain.bzl", "YQ_PLATFORMS", "yq_host_alias_repo", "yq_platform_repo", "yq_toolchains_repo", _DEFAULT_YQ_VERSION = "DEFAULT_YQ_VERSION")
 load("//lib/private:zstd_toolchain.bzl", "ZSTD_PLATFORMS", "zstd_binary_repo", "zstd_toolchains_repo")
 load("//tools:version.bzl", "IS_PRERELEASE")
 
@@ -36,12 +35,6 @@ def bazel_lib_dependencies():
         sha256 = "7b63435aa19cc6a0cfd1a82fbdf2c7a2f0a94db1a79ff7a4469ffa94286261ab",
         strip_prefix = "jq.bzl-0.1.0",
         url = "https://github.com/bazel-contrib/jq.bzl/releases/download/v0.1.0/jq.bzl-v0.1.0.tar.gz",
-    )
-    http_archive(
-        name = "yq.bzl",
-        sha256 = "b51d82b561a78ab21d265107b0edbf98d68a390b4103992d0b03258bb3819601",
-        strip_prefix = "yq.bzl-0.1.1",
-        url = "https://github.com/bazel-contrib/yq.bzl/releases/download/v0.1.1/yq.bzl-v0.1.1.tar.gz",
     )
     http_archive(
         name = "rules_shell",
@@ -74,34 +67,6 @@ def register_jq_toolchains(name = DEFAULT_JQ_REPOSITORY, version = DEFAULT_JQ_VE
     jq_host_alias_repo(name = name)
 
     jq_toolchains_repo(
-        name = "%s_toolchains" % name,
-        user_repository_name = name,
-    )
-
-DEFAULT_YQ_REPOSITORY = "yq"
-DEFAULT_YQ_VERSION = _DEFAULT_YQ_VERSION
-
-def register_yq_toolchains(name = DEFAULT_YQ_REPOSITORY, version = DEFAULT_YQ_VERSION, register = True):
-    """Registers yq toolchain and repositories
-
-    Args:
-        name: override the prefix for the generated toolchain repositories
-        version: the version of yq to execute (see https://github.com/mikefarah/yq/releases)
-        register: whether to call through to native.register_toolchains.
-            Should be True for WORKSPACE users, but false when used under bzlmod extension
-    """
-    for [platform, _] in YQ_PLATFORMS.items():
-        yq_platform_repo(
-            name = "%s_%s" % (name, platform),
-            platform = platform,
-            version = version,
-        )
-        if register:
-            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
-
-    yq_host_alias_repo(name = name)
-
-    yq_toolchains_repo(
         name = "%s_toolchains" % name,
         user_repository_name = name,
     )
@@ -347,6 +312,5 @@ def bazel_lib_register_toolchains():
     register_expand_template_toolchains()
     register_coreutils_toolchains()
     register_jq_toolchains()
-    register_yq_toolchains()
     register_zstd_toolchains()
     register_bats_toolchains()
