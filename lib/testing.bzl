@@ -2,9 +2,9 @@
 
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@jq.bzl//jq:jq.bzl", "jq")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:diff_test.bzl", "diff_test")
-load("//lib:jq.bzl", "jq")
 load("//lib:params_file.bzl", "params_file")
 
 def assert_contains(name, actual, expected, size = "small", **kwargs):
