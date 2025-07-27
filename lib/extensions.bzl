@@ -8,6 +8,7 @@ load(
     "DEFAULT_COPY_TO_DIRECTORY_REPOSITORY",
     "DEFAULT_COREUTILS_REPOSITORY",
     "DEFAULT_COREUTILS_VERSION",
+    "DEFAULT_DIFFUTILS_REPOSITORY",
     "DEFAULT_EXPAND_TEMPLATE_REPOSITORY",
     "DEFAULT_JQ_REPOSITORY",
     "DEFAULT_JQ_VERSION",
@@ -19,6 +20,7 @@ load(
     "register_copy_directory_toolchains",
     "register_copy_to_directory_toolchains",
     "register_coreutils_toolchains",
+    "register_diffutils_toolchains",
     "register_expand_template_toolchains",
     "register_jq_toolchains",
     "register_tar_toolchains",
@@ -118,6 +120,15 @@ def _toolchains_extension_impl(mctx):
         get_version_fn = lambda attr: attr.core_version,
     )
 
+    extension_utils.toolchain_repos_bfs(
+        mctx = mctx,
+        get_tag_fn = lambda tags: tags.diffutils,
+        toolchain_name = "diffutils",
+        default_repository = DEFAULT_DIFFUTILS_REPOSITORY,
+        toolchain_repos_fn = lambda name, version: register_diffutils_toolchains(name = name, register = False),
+        get_version_fn = lambda attr: None,
+    )
+
     if bazel_features.external_deps.extension_metadata_has_reproducible:
         return mctx.extension_metadata(reproducible = True)
 
@@ -138,5 +149,6 @@ toolchains = module_extension(
             "name": attr.string(default = DEFAULT_BATS_REPOSITORY),
             "core_version": attr.string(default = DEFAULT_BATS_CORE_VERSION),
         }),
+        "diffutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_DIFFUTILS_REPOSITORY)}),
     },
 )
