@@ -41,6 +41,5 @@ repos:
       - id: typos
         exclude: |
           (?x)^(
-            lib/private/yq_toolchain.bzl|
             lib/tests/glob_match_test.bzl
           )
