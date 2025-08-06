@@ -25,6 +25,12 @@ ZSTD_PLATFORMS = {
             "@platforms//cpu:aarch64",
         ],
     ),
+    "windows_amd64": struct(
+        compatible_with = [
+            "@platforms//os:windows",
+            "@platforms//cpu:x86_64",
+        ],
+    ),
 }
 
 ZSTD_PREBUILT = {
@@ -41,6 +47,14 @@ ZSTD_PREBUILT = {
         "0f0bd1193509a598629d7fa745c4b0b6d5fa6719e0c94c01ef0f20e466d801a7",
     ),
     "linux_arm64": (
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_arm64",
+        "82aacf8f1c67ff3c94e04afb0721a848bbba70fbf8249ee4bc4c9085afb84548",
+    ),
+    "windows_amd64": (
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_arm64",
+        "82aacf8f1c67ff3c94e04afb0721a848bbba70fbf8249ee4bc4c9085afb84548",
+    ),
+    "windows_arm64": (
         "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_arm64",
         "82aacf8f1c67ff3c94e04afb0721a848bbba70fbf8249ee4bc4c9085afb84548",
     ),

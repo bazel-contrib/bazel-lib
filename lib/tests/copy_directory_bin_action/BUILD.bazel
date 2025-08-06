@@ -1,25 +1,16 @@
 load("//lib:diff_test.bzl", "diff_test")
 load(":pkg.bzl", "pkg")
 
-not_windows = select({
-    # 2023/10/10 18:59:00 lstat lib\tests\copy_directory_bin_action\d\d\s1 failed:
-    # CreateFile .\1: The system cannot find the file specified.
-    "@platforms//os:windows": ["@platforms//:incompatible"],
-    "//conditions:default": [],
-})
-
 pkg(
     name = "pkg",
     src = "d",
     out = "d2",
-    target_compatible_with = not_windows,
 )
 
 pkg(
     name = "pkg2",
     src = "pkg",
     out = "d3",
-    target_compatible_with = not_windows,
 )
 
 diff_test(

@@ -7,6 +7,7 @@ import %workspace%/.aspect/bazelrc/javascript.bazelrc
 import %workspace%/.aspect/bazelrc/performance.bazelrc
 
 ### YOUR PROJECT SPECIFIC OPTIONS GO HERE ###
+common --enable_platform_specific_config
 
 # For testing our --stamp behavior.
 # Normally users would use a --workspace_status_command with a script that calls `git describe`.
@@ -28,6 +29,13 @@ common --check_direct_dependencies=off
 
 # Make sure we don't regress this.
 common --incompatible_auto_exec_groups
+
+# Symlinks are pretty much required on windows so enable by default
+startup --windows_enable_symlinks
+
+# This option fixes 20 tests on Windows but I am reluctant to enable it as it would be
+# better for this library to be tested with runfiles off (it is a performance drain on windows).
+# common:windows --enable_runfiles
 
 # Load any settings & overrides specific to the current user from `.aspect/bazelrc/user.bazelrc`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
