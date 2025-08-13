@@ -118,12 +118,20 @@ write_source_file_test(
     name = "a_test",
     in_file = ":a-desired",
     out_file = "a.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 write_source_file_test(
     name = "b_test",
     in_file = ":b-desired",
     out_file = "b.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 write_source_file(
@@ -144,12 +152,20 @@ write_source_file_test(
     name = "f_test",
     in_file = ":f-desired",
     out_file = "f.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 write_source_file_test(
     name = "g_test",
     in_file = ":g-desired",
     out_file = "g.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 write_source_file(
@@ -172,6 +188,10 @@ write_source_files(
         "f2.js": ":f-desired",
         "g2.js": ":g-desired",
     },
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 genrule(
@@ -233,6 +253,10 @@ write_source_file_test(
     check_that_out_file_exists = False,
     in_file = ":a-desired",
     out_file = "//lib/tests/write_source_files/subpkg:a.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 # Test that we can write to a parent package
@@ -241,4 +265,8 @@ write_source_file_test(
     check_that_out_file_exists = False,
     in_file = ":a-desired",
     out_file = "//lib/tests:a.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )

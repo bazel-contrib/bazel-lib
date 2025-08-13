@@ -151,6 +151,10 @@ copy_to_directory(
     name = "case_6",
     srcs = case_srcs,
     include_external_repositories = ["external_test_repo?"],
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 # TODO: This test is a false positive. sh_test always includes default

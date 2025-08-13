@@ -62,4 +62,8 @@ assert_contains(
     name = "test_wc",
     actual = "wc.txt",
     expected = """0 1 4 lib/tests/coreutils/test.bin""",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
