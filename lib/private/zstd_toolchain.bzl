@@ -35,28 +35,28 @@ ZSTD_PLATFORMS = {
 
 ZSTD_PREBUILT = {
     "darwin_amd64": (
-        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_darwin_amd64",
-        "e4d517212005cf26f8b8d657455d1380318b071cb52a3ffd9dfbdf4c2ba71a13",
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6-bcr1/zstd_darwin_amd64",
+        "E4D517212005CF26F8B8D657455D1380318B071CB52A3FFD9DFBDF4C2BA71A13",
     ),
     "darwin_arm64": (
-        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_darwin_arm64",
-        "6e210eeae08fb6ba38c3ac2d1857075c28113aef68296f7e396f1180f7e894b9",
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6-bcr1/zstd_darwin_arm64",
+        "6E210EEAE08FB6BA38C3AC2D1857075C28113AEF68296F7E396F1180F7E894B9",
     ),
     "linux_amd64": (
-        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_amd64",
-        "0f0bd1193509a598629d7fa745c4b0b6d5fa6719e0c94c01ef0f20e466d801a7",
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6-bcr1/zstd_linux_amd64",
+        "0F0BD1193509A598629D7FA745C4B0B6D5FA6719E0C94C01EF0F20E466D801A7",
     ),
     "linux_arm64": (
-        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_arm64",
-        "82aacf8f1c67ff3c94e04afb0721a848bbba70fbf8249ee4bc4c9085afb84548",
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6-bcr1/zstd_linux_arm64",
+        "82AACF8F1C67FF3C94E04AFB0721A848BBBA70FBF8249EE4BC4C9085AFB84548",
     ),
     "windows_amd64": (
-        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_arm64",
-        "82aacf8f1c67ff3c94e04afb0721a848bbba70fbf8249ee4bc4c9085afb84548",
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6-bcr1/zstd_windows_x86_64.exe",
+        "A944FDE13D01892C7CF0970FE4271F9561373F5E0A46ECEA756B6AE9A31E056C",
     ),
     "windows_arm64": (
-        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6/zstd_linux_arm64",
-        "82aacf8f1c67ff3c94e04afb0721a848bbba70fbf8249ee4bc4c9085afb84548",
+        "https://github.com/aspect-build/zstd-prebuilt/releases/download/v1.5.6-bcr1/zstd_windows_arm64.exe",
+        "8CA462473BCCD13C9D9A952F09E5F628153785323949D539E8858B2ABB85E246",
     ),
 }
 
