@@ -146,3 +146,14 @@ filegroup(
     srcs = glob(["*.md"]),
     tags = ["markdown"],
 )
+
+filegroup(
+    name = "bzl_srcs",
+    srcs = glob(
+        include = ["**/*.bzl"],
+        exclude = ["bazel-*/**"],
+    ) + [
+        "//lib:bzl_srcs",
+    ],
+    visibility = ["//visibility:public"],
+)

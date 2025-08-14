@@ -15,6 +15,12 @@ exports_files(
     visibility = ["//lib/private/docs:__pkg__"],
 )
 
+filegroup(
+    name = "bzl_srcs",
+    srcs = glob(["**/*.bzl"]),
+    visibility = ["//:__subpackages__"],
+)
+
 utf8_environment(
     name = "utf8_environment",
     visibility = ["//visibility:public"],

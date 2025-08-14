@@ -329,3 +329,11 @@ bzl_library(
     name = "resource_sets",
     srcs = ["resource_sets.bzl"],
 )
+
+filegroup(
+    name = "bzl_srcs",
+    srcs = glob(["**/*.bzl"]) + [
+        "//lib/private:bzl_srcs",
+    ],
+    visibility = ["//:subpackages"],
+)
