@@ -191,5 +191,5 @@ def write_source_file_test(name, in_file, out_file, check_that_out_file_exists =
         in_file = in_file,
         out_file = out_file,
         size = size,
-        **kwargs,
+        **kwargs
     )
