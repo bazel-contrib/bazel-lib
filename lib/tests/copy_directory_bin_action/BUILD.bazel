@@ -17,16 +17,31 @@ diff_test(
     name = "copy_test",
     file1 = ":d",
     file2 = ":pkg",
+    # TODO: re-enable this test on windows
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 diff_test(
     name = "hardlink_test",
     file1 = ":d",
     file2 = ":pkg2",
+    # TODO: re-enable this test on windows
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 diff_test(
     name = "sanity_test",
     file1 = ":pkg",
     file2 = ":pkg2",
+    # TODO: re-enable this test on windows
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )

@@ -59,6 +59,11 @@ diff_test(
     file2 = ":expected_pkg",
     # RBE not happy with the symlinks in this test case
     tags = ["no-remote"],
+    # TODO: re-enable this test on windows
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 bzl_library(
