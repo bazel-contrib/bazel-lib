@@ -6,5 +6,6 @@ The checked in content is only here to allow load() statements in the sources to
 
 RELEASED_BINARY_INTEGRITY = {
     "copy_directory-darwin_amd64": "sha256-EH6Qpf/IzIaGncigN+cMc2xCb0C3XuV8I4cUBtaZ7GE=",
+    "copy_directory-windows_amd64.exe": "sha256-EH6Qpf/IzIaGncigN+cMc2xCb0C3XuV8I4cUBtaZ7GE=",
     # ...etc
 }
