@@ -21,11 +21,6 @@ genrule(
     ],
     outs = ["1.tar"],
     cmd = "$(ZSTD_BIN) -f --decompress $(execpath :tar) --stdout > $@",
-    target_compatible_with = select({
-        # zstd not supported on windows
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
     toolchains = ["@zstd_toolchains//:resolved_toolchain"],
 )
 
