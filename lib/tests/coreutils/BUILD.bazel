@@ -14,11 +14,13 @@ diff_test(
     file2 = ":ls",
 )
 
+# Windows platform writes ' *' between hash and filename; Linux writes '  '.
+# use sed to transform windows output into linux style before assertion.
 genrule(
     name = "sha256sum",
     srcs = ["test.bin"],
     outs = ["sha256sum.txt"],
-    cmd = "$(COREUTILS_BIN) sha256sum $(location :test.bin) > $@",
+    cmd = "$(COREUTILS_BIN) sha256sum $(location :test.bin) | sed 's/ \\*/  /' > $@",
     toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
 )
 
@@ -27,16 +29,18 @@ assert_contains(
     actual = "sha256sum.txt",
     expected = """9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  lib/tests/coreutils/test.bin""",
     target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
 
+# Windows platform writes ' *' between hash and filename; Linux writes '  '.
+# use sed to transform windows output into linux style before assertion.
 genrule(
     name = "sha512sum",
     srcs = ["test.bin"],
     outs = ["sha512sum.txt"],
-    cmd = "$(COREUTILS_BIN) sha512sum $(location :test.bin) > $@",
+    cmd = "$(COREUTILS_BIN) sha512sum $(location :test.bin) | sed 's/ \\*/  /' > $@",
     toolchains = ["@coreutils_toolchains//:resolved_toolchain"],
 )
 
@@ -45,8 +49,8 @@ assert_contains(
     actual = "sha512sum.txt",
     expected = """ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff  lib/tests/coreutils/test.bin""",
     target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
 
