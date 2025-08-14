@@ -135,7 +135,7 @@ platform_transition_test(
 platform_transition_test(
     name = "transitioned_go_test_arm64",
     binary = ":test_transition_test",
-    # only run this test on an x86_64 host
+    # only run this test on an arm64 host
     target_compatible_with = [] if sorted(HOST_CONSTRAINTS) == [
         "@platforms//cpu:aarch64",
         "@platforms//os:linux",
