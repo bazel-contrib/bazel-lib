@@ -51,6 +51,11 @@ pkg(
         "//lib/tests:allow_unresolved_symlinks": True,
         "//conditions:default": False,
     }),
+    # TODO: re-enable this test on windows
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 diff_test(
