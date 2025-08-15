@@ -63,6 +63,7 @@ def copy_directory_bin_action(
         outputs = [dst],
         executable = copy_directory_bin,
         arguments = args,
+        # TODO: Drop this after https://github.com/bazel-contrib/bazel-lib/issues/1146
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyDirectory",
         progress_message = "Copying directory %{input}",
