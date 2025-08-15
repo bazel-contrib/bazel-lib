@@ -79,4 +79,8 @@ assert_contains(
     name = "dir_a_rootpath_test",
     actual = ":dir_a_rootpath",
     expected = "lib/tests/run_binary/dir_a_out",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
