@@ -52,12 +52,12 @@ pkg(
     out = "pkg",
     # RBE not happy with the symlinks in this test case
     tags = ["no-remote"],
+    # TODO: re-enable this test on windows
+    target_compatible_with = NOT_WINDOWS,
     use_declare_symlink = select({
         "//lib/tests:allow_unresolved_symlinks": True,
         "//conditions:default": False,
     }),
-    # TODO: re-enable this test on windows
-    target_compatible_with = NOT_WINDOWS,
 )
 
 diff_test(
