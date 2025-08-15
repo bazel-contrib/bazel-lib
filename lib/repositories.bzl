@@ -53,9 +53,9 @@ def aspect_bazel_lib_dependencies():
     )
     http_archive(
         name = "rules_shell",
-        sha256 = "bc61ef94facc78e20a645726f64756e5e285a045037c7a61f65af2941f4c25e1",
-        strip_prefix = "rules_shell-0.4.1",
-        url = "https://github.com/bazelbuild/rules_shell/releases/download/v0.4.1/rules_shell-v0.4.1.tar.gz",
+        sha256 = "99bfc7aaefd1ed69613bbd25e24bf7871d68aeafca3a6b79f5f85c0996a41355",
+        strip_prefix = "rules_shell-0.5.1",
+        url = "https://github.com/bazelbuild/rules_shell/releases/download/v0.5.1/rules_shell-v0.5.1.tar.gz",
     )
 
 DEFAULT_JQ_REPOSITORY = "jq"
