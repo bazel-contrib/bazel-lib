@@ -7,7 +7,7 @@ assert_contains(
     actual = ":case1.txt",
     expected = "--arg1='/{{[{]?(.*?)[}]?}}/'",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
@@ -17,7 +17,7 @@ assert_contains(
     actual = ":case1.txt",
     expected = "--arg2='/{%(.*?)%}/'",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
@@ -27,7 +27,7 @@ assert_contains(
     actual = ":case1.txt",
     expected = "`ff`",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )

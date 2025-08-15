@@ -46,7 +46,7 @@ bats_test(
         "DATA_PATH": "$(location :data.bin)",
     },
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )

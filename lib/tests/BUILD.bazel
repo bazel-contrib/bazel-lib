@@ -71,7 +71,7 @@ assert_contains(
     actual = "expand_template_test.sh",
     expected = "stuff",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
