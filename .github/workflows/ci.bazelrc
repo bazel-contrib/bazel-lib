@@ -4,3 +4,6 @@ common --repository_cache=~/.cache/bazel-repository-cache
 
 # Debug where options came from
 common --announce_rc
+
+# Keep bazel stdout readable in logs
+common --noshow_progress
