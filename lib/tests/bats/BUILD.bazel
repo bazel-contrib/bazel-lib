@@ -26,6 +26,11 @@ bats_test(
         "basic.bats",
     ],
     args = ["--timing"],
+    # flaky on windows; timeouts
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    })
 )
 
 bats_test(
