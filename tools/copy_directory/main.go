@@ -1,4 +1,5 @@
 //go:debug winsymlink=0
+//go:debug winreadlinkvolume=0
 package main
 
 import (
