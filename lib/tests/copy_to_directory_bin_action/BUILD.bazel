@@ -5,6 +5,11 @@ load("//lib:diff_test.bzl", "diff_test")
 load(":lib.bzl", "lib")
 load(":pkg.bzl", "pkg")
 
+NOT_WINDOWS = select({
+    "@platforms//os:windows": ["@platforms//:incompatible"],
+    "//conditions:default": [],
+})
+
 copy_to_bin(
     name = "copy_1",
     srcs = ["1"],
@@ -52,10 +57,7 @@ pkg(
         "//conditions:default": False,
     }),
     # TODO: re-enable this test on windows
-    target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
+    target_compatible_with = NOT_WINDOWS,
 )
 
 diff_test(
@@ -65,10 +67,7 @@ diff_test(
     # RBE not happy with the symlinks in this test case
     tags = ["no-remote"],
     # TODO: re-enable this test on windows
-    target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
+    target_compatible_with = NOT_WINDOWS,
 )
 
 bzl_library(
