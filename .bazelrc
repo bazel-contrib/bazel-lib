@@ -1,3 +1,5 @@
+common --enable_platform_specific_config
+
 # For testing our --stamp behavior.
 # Normally users would use a --workspace_status_command with a script that calls `git describe`.
 common --embed_label=v1.2.3
@@ -18,3 +20,14 @@ common --check_direct_dependencies=off
 
 # Make sure we don't regress this.
 common --incompatible_auto_exec_groups
+
+# Symlinks are pretty much required on windows so enable by default
+startup --windows_enable_symlinks
+
+# Point tools such as coursier (used in rules_jvm_external) to Bazel's downloaded JDK
+# suggested in https://github.com/bazelbuild/rules_jvm_external/issues/445
+common --repo_env=JAVA_HOME=../bazel_tools/jdk
+
+# This option fixes 20 tests on Windows but I am reluctant to enable it as it would be
+# better for this library to be tested with runfiles off (it is a performance drain on windows).
+# common:windows --enable_runfiles

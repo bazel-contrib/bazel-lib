@@ -89,7 +89,7 @@ jobs:
           - bazel-version:
               major: 6
             bzlmod: 1
-          # TODO: green up root Workspace on MacOS & Windows
+          # TODO: green up root Workspace on MacOS
           - folder: .
             os: macos
           - folder: .

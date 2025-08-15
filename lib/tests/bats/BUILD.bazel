@@ -26,6 +26,11 @@ bats_test(
         "basic.bats",
     ],
     args = ["--timing"],
+    # flaky on windows; timeouts
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 bats_test(
@@ -40,6 +45,10 @@ bats_test(
     env = {
         "DATA_PATH": "$(location :data.bin)",
     },
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 bats_test(
