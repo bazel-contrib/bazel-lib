@@ -2,7 +2,7 @@ module github.com/bazel-contrib/bazel-lib
 
 go 1.22.7
 
-toolchain 1.24.6
+toolchain go1.24.6
 
 require (
 	github.com/bazelbuild/rules_go v0.55.0
