@@ -60,6 +60,11 @@ bazel_dep(
     repo_name = "io_bazel_rules_go",
     # In released versions: dev_dependency = True
 )
+go_sdk = use_extension("@io_bazel_rules_go//go:extensions.bzl", "go_sdk")
+
+# Download an SDK for the host OS & architecture as well as common remote execution
+# platforms, using the version given from the `go.mod` file.
+go_sdk.from_file(go_mod = "//:go.mod")
 
 go_deps = use_extension(
     "@gazelle//:extensions.bzl",
