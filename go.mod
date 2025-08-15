@@ -1,11 +1,5 @@
 module github.com/bazel-contrib/bazel-lib
 
-<!-- 
-upgrade to go 1.23 may require fixing copy.go as there are some 
-changes in symlink handling in go/windows.
-These are caught by e2e\smoke
-https://tip.golang.org/doc/go1.23#ospkgos
--->
 go 1.22.7
 
 require (
