@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && BZLMOD_FLAG=${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} "$0" || kill $PPID' \{\} \;
+      - run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && BZLMOD_FLAG=--enable_bzlmod "$0" || kill $PPID' \{\} \;
   pre-commit:
     runs-on: ubuntu-latest
     steps:
