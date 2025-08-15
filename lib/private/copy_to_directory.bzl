@@ -510,6 +510,7 @@ def copy_to_directory_bin_action(
         outputs = [dst],
         executable = copy_to_directory_bin,
         arguments = [config_file.path, ctx.label.workspace_name],
+        # TODO: Drop this after https://github.com/bazel-contrib/bazel-lib/issues/1146
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %{output}",
