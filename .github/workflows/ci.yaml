@@ -35,16 +35,8 @@ jobs:
           echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
       - id: os
         name: Prepare 'os' matrix axis
-        # Only run MacOS and Windows on main branch (not PRs) to minimize minutes (billed at 10X and 2X respectively)
-        # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
         run: |
-          a=( ubuntu )
-          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "$HEAD_REF" == *"macos"* ]]; then
-            a+=( macos )
-          fi
-          if [[ "${{ github.ref_name }}" == "main" ]] || [[ "$HEAD_REF" == *"windows"* ]]; then
-            a+=( windows )
-          fi
+          a=( ubuntu, macos, windows )
           printf -v j '"%s",' "${a[@]}"
           echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
     outputs:
