@@ -58,7 +58,7 @@ assert_contains(
     actual = ":a_tmpl_stamp",
     expected = "WORKSPACE:",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
@@ -78,7 +78,7 @@ assert_contains(
     actual = ":inline_template",
     expected = "line3",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
@@ -98,7 +98,7 @@ assert_contains(
     actual = ":index_html_out",
     expected = "index.js",
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )

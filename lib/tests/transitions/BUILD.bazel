@@ -153,7 +153,7 @@ sh_test(
     ],
     data = [":transitioned_go_binary_x86_64"],
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
@@ -168,7 +168,7 @@ sh_test(
     ],
     data = [":transitioned_go_binary_arm64"],
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
@@ -183,7 +183,7 @@ sh_test(
     ],
     data = [":transitioned_go_test_x86_64"],
     target_compatible_with = select({
-        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "@bazel_lib//lib:enable_runfiles": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
 )
