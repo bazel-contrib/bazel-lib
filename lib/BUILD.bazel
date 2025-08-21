@@ -34,12 +34,6 @@ bool_flag(
     build_setting_default = False,
 )
 
-# TODO(3.0): remove
-alias(
-    name = "",
-    actual = "@tar.bzl//tar/toolchain:type",
-)
-
 config_setting(
     name = "enable_runfiles",
     values = {"enable_runfiles": "true"},
@@ -67,6 +61,12 @@ toolchain_type(
 
 toolchain_type(
     name = "expand_template_toolchain_type",
+)
+
+# TODO(3.0): remove
+alias(
+    name = "tar_toolchain_type",
+    actual = "@tar.bzl//tar/toolchain:type",
 )
 
 toolchain_type(
