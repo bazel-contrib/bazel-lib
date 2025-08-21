@@ -36,7 +36,7 @@ bool_flag(
 
 # TODO(3.0): remove
 alias(
-    name = "tar_toolchain_type",
+    name = "",
     actual = "@tar.bzl//tar/toolchain:type",
 )
 
@@ -67,10 +67,6 @@ toolchain_type(
 
 toolchain_type(
     name = "expand_template_toolchain_type",
-)
-
-toolchain_type(
-    name = "tar_toolchain_type",
 )
 
 toolchain_type(
