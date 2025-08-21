@@ -11,7 +11,7 @@ tar_lib = struct(
     implementation = _tar_lib.implementation,
     mtree_attrs = _tar_lib.mtree_attrs,
     mtree_implementation = _tar_lib.mtree_implementation,
-    toolchain_type = "//lib:tar_toolchain_type",
+    toolchain_type = "@aspect_bazel_lib//lib:tar_toolchain_type",
     common = _tar_lib.common,
 )
 
