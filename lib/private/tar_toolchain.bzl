@@ -59,12 +59,12 @@ BSDTAR_PREBUILT = {
         "663f498baab2a9b7758e46d0c377b311c5b058758a37958372a0503c5dda4028",
     ),
     "windows_arm64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_windows_arm64.exe",
-        "1cb490a72385a394bc3643d8409717c544b7af11a24864dc7bf15f1f7333da22",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1-fix.1/tar_windows_arm64.exe",
+        "130d69268b0a387bca387d00663821779dd1915557caf7fcbfd5ded3f41074f3",
     ),
     "windows_amd64": (
-        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1/tar_windows_x86_64.exe",
-        "a548b165eea72e8b8b260b15f9f77625423a8f40c4e436dc235ad9e575b285e2",
+        "https://github.com/aspect-build/bsdtar-prebuilt/releases/download/v3.8.1-fix.1/tar_windows_x86_64.exe",
+        "f48c81e1812956adb4906c6f057ca856dd280a455e7867d77800e6d5ef9fc81d",
     ),
 }
 
