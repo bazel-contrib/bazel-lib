@@ -47,9 +47,9 @@ def aspect_bazel_lib_dependencies():
     )
     http_archive(
         name = "yq.bzl",
-        sha256 = "b51d82b561a78ab21d265107b0edbf98d68a390b4103992d0b03258bb3819601",
-        strip_prefix = "yq.bzl-0.1.1",
-        url = "https://github.com/bazel-contrib/yq.bzl/releases/download/v0.1.1/yq.bzl-v0.1.1.tar.gz",
+        sha256 = "fbd298bda644d42c8d19614369f590ac372fe34ae839021f4fbe971534538505",
+        strip_prefix = "yq.bzl-0.2.0",
+        url = "https://github.com/bazel-contrib/yq.bzl/releases/download/v0.2.0/yq.bzl-v0.2.0.tar.gz",
     )
     http_archive(
         name = "rules_shell",
