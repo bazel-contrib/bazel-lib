@@ -35,9 +35,9 @@ def aspect_bazel_lib_dependencies():
     )
     http_archive(
         name = "tar.bzl",
-        sha256 = "8710443803496e1b9b5b66f56ae55aa586338cb09a4ddeb9bb3d6df4e6da44c7",
-        strip_prefix = "tar.bzl-0.2.0",
-        url = "https://github.com/alexeagle/tar.bzl/releases/download/v0.2.0/tar.bzl-v0.2.0.tar.gz",
+        sha256 = "b47e3c83a0c1440ce335aa1ae18753da6eb7cd551d4946fa303de2abde07e20b",
+        strip_prefix = "tar.bzl-0.5.1",
+        url = "https://github.com/bazel-contrib/tar.bzl/releases/download/v0.5.1/tar.bzl-v0.5.1.tar.gz",
     )
     http_archive(
         name = "jq.bzl",
