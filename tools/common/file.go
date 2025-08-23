@@ -2,7 +2,6 @@ package common
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -26,7 +25,9 @@ func Realpath(p string) (string, error) {
 	}
 
 	if !filepath.IsAbs(t) {
-		t = path.Join(path.Dir(p), t)
+		// windows fix for: 2025/08/23 13:07:40 failed to get realpath of dangling symlink lib\tests\copy_to_directory_bin_action\d\d\s1: CreateFile .\1: The system cannot find the file specified.
+		dir := filepath.Dir(p)
+		t = filepath.Join(dir, t)
 	}
 
 	info, err := os.Lstat(t)
