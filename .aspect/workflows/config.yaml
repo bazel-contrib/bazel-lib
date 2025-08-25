@@ -1,7 +1,10 @@
 # See https://docs.aspect.build/workflows/configuration
 workspaces:
   - .
-  - e2e/api_entries
+  - e2e/api_entries:
+      tasks:
+        - bazel-6:
+            without: true
   - e2e/copy_action
   - e2e/copy_to_directory
   - e2e/coreutils
