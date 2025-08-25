@@ -24,10 +24,5 @@ tasks:
       id: bazel-8
       env:
         USE_BAZEL_VERSION: 8.x
-  - test:
-      name: Test (Bazel 9.x)
-      id: bazel-9
-      env:
-        USE_BAZEL_VERSION: rolling
 notifications:
   github: {}
