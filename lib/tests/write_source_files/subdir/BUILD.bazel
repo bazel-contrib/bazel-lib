@@ -1,9 +1,13 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:write_source_files.bzl", "write_source_files")
 
-genrule(
+write_file(
     name = "c-desired",
-    outs = ["c-desired.js"],
-    cmd = "echo 'console.log(\"c*\");' > $@",
+    out = "c-desired.js",
+    content = [
+        "console.log(\"c*\");",
+        "",
+    ],
 )
 
 write_source_files(

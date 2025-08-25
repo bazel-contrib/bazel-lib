@@ -3,47 +3,19 @@
 :: TODO: Add support for XML_OUTPUT_FILE like in diff_test_tmpl.sh
 SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
+set RUNFILES_MANIFEST_ONLY=1
+{BATCH_RLOCATION_FUNCTION}
 set MF=%RUNFILES_MANIFEST_FILE:/=\\%
 set PATH=%SYSTEMROOT%\\system32
-set F1={file1}
-set F2={file2}
-if "!F1:~0,9!" equ "external/" (set F1=!F1:~9!) else (set F1=!TEST_WORKSPACE!/!F1!)
-if "!F2:~0,9!" equ "external/" (set F2=!F2:~9!) else (set F2=!TEST_WORKSPACE!/!F2!)
-for /F "tokens=2* usebackq" %%i in (`findstr.exe /l /c:"!F1! " "%MF%"`) do (
-  set RF1=%%i
-  set RF1=!RF1:/=\\!
+call :rlocation {file1} RF1
+call :rlocation {file2} RF2
+set RF1=!RF1:/=\!
+set RF2=!RF2:/=\!
+if "{file1_sub_path}" neq "" (
+  set RF1=!RF1!\\{file1_sub_path}
 )
-if "!RF1!" equ "" (
-  if "%RUNFILES_MANIFEST_ONLY%" neq "1" if exist "%RUNFILES_DIR%\\%F1%" (
-    set RF1="%RUNFILES_DIR%\\%F1%"
-  ) else (
-    if exist "{file1}" (
-      set RF1="{file1}"
-    )
-  )
-  if "!RF1!" neq "" (    set RF1=!RF1:/=\\!
-  ) else (
-    echo>&2 ERROR: !F1! not found
-    exit /b 1
-  )
-)
-for /F "tokens=2* usebackq" %%i in (`findstr.exe /l /c:"!F2! " "%MF%"`) do (
-  set RF2=%%i
-  set RF2=!RF2:/=\\!
-)
-if "!RF2!" equ "" (
-  if "%RUNFILES_MANIFEST_ONLY%" neq "1" if exist "%RUNFILES_DIR%\\%F2%" (
-    set RF2="%RUNFILES_DIR%\\%F2%"
-  ) else (
-    if exist "{file2}" (
-      set RF2="{file2}"
-    )
-  )
-  if "!RF2!" neq "" (    set RF2=!RF2:/=\\!
-  ) else (
-    echo>&2 ERROR: !F2! not found
-    exit /b 1
-  )
+if "{file2_sub_path}" neq "" (
+  set RF2=!RF2!\\{file2_sub_path}
 )
 set DF1=0
 set DF2=0
@@ -71,48 +43,65 @@ if %DF1% equ 1 (
     set DFX=1
   )
 )
-if %DFX% equ 1 (
-  for /f "delims=" %%F in (
-    'echo "."^&forfiles /s /p "!RF1!" /m "*" /c "cmd /c echo @relpath"'
-  ) do (
-    if not exist "!RF2!\\%%~F" (
-      echo>&2 FAIL: file "%%~F" exists in "{file1}" and not in "{file2}". {fail_msg}
-      GOTO fail
-    )
-    if not exist "!RF1!\\%%~F\\*" (
-      fc.exe /B "!RF1!\\%%~F" "!RF2!\\%%~F" 2>NUL 1>NUL
-      if !ERRORLEVEL! neq 0 (
-        if !ERRORLEVEL! equ 1 (
-          echo>&2 FAIL: files "{file1}\\%%~F" and "{file2}\\%%~F" differ. {fail_msg}
-          GOTO fail
-        ) else (
-          fc.exe /B "!RF1!\\%%~F" "!RF2!\\%%~F"
-          GOTO fail
-        )
+
+if %DFX% equ 0 goto :compare_files
+:compare_directories
+for /f "delims=" %%F in (
+  'echo "."^&forfiles /s /p "!RF1!" /m "*" /c "cmd /c echo @relpath"'
+) do (
+  if not exist "!RF2!\\%%~F" (
+    echo>&2 FAIL: file "%%~F" exists in "{file1}" and not in "{file2}".
+    GOTO fail
+  )
+  if not exist "!RF1!\\%%~F\\*" (
+    fc.exe "!RF1!\\%%~F" "!RF2!\\%%~F" 2>NUL 1>NUL
+    if !ERRORLEVEL! neq 0 (
+      if !ERRORLEVEL! equ 1 (
+        echo>&2 FAIL: files "!RF1!\\%%~F" and "!RF2!\\%%~F" differ.
+        set RF1=!RF1!\\%%~F
+        set RF2=!RF2!\\%%~F
+        GOTO fail
+      ) else (
+        fc.exe "!RF1!\\%%~F" "!RF2!\\%%~F"
+        GOTO fail
       )
     )
   )
-  for /f "delims=" %%F in (
-    'echo "."^&forfiles /s /p "!RF2!" /m "*" /c "cmd /c echo @relpath"'
-  ) do (
-    if not exist "!RF1!\\%%~F" (
-      echo>&2 FAIL: file "%%~F" exists in "{file2}" and not in "{file1}". {fail_msg}
-      GOTO fail
-    )
-  )
-) else (
-  fc.exe /B "!RF1!" "!RF2!" 2>NUL 1>NUL
-  if %ERRORLEVEL% neq 0 (
-    if %ERRORLEVEL% equ 1 (
-      echo>&2 FAIL: files "{file1}" and "{file2}" differ. {fail_msg}
-      exit /b 1
-    ) else (
-      fc.exe /B "!RF1!" "!RF2!"
-      exit /b %errorlevel%
-    )
+)
+for /f "delims=" %%F in (
+  'echo "."^&forfiles /s /p "!RF2!" /m "*" /c "cmd /c echo @relpath"'
+) do (
+  if not exist "!RF1!\\%%~F" (
+    echo>&2 FAIL: file "%%~F" exists in "{file2}" and not in "{file1}".
+    GOTO fail
   )
 )
+goto :success
+
+:compare_files
+echo compare_files
+fc.exe "!RF1!" "!RF2!" 2>NUL 1>NUL
+set result=%ERRORLEVEL%
+if !result! neq 0 (
+  if !result! equ 1 (
+    echo>&2 FAIL: files "!RF1!" and "!RF2!" differ.
+    goto :fail
+  ) else (
+    echo fc.exe "!RF1!" "!RF2!"
+    fc.exe "!RF1!" "!RF2!"
+    set result=%ERRORLEVEL%
+    exit /b !result!
+  )
+) else (
+  echo fc returned 0
+)
+:success
 exit /b 0
 
 :fail
+{fail_msg}
+echo To see differences run:
+echo.
+echo     diff "!RF1!" "!RF2!"
+echo.
 exit /b 1

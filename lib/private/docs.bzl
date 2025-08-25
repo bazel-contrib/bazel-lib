@@ -17,13 +17,6 @@ def stardoc_with_diff_test(
         **kwargs: additional attributes passed to the stardoc() rule, such as for overriding the templates
     """
 
-    target_compatible_with = kwargs.pop("target_compatible_with", select({
-        # stardoc produces different line endings on Windows
-        # which makes the diff_test fail
-        Label("@platforms//os:windows"): [Label("@platforms//:incompatible")],
-        "//conditions:default": [],
-    }))
-
     # Generate MD from .bzl
     _stardoc(
         name = name,
@@ -31,7 +24,6 @@ def stardoc_with_diff_test(
         input = bzl_library_target + ".bzl",
         deps = [bzl_library_target],
         tags = kwargs.pop("tags", []) + ["package:" + native.package_name()],  # Tag the package name which will help us reconstruct the write_source_files label in update_docs
-        target_compatible_with = target_compatible_with,
         **kwargs
     )
 
