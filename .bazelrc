@@ -19,7 +19,7 @@ common:release -c opt
 common --check_direct_dependencies=off
 
 # Make sure we don't regress this.
-common --incompatible_auto_exec_groups
+# common --incompatible_auto_exec_groups
 
 # Symlinks are pretty much required on windows so enable by default
 startup --windows_enable_symlinks
