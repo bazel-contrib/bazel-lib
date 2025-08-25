@@ -1,5 +1,5 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:diff_test.bzl", "diff_test")
 load(
@@ -22,7 +22,7 @@ platform(
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
-        "@io_bazel_rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
+        "@rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
     ],
 )
 
@@ -31,7 +31,7 @@ platform(
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:arm64",
-        "@io_bazel_rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
+        "@rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
     ],
 )
 

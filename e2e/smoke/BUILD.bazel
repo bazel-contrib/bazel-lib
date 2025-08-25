@@ -3,7 +3,7 @@ load("@bazel_lib//lib:copy_directory.bzl", "copy_directory")
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@bazel_lib//lib:diff_test.bzl", "diff_test")
 load("@bazel_lib//lib:expand_template.bzl", "expand_template")
-load("@io_bazel_rules_go//go:def.bzl", "go_test")
+load("@rules_go//go:def.bzl", "go_test")
 
 # Validate that copy_directory works and resolves its toolchain
 copy_directory(
@@ -102,6 +102,6 @@ go_test(
         "no-remote",
     ],
     deps = [
-        "@io_bazel_rules_go//go/tools/bazel:go_default_library",
+        "@rules_go//go/tools/bazel:go_default_library",
     ],
 )
