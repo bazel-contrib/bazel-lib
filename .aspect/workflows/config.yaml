@@ -1,6 +1,11 @@
 # See https://docs.aspect.build/workflows/configuration
 workspaces:
-  - .
+  - .:
+      tasks:
+        - bazel-6:
+            without: true
+        - bazel-7:
+            without: true
   - e2e/api_entries:
       tasks:
         - bazel-6:
