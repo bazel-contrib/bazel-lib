@@ -3,9 +3,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [main, 1.x, 3.0]
+    branches: [main, 1.x, "3.0"]
   pull_request:
-    branches: [main, 1.x, 3.0]
+    branches: [main, 1.x, "3.0"]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 concurrency:
@@ -16,111 +16,47 @@ concurrency:
 env:
   HEAD_REF: ${{ github.head_ref }}
 jobs:
-  # Prepares dynamic test matrix values
-  matrix-prep:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - id: bazel-version
-        name: Prepare 'bazel-version' matrix axis
-        run: |
-          v=$(head -n 1 .bazelversion)
-          m=${v::1}
-          a=(
-            "major:$m, version:\"$v\""
-            "major:7, version:\"7.4.1\""
-            "major:6, version:\"6.5.0\""
-          )
-          printf -v j '{%s},' "${a[@]}"
-          echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
-      - id: os
-        name: Prepare 'os' matrix axis
-        run: |
-          a=( ubuntu, macos, windows )
-          printf -v j '"%s",' "${a[@]}"
-          echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
-    outputs:
-      bazel-version: ${{ steps.bazel-version.outputs.res }}
-      os: ${{ steps.os.outputs.res }}
   test:
     runs-on: ${{ matrix.os }}-latest
-    needs:
-      - matrix-prep
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
-        bazel-version: ${{ fromJSON(needs.matrix-prep.outputs.bazel-version) }}
-        bzlmod: [1, 0]
-        os: ${{ fromJSON(needs.matrix-prep.outputs.os) }}
+        # Note, Linux is tested on Buildkite, see /.aspect/workflows
+        os: ["windows-latest", "macos-latest"]
         folder:
           - "."
+          - "e2e/api_entries"
           - "e2e/copy_action"
           - "e2e/copy_to_directory"
           - "e2e/coreutils"
           - "e2e/external_copy_to_directory"
           - "e2e/smoke"
           - "e2e/write_source_files"
-        exclude:
-          # Root workspace is bzlmod-only
-          - folder: .
-            bzlmod: 0
-          # Don't test MacOS and Windows against secondary bazel version to minimize minutes (billed at 10X and 2X respectively)
-          # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
-          - os: macos
-            bazel-version:
-              major: 6
-          - os: windows
-            bazel-version:
-              major: 6
-          # Reduce size of the test matrix:
-          # Don't run workspace tests with Bazel 8
-          # Don't run bzlmod tests with Bazel 6
-          - bazel-version:
-              major: 8
-            bzlmod: 0
-          - bazel-version:
-              major: 6
-            bzlmod: 1
-          # TODO: green up root Workspace on MacOS
-          - folder: .
-            os: macos
-          - folder: .
-            os: windows
     steps:
       - uses: actions/checkout@v4
-      - name: Mount bazel caches
-        uses: actions/cache@v4
+      - uses: bazel-contrib/setup-bazel@0.15.0
         with:
-          path: |
-            ~/.cache/bazel-disk-cache
-            ~/.cache/bazel-repository-cache
-          key: bazel-cache-${{ matrix.bazel-version.version }}-${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}-${{ hashFiles('.bazelrc', '.bazelversion', '**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'WORKSPACE.bazel', 'WORKSPACE.bzlmod', 'MODULE.bazel') }}
-          restore-keys: bazel-cache-${{ matrix.bazel-version.version }}-${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}-
+          bazelisk-cache: true
+          disk-cache: ${{ matrix.folder }}
+          repository-cache: true
       - name: bazel test //...
         working-directory: ${{ matrix.folder }}
         shell: bash
         run: |
-          bazel \
-            --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.github/workflows/ci.bazelrc \
-            test \
-            --test_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
-            --build_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
-            --enable_bzlmod=${{ matrix.bzlmod }} \
-            --enable_workspace=${{ ! matrix.bzlmod }} \
-            //...
+          bazel test //...
       - name: Integration tests
         # Don't run integration tests on Windows since they are bash scripts and Windows runs Powershell
-        if: matrix.folder == '.' && matrix.os != 'windows' && matrix.bazel-version.major != '6'
+        if: matrix.folder == '.' && matrix.os != 'windows-latest'
         # Find all shell scripts within e2e, echo the filename, execute, fail on error
-        run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && BZLMOD_FLAG=${{ steps.set_bzlmod_flag.outputs.bzlmod_flag }} "$0" || kill $PPID' \{\} \;
-      - name: Verify bcr patches
-        if: matrix.folder == '.' && matrix.bzlmod == '1' && matrix.os == 'ubuntu' && matrix.bazel-version.major != '6'
-        run: patch --dry-run -p1 < .bcr/patches/*.patch
+        run: find e2e/*.sh -maxdepth 1 -type f -exec sh -c 'echo "\n\n------------------------------- $0 -------------------------------" && "$0" || kill $PPID' \{\} \;
   pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pre-commit/action@v3.0.1
+      - name: Verify BCR patches
+        run: patch --dry-run -p1 < .bcr/patches/*.patch
   # For branch protection settings, this job provides a "stable" name that can be used to gate PR merges
   # on "all matrix jobs were successful".
   conclusion:
