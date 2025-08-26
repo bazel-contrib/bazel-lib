@@ -155,6 +155,7 @@ bzl_library(
         ":utils",
         # "//lib/private:fail_with_message_test",
         "//lib/private:write_source_file",
+        "//lib:windows_utils",
     ],
 )
 

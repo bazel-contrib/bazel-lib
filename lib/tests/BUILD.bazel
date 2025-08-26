@@ -70,10 +70,6 @@ assert_contains(
     name = "expand_template_contains",
     actual = "expand_template_test.sh",
     expected = "stuff",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 bzl_library(

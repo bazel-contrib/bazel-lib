@@ -57,10 +57,6 @@ assert_contains(
     name = "default_info_test",
     actual = ":a_tmpl_stamp",
     expected = "WORKSPACE:",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 # No `out` specified, because we don't care what the name of the generated file is.
@@ -77,10 +73,6 @@ assert_contains(
     name = "inline_template_test",
     actual = ":inline_template",
     expected = "line3",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 # When `out` is not specified, the output file is the same name as the template
@@ -97,8 +89,4 @@ assert_contains(
     name = "index_html_out_test",
     actual = ":index_html_out",
     expected = "index.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )

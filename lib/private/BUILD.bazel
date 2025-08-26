@@ -100,7 +100,9 @@ bzl_library(
     visibility = ["//lib:__subpackages__"],
     deps = [
         ":directory_path",
+        "//lib:paths",
         "//lib:utils",
+        "//lib:windows_utils",
         "@bazel_skylib//lib:shell",
         "@bazel_skylib//lib:types",
         "@bazel_skylib//rules:write_file",

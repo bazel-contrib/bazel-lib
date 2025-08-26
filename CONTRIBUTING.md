@@ -45,3 +45,16 @@ This means that any usage of `@bazel_lib` on your system will point to this fold
 1. `git push --tags`
 1. Watch the automation run on GitHub actions
 1. Update the release page with auto-generated release notes
+
+## Windows Specifics
+
+Rules and tests in this repo should support Bazel's default on Windows (runfiles directories not enabled).
+So you should not need to add the --enable_runfiles option when using the rules or testing them. New
+rules must be written using runfiles libraries to maintain this.
+
+This repository contains symlinks in the test data; to test correctly you need to clone with symlinks
+enabled:
+
+1. enable Developer mode (to switch on Windows symlink support)
+2. clone with `git clone -c core.symlinks=true <repository_url>`
+3. or `git config --global core.symlinks true`

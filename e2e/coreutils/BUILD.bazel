@@ -1,6 +1,11 @@
 load("@bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("@bazel_lib//tools/release:hashes.bzl", "hashes")
 
+NOT_WINDOWS = select({
+    "@platforms//os:windows": ["@platforms//:incompatible"],
+    "//conditions:default": [],
+})
+
 genrule(
     name = "ls",
     outs = ["ls.txt"],
@@ -35,4 +40,16 @@ write_source_files(
         "sha1.txt": ":sha1",
         "md5.txt": ":md5",
     },
+    target_compatible_with = NOT_WINDOWS,
+)
+
+write_source_files(
+    name = "write_windows",
+    files = {
+        # coreutils ls does not give expected results on windows
+        "sha256.txt": ":hash",
+        "sha1.txt": ":sha1",
+        "md5.txt": ":md5",
+    },
+    target_compatible_with = ["@platforms//os:windows"],
 )

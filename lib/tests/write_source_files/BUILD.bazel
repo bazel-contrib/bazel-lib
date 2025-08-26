@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:directory_path.bzl", "directory_path")
 load("//lib:output_files.bzl", "output_files")
@@ -7,10 +8,13 @@ load("//lib/private:write_source_file.bzl", "write_source_file")
 load("//lib/tests:generate_outputs.bzl", "generate_outputs")
 load("//lib/tests/write_source_files:write_source_file_test.bzl", "write_source_file_test")
 
-genrule(
+write_file(
     name = "a-desired",
-    outs = ["a-desired.js"],
-    cmd = "echo 'console.log(\"a*\");' > $@",
+    out = "a-desired.js",
+    content = [
+        "console.log(\"a*\");",
+        "",
+    ],
 )
 
 generate_outputs(
@@ -41,10 +45,13 @@ output_files(
     target = ":b_c-desired",
 )
 
-genrule(
+write_file(
     name = "e-contained",
-    outs = ["e-contained.js"],
-    cmd = "echo 'console.log(\"e*\");' > $@",
+    out = "e-contained.js",
+    content = [
+        "console.log(\"e*\");",
+        "",
+    ],
 )
 
 copy_to_directory(
@@ -60,10 +67,13 @@ copy_to_directory(
     },
 )
 
-genrule(
+write_file(
     name = "f-contained",
-    outs = ["f-contained.js"],
-    cmd = "echo 'console.log(\"f*\");' > $@",
+    out = "f-contained.js",
+    content = [
+        "console.log(\"f*\");",
+        "",
+    ],
 )
 
 copy_to_directory(
@@ -101,10 +111,13 @@ output_files(
     target = ":g_h-desired",
 )
 
-genrule(
+write_file(
     name = "hidden-contained",
-    outs = [".hidden"],
-    cmd = "echo 'hidden file test' > $@",
+    out = ".hidden",
+    content = [
+        "hidden file test",
+        "",
+    ],
 )
 
 copy_to_directory(
@@ -118,20 +131,12 @@ write_source_file_test(
     name = "a_test",
     in_file = ":a-desired",
     out_file = "a.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 write_source_file_test(
     name = "b_test",
     in_file = ":b-desired",
     out_file = "b.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 write_source_file(
@@ -152,20 +157,12 @@ write_source_file_test(
     name = "f_test",
     in_file = ":f-desired",
     out_file = "f.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 write_source_file_test(
     name = "g_test",
     in_file = ":g-desired",
     out_file = "g.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 write_source_file(
@@ -188,16 +185,15 @@ write_source_files(
         "f2.js": ":f-desired",
         "g2.js": ":g-desired",
     },
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
-genrule(
+write_file(
     name = "dist",
-    outs = ["dist.js"],
-    cmd = "echo 'dist' > $@",
+    out = "dist.js",
+    content = [
+        "dist",
+        "",
+    ],
 )
 
 # See e2e/write_source_files
@@ -253,10 +249,6 @@ write_source_file_test(
     check_that_out_file_exists = False,
     in_file = ":a-desired",
     out_file = "//lib/tests/write_source_files/subpkg:a.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )
 
 # Test that we can write to a parent package
@@ -265,8 +257,4 @@ write_source_file_test(
     check_that_out_file_exists = False,
     in_file = ":a-desired",
     out_file = "//lib/tests:a.js",
-    target_compatible_with = select({
-        "@bazel_lib//lib:enable_runfiles": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
 )

@@ -6,6 +6,7 @@ load("@jq.bzl//jq:jq.bzl", "jq")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:params_file.bzl", "params_file")
+load("//lib:paths.bzl", "BASH_RLOCATION_FUNCTION")
 
 def assert_contains(name, actual, expected, size = "small", **kwargs):
     """Generates a test target which fails if the file doesn't contain the string.
@@ -35,16 +36,19 @@ def assert_contains(name, actual, expected, size = "small", **kwargs):
         content = [
             "#!/usr/bin/env bash",
             "set -o errexit",
-            "grep --fixed-strings -f $1 $2",
+            BASH_RLOCATION_FUNCTION,
+            "expected=$(rlocation $1)",
+            "actual=$(rlocation $2)",
+            "grep --fixed-strings -f $expected $actual",
         ],
     )
 
     sh_test(
         name = name,
         srcs = [test_sh],
-        args = ["$(rootpath %s)" % expected_file, "$(rootpath %s)" % actual],
+        args = ["$(rlocationpath %s)" % expected_file, "$(rlocationpath %s)" % actual],
         size = size,
-        data = [actual, expected_file],
+        data = [actual, expected_file, "@bazel_tools//tools/bash/runfiles"],
         **kwargs
     )
 
