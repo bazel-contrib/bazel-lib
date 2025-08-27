@@ -38,8 +38,7 @@ jobs:
         run: |
           rm -rf ${{ env.DEST }}
           mkdir -p ${{ env.DEST }}
-          bazel --bazelrc=.github/workflows/ci.bazelrc \
-            run --config=release //tools/release:copy_release_artifacts
+          bazel run --config=release //tools/release:copy_release_artifacts
       - uses: actions/upload-artifact@v4
         with:
           name: go-binaries
