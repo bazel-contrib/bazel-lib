@@ -77,6 +77,10 @@ toolchain_type(
     name = "bats_toolchain_type",
 )
 
+toolchain_type(
+    name = "diffutils_toolchain_type",
+)
+
 bzl_library(
     name = "expand_make_vars",
     srcs = ["expand_make_vars.bzl"],
