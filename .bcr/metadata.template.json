@@ -4,17 +4,20 @@
     {
       "name": "Alex Eagle",
       "email": "alex@aspect.build",
-      "github": "alexeagle"
+      "github": "alexeagle",
+      "github_user_id": 47395
     },
     {
       "name": "Derek Cormier",
       "email": "derek@aspect.build",
-      "github": "kormide"
+      "github": "kormide",
+      "github_user_id": 4948761
     },
     {
-      "name": "Jason Bedard",
-      "email": "jason@aspect.build",
-      "github": "jbedard"
+      "email": "fabian@buildbuddy.io",
+      "github": "fmeum",
+      "name": "Fabian Meumertzheim",
+      "github_user_id": 4312191
     }
   ],
   "repository": ["github:bazel-contrib/bazel-lib"],
