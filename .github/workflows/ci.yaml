@@ -17,7 +17,7 @@ env:
   HEAD_REF: ${{ github.head_ref }}
 jobs:
   test:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       max-parallel: 2
