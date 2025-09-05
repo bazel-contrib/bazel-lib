@@ -5,10 +5,12 @@ set -o errexit -o nounset -o pipefail
 # Argument provided by reusable workflow caller, see
 # https://github.com/bazel-contrib/.github/blob/d197a6427c5435ac22e56e33340dff912bc9334e/.github/workflows/release_ruleset.yaml#L72
 TAG=$1
+# Module version, defaults to TAG without leading 'v' if not provided
+VERSION="${2:-${TAG:1}}"
 # The prefix is chosen to match what GitHub generates for source archives
 # This guarantees that users can easily switch from a released artifact to a source archive
 # with minimal differences in their code (e.g. strip_prefix remains the same)
-PREFIX="bazel-lib-${TAG:1}"
+PREFIX="bazel-lib-${VERSION}"
 ARCHIVE="bazel-lib-$TAG.tar.gz"
 ARCHIVE_TMP=$(mktemp)
 
@@ -51,7 +53,7 @@ cat <<EOF
 2. Add to your \`MODULE.bazel\` file:
 
 \`\`\`starlark
-bazel_dep(name = "aspect_bazel_lib", version = "${TAG:1}")
+bazel_dep(name = "aspect_bazel_lib", version = "${VERSION}")
 \`\`\`
 
 > Read more about bzlmod: <https://blog.aspect.dev/bzlmod>
