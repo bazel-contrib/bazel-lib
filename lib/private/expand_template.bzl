@@ -60,8 +60,16 @@ def _expand_template_impl(ctx):
         )
 
     all_outs = [output]
-    runfiles = ctx.runfiles(files = all_outs)
-    return [DefaultInfo(files = depset(all_outs), runfiles = runfiles)]
+
+    runfiles = ctx.runfiles(files = all_outs + ctx.files.data)
+    transitive_runfiles = [
+        target[DefaultInfo].default_runfiles
+        for target in ctx.attr.data
+    ]
+    return [DefaultInfo(
+        files = depset(all_outs),
+        runfiles = runfiles.merge_all(transitive_runfiles),
+    )]
 
 expand_template_lib = struct(
     doc = """Template expansion
