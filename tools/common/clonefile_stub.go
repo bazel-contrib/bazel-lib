@@ -1,9 +1,7 @@
-//go:build !darwin
+//go:build !(darwin || linux)
 
 package common
 
-func cloneFile(src, dst string) (supported bool, err error) {
-	supported = false
-	err = nil
-	return
+func CloneFile(src, dst string) error {
+	return CopyFile(src, dst)
 }
