@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -26,6 +27,8 @@ func CopyFile(src string, dst string) error {
 	_, err = io.Copy(destination, source)
 	return err
 }
+
+var ErrUnsupported = errors.New("unsupported")
 
 func Copy(opts CopyOpts) {
 	if !opts.srcInfo.Mode().IsRegular() {
@@ -56,19 +59,17 @@ func Copy(opts CopyOpts) {
 	if opts.verbose {
 		fmt.Printf("clonefile%s %v => %v\n", opModifier, opts.src, opts.dst)
 	}
-	switch supported, err := cloneFile(opts.src, opts.dst); {
-	case !supported:
+	err := CloneFile(opts.src, opts.dst)
+	if err == nil {
+		return
+	} else if err == ErrUnsupported {
 		if opts.verbose {
 			fmt.Print("clonefile skipped: not supported by platform\n")
 		}
 		// fallback to copy
-	case supported && err == nil:
-		return
-	case supported && err != nil:
-		if opts.verbose {
-			fmt.Printf("clonefile failed: %v\n", err)
-			opModifier = fallback
-		}
+	} else if opts.verbose {
+		fmt.Printf("clonefile failed: %v\n", err)
+		opModifier = fallback
 		// fallback to copy
 	}
 
@@ -76,7 +77,7 @@ func Copy(opts CopyOpts) {
 	if opts.verbose {
 		fmt.Printf("copy%s %v => %v\n", opModifier, opts.src, opts.dst)
 	}
-	err := CopyFile(opts.src, opts.dst)
+	err = CopyFile(opts.src, opts.dst)
 	if err != nil {
 		log.Fatal(err)
 	}
