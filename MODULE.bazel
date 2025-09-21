@@ -28,11 +28,13 @@ bazel_lib_toolchains.tar()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
+bazel_lib_toolchains.diffutils()
+use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "diffutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
     "@copy_to_directory_toolchains//:all",
+    "@diffutils_toolchains//:all",
     "@jq_toolchains//:all",
     "@yq_toolchains//:all",
     "@coreutils_toolchains//:all",
