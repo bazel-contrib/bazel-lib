@@ -131,6 +131,7 @@ def register_tar_toolchains(name = DEFAULT_TAR_REPOSITORY, register = True):
         )
         if register:
             native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+            native.register_toolchains("@%s_toolchains//:%s_target_toolchain" % (name, platform))
 
     tar_toolchains_repo(
         name = "%s_toolchains" % name,

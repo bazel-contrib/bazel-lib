@@ -189,6 +189,13 @@ toolchain(
     toolchain = "@{user_repository_name}_{platform}//:bsdtar_toolchain",
     toolchain_type = "@aspect_bazel_lib//lib:tar_toolchain_type",
 )
+
+toolchain(
+    name = "{platform}_target_toolchain",
+    target_compatible_with = {compatible_with},
+    toolchain = "@{user_repository_name}_{platform}//:bsdtar_toolchain",
+    toolchain_type = "@aspect_bazel_lib//lib:target_tar_toolchain_type",
+)
 """.format(
             platform = platform,
             user_repository_name = rctx.attr.user_repository_name,

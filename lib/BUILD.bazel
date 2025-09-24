@@ -70,6 +70,10 @@ alias(
 )
 
 toolchain_type(
+    name = "target_tar_toolchain_type",
+)
+
+toolchain_type(
     name = "zstd_toolchain_type",
 )
 
