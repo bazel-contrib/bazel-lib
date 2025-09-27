@@ -16,7 +16,7 @@ bazel_dep(name = "rules_shell", version = "0.4.1")
 # TODO(3.0): remove this back-compat
 bazel_dep(name = "jq.bzl", version = "0.1.0")
 bazel_dep(name = "yq.bzl", version = "0.1.1")
-bazel_dep(name = "tar.bzl", version = "0.5.1")
+bazel_dep(name = "tar.bzl", version = "0.5.6")
 
 bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
 bazel_lib_toolchains.copy_directory()
