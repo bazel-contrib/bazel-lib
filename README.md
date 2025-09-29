@@ -4,6 +4,16 @@ Base Starlark libraries and basic Bazel rules which are useful for constructing 
 
 📚 API documentation: https://registry.bazel.build/modules/bazel_lib
 
+## 3.0 release
+
+This branch has code for the 3.0 release of `bazel_lib`, to https://registry.bazel.build/modules/bazel_lib
+
+The module has been renamed from the 2.x releases which used the name "aspect_bazel_lib".
+Following Aspect's donation to the Linux Foundation, the new name allows more of the community to participate without supporting one vendor.
+This code is still in the `2.x` branch.
+
+These two modules can be used in parallel during a transition. Note that `tar`, `jq` and `yq` have moved to their own modules as part of the 3.0 release.
+
 ## Relationship to bazel-skylib
 
 This module depends on [bazel-skylib](https://github.com/bazelbuild/bazel-skylib).
