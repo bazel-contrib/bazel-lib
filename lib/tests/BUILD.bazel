@@ -1,7 +1,6 @@
 "tests for libs"
 
 load("@bazel_features//:features.bzl", "bazel_features")
-load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:expand_template.bzl", "expand_template")
@@ -70,10 +69,4 @@ assert_contains(
     name = "expand_template_contains",
     actual = "expand_template_test.sh",
     expected = "stuff",
-)
-
-bzl_library(
-    name = "generate_outputs",
-    srcs = ["generate_outputs.bzl"],
-    visibility = ["//visibility:public"],
 )

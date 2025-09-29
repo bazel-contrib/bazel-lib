@@ -1,4 +1,3 @@
-load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 load("//lib:copy_directory.bzl", "copy_directory")
 load("//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//lib:diff_test.bzl", "diff_test")
@@ -59,10 +58,4 @@ diff_test(
     file2 = ":expected_pkg",
     # RBE not happy with the symlinks in this test case
     tags = ["no-remote"],
-)
-
-bzl_library(
-    name = "other_info",
-    srcs = ["other_info.bzl"],
-    visibility = ["//visibility:public"],
 )

@@ -12,8 +12,7 @@ there are two caveats to consider when using this feature:
     can be added.
 2. Caching: Changes to only the modified time will not re-trigger cached actions. This can
     be worked around by using a clean build when these types of changes occur. For tests the
-    [external tag](https://bazel.build/reference/be/common-definitions) can be used but this
-    will result in tests never being cached.
+    [external tag](https://bazel.build/reference/be/common-definitions) can be used but this will result in tests never being cached.
 """
 
 load(

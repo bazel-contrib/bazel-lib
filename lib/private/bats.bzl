@@ -95,8 +95,7 @@ bats_test = rule(
         "env": attr.string_dict(
             doc = """Environment variables of the action.
 
-            Subject to [$(location)](https://bazel.build/reference/be/make-variables#predefined_label_variables)
-            and ["Make variable"](https://bazel.build/reference/be/make-variables) substitution.
+            Subject to [$(location)](https://bazel.build/reference/be/make-variables#predefined_label_variables) and ["Make variable"](https://bazel.build/reference/be/make-variables) substitution.
             """,
         ),
         "_runfiles": attr.label(default = "@bazel_tools//tools/bash/runfiles"),

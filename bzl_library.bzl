@@ -2,6 +2,9 @@
 
 Drop-in replacement for bzl_library in bazel_skylib, with exceptions:
 - We support .bzl and .star extensions, while bzl_library accepts .bzl and .scl.
+- Generates [starlark_doc_extract](https://bazel.build/versions/8.3.0/reference/be/general#starlark_doc_extract)
+  targets, one for each element of `srcs`, ensuring that the sources list all their dependencies.
+  Fixes https://github.com/bazelbuild/bazel-skylib/issues/568
 """
 
 load("@bazel_skylib//:bzl_library.bzl", "StarlarkLibraryInfo")
