@@ -6,7 +6,6 @@ load("//lib/private:copy_directory_toolchain.bzl", "COPY_DIRECTORY_PLATFORMS", "
 load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFORMS", "copy_to_directory_platform_repo", "copy_to_directory_toolchains_repo")
 load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION")
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
-load("//lib/private:jq_toolchain.bzl", "JQ_PLATFORMS", "jq_host_alias_repo", "jq_platform_repo", "jq_toolchains_repo", _DEFAULT_JQ_VERSION = "DEFAULT_JQ_VERSION")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
 load("//lib/private:zstd_toolchain.bzl", "ZSTD_PLATFORMS", "zstd_binary_repo", "zstd_toolchains_repo")
 load("//tools:version.bzl", "IS_PRERELEASE")
@@ -31,44 +30,10 @@ def bazel_lib_dependencies():
         sha256 = "3384eb1c30762704fbe38e440204e114154086c8fc8a8c2e3e28441028c019a8",
     )
     http_archive(
-        name = "jq.bzl",
-        sha256 = "7b63435aa19cc6a0cfd1a82fbdf2c7a2f0a94db1a79ff7a4469ffa94286261ab",
-        strip_prefix = "jq.bzl-0.1.0",
-        url = "https://github.com/bazel-contrib/jq.bzl/releases/download/v0.1.0/jq.bzl-v0.1.0.tar.gz",
-    )
-    http_archive(
         name = "rules_shell",
         sha256 = "bc61ef94facc78e20a645726f64756e5e285a045037c7a61f65af2941f4c25e1",
         strip_prefix = "rules_shell-0.4.1",
         url = "https://github.com/bazelbuild/rules_shell/releases/download/v0.4.1/rules_shell-v0.4.1.tar.gz",
-    )
-
-DEFAULT_JQ_REPOSITORY = "jq"
-DEFAULT_JQ_VERSION = _DEFAULT_JQ_VERSION
-
-def register_jq_toolchains(name = DEFAULT_JQ_REPOSITORY, version = DEFAULT_JQ_VERSION, register = True):
-    """Registers jq toolchain and repositories
-
-    Args:
-        name: override the prefix for the generated toolchain repositories
-        version: the version of jq to execute (see https://github.com/stedolan/jq/releases)
-        register: whether to call through to native.register_toolchains.
-            Should be True for WORKSPACE users, but false when used under bzlmod extension
-    """
-    for [platform, _] in JQ_PLATFORMS.items():
-        jq_platform_repo(
-            name = "%s_%s" % (name, platform),
-            platform = platform,
-            version = version,
-        )
-        if register:
-            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
-
-    jq_host_alias_repo(name = name)
-
-    jq_toolchains_repo(
-        name = "%s_toolchains" % name,
-        user_repository_name = name,
     )
 
 DEFAULT_ZSTD_REPOSITORY = "zstd"
@@ -311,6 +276,5 @@ def bazel_lib_register_toolchains():
     register_copy_to_directory_toolchains()
     register_expand_template_toolchains()
     register_coreutils_toolchains()
-    register_jq_toolchains()
     register_zstd_toolchains()
     register_bats_toolchains()

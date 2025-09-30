@@ -27,7 +27,6 @@ build_test(
         "@bazel_lib//lib:flag_bzlmod",
         "@bazel_lib//lib:glob_match",
         "@bazel_lib//lib:host_repo",
-        "@bazel_lib//lib:jq_toolchain_type",
         "@bazel_lib//lib:lists",
         "@bazel_lib//lib:output_files",
         "@bazel_lib//lib:params_file",

@@ -1,6 +1,3 @@
-# In code review, collapse generated files
-docs/*.md   linguist-generated=true
-
 #################################
 # Configuration for 'git archive'
 # see https://git-scm.com/docs/git-archive#ATTRIBUTES
