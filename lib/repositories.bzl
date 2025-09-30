@@ -32,9 +32,9 @@ def bazel_lib_dependencies():
     )
     http_archive(
         name = "jq.bzl",
-        sha256 = "7b63435aa19cc6a0cfd1a82fbdf2c7a2f0a94db1a79ff7a4469ffa94286261ab",
-        strip_prefix = "jq.bzl-0.1.0",
-        url = "https://github.com/bazel-contrib/jq.bzl/releases/download/v0.1.0/jq.bzl-v0.1.0.tar.gz",
+        sha256 = "510064590ace252cffb56cb25b1613d14bfec818251980039acdba682fcf99b9",
+        strip_prefix = "jq.bzl-0.2.4",
+        url = "https://github.com/bazel-contrib/jq.bzl/releases/download/v0.2.4/jq.bzl-v0.2.4.tar.gz",
     )
     http_archive(
         name = "rules_shell",
