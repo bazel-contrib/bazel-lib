@@ -7,7 +7,6 @@ module(
 # Lower-bounds (minimum) versions for direct runtime dependencies
 bazel_dep(name = "bazel_features", version = "1.9.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
-bazel_dep(name = "jq.bzl", version = "0.1.0")
 bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "stardoc", version = "0.7.1")
 bazel_dep(name = "rules_shell", version = "0.4.1")
@@ -15,17 +14,15 @@ bazel_dep(name = "rules_shell", version = "0.4.1")
 bazel_lib_toolchains = use_extension("@bazel_lib//lib:extensions.bzl", "toolchains")
 bazel_lib_toolchains.copy_directory()
 bazel_lib_toolchains.copy_to_directory()
-bazel_lib_toolchains.jq()
 bazel_lib_toolchains.coreutils()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "zstd_toolchains")
+use_repo(bazel_lib_toolchains, "bats_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "zstd_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
     "@copy_to_directory_toolchains//:all",
-    "@jq_toolchains//:all",
     "@coreutils_toolchains//:all",
     "@expand_template_toolchains//:all",
     "@bats_toolchains//:all",
@@ -77,7 +74,7 @@ use_repo(host, "bazel_lib_host")
 host_platform = use_extension("@platforms//host:extension.bzl", "host_platform")
 use_repo(host_platform, "host_platform")
 
-bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.5.0", dev_dependency = True)
+bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.8.2", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 bazel_dep(name = "external_test_repo", version = "0.0.0", dev_dependency = True)
 local_path_override(

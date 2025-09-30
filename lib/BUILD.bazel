@@ -40,10 +40,6 @@ config_setting(
 )
 
 toolchain_type(
-    name = "jq_toolchain_type",
-)
-
-toolchain_type(
     name = "copy_directory_toolchain_type",
 )
 
@@ -204,7 +200,6 @@ bzl_library(
         ":utils",
         "@bazel_skylib//lib:types",
         "@bazel_skylib//rules:write_file",
-        "@jq.bzl//jq:jq",
         "@rules_shell//shell:rules_bzl",
     ],
 )
@@ -230,7 +225,6 @@ bzl_library(
         "//lib/private:copy_to_directory_toolchain",
         "//lib/private:coreutils_toolchain",
         "//lib/private:expand_template_toolchain",
-        "//lib/private:jq_toolchain",
         "//lib/private:source_toolchains_repo",
         "//lib/private:zstd_toolchain",
     ],
