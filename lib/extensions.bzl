@@ -10,15 +10,12 @@ load(
     "DEFAULT_COREUTILS_REPOSITORY",
     "DEFAULT_COREUTILS_VERSION",
     "DEFAULT_EXPAND_TEMPLATE_REPOSITORY",
-    "DEFAULT_JQ_REPOSITORY",
-    "DEFAULT_JQ_VERSION",
     "DEFAULT_ZSTD_REPOSITORY",
     "register_bats_toolchains",
     "register_copy_directory_toolchains",
     "register_copy_to_directory_toolchains",
     "register_coreutils_toolchains",
     "register_expand_template_toolchains",
-    "register_jq_toolchains",
     "register_zstd_toolchains",
 )
 load("//lib/private:extension_utils.bzl", "extension_utils")
@@ -55,13 +52,6 @@ def _toolchains_extension_impl(mctx):
         toolchain_name = "copy_to_directory",
         toolchain_repos_fn = lambda name, version: register_copy_to_directory_toolchains(name = name, register = False),
         get_version_fn = lambda attr: None,
-    )
-
-    extension_utils.toolchain_repos_bfs(
-        mctx = mctx,
-        get_tag_fn = lambda tags: tags.jq,
-        toolchain_name = "jq",
-        toolchain_repos_fn = lambda name, version: register_jq_toolchains(name = name, version = version, register = False),
     )
 
     extension_utils.toolchain_repos_bfs(
@@ -107,7 +97,6 @@ toolchains = module_extension(
     tag_classes = {
         "copy_directory": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_DIRECTORY_REPOSITORY)}),
         "copy_to_directory": tag_class(attrs = {"name": attr.string(default = DEFAULT_COPY_TO_DIRECTORY_REPOSITORY)}),
-        "jq": tag_class(attrs = {"name": attr.string(default = DEFAULT_JQ_REPOSITORY), "version": attr.string(default = DEFAULT_JQ_VERSION)}),
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),
         "zstd": tag_class(attrs = {"name": attr.string(default = DEFAULT_ZSTD_REPOSITORY)}),
         "expand_template": tag_class(attrs = {"name": attr.string(default = DEFAULT_EXPAND_TEMPLATE_REPOSITORY)}),

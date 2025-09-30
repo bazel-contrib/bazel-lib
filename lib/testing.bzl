@@ -2,7 +2,6 @@
 
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("@jq.bzl//jq:jq.bzl", "jq")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:params_file.bzl", "params_file")
@@ -82,50 +81,6 @@ def assert_outputs(name, actual, expected, **kwargs):
         name = name,
         file1 = name + "_expected",
         file2 = name + "_actual",
-        **kwargs
-    )
-
-def assert_json_matches(name, file1, file2, filter1 = ".", filter2 = ".", **kwargs):
-    """Assert that the given json files have the same semantic content.
-
-    Uses jq to filter each file. The default value of `"."` as the filter
-    means to compare the whole file.
-
-    See the [jq rule](./jq.md#jq) for more about the filter expressions as well as
-    setup notes for the `jq` toolchain.
-
-    Args:
-        name: name of resulting diff_test target
-        file1: a json file
-        file2: another json file
-        filter1: a jq filter to apply to file1
-        filter2: a jq filter to apply to file2
-        **kwargs: additional named arguments for the resulting diff_test
-    """
-    name1 = "{}_jq1".format(name)
-    name2 = "{}_jq2".format(name)
-    jq(
-        name = name1,
-        srcs = [file1],
-        filter = filter1,
-    )
-
-    jq(
-        name = name2,
-        srcs = [file2],
-        filter = filter2,
-    )
-
-    diff_test(
-        name = name,
-        file1 = name1,
-        file2 = name2,
-        failure_message = "'{}' from {} doesn't match '{}' from {}".format(
-            filter1,
-            file1,
-            filter2,
-            file2,
-        ),
         **kwargs
     )
 
