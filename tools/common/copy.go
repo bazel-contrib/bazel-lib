@@ -56,27 +56,19 @@ func Copy(opts CopyOpts) {
 	if opts.verbose {
 		fmt.Printf("clonefile%s %v => %v\n", opModifier, opts.src, opts.dst)
 	}
-	switch supported, err := cloneFile(opts.src, opts.dst); {
-	case !supported:
-		if opts.verbose {
-			fmt.Print("clonefile skipped: not supported by platform\n")
-		}
-		// fallback to copy
-	case supported && err == nil:
+	err := CloneFile(opts.src, opts.dst)
+	if err == nil {
 		return
-	case supported && err != nil:
-		if opts.verbose {
-			fmt.Printf("clonefile failed: %v\n", err)
-			opModifier = fallback
-		}
-		// fallback to copy
+	}
+
+	if opts.verbose {
+		fmt.Printf("clonefile failed: %v\n", err)
+		fmt.Printf("copy%s %v => %v\n", opModifier, opts.src, opts.dst)
+		opModifier = fallback
 	}
 
 	// copy this file
-	if opts.verbose {
-		fmt.Printf("copy%s %v => %v\n", opModifier, opts.src, opts.dst)
-	}
-	err := CopyFile(opts.src, opts.dst)
+	err = CopyFile(opts.src, opts.dst)
 	if err != nil {
 		log.Fatal(err)
 	}
