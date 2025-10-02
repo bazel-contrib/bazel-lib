@@ -1,9 +1,8 @@
-load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("//:bzl_library.bzl", "bzl_library")
 load("//lib:utils.bzl", "is_bzlmod_enabled")
 load("//lib/private:stamping.bzl", "stamp_build_setting")
 
-# Ensure that users building their own rules can dep on our bzl_library targets for their stardoc
 package(default_visibility = ["//visibility:public"])
 
 exports_files(
@@ -260,12 +259,6 @@ bzl_library(
     name = "lists",
     srcs = ["lists.bzl"],
     deps = ["//lib/private:lists"],
-)
-
-bzl_library(
-    name = "docs",
-    srcs = ["docs.bzl"],
-    deps = ["//lib/private:docs"],
 )
 
 bzl_library(

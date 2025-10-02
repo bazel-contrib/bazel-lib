@@ -18,7 +18,6 @@ build_test(
         "@bazel_lib//lib:coreutils_toolchain_type",
         "@bazel_lib//lib:diff_test",
         "@bazel_lib//lib:directory_path",
-        "@bazel_lib//lib:docs",
         "@bazel_lib//lib:enable_runfiles",
         "@bazel_lib//lib:expand_make_vars",
         "@bazel_lib//lib:expand_template",

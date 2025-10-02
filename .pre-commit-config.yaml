@@ -32,7 +32,7 @@ repos:
       - id: check-symlinks
       - id: destroyed-symlinks
       - id: end-of-file-fixer
-        exclude: &exclude_pattern "^(docs|e2e|lib/tests)/"
+        exclude: "^(e2e|lib/tests)/"
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/crate-ci/typos
