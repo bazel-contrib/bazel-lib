@@ -2,14 +2,9 @@
 workspaces:
   - .:
       tasks:
-        - bazel-6:
-            without: true
         - bazel-7:
             without: true
-  - e2e/api_entries:
-      tasks:
-        - bazel-6:
-            without: true
+  - e2e/api_entries
   - e2e/copy_action
   - e2e/copy_to_directory
   - e2e/coreutils
@@ -18,19 +13,19 @@ workspaces:
   - e2e/write_source_files
 tasks:
   - test:
-      name: "Test (Bazel 6.x)"
-      id: bazel-6
-      env:
-        USE_BAZEL_VERSION: 6.x
-  - test:
-      name: "Test (Bazel 7.x)"
+      name: Bazel 7
       id: bazel-7
       env:
         USE_BAZEL_VERSION: 7.x
   - test:
-      name: "Test (Bazel 8.x)"
+      name: Bazel 8
       id: bazel-8
       env:
         USE_BAZEL_VERSION: 8.x
+  - test:
+      name: Bazel 9
+      id: bazel-9
+      env:
+        USE_BAZEL_VERSION: rolling
 notifications:
   github: {}
