@@ -53,16 +53,15 @@ tar --create --auto-compress \
 
 cat <<EOF
 
-## Using Bzlmod with Bazel 6:
+## Using Bzlmod
 
-1. Enable with \`common --enable_bzlmod\` in \`.bazelrc\`.
-2. Add to your \`MODULE.bazel\` file:
+Add to your \`MODULE.bazel\` file:
 
 \`\`\`starlark
 bazel_dep(name = "bazel_lib", version = "${TAG:1}")
 \`\`\`
 
-## Using WORKSPACE
+## Using WORKSPACE (deprecated)
 
 Paste this snippet into your \`WORKSPACE\` file:
 
