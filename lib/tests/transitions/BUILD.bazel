@@ -22,7 +22,6 @@ platform(
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:x86_64",
-        "@io_bazel_rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
     ],
 )
 
@@ -31,7 +30,6 @@ platform(
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:arm64",
-        "@io_bazel_rules_go//go/toolchain:cgo_off",  # https://github.com/bazelbuild/rules_go/pull/3390
     ],
 )
 
@@ -99,6 +97,7 @@ diff_test(
 go_binary(
     name = "test_transition_binary",
     embed = [":transitions_lib"],
+    pure = "on",
     tags = ["manual"],
     visibility = ["//visibility:public"],
 )
@@ -106,6 +105,7 @@ go_binary(
 go_test(
     name = "test_transition_test",
     size = "small",
+    pure = "on",
     srcs = ["simple_test.go"],
 )
 
