@@ -105,8 +105,8 @@ go_binary(
 go_test(
     name = "test_transition_test",
     size = "small",
-    pure = "on",
     srcs = ["simple_test.go"],
+    pure = "on",
 )
 
 platform_transition_binary(
