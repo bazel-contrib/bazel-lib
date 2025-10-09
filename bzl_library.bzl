@@ -76,7 +76,7 @@ def bzl_library(name, srcs = [], deps = [], **kwargs):
     # but there's no tool available for that since the Java implementation code is only exposed as a
     # native Bazel rule.
     # See bazelbuild/bazel-skylib#568
-    if hasattr(native, "starlark_doc_extract") and "/private" not in native.package_name():
+    if hasattr(native, "starlark_doc_extract") and "private" not in native.package_name().split("/"):
         extract_targets = []
         for i, src in enumerate(srcs):
             extract_target = "{}.doc_extract{}".format(name, i if i > 0 else "")
