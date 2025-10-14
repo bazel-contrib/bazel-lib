@@ -2,7 +2,7 @@
 
 Base Starlark libraries and basic Bazel rules which are useful for constructing rulesets and BUILD files.
 
-📚 API documentation: https://registry.bazel.build/modules/bazel_lib
+📚 **API documentation**: https://registry.bazel.build/docs/bazel_lib
 
 ## 3.0 release
 
