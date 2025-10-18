@@ -1,0 +1,15 @@
+load("//lib:copy_file.bzl", "copy_file")
+load("//lib:write_source_files.bzl", "write_source_files")
+
+copy_file(
+    name = "foobar",
+    src = "//lib/tests/write_source_files_repro_gen:gen_foobar",
+    out = "foobar.json",
+)
+
+write_source_files(
+    name = "write_foobar",
+    files = {
+        "foobar.json": "//lib/tests/write_source_files_repro_gen:gen_foobar",
+    },
+)

@@ -1,0 +1,6 @@
+genrule(
+    name = "gen_foobar",
+    outs = ["generated_foobar.txt"],
+    cmd = "echo '{\"hello\": \"world\"}' > $@",
+    visibility = ["//lib/tests:__subpackages__"],
+)
