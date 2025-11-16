@@ -5,7 +5,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/bazel-contrib/bazel-lib/tools/run_binary",
     visibility = ["//visibility:private"],
-    deps = ["@com_github_bytecodealliance_wasmtime_go//:wasmtime"],
+    deps = [
+        "@com_github_tetratelabs_wazero//:wazero",
+        "@com_github_tetratelabs_wazero//imports/wasi_snapshot_preview1",
+    ],
 )
 
 go_binary(

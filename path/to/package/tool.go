@@ -8,8 +8,8 @@ import (
 )
 
 //go:wasmexport spawn
-func spawn(path string) {
-	f, err := os.Create(path)
+func spawn() {
+	f, err := os.Create("bazel-out/darwin_arm64-fastbuild/bin/path/to/package/output.txt")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create file: %v\n", err)
 		os.Exit(1)

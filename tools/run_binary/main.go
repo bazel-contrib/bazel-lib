@@ -16,54 +16,44 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	// add a high-performance WASM runtime
-	"github.com/bytecodealliance/wasmtime-go"
+	"github.com/tetratelabs/wazero"
+	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
 func main() {
-
-	engine := wasmtime.NewEngine()
-	store := wasmtime.NewStore(engine)
-	// Load wasm code by reading /Users/alexeagle/Projects/bazel-lib/bazel-bin/path/to/package/tool_/tool.wasm
-	wasmCode, err := os.ReadFile("/Users/alexeagle/Projects/bazel-lib/bazel-bin/path/to/package/tool_/tool.wasm")
+	wasmCode, err := os.ReadFile("/Users/alexeagle/Projects/bazel-lib/bazel-bin/path/to/package/wasm_tool_/wasm_tool.wasm")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to read wasm code: %v\n", err)
 		os.Exit(1)
 	}
-	module, err := wasmtime.NewModule(engine, []byte(wasmCode))
+
+	// Choose the context to use for function calls.
+	ctx := context.Background()
+	r := wazero.NewRuntime(ctx)
+	defer r.Close(ctx)
+
+	wasi_snapshot_preview1.MustInstantiate(ctx, r)
+
+	module, err := r.Instantiate(ctx, wasmCode)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create module: %v\n", err)
-		os.Exit(1)
-	}
-	instance, err := wasmtime.NewInstance(store, module, []wasmtime.AsExtern{})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create instance: %v\n", err)
-		os.Exit(1)
-	}
-	spawnFunc := instance.GetFunc(store, "spawn")
-	if spawnFunc == nil {
-		fmt.Fprintf(os.Stderr, "Failed to get spawn function\n")
-		os.Exit(1)
-	}
-	_, err = spawnFunc.Call(store, "bazel-out/darwin_arm64-fastbuild/bin/path/to/package/output.txt")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to call spawn function: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to instantiate module: %v\n", err)
 		os.Exit(1)
 	}
 
-	// // writes to bazel-bin/path/to/package/output.txt
-	// f, err := os.Create("bazel-out/darwin_arm64-fastbuild/bin/path/to/package/output.txt")
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Failed to create output.txt: %v\n", err)
-	// 	os.Exit(1)
-	// }
-	// defer f.Close()
-	// _, err = f.Write([]byte("[DEBUG] Hello from the tool launcher!\n"))
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Failed to write to output.txt: %v\n", err)
-	// 	os.Exit(1)
-	// }
+	// Call the exported spawn function with the output path
+	// Go's wasmexport handles string parameter marshalling automatically
+	spawn := module.ExportedFunction("spawn")
+	if spawn == nil {
+		fmt.Fprintf(os.Stderr, "Failed to get spawn function\n")
+		os.Exit(1)
+	}
+	_, err = spawn.Call(ctx)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to call spawn: %v\n", err)
+		os.Exit(1)
+	}
 }
