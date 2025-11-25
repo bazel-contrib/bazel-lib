@@ -75,7 +75,7 @@ use_repo(host_platform, "host_platform")
 
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.8.2", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
-bazel_dep(name = "external_test_repo", version = "0.0.0", dev_dependency = True)
+bazel_dep(name = "external_test_repo", dev_dependency = True)
 local_path_override(
     module_name = "external_test_repo",
     path = "./lib/tests/external_test_repo",
