@@ -55,8 +55,9 @@ toolchain_type(
     name = "copy_to_directory_toolchain_type",
 )
 
-toolchain_type(
+alias(
     name = "coreutils_toolchain_type",
+    actual = "@bazel_lib//lib:coreutils_toolchain_type",
 )
 
 toolchain_type(

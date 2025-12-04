@@ -13,6 +13,11 @@ bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "stardoc", version = "0.7.1")
 bazel_dep(name = "rules_shell", version = "0.4.1")
 
+# Depend on our own renamed module, providing back-compat to make migration easier.
+# See https://github.com/aspect-build/rules_lint/pull/666 as an example where it's needed,
+# because JS actions often rely on action deduplication.
+bazel_dep(name = "bazel_lib", version = "3.0.0")
+
 # TODO(3.0): remove this back-compat
 bazel_dep(name = "jq.bzl", version = "0.1.0")
 bazel_dep(name = "yq.bzl", version = "0.1.1")
