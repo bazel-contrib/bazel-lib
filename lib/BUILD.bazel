@@ -47,12 +47,14 @@ toolchain_type(
     name = "yq_toolchain_type",
 )
 
-toolchain_type(
+alias(
     name = "copy_directory_toolchain_type",
+    actual = "@bazel_lib//lib:copy_directory_toolchain_type",
 )
 
-toolchain_type(
+alias(
     name = "copy_to_directory_toolchain_type",
+    actual = "@bazel_lib//lib:copy_to_directory_toolchain_type",
 )
 
 alias(
@@ -60,8 +62,9 @@ alias(
     actual = "@bazel_lib//lib:coreutils_toolchain_type",
 )
 
-toolchain_type(
+alias(
     name = "expand_template_toolchain_type",
+    actual = "@bazel_lib//lib:expand_template_toolchain_type",
 )
 
 # TODO(3.0): remove
