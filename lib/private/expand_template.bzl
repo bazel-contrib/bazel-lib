@@ -50,6 +50,7 @@ def _expand_template_impl(ctx):
             inputs = inputs,
             executable = expand_template_info.bin,
             toolchain = "@bazel_lib//lib:expand_template_toolchain_type",
+            execution_requirements = {"supports-path-mapping": "1"},
         )
     else:
         ctx.actions.expand_template(

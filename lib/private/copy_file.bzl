@@ -68,18 +68,47 @@ def copy_file_action(ctx, src, dst, dir_path = None):
 
     if dst.is_directory:
         fail("dst must not be a TreeArtifact")
+
+    args = ctx.actions.args()
+    args.add("cp")
+
     if src.is_directory:
         if not dir_path:
             fail("dir_path must be set if src is a TreeArtifact")
-        src_path = "/".join([src.path, dir_path])
-    else:
-        src_path = src.path
 
+        # TODO(zbarsky): No path-mapping here, _copy_file_from_directory can support it though.
+        # We can consider exposing it later.
+        args.add("/".join([src.path, dir_path]))
+    else:
+        args.add(src)
+
+    args.add(dst)
+    _run_copy_file_action(ctx, src, dst, args)
+
+def _directory_path(src):
+    dir = src[DirectoryPathInfo].directory
+    dir_path = src[DirectoryPathInfo].path
+    if not dir_path:
+        fail("dir_path must be set if src is a TreeArtifact")
+
+    return "/".join([dir.path, dir_path])
+
+def _copy_file_from_directory(ctx, src, dst):
+    if dst.is_directory:
+        fail("dst must not be a TreeArtifact")
+
+    args = ctx.actions.args()
+    args.add("cp")
+    args.add_all([src], map_each = _directory_path)
+    args.add(dst)
+    _run_copy_file_action(ctx, src[DirectoryPathInfo].directory, dst, args)
+
+def _run_copy_file_action(ctx, src, dst, args):
     coreutils = ctx.toolchains[_COREUTILS_TOOLCHAIN].coreutils_info
 
     ctx.actions.run(
         executable = coreutils.bin,
-        arguments = ["cp", src_path, dst.path],
+        arguments = [args],
         inputs = [src],
         outputs = [dst],
         mnemonic = "CopyFile",
@@ -100,12 +129,7 @@ def _copy_file_impl(ctx):
             is_executable = ctx.attr.is_executable,
         )
     elif DirectoryPathInfo in ctx.attr.src:
-        copy_file_action(
-            ctx,
-            ctx.attr.src[DirectoryPathInfo].directory,
-            ctx.outputs.out,
-            dir_path = ctx.attr.src[DirectoryPathInfo].path,
-        )
+        _copy_file_from_directory(ctx, ctx.attr.src, ctx.outputs.out)
     else:
         if len(ctx.files.src) != 1:
             fail("src must be a single file or a target that provides a DirectoryPathInfo")

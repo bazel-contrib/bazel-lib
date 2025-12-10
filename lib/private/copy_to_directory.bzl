@@ -505,11 +505,18 @@ def copy_to_directory_bin_action(
         content = json.encode_indent(config),
     )
 
+    args = ctx.actions.args()
+    args.add(config_file)
+    args.add(ctx.label.workspace_name)
+
+    # TODO(zbarsky): We path-map this action but the config's content will still mismatch.
+    # Needs a more holistic fix there.
+
     ctx.actions.run(
         inputs = file_inputs + [config_file],
         outputs = [dst],
         executable = copy_to_directory_bin,
-        arguments = [config_file.path, ctx.label.workspace_name],
+        arguments = [args],
         # TODO: Drop this after https://github.com/bazel-contrib/bazel-lib/issues/1146
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyToDirectory",
