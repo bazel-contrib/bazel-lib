@@ -70,7 +70,8 @@ Possible fixes:
         resource_set = resource_set(ctx.attr),
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
         progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
-        execution_requirements = ctx.attr.execution_requirements if ctx.attr.execution_requirements else None,
+        # Target can override if they want to.
+        execution_requirements = dicts.add({"supports-path-mapping": "1"}, ctx.attr.execution_requirements),
         use_default_shell_env = ctx.attr.use_default_shell_env,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
     )

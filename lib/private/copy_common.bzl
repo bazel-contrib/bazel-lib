@@ -11,4 +11,5 @@ COPY_EXECUTION_REQUIREMENTS = {
     # Sandboxing for this action is wasteful since there is a 1:1 mapping of input file/directory to
     # output file/directory so little room for non-hermetic inputs to sneak in to the execution.
     "no-sandbox": "1",
+    "supports-path-mapping": "1",
 }

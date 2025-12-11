@@ -43,26 +43,25 @@ def copy_directory_bin_action(
             See the caveats above about interactions with remote execution and caching.
 
     """
-    args = [
-        src.path,
-        dst.path,
-    ]
+    args = ctx.actions.args()
+    args.add_all([src, dst], expand_directories = False)
+
     if verbose:
-        args.append("--verbose")
+        args.add("--verbose")
 
     if hardlink == "on":
-        args.append("--hardlink")
+        args.add("--hardlink")
     elif hardlink == "auto" and not src.is_source:
-        args.append("--hardlink")
+        args.add("--hardlink")
 
     if preserve_mtime:
-        args.append("--preserve-mtime")
+        args.add("--preserve-mtime")
 
     ctx.actions.run(
         inputs = [src],
         outputs = [dst],
         executable = copy_directory_bin,
-        arguments = args,
+        arguments = [args],
         # TODO: Drop this after https://github.com/bazel-contrib/bazel-lib/issues/1146
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyDirectory",
