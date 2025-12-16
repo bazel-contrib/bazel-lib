@@ -96,7 +96,10 @@ bzl_library(
     name = "directory_path",
     srcs = ["directory_path.bzl"],
     visibility = ["//lib:__subpackages__"],
-    deps = ["//lib:utils"],
+    deps = [
+        "//lib:utils",
+        "@bazel_lib//lib:directory_path",
+    ],
 )
 
 #keep

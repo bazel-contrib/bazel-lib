@@ -2,15 +2,11 @@
 with a path nested within that directory
 """
 
+load("@bazel_lib//lib:directory_path.bzl", _DirectoryPathInfo = "DirectoryPathInfo")
 load("//lib:utils.bzl", _to_label = "to_label")
 
-DirectoryPathInfo = provider(
-    doc = "Joins a label pointing to a TreeArtifact with a path nested within that directory.",
-    fields = {
-        "directory": "a TreeArtifact (ctx.actions.declare_directory)",
-        "path": "path relative to the directory",
-    },
-)
+# Alias the modern bazel_lib v3 providers to ease migration of rulesets to v3.
+DirectoryPathInfo = _DirectoryPathInfo
 
 def _directory_path(ctx):
     if not ctx.file.directory.is_directory:
