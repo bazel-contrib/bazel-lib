@@ -46,7 +46,7 @@ jobs:
           retention-days: 1
   release:
     needs: build
-    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.3
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.4
     with:
       release_files: |
         go-binaries/*
