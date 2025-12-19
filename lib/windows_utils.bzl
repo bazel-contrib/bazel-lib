@@ -104,7 +104,7 @@ if defined args (
             bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
             sh_script = paths.to_rlocation_path(ctx, shell_script),
             rlocation_function = BATCH_RLOCATION_FUNCTION,
-        ),
+        ).replace("\n", "\r\n"),
         is_executable = True,
     )
     return win_launcher
