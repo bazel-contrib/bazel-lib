@@ -8,6 +8,6 @@ index eec026a..4854935 100644
  # along with our releases.
 -IS_RELEASE = False
 +IS_RELEASE = True
- 
+
  bazel_dep(
      name = "gazelle",

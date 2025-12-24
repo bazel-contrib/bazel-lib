@@ -43,8 +43,8 @@ bazel_dep(
 bazel_dep(
     name = "rules_go",
     version = "0.59.0",
-    repo_name = "io_bazel_rules_go",
     dev_dependency = IS_RELEASE,
+    repo_name = "io_bazel_rules_go",
 )
 
 go_sdk = use_extension(
