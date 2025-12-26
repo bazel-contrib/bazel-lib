@@ -1,0 +1,55 @@
+load("@bazel_lib//lib:diff_test.bzl", "diff_test")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+# Create two simple files to compare
+write_file(
+    name = "gen_file1",
+    out = "file1.txt",
+    content = ["line1", "line2"],
+)
+
+write_file(
+    name = "gen_file2",
+    out = "file2.txt",
+    content = ["line1", "line2"],
+)
+
+# This diff_test will generate a .bat file on Windows
+diff_test(
+    name = "simple_test",
+    file1 = ":file1.txt",
+    file2 = ":file2.txt",
+)
+
+# Generate a test .bat file using the same code path as create_windows_native_launcher_script
+# This simulates how .bat files are generated and allows us to test their line endings
+genrule(
+    name = "gen_test_bat",
+    outs = ["test_script.bat"],
+    cmd = select({
+        "@platforms//os:windows": """
+echo @echo off > $@
+echo SETLOCAL ENABLEEXTENSIONS >> $@
+echo echo This is a test >> $@
+echo exit /b 0 >> $@
+""",
+        "//conditions:default": "touch $@",
+    }),
+)
+
+# Test to verify that generated .bat files have CRLF line endings on Windows
+sh_test(
+    name = "bat_line_endings_test",
+    size = "small",
+    srcs = ["verify_bat_crlf.sh"],
+    args = ["$(rlocationpath :simple_test)"],
+    data = [
+        ":simple_test",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+    target_compatible_with = select({
+        "@platforms//os:windows": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+)

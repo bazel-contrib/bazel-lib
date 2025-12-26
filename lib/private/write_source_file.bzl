@@ -390,7 +390,7 @@ if !ERRORLEVEL! neq 0 (
     ctx.actions.write(
         output = updater,
         is_executable = True,
-        content = "\n".join(contents),
+        content = "\n".join(contents).replace("\n", "\r\n"),
     )
     return updater
 
