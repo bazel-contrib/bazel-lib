@@ -100,6 +100,7 @@ if defined args (
   set args=!args:"=\"!
 )
 "{bash_bin}" -c "!run_script! !args!"
+exit /b %ERRORLEVEL%
 """.format(
             bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
             sh_script = paths.to_rlocation_path(ctx, shell_script),

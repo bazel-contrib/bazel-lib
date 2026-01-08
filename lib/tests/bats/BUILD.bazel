@@ -1,5 +1,8 @@
 load("//lib:bats.bzl", "bats_test")
 
+# Note: bats tests on Windows don't seem to work with WSL bash.
+# Hint: bazel test --repo_env=BAZEL_SH="C:/Program Files/Git/bin/bash.exe" //lib/tests/bats/...
+
 NOT_WINDOWS = select({
     "@platforms//os:windows": ["@platforms//:incompatible"],
     "//conditions:default": [],
@@ -11,8 +14,6 @@ bats_test(
     srcs = [
         "basic.bats",
     ],
-    # fails on windows with 'ln: failed to create symbolic link '/tmp/bats-run-x4zjoi/file/0-basic.bats.source_file': Operation not permitted'
-    target_compatible_with = NOT_WINDOWS,
 )
 
 bats_test(
@@ -24,8 +25,6 @@ bats_test(
     env = {
         "USE_BAZEL_VERSION": "latest",
     },
-    # fails on windows with 'ln: failed to create symbolic link '/tmp/bats-run-x4zjoi/file/0-basic.bats.source_file': Operation not permitted'
-    target_compatible_with = NOT_WINDOWS,
 )
 
 bats_test(
