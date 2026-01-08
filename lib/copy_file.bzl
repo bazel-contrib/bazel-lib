@@ -29,7 +29,7 @@ This fork of bazel-skylib's copy_file adds `DirectoryPathInfo` support and allow
 """
 
 load(
-    "//lib/private:copy_file.bzl",
+    "@bazel_lib//lib:copy_file.bzl",
     _COPY_FILE_TOOLCHAINS = "COPY_FILE_TOOLCHAINS",
     _copy_file = "copy_file",
     _copy_file_action = "copy_file_action",
