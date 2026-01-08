@@ -8,7 +8,7 @@ https://github.com/bazel-contrib/rules_nodejs/blob/8b5d27400db51e7027fe95ae413ee
 """
 
 load(
-    "//lib/private:copy_to_bin.bzl",
+    "@bazel_lib//lib:copy_to_bin.bzl",
     _COPY_FILE_TO_BIN_TOOLCHAINS = "COPY_FILE_TO_BIN_TOOLCHAINS",
     _copy_file_to_bin_action = "copy_file_to_bin_action",
     _copy_files_to_bin_actions = "copy_files_to_bin_actions",
