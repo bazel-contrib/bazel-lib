@@ -68,7 +68,7 @@ To use `copy_file_action` in your own rules, you need to include the toolchains 
 in your rule definition. For example:
 
 ```starlark
-load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
+load("@bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS")
 
 my_rule = rule(
     ...,
@@ -80,7 +80,7 @@ Additionally, you must ensure that the coreutils toolchain is has been registere
 WORKSPACE if you are not using bzlmod:
 
 ```starlark
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+load("@bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
 
 register_coreutils_toolchains()
 ```

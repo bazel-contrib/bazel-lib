@@ -3,7 +3,7 @@
 This rule copies a directory to another location using a precompiled binary.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load("@bazel_lib//lib:copy_directory.bzl", _copy_directory_bin_action = "copy_directory_bin_action")
 
 def copy_directory_bin_action(
         ctx,
@@ -43,32 +43,15 @@ def copy_directory_bin_action(
             See the caveats above about interactions with remote execution and caching.
 
     """
-    args = [
-        src.path,
-        dst.path,
-    ]
-    if verbose:
-        args.append("--verbose")
-
-    if hardlink == "on":
-        args.append("--hardlink")
-    elif hardlink == "auto" and not src.is_source:
-        args.append("--hardlink")
-
-    if preserve_mtime:
-        args.append("--preserve-mtime")
-
-    ctx.actions.run(
-        inputs = [src],
-        outputs = [dst],
-        executable = copy_directory_bin,
-        arguments = args,
-        # TODO: Drop this after https://github.com/bazel-contrib/bazel-lib/issues/1146
-        env = {"GODEBUG": "winsymlink=0"},
-        mnemonic = "CopyDirectory",
-        progress_message = "Copying directory %{input}",
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
-        toolchain = copy_directory_toolchain,
+    _copy_directory_bin_action(
+        ctx,
+        src = src,
+        dst = dst,
+        copy_directory_bin = copy_directory_bin,
+        copy_directory_toolchain = copy_directory_toolchain,
+        hardlink = hardlink,
+        verbose = verbose,
+        preserve_mtime = preserve_mtime,
     )
 
 def _copy_directory_impl(ctx):
