@@ -30,7 +30,7 @@ To use `copy_file_to_bin_action` in your own rules, you need to include the tool
 in your rule definition. For example:
 
 ```starlark
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
+load("@bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
 
 my_rule = rule(
     ...,
@@ -42,7 +42,7 @@ Additionally, you must ensure that the coreutils toolchain is has been registere
 WORKSPACE if you are not using bzlmod:
 
 ```starlark
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
+load("@bazel_lib//lib:repositories.bzl", "register_coreutils_toolchains")
 
 register_coreutils_toolchains()
 ```

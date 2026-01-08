@@ -32,8 +32,8 @@ bzl_library(
     srcs = ["copy_directory.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        ":copy_common",
         ":platform_utils",
+        "@bazel_lib//lib:copy_directory",
     ],
 )
 
@@ -52,11 +52,8 @@ bzl_library(
     srcs = ["copy_to_directory.bzl"],
     visibility = ["//lib:__subpackages__"],
     deps = [
-        ":copy_common",
         ":directory_path",
-        ":glob_match",
-        ":paths",
-        ":platform_utils",
+        "@bazel_lib//lib:copy_to_directory",
         "@bazel_skylib//lib:paths",
     ],
 )
@@ -264,12 +261,6 @@ bzl_library(
 bzl_library(
     name = "bats_toolchain",
     srcs = ["bats_toolchain.bzl"],
-    visibility = ["//lib:__subpackages__"],
-)
-
-bzl_library(
-    name = "copy_common",
-    srcs = ["copy_common.bzl"],
     visibility = ["//lib:__subpackages__"],
 )
 

@@ -1,8 +1,7 @@
 "copy_to_directory implementation"
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load("@bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory_bin_action = "copy_to_directory_bin_action")
 load(":directory_path.bzl", "DirectoryPathInfo")
-load(":paths.bzl", "paths")
 
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:
 
@@ -312,19 +311,6 @@ def _copy_to_directory_impl(ctx):
         ),
     ]
 
-def _expand_src_packages_patterns(patterns, package):
-    result = []
-    for pattern in patterns:
-        if pattern.startswith("."):
-            if not package and pattern.startswith("./"):
-                # special case in the root package
-                result.append(pattern[2:])
-            else:
-                result.append(package + pattern[1:])
-        else:
-            result.append(pattern)
-    return result
-
 def copy_to_directory_bin_action(
         ctx,
         name,
@@ -407,115 +393,25 @@ def copy_to_directory_bin_action(
 
         verbose: If true, prints out verbose logs to stdout
     """
-
-    # Replace "." in root_paths with the package name of the target
-    root_paths = [p if p != "." else ctx.label.package for p in root_paths]
-
-    # Replace a leading "." with the package name of the target in include_srcs_packages & exclude_srcs_packages
-    include_srcs_packages = _expand_src_packages_patterns(include_srcs_packages, ctx.label.package)
-    exclude_srcs_packages = _expand_src_packages_patterns(exclude_srcs_packages, ctx.label.package)
-
-    if not include_srcs_packages:
-        fail("An empty 'include_srcs_packages' list will exclude all srcs and result in an empty directory")
-
-    if "**" in exclude_srcs_packages:
-        fail("A '**' glob pattern in 'exclude_srcs_packages' will exclude all srcs and result in an empty directory")
-
-    if not include_srcs_patterns:
-        fail("An empty 'include_srcs_patterns' list will exclude all srcs and result in an empty directory")
-
-    if "**" in exclude_srcs_patterns:
-        fail("A '**' glob pattern in 'exclude_srcs_patterns' will exclude all srcs and result in an empty directory")
-
-    for replace_prefix in replace_prefixes.keys():
-        if replace_prefix.endswith("**"):
-            msg = "replace_prefix '{}' must not end with '**' glob expression".format(replace_prefix)
-            fail(msg)
-
-    files_and_targets = []
-    for f in files:
-        files_and_targets.append(struct(
-            file = f,
-            path = f.path,
-            root_path = f.root.path,
-            short_path = f.short_path,
-            workspace_path = paths.to_repository_relative_path(f),
-        ))
-    for t in targets:
-        if not DirectoryPathInfo in t:
-            continue
-        files_and_targets.append(struct(
-            file = t[DirectoryPathInfo].directory,
-            path = "/".join([t[DirectoryPathInfo].directory.path, t[DirectoryPathInfo].path]),
-            root_path = t[DirectoryPathInfo].directory.root.path,
-            short_path = "/".join([t[DirectoryPathInfo].directory.short_path, t[DirectoryPathInfo].path]),
-            workspace_path = "/".join([paths.to_repository_relative_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
-        ))
-
-    file_infos = []
-    file_inputs = []
-    for f in files_and_targets:
-        if not f.file.owner:
-            msg = "Expected an owner target label for file {} but found none".format(f)
-            fail(msg)
-
-        if f.file.owner.package == None:
-            msg = "Expected owner target label for file {} to have a package name but found None".format(f)
-            fail(msg)
-
-        if f.file.owner.workspace_name == None:
-            msg = "Expected owner target label for file {} to have a workspace name but found None".format(f)
-            fail(msg)
-
-        hardlink_file = False
-        if hardlink == "on":
-            hardlink_file = True
-        elif hardlink == "auto":
-            hardlink_file = not f.file.is_source
-
-        file_infos.append({
-            "package": f.file.owner.package,
-            "path": f.path,
-            "root_path": f.root_path,
-            "short_path": f.short_path,
-            "workspace": f.file.owner.workspace_name,
-            "workspace_path": f.workspace_path,
-            "hardlink": hardlink_file,
-        })
-        file_inputs.append(f.file)
-
-    config = {
-        "allow_overwrites": allow_overwrites,
-        "dst": dst.path,
-        "exclude_srcs_packages": exclude_srcs_packages,
-        "exclude_srcs_patterns": exclude_srcs_patterns,
-        "files": file_infos,
-        "include_external_repositories": include_external_repositories,
-        "include_srcs_packages": include_srcs_packages,
-        "include_srcs_patterns": include_srcs_patterns,
-        "replace_prefixes": replace_prefixes,
-        "root_paths": root_paths,
-        "preserve_mtime": preserve_mtime,
-        "verbose": verbose,
-    }
-
-    config_file = ctx.actions.declare_file("{}_config.json".format(name))
-    ctx.actions.write(
-        output = config_file,
-        content = json.encode_indent(config),
-    )
-
-    ctx.actions.run(
-        inputs = file_inputs + [config_file],
-        outputs = [dst],
-        executable = copy_to_directory_bin,
-        arguments = [config_file.path, ctx.label.workspace_name],
-        # TODO: Drop this after https://github.com/bazel-contrib/bazel-lib/issues/1146
-        env = {"GODEBUG": "winsymlink=0"},
-        mnemonic = "CopyToDirectory",
-        progress_message = "Copying files to directory %{output}",
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
-        toolchain = copy_to_directory_toolchain,
+    return _copy_to_directory_bin_action(
+        ctx,
+        name = name,
+        dst = dst,
+        copy_to_directory_bin = copy_to_directory_bin,
+        copy_to_directory_toolchain = copy_to_directory_toolchain,
+        files = files,
+        targets = targets,
+        root_paths = root_paths,
+        include_external_repositories = include_external_repositories,
+        include_srcs_packages = include_srcs_packages,
+        exclude_srcs_packages = exclude_srcs_packages,
+        include_srcs_patterns = include_srcs_patterns,
+        exclude_srcs_patterns = exclude_srcs_patterns,
+        replace_prefixes = replace_prefixes,
+        allow_overwrites = allow_overwrites,
+        hardlink = hardlink,
+        preserve_mtime = preserve_mtime,
+        verbose = verbose,
     )
 
 copy_to_directory_lib = struct(
