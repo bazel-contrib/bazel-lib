@@ -1,0 +1,23 @@
+# See https://docs.aspect.build/workflows/configuration
+workspaces:
+  - .
+  - e2e/api_entries
+  - e2e/copy_action
+  - e2e/copy_to_directory
+  - e2e/coreutils
+  - e2e/external_copy_to_directory
+  - e2e/smoke
+  - e2e/write_source_files
+tasks:
+  - test:
+      name: Bazel 7
+      id: bazel-7
+      env:
+        USE_BAZEL_VERSION: 7.x
+  - test:
+      name: Bazel 8
+      id: bazel-8
+      env:
+        USE_BAZEL_VERSION: 8.x
+notifications:
+  github: {}
