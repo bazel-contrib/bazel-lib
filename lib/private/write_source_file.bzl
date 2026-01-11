@@ -233,7 +233,7 @@ def _write_source_file_sh(ctx, paths):
 
     contents = ["""#!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
-runfiles_dir=$PWD
+current_working_dir=$PWD
 # BUILD_WORKSPACE_DIRECTORY not set when running as a test, uses the sandbox instead
 if [[ ! -z "${BUILD_WORKSPACE_DIRECTORY:-}" ]]; then
     cd "$BUILD_WORKSPACE_DIRECTORY"
@@ -262,7 +262,7 @@ fi"""]
 
     for in_path, _, _, out_path in paths:
         contents.append("""
-in=$runfiles_dir/{in_path}
+in=$current_working_dir/{in_path}
 out={out_path}
 
 mkdir -p "$(dirname "$out")"
@@ -296,7 +296,7 @@ fi
         ))
 
     contents.extend([
-        "cd \"$runfiles_dir\"",
+        "cd \"$current_working_dir\"",
         "# Run the update scripts for all write_source_file deps",
     ])
     for update_script in additional_update_scripts:
@@ -328,7 +328,7 @@ SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
 set RUNFILES_MANIFEST_ONLY=1
 """ + BATCH_RLOCATION_FUNCTION + """
-set runfiles_dir=%cd%
+set current_working_dir=%cd%
 if defined BUILD_WORKSPACE_DIRECTORY (
     cd /d %BUILD_WORKSPACE_DIRECTORY%
 )"""]
@@ -380,7 +380,7 @@ if !ERRORLEVEL! neq 0 (
         ))
 
     contents.extend([
-        "cd /d %runfiles_dir%",
+        "cd /d %current_working_dir%",
         "@rem Run the update scripts for all write_source_file deps",
     ])
     for update_script in additional_update_scripts:
