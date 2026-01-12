@@ -1,6 +1,7 @@
 """Rule that uses copy actions"""
 
 load("@aspect_bazel_lib//lib:copy_file.bzl", "COPY_FILE_TOOLCHAINS", "copy_file_action")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
 
 def _simple_copy_file_impl(ctx):
     if len(ctx.files.src) != 1:
@@ -22,5 +23,5 @@ simple_copy_file = rule(
         "src": attr.label(mandatory = True, allow_files = True),
         "out": attr.output(mandatory = True),
     },
-    toolchains = COPY_FILE_TOOLCHAINS,
+    toolchains = COPY_FILE_TOOLCHAINS + COPY_FILE_TO_BIN_TOOLCHAINS,
 )
