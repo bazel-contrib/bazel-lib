@@ -118,8 +118,8 @@ exit /b 1
     ctx.actions.write(
         output = test,
         is_executable = True,
-        # since `contents` already contains some \n, joining on \n first avoids bogus \r\r\n
-        content = "\n".join(contents).replace("\n", "\r\n"),
+        # since `contents` already contains some \n, splitting lines first avoids bogus \r\r\n
+        content = "\r\n".join([line for content in contents for line in content.splitlines()]),
     )
 
     return test

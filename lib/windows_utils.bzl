@@ -85,7 +85,7 @@ def create_windows_native_launcher_script(ctx, shell_script):
     win_launcher = ctx.actions.declare_file(name + ".bat", sibling = shell_script)
     ctx.actions.write(
         output = win_launcher,
-        content = r"""@echo off
+        content = "\r\n".join(r"""@echo off
 SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
 set RUNFILES_MANIFEST_ONLY=1
@@ -104,7 +104,7 @@ if defined args (
             bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
             sh_script = paths.to_rlocation_path(ctx, shell_script),
             rlocation_function = BATCH_RLOCATION_FUNCTION,
-        ).replace("\n", "\r\n"),
+        ).splitlines()),
         is_executable = True,
     )
     return win_launcher

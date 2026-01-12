@@ -68,7 +68,7 @@ def _diff_test_impl(ctx):
         template = ctx.file._diff_test_tmpl_bat
         file1_path = to_rlocation_path(ctx, file1)
         file2_path = to_rlocation_path(ctx, file2)
-        fail_msg = "\r\n".join(["@echo" + (" " + line if line.strip() != "" else ".") for line in ctx.attr.failure_message[:-1].split("\n")])
+        fail_msg = "\r\n".join(["@echo" + (" " + line if line.strip() != "" else ".") for line in ctx.attr.failure_message[:-1].splitlines()])
     else:
         test_suffix = "-test.sh"
         template = ctx.file._diff_test_tmpl_sh
@@ -79,7 +79,7 @@ def _diff_test_impl(ctx):
         template = template,
         output = test_bin,
         substitutions = {
-            "{BATCH_RLOCATION_FUNCTION}": BATCH_RLOCATION_FUNCTION.replace("\n", "\r\n"),
+            "{BATCH_RLOCATION_FUNCTION}": "\r\n".join(BATCH_RLOCATION_FUNCTION.splitlines()),
             "{name}": ctx.attr.name,
             "{fail_msg}": fail_msg,
             "{file1}": file1_path,
