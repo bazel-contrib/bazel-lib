@@ -390,7 +390,8 @@ if !ERRORLEVEL! neq 0 (
     ctx.actions.write(
         output = updater,
         is_executable = True,
-        content = "\n".join(contents),
+        # since `contents` already contains some \n, splitting lines first avoids bogus \r\r\n
+        content = "\r\n".join([line for content in contents for line in content.splitlines()]),
     )
     return updater
 
