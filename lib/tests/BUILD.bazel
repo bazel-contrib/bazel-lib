@@ -10,6 +10,7 @@ load(":expand_make_vars_test.bzl", "expand_make_vars_test_suite")
 load(":glob_match_test.bzl", "glob_match_test_suite")
 load(":lists_test.bzl", "lists_test_suite")
 load(":paths_test.bzl", "paths_test_suite")
+load(":resource_sets_tests.bzl", "resource_sets_test_suite")
 load(":strings_tests.bzl", "strings_test_suite")
 load(":utils_test.bzl", "utils_test_suite")
 
@@ -34,6 +35,8 @@ base64_test_suite()
 strings_test_suite()
 
 lists_test_suite()
+
+resource_sets_test_suite()
 
 write_file(
     name = "gen_template",

@@ -276,4 +276,5 @@ bzl_library(
 bzl_library(
     name = "resource_sets",
     srcs = ["resource_sets.bzl"],
+    deps = ["//lib/private:resource_sets"],
 )

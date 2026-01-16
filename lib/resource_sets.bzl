@@ -9,6 +9,11 @@ write custom resource_set functions for use within their own repository.
 This seems to be the use case that Google engineers imagined.
 """
 
+load(
+    "//lib/private:resource_sets.bzl",
+    _resource_lookup = "resource_lookup",
+)
+
 resource_set_values = [
     "cpu_2",
     "cpu_4",
@@ -22,56 +27,52 @@ resource_set_values = [
     "mem_32g",
 ]
 
-def _resource_set_cpu_2(_, __):
-    return {"cpu": 2}
-
-def _resource_set_cpu_4(_, __):
-    return {"cpu": 4}
-
-def _resource_set_mem_512m(_, __):
-    return {"memory": 512}
-
-def _resource_set_mem_1g(_, __):
-    return {"memory": 1024}
-
-def _resource_set_mem_2g(_, __):
-    return {"memory": 2048}
-
-def _resource_set_mem_4g(_, __):
-    return {"memory": 4096}
-
-def _resource_set_mem_8g(_, __):
-    return {"memory": 8192}
-
-def _resource_set_mem_16g(_, __):
-    return {"memory": 16384}
-
-def _resource_set_mem_32g(_, __):
-    return {"memory": 32768}
-
 # buildifier: disable=function-docstring
 def resource_set(attr):
+    cpu = 0
+    mem = 0
+
     if attr.resource_set == "cpu_2":
-        return _resource_set_cpu_2
-    if attr.resource_set == "cpu_4":
-        return _resource_set_cpu_4
-    if attr.resource_set == "default":
+        cpu = 2
+    elif attr.resource_set == "cpu_4":
+        cpu = 4
+    elif attr.resource_set == "default":
         return None
-    if attr.resource_set == "mem_512m":
-        return _resource_set_mem_512m
-    if attr.resource_set == "mem_1g":
-        return _resource_set_mem_1g
-    if attr.resource_set == "mem_2g":
-        return _resource_set_mem_2g
-    if attr.resource_set == "mem_4g":
-        return _resource_set_mem_4g
-    if attr.resource_set == "mem_8g":
-        return _resource_set_mem_8g
-    if attr.resource_set == "mem_16g":
-        return _resource_set_mem_16g
-    if attr.resource_set == "mem_32g":
-        return _resource_set_mem_32g
-    fail("unknown resource set", attr.resource_set)
+    elif attr.resource_set == "mem_512m":
+        mem = 512
+    elif attr.resource_set == "mem_1g":
+        mem = 1024
+    elif attr.resource_set == "mem_2g":
+        mem = 2048
+    elif attr.resource_set == "mem_4g":
+        mem = 4096
+    elif attr.resource_set == "mem_8g":
+        mem = 8192
+    elif attr.resource_set == "mem_16g":
+        mem = 16384
+    elif attr.resource_set == "mem_32g":
+        mem = 32768
+    else:
+        fail("unknown resource set", attr.resource_set)
+
+    return _resource_lookup(cpu, mem)
+
+def resource_set_for(*, cpu_cores = 0, mem_mb = 0):
+    """ return an appropriate resource_set for the given values.
+
+    Args:
+        cpu_cores: (int) the number of cores to request. 0 means "use the bazel
+                   default". If the value is larger than the hard-coded max value, it will
+                   be clamped to the max value.
+
+        mem_mb: (int) megabytes of memory to request. 0 means "use the bazel
+                default". The value will be rounded up to a supported ram value, and
+                will be clamped to the max value.
+
+    Returns:
+        a resource_set function, as required by `ctx.actions.run` and `ctx.actions.run_shell`
+"""
+    return _resource_lookup(cpu_cores, mem_mb)
 
 resource_set_attr = {
     "resource_set": attr.string(
