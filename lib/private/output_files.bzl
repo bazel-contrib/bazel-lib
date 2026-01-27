@@ -101,6 +101,11 @@ def _find_execution_path_in_files_list(ctx, files_list, path):
         The File if found else None
     """
     for file in files_list:
-        if file.path == "/".join([ctx.bin_dir.path, ctx.attr.target.label.workspace_root, path]):
+        # The `path` can be different depending on whether the file is generated (which will include bin_dir)
+        # or in the source (which will not)
+        if file.path in (
+            "/".join([ctx.bin_dir.path, ctx.attr.target.label.workspace_root, path]),
+            "/".join([ctx.attr.target.label.workspace_root, path]),
+        ):
             return file
     return None
