@@ -346,7 +346,7 @@ set in=!in:/=\\!
 if "!in_sub_path!" neq "" (
   set in=!in!\\!in_sub_path!
 )
-set out={out_path}
+set "out={out_path}"
 
 if not defined BUILD_WORKSPACE_DIRECTORY (
     @rem Because there's no sandboxing in windows, if we copy over the target

@@ -76,9 +76,9 @@ set in_sub_path={in_sub_path}
 if "!in_sub_path!" neq "" (
   set in_path=!in_path!\\!in_sub_path!
 )
-set out_path={out_path}
+set "out_path={out_path}"
 
-call :assert_different !in_path! !out_path!
+call :assert_different "!in_path!" "!out_path!"
 if %errorlevel% neq 0 exit /b 1
 """.format(
         BATCH_RLOCATION_FUNCTION = BATCH_RLOCATION_FUNCTION,
@@ -98,7 +98,7 @@ if %errorlevel% neq 0 exit /b 1
 
     contents.append("""
 @rem Check that in and out files are the same
-call :assert_same %in_path% %out_path%
+call :assert_same "!in_path!" "!out_path!"
 if %errorlevel% neq 0 exit /b 1
 exit /b 0
 
