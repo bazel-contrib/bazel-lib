@@ -262,8 +262,8 @@ fi"""]
 
     for in_path, _, _, out_path in paths:
         contents.append("""
-in=$current_working_dir/{in_path}
-out={out_path}
+in="$current_working_dir/{in_path}"
+out="{out_path}"
 
 mkdir -p "$(dirname "$out")"
 if [[ -f "$in" ]]; then
