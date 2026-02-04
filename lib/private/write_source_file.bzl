@@ -335,9 +335,9 @@ if defined BUILD_WORKSPACE_DIRECTORY (
 
     progress_message = ""
     if ctx.attr.verbosity == "full":
-        progress_message = "echo Copying %in% to %out% in %cd%"
+        progress_message = "echo Copying !in! to !out! in %cd%"
     elif ctx.attr.verbosity == "short":
-        progress_message = "echo Updating %out%"
+        progress_message = "echo Updating !out!"
 
     for _, in_file, in_sub_path, out_path in paths:
         contents.append("""
@@ -353,21 +353,21 @@ if not defined BUILD_WORKSPACE_DIRECTORY (
     @rem file's symlink it will get copied back into the source directory
     @rem during tests. Work around this in tests by deleting the target file
     @rem symlink before copying over it.
-    del %out%
+    del "!out!"
 )
 
 {progress_message}
 
-if not exist "%in%\\*" goto :copy_file
-mkdir "%out%" >NUL 2>NUL
-robocopy "%in%" "%out%" /E >NUL
+if not exist "!in!\\*" goto :copy_file
+mkdir "!out!" >NUL 2>NUL
+robocopy "!in!" "!out!" /E >NUL
 goto :done
 
 :copy_file
-for %%I in ("%out%") do if not exist "%%~dpI" mkdir "%%~dpI"
-copy %in% %out%
+for %%I in ("!out!") do if not exist "%%~dpI" mkdir "%%~dpI"
+copy "!in!" "!out!"
 if !ERRORLEVEL! neq 0 (
-    echo Failed to copy %in% to %out%
+    echo Failed to copy !in! to !out!
     exit /b 1
 )
 
