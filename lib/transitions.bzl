@@ -38,6 +38,7 @@ platform_transition_filegroup = rule(
         ),
         "srcs": attr.label_list(
             allow_empty = False,
+            allow_files = True,
             cfg = _transition_platform,
             doc = "The input to be transitioned to the target platform.",
         ),
