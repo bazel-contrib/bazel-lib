@@ -94,6 +94,18 @@ diff_test(
     ],
 )
 
+genrule(
+    name = "dynamic_path",
+    outs = ["dynamic_path.txt"],
+    cmd = "echo $(RULEDIR) > $@",
+)
+
+platform_transition_filegroup(
+    name = "transitioned_dynamic_path",
+    srcs = ["dynamic_path.txt"],
+    target_platform = ":armv7_linux",
+)
+
 go_binary(
     name = "test_transition_binary",
     embed = [":transitions_lib"],
