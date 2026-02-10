@@ -83,7 +83,7 @@ def _platform(rctx):
         rctx: rctx
 
     Returns:
-        The normalized "<os>_<arch>" string of the host os and CPU architecture.
+        The normalized `<os>_<arch>` string of the host os and CPU architecture.
     """
     os = _os(rctx)
 
