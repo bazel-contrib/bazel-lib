@@ -32,7 +32,7 @@ assert_same() {
 
     contents.append("""
 # Check that in and out files are different
-assert_different {in_file} {out_file}
+assert_different "{in_file}" "{out_file}"
 """.format(
         in_file = in_file_path,
         out_file = out_file_path,
@@ -43,7 +43,7 @@ assert_different {in_file} {out_file}
 """.format(write_source_files = ctx.file.write_source_file_target.short_path))
 
     contents.append("""# Check that in and out files are the same
-assert_same {in_file} {out_file}""".format(
+assert_same "{in_file}" "{out_file}" """.format(
         in_file = in_file_path,
         out_file = out_file_path,
     ))
@@ -76,9 +76,9 @@ set in_sub_path={in_sub_path}
 if "!in_sub_path!" neq "" (
   set in_path=!in_path!\\!in_sub_path!
 )
-set out_path={out_path}
+set "out_path={out_path}"
 
-call :assert_different !in_path! !out_path!
+call :assert_different "!in_path!" "!out_path!"
 if %errorlevel% neq 0 exit /b 1
 """.format(
         BATCH_RLOCATION_FUNCTION = BATCH_RLOCATION_FUNCTION,
@@ -98,7 +98,7 @@ if %errorlevel% neq 0 exit /b 1
 
     contents.append("""
 @rem Check that in and out files are the same
-call :assert_same %in_path% %out_path%
+call :assert_same "!in_path!" "!out_path!"
 if %errorlevel% neq 0 exit /b 1
 exit /b 0
 
