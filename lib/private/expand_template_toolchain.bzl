@@ -185,6 +185,12 @@ expand_template_toolchain(name = "expand_template_toolchain", bin = "{0}", visib
     # Base BUILD file for this repository
     rctx.file("BUILD.bazel", build_content)
 
+    # Bazel <8.3.0 lacks rctx.repo_metadata
+    if not hasattr(rctx, "repo_metadata"):
+        return None
+
+    return rctx.repo_metadata(reproducible = True)
+
 expand_template_platform_repo = repository_rule(
     implementation = _expand_template_platform_repo_impl,
     doc = "Fetch external tools needed for expand_template toolchain",
