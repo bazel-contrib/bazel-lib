@@ -247,6 +247,19 @@ write_source_files(
     },
 )
 
+# Test that paths with shell metacharacters (parentheses) are handled correctly.
+genrule(
+    name = "special-chars-desired",
+    outs = ["special-chars-desired.js"],
+    cmd = "echo 'console.log(\"special-chars*\");' > $@",
+)
+
+write_source_file_test(
+    name = "special_chars_in_path_test",
+    in_file = ":special-chars-desired",
+    out_file = "(route-group)/test.js",
+)
+
 # Test that we can write to a sub package
 write_source_file_test(
     name = "a_subpkg_test",
