@@ -258,6 +258,10 @@ write_source_file_test(
     name = "special_chars_in_path_test",
     in_file = ":special-chars-desired",
     out_file = "(route-group)/test.js",
+    target_compatible_with = select({
+        "@aspect_bazel_lib//lib:enable_runfiles": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 # Test that we can write to a sub package
