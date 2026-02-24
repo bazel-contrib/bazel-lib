@@ -48,17 +48,23 @@ Possible fixes:
             rule_kind = str(ctx.attr.tool.label),
         ))
 
+    # Location and Make variable expansion can reference paths that aren't path mapped.
+    can_path_map = True
     for a in ctx.attr.args:
-        args.add_all(split_args(expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs)))
+        expanded = expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs)
+        can_path_map = can_path_map and expanded == a
+        args.add_all(split_args(expanded))
     envs = {}
     for k, v in ctx.attr.env.items():
         envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs, attribute_name = "env")
+        can_path_map = can_path_map and envs[k] == v
 
     stamp = maybe_stamp(ctx)
     if stamp:
         inputs = ctx.files.srcs + [stamp.volatile_status_file, stamp.stable_status_file]
         envs["BAZEL_STABLE_STATUS_FILE"] = stamp.stable_status_file.path
         envs["BAZEL_VOLATILE_STATUS_FILE"] = stamp.volatile_status_file.path
+        can_path_map = False
     else:
         inputs = ctx.files.srcs
 
@@ -71,7 +77,7 @@ Possible fixes:
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
         progress_message = ctx.attr.progress_message if ctx.attr.progress_message else None,
         # Target can override if they want to.
-        execution_requirements = dicts.add({"supports-path-mapping": "1"}, ctx.attr.execution_requirements),
+        execution_requirements = dicts.add({"supports-path-mapping": "1"} if can_path_map else {}, ctx.attr.execution_requirements),
         use_default_shell_env = ctx.attr.use_default_shell_env,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
     )

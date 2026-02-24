@@ -6,9 +6,13 @@ load(":expand_variables.bzl", "expand_variables")
 
 def _expand_substitutions(ctx, output, substitutions):
     result = {}
+
+    # Location and Make variable expansion can reference paths that aren't path mapped.
+    can_path_map = True
     for k, v in substitutions.items():
         result[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.data), outs = [output], attribute_name = "substitutions")
-    return result
+        can_path_map = can_path_map and result[k] == v
+    return result, can_path_map
 
 def _expand_template_impl(ctx):
     output = ctx.outputs.out
@@ -18,11 +22,13 @@ def _expand_template_impl(ctx):
         else:
             output = ctx.actions.declare_file(ctx.attr.name + ".txt")
 
-    substitutions = _expand_substitutions(ctx, output, ctx.attr.substitutions)
+    substitutions, can_path_map = _expand_substitutions(ctx, output, ctx.attr.substitutions)
     expand_template_info = ctx.toolchains["@bazel_lib//lib:expand_template_toolchain_type"].expand_template_info
     stamp = maybe_stamp(ctx)
     if stamp:
-        substitutions = dicts.add(substitutions, _expand_substitutions(ctx, output, ctx.attr.stamp_substitutions))
+        stamp_substitutions, stamp_can_path_map = _expand_substitutions(ctx, output, ctx.attr.stamp_substitutions)
+        substitutions = dicts.add(substitutions, stamp_substitutions)
+        can_path_map = can_path_map and stamp_can_path_map
         substitutions_out = ctx.actions.declare_file("{}_substitutions.json".format(ctx.label.name))
         ctx.actions.write(
             output = substitutions_out,
@@ -50,7 +56,7 @@ def _expand_template_impl(ctx):
             inputs = inputs,
             executable = expand_template_info.bin,
             toolchain = "@bazel_lib//lib:expand_template_toolchain_type",
-            execution_requirements = {"supports-path-mapping": "1"},
+            execution_requirements = {"supports-path-mapping": "1"} if can_path_map else {},
         )
     else:
         ctx.actions.expand_template(
