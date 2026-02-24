@@ -1,6 +1,5 @@
 "copy_to_directory implementation"
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":paths.bzl", "paths")
 
@@ -509,9 +508,8 @@ def copy_to_directory_bin_action(
     args.add(config_file)
     args.add(ctx.label.workspace_name)
 
-    # TODO(zbarsky): We path-map this action but the config's content will still mismatch.
-    # Needs a more holistic fix there.
-
+    # TODO: Use a parameter file constructed via Args instead of a JSON config
+    # so that the action can opt into path mapping.
     ctx.actions.run(
         inputs = file_inputs + [config_file],
         outputs = [dst],
@@ -521,7 +519,6 @@ def copy_to_directory_bin_action(
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %{output}",
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
         toolchain = copy_to_directory_toolchain,
     )
 

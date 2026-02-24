@@ -18,7 +18,7 @@ These rules copy a file to another location using hermetic uutils/coreutils `cp`
 `_copy_xfile` marks the resulting file executable, `_copy_file` does not.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", "SUPPORTS_PATH_MAPPING")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
 _COREUTILS_TOOLCHAIN = "@bazel_lib//lib:coreutils_toolchain_type"
@@ -113,7 +113,7 @@ def _run_copy_file_action(ctx, src, dst, args):
         outputs = [dst],
         mnemonic = "CopyFile",
         progress_message = "Copying file %{input}",
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = SUPPORTS_PATH_MAPPING,
         toolchain = "@bazel_lib//lib:coreutils_toolchain_type",
     )
 

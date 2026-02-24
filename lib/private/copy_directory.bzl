@@ -3,7 +3,7 @@
 This rule copies a directory to another location using a precompiled binary.
 """
 
-load(":copy_common.bzl", _COPY_EXECUTION_REQUIREMENTS = "COPY_EXECUTION_REQUIREMENTS")
+load(":copy_common.bzl", "SUPPORTS_PATH_MAPPING")
 
 def copy_directory_bin_action(
         ctx,
@@ -66,7 +66,7 @@ def copy_directory_bin_action(
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyDirectory",
         progress_message = "Copying directory %{input}",
-        execution_requirements = _COPY_EXECUTION_REQUIREMENTS,
+        execution_requirements = SUPPORTS_PATH_MAPPING,
         toolchain = copy_directory_toolchain,
     )
 
