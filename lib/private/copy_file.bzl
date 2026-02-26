@@ -21,7 +21,7 @@ These rules copy a file to another location using hermetic uutils/coreutils `cp`
 load(":copy_common.bzl", "SUPPORTS_PATH_MAPPING")
 load(":directory_path.bzl", "DirectoryPathInfo")
 
-_COREUTILS_TOOLCHAIN = "@bazel_lib//lib:coreutils_toolchain_type"
+_COREUTILS_TOOLCHAIN = Label("@bazel_lib//lib:coreutils_toolchain_type")
 
 # Declare toolchains used by copy file actions so that downstream rulesets can pass it into
 # the `toolchains` attribute of their rule.
