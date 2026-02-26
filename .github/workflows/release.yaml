@@ -39,7 +39,7 @@ jobs:
           rm -rf ${{ env.DEST }}
           mkdir -p ${{ env.DEST }}
           bazel run --config=release //tools/release:copy_release_artifacts
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: go-binaries
           path: binaries/
