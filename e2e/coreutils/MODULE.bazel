@@ -7,4 +7,4 @@ local_path_override(
 bazel_lib_toolchains = use_extension("@bazel_lib//lib:extensions.bzl", "toolchains", dev_dependency = True)
 use_repo(bazel_lib_toolchains, "coreutils_toolchains")
 
-bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "platforms", version = "1.0.0")
