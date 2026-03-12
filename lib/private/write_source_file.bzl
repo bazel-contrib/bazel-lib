@@ -259,8 +259,8 @@ fi"""]
 
     for in_path, out_path in paths:
         contents.append("""
-in=$runfiles_dir/{in_path}
-out={out_path}
+in="$runfiles_dir/{in_path}"
+out="{out_path}"
 
 mkdir -p "$(dirname "$out")"
 if [[ -f "$in" ]]; then
@@ -335,14 +335,14 @@ if defined BUILD_WORKSPACE_DIRECTORY (
     for in_path, out_path in paths:
         contents.append("""
 set in=%runfiles_dir%\\{in_path}
-set out={out_path}
+set "out={out_path}"
 
 if not defined BUILD_WORKSPACE_DIRECTORY (
     @rem Because there's no sandboxing in windows, if we copy over the target
     @rem file's symlink it will get copied back into the source directory
     @rem during tests. Work around this in tests by deleting the target file
     @rem symlink before copying over it.
-    del %out%
+    del "%out%"
 )
 
 {progress_message}
@@ -351,7 +351,7 @@ if exist "%in%\\*" (
     mkdir "%out%" >NUL 2>NUL
     robocopy "%in%" "%out%" /E >NUL
 ) else (
-    copy %in% %out% >NUL
+    copy "%in%" "%out%" >NUL
 )
 """.format(
             in_path = in_path.replace("/", "\\"),
