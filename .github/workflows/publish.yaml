@@ -37,6 +37,8 @@ jobs:
   finalize:
     needs: publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - run: gh release edit "$TAG" --draft=false --repo "$GITHUB_REPOSITORY"
         env:
