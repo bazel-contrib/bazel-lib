@@ -46,12 +46,13 @@ jobs:
           retention-days: 1
   release:
     needs: build
-    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.3
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.4.0
     with:
       release_files: |
         go-binaries/*
         bazel-lib-*.tar.gz
       prerelease: false
+      draft: true
       tag_name: ${{ inputs.tag_name || github.ref_name }}
   publish:
     needs: release
