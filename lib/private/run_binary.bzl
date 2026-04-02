@@ -71,7 +71,7 @@ Possible fixes:
     ctx.actions.run(
         outputs = outputs,
         inputs = inputs,
-        executable = ctx.executable.tool,
+        executable = ctx.executable.tool_launcher,
         arguments = [args],
         resource_set = resource_set(ctx.attr),
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
@@ -93,6 +93,12 @@ _run_binary = rule(
             executable = True,
             allow_files = True,
             mandatory = True,
+            cfg = "exec",
+        ),
+        "tool_launcher": attr.label(
+            default = Label("//tools/run_binary"),
+            executable = True,
+            allow_files = True,
             cfg = "exec",
         ),
         "env": attr.string_dict(),
