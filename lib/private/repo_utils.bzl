@@ -82,11 +82,9 @@ def _arch(rctx):
     Returns:
         The normalized host CPU architecture string.
     """
-
-    # NB: in bazel 5.1.1 rctx.os.arch was added which https://github.com/bazelbuild/bazel/commit/32d1606dac2fea730abe174c41870b7ee70ae041.
-    # Once we drop support for anything older than Bazel 5.1.1 than we can simplify
-    # this function.
-    if _os(rctx) == "windows":
+    if hasattr(rctx.os, "arch"):
+        arch = rctx.os.arch
+    elif _os(rctx) == "windows":
         proc_arch = (_get_env_var(rctx, "PROCESSOR_ARCHITECTURE", "") or
                      _get_env_var(rctx, "PROCESSOR_ARCHITEW6432", ""))
         if proc_arch == "ARM64":
