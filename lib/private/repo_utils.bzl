@@ -94,7 +94,10 @@ def _arch(rctx):
         else:
             arch = "amd64"
     else:
-        arch = rctx.execute(["uname", "-m"]).stdout.strip()
+        result = rctx.execute(["uname", "-m"])
+        if result.return_code != 0:
+            fail("uname execution failed: %s" % result.stderr.strip())
+        arch = result.stdout.strip()
 
     aliases = {
         "x86_64": "amd64",
