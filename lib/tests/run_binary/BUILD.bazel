@@ -84,8 +84,8 @@ assert_contains(
 )
 
 # Verify that items in `tools` are built in the exec configuration.
-# In Bazel, exec-configured outputs live under a bazel-out subdirectory
-# containing "-exec-", which distinguishes them from target-configured outputs.
+# To do this we check that run_binary agrees with genrule on the location of a
+# tool dependency.
 write_file(
     name = "gen_cfg_probe",
     out = "cfg_probe.txt",
@@ -117,10 +117,17 @@ run_binary(
     tools = [":cfg_probe.txt"],
 )
 
-assert_contains(
+genrule(
+    name = "expected_tools_cfg_location",
+    outs = ["expected_tools_cfg_location.txt"],
+    cmd = "echo $(execpath :cfg_probe.txt) > $@",
+    tools = [":cfg_probe.txt"],
+)
+
+diff_test(
     name = "tools_exec_cfg_test",
-    actual = ":tools_cfg_location.txt",
-    expected = "-exec-",
+    file1 = ":tools_cfg_location.txt",
+    file2 = ":expected_tools_cfg_location.txt",
 )
 
 # Below we set up a run_binary() target that writes the name of the execution
@@ -206,34 +213,46 @@ platform_transition_filegroup(
     target_platform = ":macos",
 )
 
+platform_transition_filegroup(
+    name = "exec_os_windows",
+    srcs = [":gen_exec_os"],
+    target_platform = ":windows",
+)
+
 genrule(
     name = "gen_platform_test",
     srcs = [
         ":exec_os_linux",
         ":exec_os_macos",
+        ":exec_os_windows",
     ],
     outs = ["platform_test.sh"],
     # The genrule runs in the execroot so execpaths resolve directly. It reads
-    # the two files and bakes their paths and contents into the test script as
-    # shell assignments; the assertions then run at test time via sh_test.
+    # the three files and bakes their paths and contents into the test script
+    # as shell assignments; the assertions then run at test time via sh_test.
     cmd = """
         exec_os_linux_path=$(execpath :exec_os_linux)
         exec_os_macos_path=$(execpath :exec_os_macos)
+        exec_os_windows_path=$(execpath :exec_os_windows)
         {
             echo '#!/usr/bin/env sh'
-            echo 'set -eu'
+            echo 'set -o errexit -o nounset'
             echo "linux_path='$$exec_os_linux_path'"
             echo "macos_path='$$exec_os_macos_path'"
+            echo "windows_path='$$exec_os_windows_path'"
             echo "linux_os='$$(cat $$exec_os_linux_path)'"
             echo "macos_os='$$(cat $$exec_os_macos_path)'"
-            echo 'if [ "$$linux_path" = "$$macos_path" ]; then'
-            echo '  printf "ERROR: expected different file paths for linux and macos targets\\n" >&2'
+            echo "windows_os='$$(cat $$exec_os_windows_path)'"
+            echo 'n=$$(printf "%s\n" "$$linux_path" "$$macos_path" "$$windows_path" | sort -u | wc -l)'
+            echo 'if [ "$$n" -ne 3 ]; then'
+            echo '  printf "ERROR: expected different file paths for linux, macos, and windows targets\\n" >&2'
             echo '  exit 1'
             echo 'fi'
-            echo 'if [ "$$linux_os" != "$$macos_os" ]; then'
+            echo 'if [ "$$linux_os" != "$$macos_os" ] || [ "$$linux_os" != "$$windows_os" ]; then'
             echo '  printf "ERROR: exec OS should be the same regardless of target platform\\n" >&2'
             echo '  printf "  linux target produced: $$linux_os\\n" >&2'
             echo '  printf "  macos target produced: $$macos_os\\n" >&2'
+            echo '  printf "  windows target produced: $$windows_os\\n" >&2'
             echo '  exit 1'
             echo 'fi'
         } > $@
