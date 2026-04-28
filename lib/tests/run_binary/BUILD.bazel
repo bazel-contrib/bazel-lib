@@ -2,10 +2,12 @@
 
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//lib:diff_test.bzl", "diff_test")
 load("//lib:run_binary.bzl", "run_binary")
 load("//lib:testing.bzl", "assert_contains")
+load("//lib:transitions.bzl", "platform_transition_filegroup")
 
 write_file(
     name = "make_dir_a_sh",
@@ -79,4 +81,217 @@ assert_contains(
     name = "dir_a_rootpath_test",
     actual = ":dir_a_rootpath",
     expected = "lib/tests/run_binary/dir_a_out",
+)
+
+# Verify that items in `tools` are built in the exec configuration.
+# In Bazel, exec-configured outputs live under a bazel-out subdirectory
+# containing "-exec-", which distinguishes them from target-configured outputs.
+write_file(
+    name = "gen_cfg_probe",
+    out = "cfg_probe.txt",
+    content = ["probe"],
+)
+
+write_file(
+    name = "make_echo_arg_sh",
+    out = "echo_arg.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        'echo "$1" > "$2"',
+    ],
+)
+
+sh_binary(
+    name = "echo_arg",
+    srcs = [":echo_arg.sh"],
+)
+
+run_binary(
+    name = "tools_cfg_location",
+    outs = ["tools_cfg_location.txt"],
+    args = [
+        "$(execpath :cfg_probe.txt)",
+        "$@",
+    ],
+    tool = ":echo_arg",
+    tools = [":cfg_probe.txt"],
+)
+
+assert_contains(
+    name = "tools_exec_cfg_test",
+    actual = ":tools_cfg_location.txt",
+    expected = "-exec-",
+)
+
+# Below we set up a run_binary() target that writes the name of the execution
+# platform OS to a file. Since we provide the OS name via the tools parameter,
+# it should always be associated with the execution platform rather than the
+# target platform.
+#
+# We do not know what the execution platform is going to be, since that is up
+# to whoever is running the test. However, we can assert two things to
+# establish some confidence that we are correctly making a distinction between
+# the execution and target platforms:
+# 1. Regardless of what platform we are targeting, the detected execution
+#    platform should remain the same.
+# 2. The file paths produced for different target platforms should be different.
+write_file(
+    name = "gen_os_name",
+    out = "os_name.txt",
+    content = select({
+        "@platforms//os:linux": ["linux"],
+        "@platforms//os:macos": ["macos"],
+        "@platforms//os:windows": ["windows"],
+        "//conditions:default": ["other"],
+    }),
+    tags = ["manual"],
+)
+
+write_file(
+    name = "make_cat_file_sh",
+    out = "cat_file.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        'cat "$1" > "$2"',
+    ],
+)
+
+sh_binary(
+    name = "cat_file",
+    srcs = [":cat_file.sh"],
+)
+
+run_binary(
+    name = "gen_exec_os",
+    outs = ["exec_os.txt"],
+    args = [
+        "$(execpath :os_name.txt)",
+        "$@",
+    ],
+    tags = ["manual"],
+    tool = ":cat_file",
+    tools = [":os_name.txt"],
+)
+
+platform(
+    name = "linux",
+    constraint_values = [
+        "@platforms//os:linux",
+    ],
+)
+
+platform(
+    name = "macos",
+    constraint_values = [
+        "@platforms//os:macos",
+    ],
+)
+
+platform(
+    name = "windows",
+    constraint_values = [
+        "@platforms//os:windows",
+    ],
+)
+
+platform_transition_filegroup(
+    name = "exec_os_linux",
+    srcs = [":gen_exec_os"],
+    target_platform = ":linux",
+)
+
+platform_transition_filegroup(
+    name = "exec_os_macos",
+    srcs = [":gen_exec_os"],
+    target_platform = ":macos",
+)
+
+genrule(
+    name = "gen_platform_test",
+    srcs = [
+        ":exec_os_linux",
+        ":exec_os_macos",
+    ],
+    outs = ["platform_test.sh"],
+    # The genrule runs in the execroot so execpaths resolve directly. It reads
+    # the two files and bakes their paths and contents into the test script as
+    # shell assignments; the assertions then run at test time via sh_test.
+    cmd = """
+        exec_os_linux_path=$(execpath :exec_os_linux)
+        exec_os_macos_path=$(execpath :exec_os_macos)
+        {
+            echo '#!/usr/bin/env sh'
+            echo 'set -eu'
+            echo "linux_path='$$exec_os_linux_path'"
+            echo "macos_path='$$exec_os_macos_path'"
+            echo "linux_os='$$(cat $$exec_os_linux_path)'"
+            echo "macos_os='$$(cat $$exec_os_macos_path)'"
+            echo 'if [ "$$linux_path" = "$$macos_path" ]; then'
+            echo '  printf "ERROR: expected different file paths for linux and macos targets\\n" >&2'
+            echo '  exit 1'
+            echo 'fi'
+            echo 'if [ "$$linux_os" != "$$macos_os" ]; then'
+            echo '  printf "ERROR: exec OS should be the same regardless of target platform\\n" >&2'
+            echo '  printf "  linux target produced: $$linux_os\\n" >&2'
+            echo '  printf "  macos target produced: $$macos_os\\n" >&2'
+            echo '  exit 1'
+            echo 'fi'
+        } > $@
+    """,
+)
+
+sh_test(
+    name = "platform_test",
+    srcs = [":platform_test.sh"],
+)
+
+# This target copies the OS name to another file, but this time takes in the
+# name via the srcs parameter. We test below that the resulting output matches
+# the platform we are targeting.
+run_binary(
+    name = "gen_target_os",
+    srcs = [":os_name.txt"],
+    outs = ["target_os.txt"],
+    args = [
+        "$(execpath :os_name.txt)",
+        "$@",
+    ],
+    tags = ["manual"],
+    tool = ":cat_file",
+)
+
+platform_transition_filegroup(
+    name = "target_os_linux",
+    srcs = [":gen_target_os"],
+    target_platform = ":linux",
+)
+
+platform_transition_filegroup(
+    name = "target_os_macos",
+    srcs = [":gen_target_os"],
+    target_platform = ":macos",
+)
+
+platform_transition_filegroup(
+    name = "target_os_windows",
+    srcs = [":gen_target_os"],
+    target_platform = ":windows",
+)
+
+assert_contains(
+    name = "linux_target_platform_test",
+    actual = ":target_os_linux",
+    expected = "linux",
+)
+
+assert_contains(
+    name = "macos_target_platform_test",
+    actual = ":target_os_macos",
+    expected = "macos",
+)
+
+assert_contains(
+    name = "windows_target_platform_test",
+    actual = ":target_os_windows",
+    expected = "windows",
 )
