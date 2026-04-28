@@ -50,13 +50,15 @@ Possible fixes:
 
     # Location and Make variable expansion can reference paths that aren't path mapped.
     can_path_map = True
+    targets = ctx.attr.tools + ctx.attr.srcs
+    inputs = ctx.files.tools + ctx.files.srcs
     for a in ctx.attr.args:
-        expanded = expand_variables(ctx, ctx.expand_location(a, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs)
+        expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = outputs)
         can_path_map = can_path_map and expanded == a
         args.add_all(split_args(expanded))
     envs = {}
     for k, v in ctx.attr.env.items():
-        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = ctx.attr.srcs), inputs = ctx.files.srcs, outs = outputs, attribute_name = "env")
+        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = outputs, attribute_name = "env")
         can_path_map = can_path_map and envs[k] == v
 
     stamp = maybe_stamp(ctx)
@@ -72,6 +74,7 @@ Possible fixes:
         outputs = outputs,
         inputs = inputs,
         executable = ctx.executable.tool,
+        tools = ctx.files.tools,
         arguments = [args],
         resource_set = resource_set(ctx.attr),
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
@@ -93,6 +96,10 @@ _run_binary = rule(
             executable = True,
             allow_files = True,
             mandatory = True,
+            cfg = "exec",
+        ),
+        "tools": attr.label_list(
+            allow_files = True,
             cfg = "exec",
         ),
         "env": attr.string_dict(),
@@ -122,6 +129,7 @@ def run_binary(
         execution_requirements = None,
         use_default_shell_env = False,
         stamp = 0,
+        tools = [],
         **kwargs):
     """Runs a binary as a build action.
 
@@ -215,12 +223,19 @@ def run_binary(
 
             These files can be read and parsed by the action, for example to pass some values to a linker.
 
+        tools: A list of tool dependencies for this action.
+
+            These are treated similarly to srcs, except that they are built in
+            the exec configuration. Any code that will be executed as part of
+            the action should generally be listed here instead of in srcs.
+
         **kwargs: Additional arguments
     """
     _run_binary(
         name = name,
         tool = tool,
         srcs = srcs,
+        tools = tools,
         args = args,
         env = env,
         outs = outs,
