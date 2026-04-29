@@ -32,9 +32,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build Go Binaries
         env:
-          # NB: this variable is read by tools/release/copy_release_artifacts.sh
-          # and must match the path in release_prep.sh under RELEASED_BINARY_INTEGRITY
-          DEST: binaries
+          # NB: this variable is read by
+          # tools/release/copy_release_artifacts.sh.
+          # We intentionally nest everything inside a go-binaries/ directory
+          # inside go-binaries.zip. This works around a unintended change in
+          # actions/download-artifact:
+          # https://github.com/actions/download-artifact/issues/455
+          # The release_ruleset reusable workflow picked up that change in
+          # https://github.com/bazel-contrib/.github/pull/50.
+          DEST: binaries/go-binaries
         run: |
           rm -rf ${{ env.DEST }}
           mkdir -p ${{ env.DEST }}
