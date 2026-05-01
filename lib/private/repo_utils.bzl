@@ -58,10 +58,56 @@ def _get_env_var(rctx, name, default):
 def _get_home_directory(rctx):
     return _get_env_var(rctx, "HOME", None)
 
+def _arch(rctx):
+    """Returns a normalized name of the host CPU architecture.
+
+    Alias architectures names are normalized:
+
+    x86_64 => amd64
+    aarch64 => arm64
+
+    The result can be used to generate repository names for host toolchain
+    repositories for toolchains that use these normalized names.
+
+    Common archtecture names are:
+
+    - amd64
+    - arm64
+    - s390x
+    - ppc64le
+
+    Args:
+        rctx: rctx
+
+    Returns:
+        The normalized host CPU architecture string.
+    """
+    if hasattr(rctx.os, "arch"):
+        arch = rctx.os.arch
+    elif _os(rctx) == "windows":
+        proc_arch = (_get_env_var(rctx, "PROCESSOR_ARCHITECTURE", "") or
+                     _get_env_var(rctx, "PROCESSOR_ARCHITEW6432", ""))
+        if proc_arch == "ARM64":
+            arch = "arm64"
+        else:
+            arch = "amd64"
+    else:
+        result = rctx.execute(["uname", "-m"])
+        if result.return_code != 0:
+            fail("uname execution failed: %s" % result.stderr.strip())
+        arch = result.stdout.strip()
+
+    aliases = {
+        "x86_64": "amd64",
+        "aarch64": "arm64",
+    }
+
+    return aliases.get(arch, arch)
+
 def _platform(rctx):
     """Returns a normalized name of the host os and CPU architecture.
 
-    Alias archictures names are normalized:
+    Alias architectures names are normalized:
 
     x86_64 => amd64
     aarch64 => arm64
@@ -86,25 +132,7 @@ def _platform(rctx):
         The normalized `<os>_<arch>` string of the host os and CPU architecture.
     """
     os = _os(rctx)
-
-    # NB: in bazel 5.1.1 rctx.os.arch was added which https://github.com/bazelbuild/bazel/commit/32d1606dac2fea730abe174c41870b7ee70ae041.
-    # Once we drop support for anything older than Bazel 5.1.1 than we can simplify
-    # this function.
-    if os == "windows":
-        proc_arch = (_get_env_var(rctx, "PROCESSOR_ARCHITECTURE", "") or
-                     _get_env_var(rctx, "PROCESSOR_ARCHITEW6432", ""))
-        if proc_arch == "ARM64":
-            arch = "arm64"
-        else:
-            arch = "amd64"
-    else:
-        arch = rctx.execute(["uname", "-m"]).stdout.strip()
-    arch_map = {
-        "x86_64": "amd64",
-        "aarch64": "arm64",
-    }
-    if arch in arch_map.keys():
-        arch = arch_map[arch]
+    arch = _arch(rctx)
     return "%s_%s" % (os, arch)
 
 repo_utils = struct(
@@ -114,5 +142,6 @@ repo_utils = struct(
     get_env_var = _get_env_var,
     get_home_directory = _get_home_directory,
     os = _os,
+    arch = _arch,
     platform = _platform,
 )
