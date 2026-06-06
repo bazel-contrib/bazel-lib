@@ -6,7 +6,7 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 set RUNFILES_MANIFEST_ONLY=1
 {BATCH_RLOCATION_FUNCTION}
 set MF=%RUNFILES_MANIFEST_FILE:/=\\%
-set PATH=%SYSTEMROOT%\\system32
+set PATH=%SYSTEMROOT%\\system32;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0
 call :rlocation {file1} RF1
 call :rlocation {file2} RF2
 set RF1=!RF1:/=\!
@@ -54,7 +54,7 @@ for /f "delims=" %%F in (
     GOTO fail
   )
   if not exist "!RF1!\\%%~F\\*" (
-    fc.exe "!RF1!\\%%~F" "!RF2!\\%%~F" 2>NUL 1>NUL
+    powershell -NoProfile -Command "if ((Get-Content '!RF1!\%%~F' -Raw) -replace '\r\n','\n' -eq (Get-Content '!RF2!\%%~F' -Raw) -replace '\r\n','\n') { exit 0 } else { exit 1 }" 2>NUL 1>NUL
     if !ERRORLEVEL! neq 0 (
       if !ERRORLEVEL! equ 1 (
         echo>&2 FAIL: files "!RF1!\\%%~F" and "!RF2!\\%%~F" differ.
@@ -62,7 +62,7 @@ for /f "delims=" %%F in (
         set RF2=!RF2!\\%%~F
         GOTO fail
       ) else (
-        fc.exe "!RF1!\\%%~F" "!RF2!\\%%~F"
+        powershell -NoProfile -Command "if ((Get-Content '!RF1!\%%~F' -Raw) -replace '\r\n','\n' -eq (Get-Content '!RF2!\%%~F' -Raw) -replace '\r\n','\n') { exit 0 } else { exit 1 }"
         GOTO fail
       )
     )
@@ -80,15 +80,15 @@ goto :success
 
 :compare_files
 echo compare_files
-fc.exe "!RF1!" "!RF2!" 2>NUL 1>NUL
+powershell -NoProfile -Command "if ((Get-Content '!RF1!' -Raw) -replace '\r\n','\n' -eq (Get-Content '!RF2!' -Raw) -replace '\r\n','\n') { exit 0 } else { exit 1 }" 2>NUL 1>NUL
 set result=%ERRORLEVEL%
 if !result! neq 0 (
   if !result! equ 1 (
     echo>&2 FAIL: files "!RF1!" and "!RF2!" differ.
     goto :fail
   ) else (
-    echo fc.exe "!RF1!" "!RF2!"
-    fc.exe "!RF1!" "!RF2!"
+    echo powershell compare "!RF1!" "!RF2!"
+    powershell -NoProfile -Command "if ((Get-Content '!RF1!' -Raw) -replace '\r\n','\n' -eq (Get-Content '!RF2!' -Raw) -replace '\r\n','\n') { exit 0 } else { exit 1 }"
     set result=%ERRORLEVEL%
     exit /b !result!
   )
