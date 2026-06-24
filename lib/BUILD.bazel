@@ -75,6 +75,7 @@ bzl_library(
     name = "expand_template",
     srcs = ["expand_template.bzl"],
     deps = [
+        ":utils",
         "//lib/private:expand_template",
         "@bazel_skylib//lib:types",
         "@bazel_skylib//rules:write_file",
