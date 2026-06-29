@@ -7,6 +7,7 @@ load("//lib/private:copy_to_directory_toolchain.bzl", "COPY_TO_DIRECTORY_PLATFOR
 load("//lib/private:coreutils_toolchain.bzl", "COREUTILS_PLATFORMS", "coreutils_platform_repo", "coreutils_toolchains_repo", _DEFAULT_COREUTILS_VERSION = "DEFAULT_COREUTILS_VERSION")
 load("//lib/private:expand_template_toolchain.bzl", "EXPAND_TEMPLATE_PLATFORMS", "expand_template_platform_repo", "expand_template_toolchains_repo")
 load("//lib/private:source_toolchains_repo.bzl", "source_toolchains_repo")
+load("//lib/private:spawn_binary_toolchain.bzl", "SPAWN_BINARY_PLATFORMS", "spawn_binary_platform_repo", "spawn_binary_toolchains_repo")
 load("//lib/private:zstd_toolchain.bzl", "ZSTD_PLATFORMS", "zstd_binary_repo", "zstd_toolchains_repo")
 load("//tools:version.bzl", "IS_PRERELEASE")
 
@@ -265,6 +266,41 @@ def register_expand_template_toolchains(name = DEFAULT_EXPAND_TEMPLATE_REPOSITOR
         user_repository_name = name,
     )
 
+DEFAULT_SPAWN_BINARY_REPOSITORY = "spawn_binary"
+
+def register_spawn_binary_toolchains(name = DEFAULT_SPAWN_BINARY_REPOSITORY, register = True):
+    """Registers spawn_binary toolchain and repositories
+
+    Args:
+        name: override the prefix for the generated toolchain repositories
+        register: whether to call through to native.register_toolchains.
+            Should be True for WORKSPACE users, but false when used under bzlmod extension
+    """
+    if IS_PRERELEASE:
+        source_toolchains_repo(
+            name = "%s_toolchains" % name,
+            toolchain_type = "@bazel_lib//lib:spawn_binary_toolchain_type",
+            toolchain_rule_load_from = "@bazel_lib//lib/private:spawn_binary_toolchain.bzl",
+            toolchain_rule = "spawn_binary_toolchain",
+            binary = "@bazel_lib//tools/spawn_binary",
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:toolchain" % name)
+        return
+
+    for [platform, _] in SPAWN_BINARY_PLATFORMS.items():
+        spawn_binary_platform_repo(
+            name = "%s_%s" % (name, platform),
+            platform = platform,
+        )
+        if register:
+            native.register_toolchains("@%s_toolchains//:%s_toolchain" % (name, platform))
+
+    spawn_binary_toolchains_repo(
+        name = "%s_toolchains" % name,
+        user_repository_name = name,
+    )
+
 # buildifier: disable=unnamed-macro
 def bazel_lib_register_toolchains():
     """Register all bazel-lib toolchains at their default versions.
@@ -275,6 +311,7 @@ def bazel_lib_register_toolchains():
     register_copy_directory_toolchains()
     register_copy_to_directory_toolchains()
     register_expand_template_toolchains()
+    register_spawn_binary_toolchains()
     register_coreutils_toolchains()
     register_zstd_toolchains()
     register_bats_toolchains()

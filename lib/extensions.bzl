@@ -10,12 +10,14 @@ load(
     "DEFAULT_COREUTILS_REPOSITORY",
     "DEFAULT_COREUTILS_VERSION",
     "DEFAULT_EXPAND_TEMPLATE_REPOSITORY",
+    "DEFAULT_SPAWN_BINARY_REPOSITORY",
     "DEFAULT_ZSTD_REPOSITORY",
     "register_bats_toolchains",
     "register_copy_directory_toolchains",
     "register_copy_to_directory_toolchains",
     "register_coreutils_toolchains",
     "register_expand_template_toolchains",
+    "register_spawn_binary_toolchains",
     "register_zstd_toolchains",
 )
 load("//lib/private:extension_utils.bzl", "extension_utils")
@@ -80,6 +82,14 @@ def _toolchains_extension_impl(mctx):
 
     extension_utils.toolchain_repos_bfs(
         mctx = mctx,
+        get_tag_fn = lambda tags: tags.spawn_binary,
+        toolchain_name = "spawn_binary",
+        toolchain_repos_fn = lambda name, version: register_spawn_binary_toolchains(name = name, register = False),
+        get_version_fn = lambda attr: None,
+    )
+
+    extension_utils.toolchain_repos_bfs(
+        mctx = mctx,
         get_tag_fn = lambda tags: tags.bats,
         toolchain_name = "bats",
         default_repository = DEFAULT_BATS_REPOSITORY,
@@ -100,6 +110,7 @@ toolchains = module_extension(
         "coreutils": tag_class(attrs = {"name": attr.string(default = DEFAULT_COREUTILS_REPOSITORY), "version": attr.string(default = DEFAULT_COREUTILS_VERSION)}),
         "zstd": tag_class(attrs = {"name": attr.string(default = DEFAULT_ZSTD_REPOSITORY)}),
         "expand_template": tag_class(attrs = {"name": attr.string(default = DEFAULT_EXPAND_TEMPLATE_REPOSITORY)}),
+        "spawn_binary": tag_class(attrs = {"name": attr.string(default = DEFAULT_SPAWN_BINARY_REPOSITORY)}),
         "bats": tag_class(attrs = {
             "name": attr.string(default = DEFAULT_BATS_REPOSITORY),
             "core_version": attr.string(default = DEFAULT_BATS_CORE_VERSION),

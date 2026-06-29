@@ -20,10 +20,17 @@ multi_platform_go_binaries(
     tags = ["manual"],
 )
 
+multi_platform_go_binaries(
+    name = "spawn_binary",
+    embed = ["//tools/spawn_binary:spawn_binary_lib"],
+    tags = ["manual"],
+)
+
 RELEASE_ARTIFACTS = [
     ":copy_directory",
     ":copy_to_directory",
     ":expand_template",
+    ":spawn_binary",
 ]
 
 sh_binary(

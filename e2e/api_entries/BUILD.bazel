@@ -35,6 +35,7 @@ build_test(
         "@bazel_lib//lib:repositories",
         "@bazel_lib//lib:resource_sets",
         "@bazel_lib//lib:run_binary",
+        "@bazel_lib//lib:spawn_binary_toolchain_type",
         "@bazel_lib//lib:stamp",
         "@bazel_lib//lib:stamp_detect",
         "@bazel_lib//lib:stamping",

@@ -16,14 +16,16 @@ bazel_lib_toolchains.copy_to_directory()
 bazel_lib_toolchains.coreutils()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
+bazel_lib_toolchains.spawn_binary()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "zstd_toolchains")
+use_repo(bazel_lib_toolchains, "bats_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "spawn_binary_toolchains", "zstd_toolchains")
 
 register_toolchains(
     "@copy_directory_toolchains//:all",
     "@copy_to_directory_toolchains//:all",
     "@coreutils_toolchains//:all",
     "@expand_template_toolchains//:all",
+    "@spawn_binary_toolchains//:all",
     "@bats_toolchains//:all",
     "@zstd_toolchains//:all",
 )

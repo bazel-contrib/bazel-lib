@@ -33,7 +33,31 @@ def _run_binary_impl(ctx):
             if output.is_directory and out_dir.path.startswith(output.path + "/"):
                 fail("output directory {} is nested within output directory {}; outputs cannot be nested within each other!".format(out_dir.path, output.path))
         outputs.append(out_dir)
-    if len(outputs) < 1:
+
+    # When a feature that requires interposing on the spawned process is requested
+    # (currently only stdout capture), the tool is launched through the spawn_binary
+    # wrapper instead of directly. When no such feature is used the tool is spawned
+    # directly, avoiding the extra process and keeping the wrapper out of the action
+    # inputs entirely.
+    #
+    # `outputs` (outs + out_dirs) are also what make variables like $@ and $(@D)
+    # expand to. The stdout capture file is a real action output but is intentionally
+    # kept out of that set, so that a tool with a single declared `outs` file keeps
+    # working with $@; it is only used for expansion when it is the sole output.
+    stdout = ctx.outputs.stdout
+    spawn_binary = None
+    action_outputs = list(outputs)
+    if stdout:
+        action_outputs.append(stdout)
+        spawn_binary_toolchain = ctx.toolchains["//lib:spawn_binary_toolchain_type"]
+        if not spawn_binary_toolchain:
+            fail("run_binary target {} sets the `stdout` attribute, which requires the spawn_binary toolchain, but none is registered. Register it with register_spawn_binary_toolchains() (WORKSPACE) or the bazel_lib `spawn_binary` toolchain extension (bzlmod).".format(ctx.label))
+        spawn_binary = spawn_binary_toolchain.spawn_binary_info.bin
+        args.add("--stdout", stdout)
+        args.add("--")
+        args.add(ctx.executable.tool)
+
+    if len(action_outputs) < 1:
         fail("""\
 ERROR: target {target} is not configured to produce any outputs.
 
@@ -48,17 +72,19 @@ Possible fixes:
             rule_kind = str(ctx.attr.tool.label),
         ))
 
+    expansion_outputs = outputs if outputs else action_outputs
+
     # Location and Make variable expansion can reference paths that aren't path mapped.
     can_path_map = True
     targets = ctx.attr.tools + ctx.attr.srcs
     inputs = ctx.files.tools + ctx.files.srcs
     for a in ctx.attr.args:
-        expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = outputs)
+        expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
         can_path_map = can_path_map and expanded == a
         args.add_all(split_args(expanded))
     envs = {}
     for k, v in ctx.attr.env.items():
-        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = outputs, attribute_name = "env")
+        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = expansion_outputs, attribute_name = "env")
         can_path_map = can_path_map and envs[k] == v
 
     stamp = maybe_stamp(ctx)
@@ -70,11 +96,23 @@ Possible fixes:
     else:
         inputs = ctx.files.srcs
 
+    if spawn_binary:
+        executable = spawn_binary
+
+        # Pass the wrapped tool via tools (rather than as the executable) so that
+        # its runfiles are materialized and discoverable when spawn_binary execs it.
+        tools = [ctx.attr.tool[DefaultInfo].files_to_run] + ctx.files.tools
+        toolchain = "//lib:spawn_binary_toolchain_type"
+    else:
+        executable = ctx.executable.tool
+        tools = ctx.files.tools
+        toolchain = None
+
     ctx.actions.run(
-        outputs = outputs,
+        outputs = action_outputs,
         inputs = inputs,
-        executable = ctx.executable.tool,
-        tools = ctx.files.tools,
+        executable = executable,
+        tools = tools,
         arguments = [args],
         resource_set = resource_set(ctx.attr),
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
@@ -83,14 +121,21 @@ Possible fixes:
         execution_requirements = dicts.add({"supports-path-mapping": "1"} if can_path_map else {}, ctx.attr.execution_requirements),
         use_default_shell_env = ctx.attr.use_default_shell_env,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
+        toolchain = toolchain,
     )
     return DefaultInfo(
-        files = depset(outputs),
-        runfiles = ctx.runfiles(files = outputs),
+        files = depset(action_outputs),
+        runfiles = ctx.runfiles(files = action_outputs),
     )
 
 _run_binary = rule(
     implementation = _run_binary_impl,
+    # Optional: only the `stdout` (and future feature) path uses the wrapper, so a
+    # plain run_binary that spawns its tool directly does not require this toolchain
+    # to be registered.
+    toolchains = [
+        config_common.toolchain_type("//lib:spawn_binary_toolchain_type", mandatory = False),
+    ],
     attrs = dicts.add({
         "tool": attr.label(
             executable = True,
@@ -108,6 +153,7 @@ _run_binary = rule(
         ),
         "out_dirs": attr.string_list(),
         "outs": attr.output_list(),
+        "stdout": attr.output(),
         "args": attr.string_list(),
         "mnemonic": attr.string(),
         "progress_message": attr.string(),
@@ -124,6 +170,7 @@ def run_binary(
         env = {},
         outs = [],
         out_dirs = [],
+        stdout = None,
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
@@ -134,6 +181,13 @@ def run_binary(
     """Runs a binary as a build action.
 
     This rule does not require Bash (unlike `native.genrule`).
+
+    By default the binary is spawned directly. When the `stdout` attribute is set, the
+    binary is instead launched through a small wrapper (`spawn_binary`) that captures its
+    standard output into the named file. This is handy both to feed a program's output
+    into a downstream action when the program has no flag to write it to a file, and to
+    silence the output of otherwise-noisy successful build steps. The wrapper is only used
+    when such a feature is requested, so the common case incurs no extra overhead.
 
     Args:
         name: The target name
@@ -173,6 +227,17 @@ def run_binary(
             declared instead by `ctx.actions.declare_directory`.
 
             Output directories cannot be nested within other output directories in out_dirs.
+
+        stdout: Output file to capture the stdout of the binary to.
+
+            When set, the binary is launched through a small wrapper that redirects its
+            standard output to this file. The file can later be used as an input to
+            another target, subject to the same semantics as `outs`. If the binary also
+            creates declared outputs, those must still be created.
+
+            Only the standard output is captured; standard error and standard input are
+            passed through to the binary unchanged. When `stdout` is not set, the binary
+            is spawned directly without the wrapper.
 
         mnemonic: A one-word description of the action, for example, CppCompile or GoLink.
 
@@ -240,6 +305,7 @@ def run_binary(
         env = env,
         outs = outs,
         out_dirs = out_dirs,
+        stdout = stdout,
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
