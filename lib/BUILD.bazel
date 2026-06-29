@@ -54,6 +54,9 @@ toolchain_type(
     name = "expand_template_toolchain_type",
 )
 
+# spawn_binary wraps the spawning of build actions, so it is always resolved for
+# the execution platform. There is no utility in having this program on the target
+# platform, since it never appears in a target's runfiles or outputs.
 toolchain_type(
     name = "spawn_binary_toolchain_type",
 )
