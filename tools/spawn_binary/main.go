@@ -59,17 +59,20 @@ func run(args []string) int {
 		return fatalf("no command specified; expected: spawn_binary [flags] -- <tool> [args...]")
 	}
 
-	// When changing the child's working directory, resolve a relative tool path to
-	// an absolute one first, so it still refers to the same file (the wrapper itself
-	// keeps running in the original working directory, so the capture output paths,
-	// which it opens, do not need adjusting).
-	if opts.chdir != "" && strings.ContainsRune(cmdArgs[0], '/') {
-		abs, aerr := filepath.Abs(cmdArgs[0])
-		if aerr != nil {
-			return fatalf("failed to resolve tool path %q: %v", cmdArgs[0], aerr)
-		}
-		cmdArgs[0] = abs
+	// The tool is always a declared input file, referenced by its execroot-relative
+	// path, never a command to look up on PATH. Resolve it to an absolute path
+	// (relative to the wrapper's working directory, the execution root) so that:
+	//   - a separator-less execpath (e.g. a tool at the workspace root, passed as
+	//     "tool.sh") is executed as a file rather than mistaken for a PATH lookup by
+	//     exec.Command, and
+	//   - it still refers to the same file when --chdir changes the child's working
+	//     directory. The wrapper itself stays in the original working directory, so
+	//     the capture output paths it opens do not need adjusting.
+	abs, aerr := filepath.Abs(cmdArgs[0])
+	if aerr != nil {
+		return fatalf("failed to resolve tool path %q: %v", cmdArgs[0], aerr)
 	}
+	cmdArgs[0] = abs
 
 	// Set up the stdout and stderr handling. Each stream is either written straight
 	// to a declared output file, buffered (revealed only on failure when
