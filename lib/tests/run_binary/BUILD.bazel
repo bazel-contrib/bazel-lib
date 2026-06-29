@@ -54,10 +54,10 @@ write_file(
     content = [
         "#!/usr/bin/env bash",
         "set -o errexit -o nounset -o pipefail",
-        "echo \"to stdout: captured\"",
-        "echo \"args: $*\"",
+        '''echo "to stdout: captured"''',
+        '''echo "args: $*"''',
         # This must NOT end up in the captured stdout file.
-        "echo \"to stderr: not captured\" >&2",
+        '''echo "to stderr: not captured" >&2''',
     ],
     is_executable = True,
 )
