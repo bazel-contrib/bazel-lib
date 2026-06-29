@@ -125,6 +125,17 @@ def patch(ctx, patches = None, patch_cmds = None, patch_cmds_win = None, patch_t
             strip = 0
         for patchfile in patches:
             ctx.patch(patchfile, strip)
+    elif repo_utils.is_windows(ctx) and patch_directory != None:
+        # `patch` is not available on stock Windows, so use `git apply` instead.
+        # `--ignore-whitespace` mirrors the lenient whitespace handling of `patch`.
+        for patchfile in patches:
+            st = ctx.execute(
+                ["git", "apply", "--ignore-whitespace"] + patch_args + [str(ctx.path(patchfile))],
+                working_directory = patch_directory,
+            )
+            if st.return_code:
+                msg = "Error applying patch {}:\n{}{}".format(str(patchfile), st.stderr, st.stdout)
+                fail(msg)
     else:
         for patchfile in patches:
             command = "{patchtool} {patch_args} < {patchfile}".format(
