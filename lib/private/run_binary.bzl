@@ -35,27 +35,40 @@ def _run_binary_impl(ctx):
         outputs.append(out_dir)
 
     # When a feature that requires interposing on the spawned process is requested
-    # (currently only stdout capture), the tool is launched through the spawn_binary
-    # wrapper instead of directly. When no such feature is used the tool is spawned
-    # directly, avoiding the extra process and keeping the wrapper out of the action
-    # inputs entirely.
+    # (capturing stdout/stderr/exit code, changing directory, or silencing output on
+    # success), the tool is launched through the spawn_binary wrapper instead of
+    # directly. When no such feature is used the tool is spawned directly, avoiding
+    # the extra process and keeping the wrapper out of the action inputs entirely.
     #
-    # `outputs` (outs + out_dirs) are also what make variables like $@ and $(@D)
-    # expand to. The stdout capture file is a real action output but is intentionally
-    # kept out of that set, so that a tool with a single declared `outs` file keeps
-    # working with $@; it is only used for expansion when it is the sole output.
+    # The capture output files (stdout/stderr/exit_code_out) are real action outputs,
+    # but are intentionally kept out of the make-variable output set (`outputs`, used
+    # by $@ and $(@D)), so that a tool with a single declared `outs` file keeps
+    # working with $@. They are only used for expansion when there is no other output.
     stdout = ctx.outputs.stdout
+    stderr = ctx.outputs.stderr
+    exit_code_out = ctx.outputs.exit_code_out
+    silent_on_success = ctx.attr.silent_on_success
+    chdir = ctx.attr.chdir
+    use_wrapper = bool(stdout or stderr or exit_code_out or silent_on_success or chdir)
+
+    capture_outputs = [o for o in [stdout, stderr, exit_code_out] if o]
+    action_outputs = outputs + capture_outputs
+    expansion_outputs = outputs if outputs else action_outputs
+
     spawn_binary = None
-    action_outputs = list(outputs)
-    if stdout:
-        action_outputs.append(stdout)
+    if use_wrapper:
         spawn_binary_toolchain = ctx.toolchains["//lib:spawn_binary_toolchain_type"]
         if not spawn_binary_toolchain:
-            fail("run_binary target {} sets the `stdout` attribute, which requires the spawn_binary toolchain, but none is registered. Register it with register_spawn_binary_toolchains() (WORKSPACE) or the bazel_lib `spawn_binary` toolchain extension (bzlmod).".format(ctx.label))
+            fail("run_binary target {} requests a feature that requires the spawn_binary toolchain (one of stdout, stderr, exit_code_out, silent_on_success, chdir), but none is registered. Register it with register_spawn_binary_toolchains() (WORKSPACE) or the bazel_lib `spawn_binary` toolchain extension (bzlmod).".format(ctx.label))
         spawn_binary = spawn_binary_toolchain.spawn_binary_info.bin
-        args.add("--stdout", stdout)
-        args.add("--")
-        args.add(ctx.executable.tool)
+        if stdout:
+            args.add("--stdout", stdout)
+        if stderr:
+            args.add("--stderr", stderr)
+        if exit_code_out:
+            args.add("--exit-code-out", exit_code_out)
+        if silent_on_success:
+            args.add("--silent-on-success")
 
     if len(action_outputs) < 1:
         fail("""\
@@ -72,12 +85,21 @@ Possible fixes:
             rule_kind = str(ctx.attr.tool.label),
         ))
 
-    expansion_outputs = outputs if outputs else action_outputs
-
     # Location and Make variable expansion can reference paths that aren't path mapped.
     can_path_map = True
     targets = ctx.attr.tools + ctx.attr.srcs
     inputs = ctx.files.tools + ctx.files.srcs
+
+    if use_wrapper:
+        if chdir:
+            expanded_chdir = expand_variables(ctx, ctx.expand_location(chdir, targets = targets), inputs = inputs, outs = expansion_outputs, attribute_name = "chdir")
+            can_path_map = can_path_map and expanded_chdir == chdir
+            args.add("--chdir", expanded_chdir)
+
+        # The remaining args are the command to run: the tool followed by its args.
+        args.add("--")
+        args.add(ctx.executable.tool)
+
     for a in ctx.attr.args:
         expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
         can_path_map = can_path_map and expanded == a
@@ -130,9 +152,9 @@ Possible fixes:
 
 _run_binary = rule(
     implementation = _run_binary_impl,
-    # Optional: only the `stdout` (and future feature) path uses the wrapper, so a
-    # plain run_binary that spawns its tool directly does not require this toolchain
-    # to be registered.
+    # Optional: only targets that request a wrapper feature (stdout, stderr,
+    # exit_code_out, silent_on_success, chdir) use the wrapper, so a plain run_binary
+    # that spawns its tool directly does not require this toolchain to be registered.
     toolchains = [
         config_common.toolchain_type("//lib:spawn_binary_toolchain_type", mandatory = False),
     ],
@@ -154,6 +176,10 @@ _run_binary = rule(
         "out_dirs": attr.string_list(),
         "outs": attr.output_list(),
         "stdout": attr.output(),
+        "stderr": attr.output(),
+        "exit_code_out": attr.output(),
+        "chdir": attr.string(),
+        "silent_on_success": attr.bool(),
         "args": attr.string_list(),
         "mnemonic": attr.string(),
         "progress_message": attr.string(),
@@ -171,6 +197,10 @@ def run_binary(
         outs = [],
         out_dirs = [],
         stdout = None,
+        stderr = None,
+        exit_code_out = None,
+        chdir = None,
+        silent_on_success = False,
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
@@ -182,12 +212,13 @@ def run_binary(
 
     This rule does not require Bash (unlike `native.genrule`).
 
-    By default the binary is spawned directly. When the `stdout` attribute is set, the
-    binary is instead launched through a small wrapper (`spawn_binary`) that captures its
-    standard output into the named file. This is handy both to feed a program's output
-    into a downstream action when the program has no flag to write it to a file, and to
-    silence the output of otherwise-noisy successful build steps. The wrapper is only used
-    when such a feature is requested, so the common case incurs no extra overhead.
+    By default the binary is spawned directly. When any of the `stdout`, `stderr`,
+    `exit_code_out`, `chdir`, or `silent_on_success` attributes is set, the binary is
+    instead launched through a small wrapper (`spawn_binary`) that provides these
+    features. This is handy both to feed a program's output into a downstream action
+    when the program has no flag to write it to a file, and to silence the output of
+    otherwise-noisy successful build steps. The wrapper is only used when such a
+    feature is requested, so the common case incurs no extra overhead.
 
     Args:
         name: The target name
@@ -235,9 +266,35 @@ def run_binary(
             another target, subject to the same semantics as `outs`. If the binary also
             creates declared outputs, those must still be created.
 
-            Only the standard output is captured; standard error and standard input are
-            passed through to the binary unchanged. When `stdout` is not set, the binary
-            is spawned directly without the wrapper.
+            Standard input is always passed through to the binary unchanged. When none of
+            the wrapper features are set, the binary is spawned directly without the wrapper.
+
+        stderr: Output file to capture the stderr of the binary to.
+
+            Behaves like `stdout`, but for the standard error stream. The file can later
+            be used as an input to another target, subject to the same semantics as `outs`.
+
+        exit_code_out: Output file to capture the exit code of the binary to.
+
+            When set, the binary is allowed to exit non-zero without failing the action:
+            its exit code is written to this file (as a decimal string) and the action
+            itself succeeds. Any declared `outs`/`out_dirs` must still be created. This is
+            useful to record the result of a tool whose failure should be handled by a
+            downstream target rather than breaking the build.
+
+        chdir: Working directory to run the binary in.
+
+            When set, the binary is run with this as its working directory instead of the
+            execution root. Subject to `$(location)` and make variable expansions. Note
+            that paths in `args`/`env` are expanded relative to the execution root, so a
+            program that receives such paths and is also given a `chdir` typically needs
+            absolute paths (for example via `$(execpath ...)` combined with `$(RULEDIR)`).
+
+        silent_on_success: Suppress the binary's output unless it fails.
+
+            When True, stdout and stderr that are not being captured to a file are buffered
+            and only forwarded to the console if the binary exits non-zero. This silences
+            logspam from successful build steps while preserving diagnostics on failure.
 
         mnemonic: A one-word description of the action, for example, CppCompile or GoLink.
 
@@ -306,6 +363,10 @@ def run_binary(
         outs = outs,
         out_dirs = out_dirs,
         stdout = stdout,
+        stderr = stderr,
+        exit_code_out = exit_code_out,
+        chdir = chdir,
+        silent_on_success = silent_on_success,
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
