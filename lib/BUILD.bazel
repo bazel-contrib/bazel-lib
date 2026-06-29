@@ -55,6 +55,10 @@ toolchain_type(
 )
 
 toolchain_type(
+    name = "spawn_binary_toolchain_type",
+)
+
+toolchain_type(
     name = "zstd_toolchain_type",
 )
 
@@ -226,6 +230,7 @@ bzl_library(
         "//lib/private:coreutils_toolchain",
         "//lib/private:expand_template_toolchain",
         "//lib/private:source_toolchains_repo",
+        "//lib/private:spawn_binary_toolchain",
         "//lib/private:zstd_toolchain",
     ],
 )

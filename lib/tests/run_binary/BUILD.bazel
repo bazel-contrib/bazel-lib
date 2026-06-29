@@ -43,6 +43,59 @@ run_binary(
     tool = ":make_dir_a",
 )
 
+# Capturing stdout: the binary is launched through the spawn_binary wrapper, which
+# redirects only stdout to the declared file. Using an sh_binary as the tool also
+# exercises runfiles discovery through the wrapper: sh_binary's launcher must locate
+# its own runfiles (the bash runfiles library and the script) after spawn_binary
+# execs it, otherwise it would fail to run at all.
+write_file(
+    name = "make_capture_stdout_sh",
+    out = "capture_stdout.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        "echo \"to stdout: captured\"",
+        "echo \"args: $*\"",
+        # This must NOT end up in the captured stdout file.
+        "echo \"to stderr: not captured\" >&2",
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "capture_stdout",
+    srcs = [":capture_stdout.sh"],
+)
+
+# target-under-test
+run_binary(
+    name = "captured",
+    args = [
+        "one",
+        "two",
+    ],
+    stdout = "captured_stdout.txt",
+    tool = ":capture_stdout",
+)
+
+write_file(
+    name = "expected_captured_stdout",
+    out = "expected_captured_stdout.txt",
+    content = [
+        "to stdout: captured",
+        "args: one two",
+        # trailing newline, matching the final echo in the script
+        "",
+    ],
+)
+
+# Asserts both that stdout is captured exactly and that stderr is not.
+diff_test(
+    name = "captured_stdout_test",
+    file1 = ":captured_stdout.txt",
+    file2 = ":expected_captured_stdout.txt",
+)
+
 genrule(
     name = "make_foo",
     outs = ["foo"],

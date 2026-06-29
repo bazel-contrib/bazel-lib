@@ -33,6 +33,21 @@ def _run_binary_impl(ctx):
             if output.is_directory and out_dir.path.startswith(output.path + "/"):
                 fail("output directory {} is nested within output directory {}; outputs cannot be nested within each other!".format(out_dir.path, output.path))
         outputs.append(out_dir)
+
+    # When a feature that requires interposing on the spawned process is requested
+    # (currently only stdout capture), the tool is launched through the spawn_binary
+    # wrapper instead of directly. When no such feature is used the tool is spawned
+    # directly, avoiding the extra process and keeping the wrapper out of the action
+    # inputs entirely.
+    stdout = ctx.outputs.stdout
+    spawn_binary = None
+    if stdout:
+        outputs.append(stdout)
+        spawn_binary = ctx.toolchains["//lib:spawn_binary_toolchain_type"].spawn_binary_info.bin
+        args.add("--stdout", stdout)
+        args.add("--")
+        args.add(ctx.executable.tool)
+
     if len(outputs) < 1:
         fail("""\
 ERROR: target {target} is not configured to produce any outputs.
@@ -70,11 +85,23 @@ Possible fixes:
     else:
         inputs = ctx.files.srcs
 
+    if spawn_binary:
+        executable = spawn_binary
+
+        # Pass the wrapped tool via tools (rather than as the executable) so that
+        # its runfiles are materialized and discoverable when spawn_binary execs it.
+        tools = [ctx.attr.tool[DefaultInfo].files_to_run] + ctx.files.tools
+        toolchain = "//lib:spawn_binary_toolchain_type"
+    else:
+        executable = ctx.executable.tool
+        tools = ctx.files.tools
+        toolchain = None
+
     ctx.actions.run(
         outputs = outputs,
         inputs = inputs,
-        executable = ctx.executable.tool,
-        tools = ctx.files.tools,
+        executable = executable,
+        tools = tools,
         arguments = [args],
         resource_set = resource_set(ctx.attr),
         mnemonic = ctx.attr.mnemonic if ctx.attr.mnemonic else None,
@@ -83,6 +110,7 @@ Possible fixes:
         execution_requirements = dicts.add({"supports-path-mapping": "1"} if can_path_map else {}, ctx.attr.execution_requirements),
         use_default_shell_env = ctx.attr.use_default_shell_env,
         env = dicts.add(ctx.configuration.default_shell_env, envs),
+        toolchain = toolchain,
     )
     return DefaultInfo(
         files = depset(outputs),
@@ -91,6 +119,7 @@ Possible fixes:
 
 _run_binary = rule(
     implementation = _run_binary_impl,
+    toolchains = ["//lib:spawn_binary_toolchain_type"],
     attrs = dicts.add({
         "tool": attr.label(
             executable = True,
@@ -108,6 +137,7 @@ _run_binary = rule(
         ),
         "out_dirs": attr.string_list(),
         "outs": attr.output_list(),
+        "stdout": attr.output(),
         "args": attr.string_list(),
         "mnemonic": attr.string(),
         "progress_message": attr.string(),
@@ -124,6 +154,7 @@ def run_binary(
         env = {},
         outs = [],
         out_dirs = [],
+        stdout = None,
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
@@ -173,6 +204,17 @@ def run_binary(
             declared instead by `ctx.actions.declare_directory`.
 
             Output directories cannot be nested within other output directories in out_dirs.
+
+        stdout: Output file to capture the stdout of the binary to.
+
+            When set, the binary is launched through a small wrapper that redirects its
+            standard output to this file. The file can later be used as an input to
+            another target, subject to the same semantics as `outs`. If the binary also
+            creates declared outputs, those must still be created.
+
+            Only the standard output is captured; standard error and standard input are
+            passed through to the binary unchanged. When `stdout` is not set, the binary
+            is spawned directly without the wrapper.
 
         mnemonic: A one-word description of the action, for example, CppCompile or GoLink.
 
@@ -240,6 +282,7 @@ def run_binary(
         env = env,
         outs = outs,
         out_dirs = out_dirs,
+        stdout = stdout,
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
