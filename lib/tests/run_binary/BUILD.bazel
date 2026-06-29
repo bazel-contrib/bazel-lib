@@ -155,6 +155,152 @@ diff_test(
     file2 = ":expected_captured_with_out.stdout",
 )
 
+# Capturing stderr: only stderr is redirected to the file; stdout passes through.
+write_file(
+    name = "make_capture_stderr_sh",
+    out = "capture_stderr.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        '''echo "to stdout: not captured here"''',
+        '''echo "to stderr: captured" >&2''',
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "capture_stderr",
+    srcs = [":capture_stderr.sh"],
+)
+
+run_binary(
+    name = "captured_stderr",
+    stderr = "captured_stderr.txt",
+    tool = ":capture_stderr",
+)
+
+write_file(
+    name = "expected_captured_stderr",
+    out = "expected_captured_stderr.txt",
+    content = [
+        "to stderr: captured",
+        "",
+    ],
+)
+
+diff_test(
+    name = "captured_stderr_test",
+    file1 = ":captured_stderr.txt",
+    file2 = ":expected_captured_stderr.txt",
+)
+
+# Capturing the exit code: the binary may exit non-zero without failing the action.
+write_file(
+    name = "make_exit_code_sh",
+    out = "exit_code.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        '''echo "doing work"''',
+        "exit 3",
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "exit_code",
+    srcs = [":exit_code.sh"],
+)
+
+run_binary(
+    name = "captured_exit_code",
+    exit_code_out = "captured_exit_code.txt",
+    tool = ":exit_code",
+)
+
+# The tool exits 3, but with exit_code_out the action succeeds and the code is
+# written to the output file.
+assert_contains(
+    name = "captured_exit_code_test",
+    actual = ":captured_exit_code.txt",
+    expected = "3",
+)
+
+# silent_on_success: a successful run still produces its declared outputs. (Console
+# suppression itself is not observable from a build action assertion.)
+write_file(
+    name = "make_silent_sh",
+    out = "silent.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        '''echo "noisy stdout"''',
+        '''echo "noisy stderr" >&2''',
+        '''echo "the real output" > "$1"''',
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "silent",
+    srcs = [":silent.sh"],
+)
+
+run_binary(
+    name = "silent_success",
+    outs = ["silent_success.out"],
+    args = ["$@"],
+    silent_on_success = True,
+    tool = ":silent",
+)
+
+write_file(
+    name = "expected_silent_success",
+    out = "expected_silent_success.out",
+    content = [
+        "the real output",
+        "",
+    ],
+)
+
+diff_test(
+    name = "silent_success_test",
+    file1 = ":silent_success.out",
+    file2 = ":expected_silent_success.out",
+)
+
+# chdir: the binary runs with a different working directory, so it can read a file
+# by a path relative to that directory. The source file lives in chdir_data/.
+write_file(
+    name = "make_chdir_sh",
+    out = "chdir.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        # Relative to the chdir directory, this resolves to chdir_data/marker.txt.
+        """cat marker.txt""",
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "chdir_tool",
+    srcs = [":chdir.sh"],
+)
+
+run_binary(
+    name = "chdir_capture",
+    srcs = ["chdir_data/marker.txt"],
+    chdir = "lib/tests/run_binary/chdir_data",
+    stdout = "chdir_capture.txt",
+    tool = ":chdir_tool",
+)
+
+diff_test(
+    name = "chdir_test",
+    file1 = ":chdir_capture.txt",
+    file2 = "chdir_data/marker.txt",
+)
+
 genrule(
     name = "make_foo",
     outs = ["foo"],
