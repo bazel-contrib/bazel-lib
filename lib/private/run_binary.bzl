@@ -166,6 +166,13 @@ def run_binary(
 
     This rule does not require Bash (unlike `native.genrule`).
 
+    By default the binary is spawned directly. When the `stdout` attribute is set, the
+    binary is instead launched through a small wrapper (`spawn_binary`) that captures its
+    standard output into the named file. This is handy both to feed a program's output
+    into a downstream action when the program has no flag to write it to a file, and to
+    silence the output of otherwise-noisy successful build steps. The wrapper is only used
+    when such a feature is requested, so the common case incurs no extra overhead.
+
     Args:
         name: The target name
 
