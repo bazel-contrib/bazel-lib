@@ -96,6 +96,65 @@ diff_test(
     file2 = ":expected_captured_stdout.txt",
 )
 
+# Capturing stdout alongside a declared `outs` file. This exercises that $@ still
+# expands to the single declared output and is not confused by the stdout capture
+# file (which is a separate output kept out of make-variable expansion).
+write_file(
+    name = "make_capture_with_out_sh",
+    out = "capture_with_out.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        # $1 is $@, the single declared `outs` file.
+        '''echo "to declared out" > "$1"''',
+        '''echo "to captured stdout"''',
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "capture_with_out",
+    srcs = [":capture_with_out.sh"],
+)
+
+run_binary(
+    name = "captured_with_out",
+    outs = ["captured_with_out.out"],
+    args = ["$@"],
+    stdout = "captured_with_out.stdout",
+    tool = ":capture_with_out",
+)
+
+write_file(
+    name = "expected_captured_with_out_file",
+    out = "expected_captured_with_out.out",
+    content = [
+        "to declared out",
+        "",
+    ],
+)
+
+write_file(
+    name = "expected_captured_with_out_stdout",
+    out = "expected_captured_with_out.stdout",
+    content = [
+        "to captured stdout",
+        "",
+    ],
+)
+
+diff_test(
+    name = "captured_with_out_file_test",
+    file1 = ":captured_with_out.out",
+    file2 = ":expected_captured_with_out.out",
+)
+
+diff_test(
+    name = "captured_with_out_stdout_test",
+    file1 = ":captured_with_out.stdout",
+    file2 = ":expected_captured_with_out.stdout",
+)
+
 genrule(
     name = "make_foo",
     outs = ["foo"],

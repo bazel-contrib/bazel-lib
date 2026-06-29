@@ -39,16 +39,25 @@ def _run_binary_impl(ctx):
     # wrapper instead of directly. When no such feature is used the tool is spawned
     # directly, avoiding the extra process and keeping the wrapper out of the action
     # inputs entirely.
+    #
+    # `outputs` (outs + out_dirs) are also what make variables like $@ and $(@D)
+    # expand to. The stdout capture file is a real action output but is intentionally
+    # kept out of that set, so that a tool with a single declared `outs` file keeps
+    # working with $@; it is only used for expansion when it is the sole output.
     stdout = ctx.outputs.stdout
     spawn_binary = None
+    action_outputs = list(outputs)
     if stdout:
-        outputs.append(stdout)
-        spawn_binary = ctx.toolchains["//lib:spawn_binary_toolchain_type"].spawn_binary_info.bin
+        action_outputs.append(stdout)
+        spawn_binary_toolchain = ctx.toolchains["//lib:spawn_binary_toolchain_type"]
+        if not spawn_binary_toolchain:
+            fail("run_binary target {} sets the `stdout` attribute, which requires the spawn_binary toolchain, but none is registered. Register it with register_spawn_binary_toolchains() (WORKSPACE) or the bazel_lib `spawn_binary` toolchain extension (bzlmod).".format(ctx.label))
+        spawn_binary = spawn_binary_toolchain.spawn_binary_info.bin
         args.add("--stdout", stdout)
         args.add("--")
         args.add(ctx.executable.tool)
 
-    if len(outputs) < 1:
+    if len(action_outputs) < 1:
         fail("""\
 ERROR: target {target} is not configured to produce any outputs.
 
@@ -63,17 +72,19 @@ Possible fixes:
             rule_kind = str(ctx.attr.tool.label),
         ))
 
+    expansion_outputs = outputs if outputs else action_outputs
+
     # Location and Make variable expansion can reference paths that aren't path mapped.
     can_path_map = True
     targets = ctx.attr.tools + ctx.attr.srcs
     inputs = ctx.files.tools + ctx.files.srcs
     for a in ctx.attr.args:
-        expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = outputs)
+        expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
         can_path_map = can_path_map and expanded == a
         args.add_all(split_args(expanded))
     envs = {}
     for k, v in ctx.attr.env.items():
-        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = outputs, attribute_name = "env")
+        envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = expansion_outputs, attribute_name = "env")
         can_path_map = can_path_map and envs[k] == v
 
     stamp = maybe_stamp(ctx)
@@ -98,7 +109,7 @@ Possible fixes:
         toolchain = None
 
     ctx.actions.run(
-        outputs = outputs,
+        outputs = action_outputs,
         inputs = inputs,
         executable = executable,
         tools = tools,
@@ -113,13 +124,18 @@ Possible fixes:
         toolchain = toolchain,
     )
     return DefaultInfo(
-        files = depset(outputs),
-        runfiles = ctx.runfiles(files = outputs),
+        files = depset(action_outputs),
+        runfiles = ctx.runfiles(files = action_outputs),
     )
 
 _run_binary = rule(
     implementation = _run_binary_impl,
-    toolchains = ["//lib:spawn_binary_toolchain_type"],
+    # Optional: only the `stdout` (and future feature) path uses the wrapper, so a
+    # plain run_binary that spawns its tool directly does not require this toolchain
+    # to be registered.
+    toolchains = [
+        config_common.toolchain_type("//lib:spawn_binary_toolchain_type", mandatory = False),
+    ],
     attrs = dicts.add({
         "tool": attr.label(
             executable = True,
