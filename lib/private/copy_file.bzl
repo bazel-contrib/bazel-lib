@@ -114,7 +114,7 @@ def _run_copy_file_action(ctx, src, dst, args):
         mnemonic = "CopyFile",
         progress_message = "Copying file %{input}",
         execution_requirements = SUPPORTS_PATH_MAPPING,
-        toolchain = "@bazel_lib//lib:coreutils_toolchain_type",
+        toolchain = _COREUTILS_TOOLCHAIN,
     )
 
 def _copy_file_impl(ctx):

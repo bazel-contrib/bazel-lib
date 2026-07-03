@@ -3,6 +3,8 @@
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":paths.bzl", "paths")
 
+_COPY_TO_DIRECTORY_TOOLCHAIN = Label("@bazel_lib//lib:copy_to_directory_toolchain_type")
+
 _filter_transforms_order_docstring = """Filters and transformations are applied in the following order:
 
 1. `include_external_repositories`
@@ -277,7 +279,7 @@ _copy_to_directory_attr = {
 }
 
 def _copy_to_directory_impl(ctx):
-    copy_to_directory_bin = ctx.toolchains["@bazel_lib//lib:copy_to_directory_toolchain_type"].copy_to_directory_info.bin
+    copy_to_directory_bin = ctx.toolchains[_COPY_TO_DIRECTORY_TOOLCHAIN].copy_to_directory_info.bin
 
     dst = ctx.actions.declare_directory(ctx.attr.out if ctx.attr.out else ctx.attr.name)
 
@@ -329,7 +331,7 @@ def copy_to_directory_bin_action(
         name,
         dst,
         copy_to_directory_bin,
-        copy_to_directory_toolchain = "@bazel_lib//lib:copy_to_directory_toolchain_type",
+        copy_to_directory_toolchain = _COPY_TO_DIRECTORY_TOOLCHAIN,
         files = [],
         targets = [],
         root_paths = ["."],
