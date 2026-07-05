@@ -1,6 +1,15 @@
 load("//lib:diff_test.bzl", "diff_test")
 load(":pkg.bzl", "pkg")
 
+# BSD diff reports a directory loop when it visits a directory and then
+# follows a symlink back to that same directory. Keep the fixture's directory
+# symlink target out of the direct comparison so the test still compares it via
+# d/ds, where copy_directory is expected to dereference it.
+_DEREF_SYMLINK_DIFF_ARGS = [
+    "-x",
+    ".ds_target",
+]
+
 pkg(
     name = "pkg",
     src = "d",
@@ -15,12 +24,14 @@ pkg(
 
 diff_test(
     name = "copy_test",
+    diff_args = _DEREF_SYMLINK_DIFF_ARGS,
     file1 = ":d",
     file2 = ":pkg",
 )
 
 diff_test(
     name = "hardlink_test",
+    diff_args = _DEREF_SYMLINK_DIFF_ARGS,
     file1 = ":d",
     file2 = ":pkg2",
 )
