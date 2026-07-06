@@ -1,5 +1,10 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
+NOT_WINDOWS = select({
+    "@platforms//os:windows": ["@platforms//:incompatible"],
+    "//conditions:default": [],
+})
+
 go_library(
     name = "spawn_binary_lib",
     srcs = [
@@ -24,4 +29,6 @@ go_test(
         "run_unix_test.go",
     ],
     embed = [":spawn_binary_lib"],
+    # run_unix_test.go exercises bash scripts and is behind //go:build !windows.
+    target_compatible_with = NOT_WINDOWS,
 )
