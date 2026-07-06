@@ -93,6 +93,7 @@ Possible fixes:
     if use_wrapper:
         if chdir:
             expanded_chdir = expand_variables(ctx, ctx.expand_location(chdir, targets = targets), inputs = inputs, outs = expansion_outputs, attribute_name = "chdir")
+
             # Path mapping rewrites action input/output paths in the sandbox. Only
             # advertise support when chdir is a literal path; $(location) / make
             # variable expansion can produce paths that must not be remapped.
