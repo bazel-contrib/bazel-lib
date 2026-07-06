@@ -4,6 +4,8 @@ load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 load(":expand_variables.bzl", "expand_variables")
 
+_EXPAND_TEMPLATE_TOOLCHAIN = Label("@bazel_lib//lib:expand_template_toolchain_type")
+
 def _expand_substitutions(ctx, output, substitutions):
     result = {}
 
@@ -23,7 +25,7 @@ def _expand_template_impl(ctx):
             output = ctx.actions.declare_file(ctx.attr.name + ".txt")
 
     substitutions, can_path_map = _expand_substitutions(ctx, output, ctx.attr.substitutions)
-    expand_template_info = ctx.toolchains["@bazel_lib//lib:expand_template_toolchain_type"].expand_template_info
+    expand_template_info = ctx.toolchains[_EXPAND_TEMPLATE_TOOLCHAIN].expand_template_info
     stamp = maybe_stamp(ctx)
     if stamp:
         stamp_substitutions, stamp_can_path_map = _expand_substitutions(ctx, output, ctx.attr.stamp_substitutions)
@@ -55,7 +57,7 @@ def _expand_template_impl(ctx):
             outputs = [output],
             inputs = inputs,
             executable = expand_template_info.bin,
-            toolchain = "@bazel_lib//lib:expand_template_toolchain_type",
+            toolchain = _EXPAND_TEMPLATE_TOOLCHAIN,
             execution_requirements = {"supports-path-mapping": "1"} if can_path_map else {},
         )
     else:
@@ -96,7 +98,7 @@ such as `$(BINDIR)`, `$(TARGET_CPU)`, and `$(COMPILATION_MODE)` as documented in
 [expand_variables](https://github.com/bazel-contrib/bazel-lib/blob/main/docs/expand_make_vars.md#expand_variables).
 """,
     implementation = _expand_template_impl,
-    toolchains = ["@bazel_lib//lib:expand_template_toolchain_type"],
+    toolchains = [_EXPAND_TEMPLATE_TOOLCHAIN],
     attrs = dicts.add({
         "data": attr.label_list(
             doc = "List of targets for additional lookup information.",

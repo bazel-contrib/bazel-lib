@@ -11,10 +11,12 @@ load(
 copy_to_directory_lib = _copy_to_directory_lib
 copy_to_directory_bin_action = _copy_to_directory_bin_action
 
+_COPY_TO_DIRECTORY_TOOLCHAIN = Label("@bazel_lib//lib:copy_to_directory_toolchain_type")
+
 copy_to_directory = rule(
     doc = _copy_to_directory_lib.doc,
     implementation = _copy_to_directory_lib.impl,
     provides = _copy_to_directory_lib.provides,
     attrs = _copy_to_directory_lib.attrs,
-    toolchains = ["@bazel_lib//lib:copy_to_directory_toolchain_type"],
+    toolchains = [_COPY_TO_DIRECTORY_TOOLCHAIN],
 )

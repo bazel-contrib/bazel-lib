@@ -5,12 +5,14 @@ This rule copies a directory to another location using a precompiled binary.
 
 load(":copy_common.bzl", "SUPPORTS_PATH_MAPPING")
 
+_COPY_DIRECTORY_TOOLCHAIN = Label("@bazel_lib//lib:copy_directory_toolchain_type")
+
 def copy_directory_bin_action(
         ctx,
         src,
         dst,
         copy_directory_bin,
-        copy_directory_toolchain = "@bazel_lib//lib:copy_directory_toolchain_type",
+        copy_directory_toolchain = _COPY_DIRECTORY_TOOLCHAIN,
         hardlink = "auto",
         verbose = False,
         preserve_mtime = False):
@@ -71,7 +73,7 @@ def copy_directory_bin_action(
     )
 
 def _copy_directory_impl(ctx):
-    copy_directory_bin = ctx.toolchains["@bazel_lib//lib:copy_directory_toolchain_type"].copy_directory_info.bin
+    copy_directory_bin = ctx.toolchains[_COPY_DIRECTORY_TOOLCHAIN].copy_directory_info.bin
 
     dst = ctx.actions.declare_directory(ctx.attr.out)
 
@@ -118,7 +120,7 @@ _copy_directory = rule(
         #     default = "//tools/copy_directory",
         # ),
     },
-    toolchains = ["@bazel_lib//lib:copy_directory_toolchain_type"],
+    toolchains = [_COPY_DIRECTORY_TOOLCHAIN],
 )
 
 def copy_directory(
