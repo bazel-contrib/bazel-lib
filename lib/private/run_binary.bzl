@@ -300,10 +300,10 @@ def run_binary(
             listed exit codes cause the action to fail. All other exit codes are treated
             as success. This is useful for tools such as `diff` that use non-zero exit
             codes for non-error conditions (for example exit `1` when files differ and
-            exit `2` on error). Can be combined with `exit_code_out` to record the exit
-            code while still failing the action on specific codes. `silent_on_success`
-            uses the same success/failure decision when deciding whether to forward
-            buffered output.
+            exit `2` on error, or exit `0` when `grep` finds a match). Can be combined
+            with `exit_code_out` to record the exit code while still failing the action
+            on specific codes. `silent_on_success` uses the same success/failure decision
+            when deciding whether to forward buffered output.
 
         chdir: Working directory to run the binary in.
 

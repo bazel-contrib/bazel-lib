@@ -104,6 +104,18 @@ func TestFailOnRejectsListedExit(t *testing.T) {
 	}
 }
 
+// fail_on can include 0 for grep-style tools where a successful child exit should
+// still fail the action; the wrapper must exit non-zero in that case.
+func TestFailOnRejectsExitZero(t *testing.T) {
+	dir := t.TempDir()
+	writeScript(t, filepath.Join(dir, "tool.sh"), "exit 0\n")
+	t.Chdir(dir)
+
+	if code := run([]string{"--fail-on=0", "--", "tool.sh"}); code != 1 {
+		t.Fatalf("run() = %d, want 1", code)
+	}
+}
+
 // fail_on takes precedence over exit_code_out: the code is written, but listed codes
 // still fail the action.
 func TestFailOnWithExitCodeOut(t *testing.T) {

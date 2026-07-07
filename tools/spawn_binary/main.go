@@ -149,7 +149,17 @@ func run(args []string) int {
 	if !failed {
 		return 0
 	}
-	return code
+	return wrapperExitStatus(code)
+}
+
+// wrapperExitStatus maps a failed action to a non-zero process exit. When the child
+// exited 0 but fail_on treats that as failure (e.g. grep finding a match), the
+// wrapper must still exit non-zero so Bazel fails the action.
+func wrapperExitStatus(childCode int) int {
+	if childCode == 0 {
+		return 1
+	}
+	return childCode
 }
 
 // actionFailed reports whether the build action should fail for the child's exit
