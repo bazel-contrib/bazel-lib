@@ -225,6 +225,51 @@ assert_contains(
     expected = "3",
 )
 
+# fail_on: like diff(1), exit 1 is a non-error result while exit 2 is an error.
+write_file(
+    name = "make_diff_like_sh",
+    out = "diff_like.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        "exit \"$1\"",
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "diff_like",
+    srcs = [":diff_like.sh"],
+)
+
+run_binary(
+    name = "fail_on_allows_one",
+    args = ["1"],
+    exit_code_out = "fail_on_allows_one_code.txt",
+    fail_on = [2],
+    tool = ":diff_like",
+)
+
+assert_contains(
+    name = "fail_on_allows_one_test",
+    actual = ":fail_on_allows_one_code.txt",
+    expected = "1",
+)
+
+run_binary(
+    name = "fail_on_allows_zero",
+    args = ["0"],
+    exit_code_out = "fail_on_allows_zero_code.txt",
+    fail_on = [2],
+    tool = ":diff_like",
+)
+
+assert_contains(
+    name = "fail_on_allows_zero_test",
+    actual = ":fail_on_allows_zero_code.txt",
+    expected = "0",
+)
+
 # silent_on_success: a successful run still produces its declared outputs. (Console
 # suppression itself is not observable from a build action assertion.)
 write_file(
