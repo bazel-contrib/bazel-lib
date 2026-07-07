@@ -10,7 +10,9 @@
 //
 //	--stdout=FILE         capture the program's stdout into FILE
 //	--stderr=FILE         capture the program's stderr into FILE
-//	--exit-code-out=FILE  write the program's exit code into FILE and exit 0
+//	--exit-code-out=FILE  write the program's exit code into FILE
+//	--fail-on=CODE       treat CODE as an action failure (repeatable; comma-separated
+//	                     values in one flag are also accepted)
 //	--chdir=DIR           run the program with DIR as its working directory
 //	--silent-on-success   only forward non-captured stdout/stderr to the console
 //	                      when the program exits non-zero
@@ -42,6 +44,7 @@ type options struct {
 	stdoutPath      string
 	stderrPath      string
 	exitCodePath    string
+	failOn          []int
 	chdir           string
 	silentOnSuccess bool
 }
@@ -75,7 +78,7 @@ func run(args []string) int {
 	cmdArgs[0] = abs
 
 	// Set up the stdout and stderr handling. Each stream is either written straight
-	// to a declared output file, buffered (revealed only on failure when
+	// to a declared output file, buffered (revealed only on action failure when
 	// --silent-on-success is set), or passed through to our own fd verbatim.
 	stdout, finalizeStdout, err := newStream(opts.stdoutPath, opts.silentOnSuccess, os.Stdout)
 	if err != nil {
@@ -83,7 +86,7 @@ func run(args []string) int {
 	}
 	stderr, finalizeStderr, err := newStream(opts.stderrPath, opts.silentOnSuccess, os.Stderr)
 	if err != nil {
-		_ = finalizeStdout(1)
+		_ = finalizeStdout(true)
 		return fatalf("%v", err)
 	}
 
@@ -96,8 +99,8 @@ func run(args []string) int {
 	cmd.Dir = opts.chdir
 
 	if serr := cmd.Start(); serr != nil {
-		_ = finalizeStdout(1)
-		_ = finalizeStderr(1)
+		_ = finalizeStdout(true)
+		_ = finalizeStderr(true)
 		return fatalf("failed to start %q: %v", cmdArgs[0], serr)
 	}
 
@@ -121,18 +124,19 @@ func run(args []string) int {
 		if exitErr, ok := werr.(*exec.ExitError); ok {
 			code = exitCode(exitErr)
 		} else {
-			_ = finalizeStdout(1)
-			_ = finalizeStderr(1)
+			_ = finalizeStdout(true)
+			_ = finalizeStderr(true)
 			return fatalf("failed to run %q: %v", cmdArgs[0], werr)
 		}
 	}
 
-	// Flush capture files and reveal any buffered output, based on the child's exit
-	// code.
-	if ferr := finalizeStdout(code); ferr != nil {
+	failed := actionFailed(code, opts)
+
+	// Flush capture files and reveal any buffered output when the action failed.
+	if ferr := finalizeStdout(failed); ferr != nil {
 		return fatalf("%v", ferr)
 	}
-	if ferr := finalizeStderr(code); ferr != nil {
+	if ferr := finalizeStderr(failed); ferr != nil {
 		return fatalf("%v", ferr)
 	}
 
@@ -140,12 +144,40 @@ func run(args []string) int {
 		if werr := os.WriteFile(opts.exitCodePath, []byte(strconv.Itoa(code)), 0o644); werr != nil {
 			return fatalf("failed to write exit code file %q: %v", opts.exitCodePath, werr)
 		}
-		// The exit code has been captured as an output, so the wrapper (and thus the
-		// build action) succeeds regardless of the child's exit code.
-		return 0
 	}
 
-	return code
+	if !failed {
+		return 0
+	}
+	return wrapperExitStatus(code)
+}
+
+// wrapperExitStatus maps a failed action to a non-zero process exit. When the child
+// exited 0 but fail_on treats that as failure (e.g. grep finding a match), the
+// wrapper must still exit non-zero so Bazel fails the action.
+func wrapperExitStatus(childCode int) int {
+	if childCode == 0 {
+		return 1
+	}
+	return childCode
+}
+
+// actionFailed reports whether the build action should fail for the child's exit
+// code. When --fail-on is set it takes precedence; otherwise exit_code_out forces
+// success and the default is to fail on any non-zero exit.
+func actionFailed(code int, opts options) bool {
+	if len(opts.failOn) > 0 {
+		for _, c := range opts.failOn {
+			if code == c {
+				return true
+			}
+		}
+		return false
+	}
+	if opts.exitCodePath != "" {
+		return false
+	}
+	return code != 0
 }
 
 // newStream returns the writer to hand to the child for one output stream, plus a
@@ -153,9 +185,9 @@ func run(args []string) int {
 //
 //   - path != "":         the child writes directly to the declared output file.
 //   - silentOnSuccess:    the stream is buffered and only written to console when
-//     the child exits non-zero.
+//     the action is treated as a failure (see actionFailed).
 //   - otherwise:          the stream passes through to console (our own fd) verbatim.
-func newStream(path string, silentOnSuccess bool, console *os.File) (io.Writer, func(code int) error, error) {
+func newStream(path string, silentOnSuccess bool, console *os.File) (io.Writer, func(failed bool) error, error) {
 	if path != "" {
 		// Handing the child an *os.File passes the file descriptor directly, so it
 		// writes straight to the output file with no intermediate copy.
@@ -163,19 +195,19 @@ func newStream(path string, silentOnSuccess bool, console *os.File) (io.Writer, 
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to create output file %q: %w", path, err)
 		}
-		return f, func(int) error { return f.Close() }, nil
+		return f, func(bool) error { return f.Close() }, nil
 	}
 	if silentOnSuccess {
 		buf := &bytes.Buffer{}
-		return buf, func(code int) error {
-			if code == 0 {
+		return buf, func(failed bool) error {
+			if !failed {
 				return nil
 			}
 			_, err := console.Write(buf.Bytes())
 			return err
 		}, nil
 	}
-	return console, func(int) error { return nil }, nil
+	return console, func(bool) error { return nil }, nil
 }
 
 // parseArgs separates the wrapper's own flags (everything before the "--"
@@ -203,6 +235,16 @@ func parseArgs(args []string) (options, []string, error) {
 			return opts, nil, err
 		} else if ok {
 			opts.exitCodePath = v
+			continue
+		}
+		if v, ok, err := valueFlag("--fail-on", arg, args, &i); err != nil {
+			return opts, nil, err
+		} else if ok {
+			codes, err := parseFailOn(v)
+			if err != nil {
+				return opts, nil, err
+			}
+			opts.failOn = append(opts.failOn, codes...)
 			continue
 		}
 		if v, ok, err := valueFlag("--chdir", arg, args, &i); err != nil {
@@ -234,6 +276,25 @@ func valueFlag(name, arg string, args []string, i *int) (string, bool, error) {
 		return strings.TrimPrefix(arg, prefix), true, nil
 	}
 	return "", false, nil
+}
+
+func parseFailOn(s string) ([]int, error) {
+	var codes []int
+	for _, part := range strings.Split(s, ",") {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		n, err := strconv.Atoi(part)
+		if err != nil {
+			return nil, fmt.Errorf("invalid exit code %q in --fail-on", part)
+		}
+		codes = append(codes, n)
+	}
+	if len(codes) == 0 {
+		return nil, fmt.Errorf("--fail-on requires at least one exit code")
+	}
+	return codes, nil
 }
 
 func fatalf(format string, a ...interface{}) int {

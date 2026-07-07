@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestParseArgs(t *testing.T) {
 	cases := []struct {
@@ -17,8 +20,14 @@ func TestParseArgs(t *testing.T) {
 		},
 		{
 			name:    "space-separated values",
-			args:    []string{"--stdout", "o", "--stderr", "e", "--exit-code-out", "c", "--chdir", "d", "--silent-on-success", "--", "tool"},
-			want:    options{stdoutPath: "o", stderrPath: "e", exitCodePath: "c", chdir: "d", silentOnSuccess: true},
+			args:    []string{"--stdout", "o", "--stderr", "e", "--exit-code-out", "c", "--fail-on", "2", "--chdir", "d", "--silent-on-success", "--", "tool"},
+			want:    options{stdoutPath: "o", stderrPath: "e", exitCodePath: "c", failOn: []int{2}, chdir: "d", silentOnSuccess: true},
+			wantCmd: []string{"tool"},
+		},
+		{
+			name:    "comma-separated fail-on",
+			args:    []string{"--fail-on=1,2", "--", "tool"},
+			want:    options{failOn: []int{1, 2}},
 			wantCmd: []string{"tool"},
 		},
 		{
@@ -55,7 +64,7 @@ func TestParseArgs(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseArgs(%v) unexpected error: %v", tc.args, err)
 			}
-			if opts != tc.want {
+			if !reflect.DeepEqual(opts, tc.want) {
 				t.Errorf("options = %+v, want %+v", opts, tc.want)
 			}
 			if len(cmd) != len(tc.wantCmd) {

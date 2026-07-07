@@ -49,7 +49,8 @@ def _run_binary_impl(ctx):
     exit_code_out = ctx.outputs.exit_code_out
     silent_on_success = ctx.attr.silent_on_success
     chdir = ctx.attr.chdir
-    use_wrapper = bool(stdout or stderr or exit_code_out or silent_on_success or chdir)
+    fail_on = ctx.attr.fail_on
+    use_wrapper = bool(stdout or stderr or exit_code_out or silent_on_success or chdir or fail_on)
 
     capture_outputs = [o for o in [stdout, stderr, exit_code_out] if o]
     action_outputs = outputs + capture_outputs
@@ -59,7 +60,7 @@ def _run_binary_impl(ctx):
     if use_wrapper:
         spawn_binary_toolchain = ctx.toolchains["//lib:spawn_binary_toolchain_type"]
         if not spawn_binary_toolchain:
-            fail("run_binary target {} requests a feature that requires the spawn_binary toolchain (one of stdout, stderr, exit_code_out, silent_on_success, chdir), but none is registered. Register it with register_spawn_binary_toolchains() (WORKSPACE) or the bazel_lib `spawn_binary` toolchain extension (bzlmod).".format(ctx.label))
+            fail("run_binary target {} requests a feature that requires the spawn_binary toolchain (one of stdout, stderr, exit_code_out, silent_on_success, chdir, fail_on), but none is registered. Register it with register_spawn_binary_toolchains() (WORKSPACE) or the bazel_lib `spawn_binary` toolchain extension (bzlmod).".format(ctx.label))
         spawn_binary = spawn_binary_toolchain.spawn_binary_info.bin
         if stdout:
             args.add("--stdout", stdout)
@@ -69,6 +70,8 @@ def _run_binary_impl(ctx):
             args.add("--exit-code-out", exit_code_out)
         if silent_on_success:
             args.add("--silent-on-success")
+        for code in fail_on:
+            args.add("--fail-on", str(code))
 
     if len(action_outputs) < 1:
         fail("""\
@@ -157,7 +160,7 @@ Possible fixes:
 _run_binary = rule(
     implementation = _run_binary_impl,
     # Optional: only targets that request a wrapper feature (stdout, stderr,
-    # exit_code_out, silent_on_success, chdir) use the wrapper, so a plain run_binary
+    # exit_code_out, silent_on_success, chdir, fail_on) use the wrapper, so a plain run_binary
     # that spawns its tool directly does not require this toolchain to be registered.
     toolchains = [
         config_common.toolchain_type("//lib:spawn_binary_toolchain_type", mandatory = False),
@@ -184,6 +187,7 @@ _run_binary = rule(
         "exit_code_out": attr.output(),
         "chdir": attr.string(),
         "silent_on_success": attr.bool(),
+        "fail_on": attr.int_list(),
         "args": attr.string_list(),
         "mnemonic": attr.string(),
         "progress_message": attr.string(),
@@ -205,6 +209,7 @@ def run_binary(
         exit_code_out = None,
         chdir = None,
         silent_on_success = False,
+        fail_on = [],
         mnemonic = "RunBinary",
         progress_message = None,
         execution_requirements = None,
@@ -217,7 +222,7 @@ def run_binary(
     This rule does not require Bash (unlike `native.genrule`).
 
     By default the binary is spawned directly. When any of the `stdout`, `stderr`,
-    `exit_code_out`, `chdir`, or `silent_on_success` attributes is set, the binary is
+    `exit_code_out`, `chdir`, `silent_on_success`, or `fail_on` attributes is set, the binary is
     instead launched through a small wrapper (`spawn_binary`) that provides these
     features. This is handy both to feed a program's output into a downstream action
     when the program has no flag to write it to a file, and to silence the output of
@@ -286,6 +291,20 @@ def run_binary(
             useful to record the result of a tool whose failure should be handled by a
             downstream target rather than breaking the build.
 
+            When `fail_on` is also set, only the listed exit codes fail the action; the
+            exit code is still written to this file.
+
+        fail_on: Exit codes that should fail the action.
+
+            When set, the binary is launched through the spawn_binary wrapper and only the
+            listed exit codes cause the action to fail. All other exit codes are treated
+            as success. This is useful for tools such as `diff` that use non-zero exit
+            codes for non-error conditions (for example exit `1` when files differ and
+            exit `2` on error, or exit `0` when `grep` finds a match). Can be combined
+            with `exit_code_out` to record the exit code while still failing the action
+            on specific codes. `silent_on_success` uses the same success/failure decision
+            when deciding whether to forward buffered output.
+
         chdir: Working directory to run the binary in.
 
             When set, the binary is run with this as its working directory instead of the
@@ -297,8 +316,10 @@ def run_binary(
         silent_on_success: Suppress the binary's output unless it fails.
 
             When True, stdout and stderr that are not being captured to a file are buffered
-            and only forwarded to the console if the binary exits non-zero. This silences
-            logspam from successful build steps while preserving diagnostics on failure.
+            and only forwarded to the console if the action is treated as a failure. With
+            `fail_on`, that means exit codes listed in `fail_on`; otherwise a non-zero
+            exit code. This silences logspam from successful build steps while preserving
+            diagnostics on failure.
 
         mnemonic: A one-word description of the action, for example, CppCompile or GoLink.
 
@@ -371,6 +392,7 @@ def run_binary(
         exit_code_out = exit_code_out,
         chdir = chdir,
         silent_on_success = silent_on_success,
+        fail_on = fail_on,
         mnemonic = mnemonic,
         progress_message = progress_message,
         execution_requirements = execution_requirements,
