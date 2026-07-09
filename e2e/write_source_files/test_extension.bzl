@@ -6,6 +6,9 @@ exports_files(["foobar.txt"], visibility = ["//visibility:public"])
 """, executable = False)
 
     rctx.file("foobar.txt", "foobar\n")
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = True)
+    return None
 
 test_repo = repository_rule(
     local = True,

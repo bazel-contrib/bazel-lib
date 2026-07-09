@@ -185,6 +185,9 @@ toolchain(
         )
 
     rctx.file("BUILD.bazel", build_content)
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = True)
+    return None
 
 zstd_toolchains_repo = repository_rule(
     _zstd_toolchains_repo_impl,
