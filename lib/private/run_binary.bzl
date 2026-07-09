@@ -112,6 +112,8 @@ Possible fixes:
         can_path_map = can_path_map and expanded == a
         args.add_all(split_args(expanded))
     envs = {}
+    if RunEnvironmentInfo in ctx.attr.tool:
+        envs = ctx.attr.tool[RunEnvironmentInfo].environment
     for k, v in ctx.attr.env.items():
         envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = expansion_outputs, attribute_name = "env")
         can_path_map = can_path_map and envs[k] == v
