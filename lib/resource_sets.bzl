@@ -2,6 +2,11 @@
 
 Workaround for https://github.com/bazelbuild/bazel/issues/15187
 
+The proper fix is https://github.com/bazelbuild/bazel/pull/29284 (Bazel 9.2.0+),
+which makes local scheduling respect `exec_properties` such as
+`{"resources:cpu": "10"}` and `{"resources:memory": "8192"}`.
+Prefer that over this module when your Bazel version supports it.
+
 Note, this workaround only provides some fixed values for either CPU or Memory.
 
 Rule authors who are ALSO the BUILD author might know better, and can
@@ -79,6 +84,9 @@ resource_set_attr = {
         doc = """A predefined function used as the resource_set for actions.
 
         Used with --experimental_action_resource_set to reserve more RAM/CPU, preventing Bazel overscheduling resource-intensive actions.
+
+        On Bazel 9.2.0+, prefer setting `exec_properties` instead; see
+        https://github.com/bazelbuild/bazel/pull/29284.
 
         By default, Bazel allocates 1 CPU and 250M of RAM.
         https://github.com/bazelbuild/bazel/blob/058f943037e21710837eda9ca2f85b5f8538c8c5/src/main/java/com/google/devtools/build/lib/actions/AbstractAction.java#L77
