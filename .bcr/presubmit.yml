@@ -5,6 +5,7 @@ bcr_test_module:
     bazel:
       - 7.x
       - 8.x
+      - 9.x
       - rolling
   tasks:
     run_tests:
