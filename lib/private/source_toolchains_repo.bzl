@@ -77,6 +77,10 @@ def _source_toolchains_repo_impl(rctx):
         binary = rctx.attr.binary,
     ))
 
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = True)
+    return None
+
 source_toolchains_repo = repository_rule(
     _source_toolchains_repo_impl,
     doc = "Creates a repository with toolchain definitions for source binaries.",

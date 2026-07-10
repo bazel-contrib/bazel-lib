@@ -32,6 +32,11 @@ def _host_extension_impl(mctx):
     if create_host_repo:
         host_repo(name = "bazel_lib_host")
 
+    if bazel_features.external_deps.extension_metadata_has_reproducible:
+        return mctx.extension_metadata(reproducible = True)
+
+    return mctx.extension_metadata()
+
 host = module_extension(
     implementation = _host_extension_impl,
     tag_classes = {

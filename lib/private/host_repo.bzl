@@ -34,6 +34,10 @@ host = struct(
         platform = repo_utils.platform(rctx),
     ))
 
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = False)
+    return None
+
 host_repo = repository_rule(
     implementation = _host_repo_impl,
     # always invalidate this repository since so that the bazel_version is

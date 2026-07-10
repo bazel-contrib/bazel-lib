@@ -148,6 +148,9 @@ toolchain(
 
     # Base BUILD file for this repository
     rctx.file("BUILD.bazel", build_content)
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = True)
+    return None
 
 expand_template_toolchains_repo = repository_rule(
     _expand_template_toolchains_repo_impl,

@@ -243,6 +243,9 @@ toolchain(
 
     # Base BUILD file for this repository
     rctx.file("BUILD.bazel", build_content)
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = True)
+    return None
 
 coreutils_toolchains_repo = repository_rule(
     _coreutils_toolchains_repo_impl,
