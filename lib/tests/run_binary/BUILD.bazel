@@ -617,3 +617,29 @@ assert_contains(
     actual = ":target_os_windows",
     expected = "windows",
 )
+
+# Covers the path-mapping-friendly handling of a bare "$(BINDIR)" arg (with
+# no prefix or suffix). $(BINDIR) doesn't depend on the target's own name
+# (it's just the root of the bin tree for the target's configuration), so a
+# genrule produces an identical value and can be diffed against directly.
+run_binary(
+    name = "bindir_location",
+    outs = ["bindir_location.txt"],
+    args = [
+        "$(BINDIR)",
+        "$@",
+    ],
+    tool = ":echo_arg",
+)
+
+genrule(
+    name = "expected_bindir_location",
+    outs = ["expected_bindir_location.txt"],
+    cmd = "echo $(BINDIR) > $@",
+)
+
+diff_test(
+    name = "bindir_location_test",
+    file1 = ":bindir_location.txt",
+    file2 = ":expected_bindir_location.txt",
+)
