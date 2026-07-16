@@ -115,8 +115,11 @@ Possible fixes:
             # As a special case, we expand arguments exactly equal to
             # "$(BINDIR)" directly, in a way that is compatible with path
             # mapping. Every output has the same bin directory, so we just
-            # examine the first one.
-            args.add_all([expansion_outputs[0]], map_each = _bindir_path)
+            # examine the first one. expand_directories is disabled since
+            # the first output may be a not-yet-created output directory
+            # (from out_dirs); we want its path, not its (currently
+            # nonexistent) contents.
+            args.add_all([expansion_outputs[0]], map_each = _bindir_path, expand_directories = False)
         else:
             expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
             can_path_map = can_path_map and expanded == a
