@@ -122,6 +122,7 @@ Possible fixes:
             args.add_all([expansion_outputs[0]], map_each = _bindir_path, expand_directories = False)
         else:
             expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
+            # Disable path mapping if any location or variable expansion occurred
             can_path_map = can_path_map and expanded == a
             args.add_all(split_args(expanded))
     envs = {}
