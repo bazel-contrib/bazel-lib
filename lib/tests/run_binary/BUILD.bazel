@@ -617,3 +617,83 @@ assert_contains(
     actual = ":target_os_windows",
     expected = "windows",
 )
+
+# Covers the path-mapping-friendly handling of a bare "$(BINDIR)" arg (with
+# no prefix or suffix). $(BINDIR) doesn't depend on the target's own name
+# (it's just the root of the bin tree for the target's configuration), so a
+# genrule produces an identical value and can be diffed against directly.
+run_binary(
+    name = "bindir_location",
+    outs = ["bindir_location.txt"],
+    args = [
+        "$(BINDIR)",
+        "$@",
+    ],
+    tool = ":echo_arg",
+)
+
+genrule(
+    name = "expected_bindir_location",
+    outs = ["expected_bindir_location.txt"],
+    cmd = "echo $(BINDIR) > $@",
+)
+
+diff_test(
+    name = "bindir_location_test",
+    file1 = ":bindir_location.txt",
+    file2 = ":expected_bindir_location.txt",
+)
+
+# Covers the path-mapping-friendly handling of a bare "$(BINDIR)" arg when
+# the target has only out_dirs (no outs), so the first expansion output is
+# an as-yet-uncreated output directory rather than a regular file. Args.add_all
+# expands directory File values by default, which would try (and fail) to
+# expand this not-yet-created directory; run_binary must pass
+# expand_directories = False so the directory's path is used as-is.
+#
+# The tool both creates the required out_dir (so the action is valid) and
+# reports what it actually received via stdout, captured to a plain file so
+# the test can inspect it directly (a file inside an output directory isn't
+# addressable as its own label).
+write_file(
+    name = "make_bindir_out_dirs_only_sh",
+    out = "bindir_out_dirs_only.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -o errexit -o nounset -o pipefail",
+        "outdir=$1",
+        "shift",
+        "touch \"$outdir/marker\"",
+        "echo \"argc=$#\"",
+        "echo \"args=$*\"",
+    ],
+    is_executable = True,
+)
+
+sh_binary(
+    name = "bindir_out_dirs_only_tool",
+    srcs = [":bindir_out_dirs_only.sh"],
+)
+
+run_binary(
+    name = "bindir_out_dirs_only",
+    args = [
+        "$(@D)",
+        "$(BINDIR)",
+    ],
+    out_dirs = ["bindir_out_dirs_only_dir"],
+    stdout = "bindir_out_dirs_only_stdout.txt",
+    tool = ":bindir_out_dirs_only_tool",
+)
+
+assert_contains(
+    name = "bindir_out_dirs_only_argc_test",
+    actual = ":bindir_out_dirs_only_stdout.txt",
+    expected = "argc=1",
+)
+
+assert_contains(
+    name = "bindir_out_dirs_only_value_test",
+    actual = ":bindir_out_dirs_only_stdout.txt",
+    expected = "args=bazel-out/",
+)

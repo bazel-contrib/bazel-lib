@@ -20,6 +20,9 @@ load("//lib:stamping.bzl", "STAMP_ATTRS", "maybe_stamp")
 load(":expand_variables.bzl", "expand_variables")
 load(":strings.bzl", "split_args")
 
+def _bindir_path(file):
+    return file.root.path
+
 def _run_binary_impl(ctx):
     args = ctx.actions.args()
 
@@ -108,9 +111,21 @@ Possible fixes:
         args.add(ctx.executable.tool)
 
     for a in ctx.attr.args:
-        expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
-        can_path_map = can_path_map and expanded == a
-        args.add_all(split_args(expanded))
+        if a == "$(BINDIR)":
+            # As a special case, we expand arguments exactly equal to
+            # "$(BINDIR)" directly, in a way that is compatible with path
+            # mapping. Every output has the same bin directory, so we just
+            # examine the first one. expand_directories is disabled since
+            # the first output may be a not-yet-created output directory
+            # (from out_dirs); we want its path, not its (currently
+            # nonexistent) contents.
+            args.add_all([expansion_outputs[0]], map_each = _bindir_path, expand_directories = False)
+        else:
+            expanded = expand_variables(ctx, ctx.expand_location(a, targets = targets), inputs = inputs, outs = expansion_outputs)
+
+            # Disable path mapping if any location or variable expansion occurred
+            can_path_map = can_path_map and expanded == a
+            args.add_all(split_args(expanded))
     envs = {}
     for k, v in ctx.attr.env.items():
         envs[k] = expand_variables(ctx, ctx.expand_location(v, targets = targets), inputs = inputs, outs = expansion_outputs, attribute_name = "env")
