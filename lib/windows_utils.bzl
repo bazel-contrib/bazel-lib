@@ -54,7 +54,7 @@ if not exist "%MF%" (
   exit 1
 )
 set runfile_path=%~1
-for /F "tokens=2* usebackq" %%i in (`%SYSTEMROOT%\system32\findstr.exe /l /c:"!runfile_path! " "%MF%"`) do (
+for /F "tokens=2* usebackq" %%i in (`%SYSTEMROOT%\system32\findstr.exe /b /l /c:"!runfile_path! " "%MF%"`) do (
   set abs_path=%%i
 )
 if "!abs_path!" equ "" (
