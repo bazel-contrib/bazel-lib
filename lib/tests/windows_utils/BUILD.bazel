@@ -1,0 +1,10 @@
+load(":exact_manifest_match_test.bzl", "windows_exact_manifest_match_test")
+
+windows_exact_manifest_match_test(
+    name = "exact_manifest_match_test",
+    size = "small",
+    target_compatible_with = select({
+        "@platforms//os:windows": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+)
