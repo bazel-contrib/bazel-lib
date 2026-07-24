@@ -45,6 +45,36 @@ COREUTILS_PLATFORMS = {
 # The integrity hashes can be automatically fetched for the coreutils releases by running
 # `tools/coreutils_mirror_release.sh`.
 COREUTILS_VERSIONS = {
+    "0.9.0": {
+        "darwin_arm64": {
+            "filename": "coreutils-0.9.0-aarch64-apple-darwin.tar.gz",
+            "sha256": "sha256-7WkY+n3VETYzm5Y+QYeev/v02pM15QGTat/OkEjC8vc="
+        },
+        "windows_arm64": {
+            "filename": "coreutils-0.9.0-aarch64-pc-windows-msvc.zip",
+            "sha256": "sha256-x5LjlJpqPZH5RLdlqrbwtizyE+iGs0fbuBxm1+BJnQQ="
+        },
+        "linux_arm64": {
+            "filename": "coreutils-0.9.0-aarch64-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-ww0v/2Y/pwfyaC/Enm/UUhsF8Rjus4Urkt1U/Z2va68="
+        },
+        "linux_riscv64gc": {
+            "filename": "coreutils-0.9.0-riscv64gc-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-3IjaSFyVxxlXzArdiX5QU83qCtlYeXh6zvIjYtZiXXI="
+        },
+        "darwin_amd64": {
+            "filename": "coreutils-0.9.0-x86_64-apple-darwin.tar.gz",
+            "sha256": "sha256-XsgJUZ6YGzL0cwpqrM8G8Yzn829T/DvCNCzB9Xd8Aq8="
+        },
+        "windows_amd64": {
+            "filename": "coreutils-0.9.0-x86_64-pc-windows-msvc.zip",
+            "sha256": "sha256-d7TK0gJYtlSnXEzef09wM+qJanGnAPaAcu5EWZwddtQ="
+        },
+        "linux_amd64": {
+            "filename": "coreutils-0.9.0-x86_64-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-f/++nINQVPEUOl8qaO9HjvtCdBcWPgQQwmyQHaFWR+U="
+        }
+    },
     "0.5.0": {
         "darwin_arm64": {
             "filename": "coreutils-0.5.0-aarch64-apple-darwin.tar.gz",
