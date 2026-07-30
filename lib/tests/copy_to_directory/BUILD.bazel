@@ -210,8 +210,8 @@ copy_to_directory(
         "@external_test_repo//:test_c",
         "@external_test_repo//:test_d",
     ] + make_directory_paths(
-        "case_9_srcs",
-        {
+        name = "case_9_srcs",
+        dict = {
             ":a": "a",
             ":b": [
                 "b",

@@ -49,10 +49,18 @@ gazelle(
     command = "update-repos",
 )
 
+# This library manipulates external repository paths and canonical repository
+# names, so the warnings against writing them are expected here.
+LINT_WARNINGS = [
+    "-canonical-repository",
+    "-external-path",
+]
+
 buildifier(
     name = "buildifier",
     exclude_patterns = ["./.git/*"],
     lint_mode = "fix",
+    lint_warnings = LINT_WARNINGS,
     mode = "fix",
     tags = ["manual"],  # tag as manual so windows ci does not build it by default
 )
@@ -61,6 +69,7 @@ buildifier(
     name = "buildifier.check",
     exclude_patterns = ["./.git/*"],
     lint_mode = "warn",
+    lint_warnings = LINT_WARNINGS,
     mode = "diff",
     tags = ["manual"],  # tag as manual so windows ci does not build it by default
 )
