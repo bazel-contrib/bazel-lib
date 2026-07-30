@@ -39,12 +39,12 @@ IS_RELEASE = False
 
 bazel_dep(
     name = "gazelle",
-    version = "0.40.0",
+    version = "0.52.2",
     dev_dependency = IS_RELEASE,
 )
 bazel_dep(
     name = "rules_go",
-    version = "0.59.0",
+    version = "0.62.0",
     dev_dependency = IS_RELEASE,
     repo_name = "io_bazel_rules_go",
 )
@@ -76,7 +76,7 @@ use_repo(host, "bazel_lib_host")
 host_platform = use_extension("@platforms//host:extension.bzl", "host_platform")
 use_repo(host_platform, "host_platform")
 
-bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.8.2", dev_dependency = True)
+bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.9.2", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 bazel_dep(name = "external_test_repo", dev_dependency = True)
 local_path_override(

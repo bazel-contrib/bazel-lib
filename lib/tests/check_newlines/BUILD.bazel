@@ -1,9 +1,16 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 go_binary(
     name = "check_newlines",
     testonly = True,
-    srcs = ["main.go"],
+    embed = [":check_newlines_lib"],
     visibility = ["//lib/tests:__subpackages__"],
+)
+
+go_library(
+    name = "check_newlines_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/bazel-contrib/bazel-lib/lib/tests/check_newlines",
+    visibility = ["//visibility:private"],
     deps = ["@io_bazel_rules_go//go/runfiles"],
 )
