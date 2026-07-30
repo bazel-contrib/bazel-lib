@@ -27,7 +27,11 @@ copy_to_directory(
 
 copy_file(
     name = "a_copy_from_dir",
-    src = make_directory_path("a_dir_a", ":a_dir", "a"),
+    src = make_directory_path(
+        name = "a_dir_a",
+        directory = ":a_dir",
+        path = "a",
+    ),
     out = "a_copy",
 )
 

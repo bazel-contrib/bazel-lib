@@ -8,10 +8,15 @@ default_stages: [pre-commit]
 repos:
   # Check formatting and lint for starlark code
   - repo: https://github.com/keith/pre-commit-buildifier
-    rev: 8.0.3
+    rev: 8.5.1.3
     hooks:
       - id: buildifier
+        # This library manipulates external repository paths and canonical
+        # repository names, so the warnings against writing them are expected.
+        # Keep in sync with LINT_WARNINGS in //:BUILD.bazel
+        args: ["--warnings=-canonical-repository,-external-path"]
       - id: buildifier-lint
+        args: ["--warnings=-canonical-repository,-external-path"]
   # Enforce that commit messages allow for later changelog generation
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.17.0
