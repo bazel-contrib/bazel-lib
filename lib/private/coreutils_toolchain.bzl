@@ -45,6 +45,35 @@ COREUTILS_PLATFORMS = {
 # The integrity hashes can be automatically fetched for the coreutils releases by running
 # `tools/coreutils_mirror_release.sh`.
 COREUTILS_VERSIONS = {
+    "0.9.0": {
+        "darwin_arm64": {
+            "filename": "coreutils-0.9.0-aarch64-apple-darwin.tar.gz",
+            "sha256": "sha256-7WkY+n3VETYzm5Y+QYeev/v02pM15QGTat/OkEjC8vc=",
+        },
+        "windows_arm64": {
+            "filename": "coreutils-0.9.0-aarch64-pc-windows-msvc.zip",
+            "sha256": "sha256-x5LjlJpqPZH5RLdlqrbwtizyE+iGs0fbuBxm1+BJnQQ=",
+        },
+        "linux_arm64": {
+            "filename": "coreutils-0.9.0-aarch64-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-ww0v/2Y/pwfyaC/Enm/UUhsF8Rjus4Urkt1U/Z2va68=",
+        },
+        "darwin_amd64": {
+            "filename": "coreutils-0.9.0-x86_64-apple-darwin.tar.gz",
+            "sha256": "sha256-XsgJUZ6YGzL0cwpqrM8G8Yzn829T/DvCNCzB9Xd8Aq8=",
+        },
+        "windows_amd64": {
+            # The x86_64 msvc archive ships one binary per applet instead of the
+            # multicall `coreutils.exe` (since 0.7.0), so use the gnu archive which
+            # still ships the multicall binary.
+            "filename": "coreutils-0.9.0-x86_64-pc-windows-gnu.zip",
+            "sha256": "sha256-P4SHbSC4bisTzkzKfV/iILx3c7kqPfhE5wwsm1kDV9Y=",
+        },
+        "linux_amd64": {
+            "filename": "coreutils-0.9.0-x86_64-unknown-linux-musl.tar.gz",
+            "sha256": "sha256-f/++nINQVPEUOl8qaO9HjvtCdBcWPgQQwmyQHaFWR+U=",
+        },
+    },
     "0.5.0": {
         "darwin_arm64": {
             "filename": "coreutils-0.5.0-aarch64-apple-darwin.tar.gz",
