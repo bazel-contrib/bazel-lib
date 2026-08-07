@@ -1,0 +1,23 @@
+name: 'Identify stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 1 * * *'
+permissions:
+  actions: write
+  issues: write
+  pull-requests: write
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v10
+        with:
+          stale-issue-message: 'This issue seems stale because it has been open 60 days with no activity.'
+          stale-pr-message: 'This PR seems stale because it has been open 60 days with no activity.'
+          days-before-stale: 60
+
+          # Don't close issues or PRs.
+          # It's common that it's still accurate but we just didn't take action on it.
+          # Contributors shouldn't feel discouraged by inaction.
+          # Also, avoid someone re-doing the same work to re-open the same thing.
+          days-before-close: -1
