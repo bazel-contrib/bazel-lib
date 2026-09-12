@@ -54,8 +54,8 @@ if not exist "%MF%" (
   exit 1
 )
 set runfile_path=%~1
-for /F "tokens=2* usebackq" %%i in (`%SYSTEMROOT%\system32\findstr.exe /b /l /c:"!runfile_path! " "%MF%"`) do (
-  set abs_path=%%i
+for /F "tokens=1* usebackq" %%i in (`%SYSTEMROOT%\system32\findstr.exe /b /l /c:"!runfile_path! " "%MF%"`) do (
+  set abs_path=%%j
 )
 if "!abs_path!" equ "" (
   echo>&2 ERROR: !runfile_path! not found in runfiles manifest
@@ -99,7 +99,7 @@ if defined args (
   set args=!args:\=\\\\!
   set args=!args:"=\"!
 )
-"{bash_bin}" -c "!run_script! !args!"
+"{bash_bin}" -c "'!run_script!' !args!"
 """.format(
             bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
             sh_script = paths.to_rlocation_path(ctx, shell_script),
