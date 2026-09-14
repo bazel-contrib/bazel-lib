@@ -1,10 +1,48 @@
+load(":directory_runfiles_test.bzl", "windows_directory_runfiles_test")
 load(":exact_manifest_match_test.bzl", "windows_exact_manifest_match_test")
+
+WINDOWS_ONLY = select({
+    "@platforms//os:windows": [],
+    "//conditions:default": ["@platforms//:incompatible"],
+})
 
 windows_exact_manifest_match_test(
     name = "exact_manifest_match_test",
     size = "small",
-    target_compatible_with = select({
-        "@platforms//os:windows": [],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    target_compatible_with = WINDOWS_ONLY,
+)
+
+windows_directory_runfiles_test(
+    name = "explicit_manifest_test",
+    size = "small",
+    scenario = "explicit_manifest",
+    target_compatible_with = WINDOWS_ONLY,
+)
+
+windows_directory_runfiles_test(
+    name = "explicit_directory_test",
+    size = "small",
+    scenario = "explicit_directory",
+    target_compatible_with = WINDOWS_ONLY,
+)
+
+windows_directory_runfiles_test(
+    name = "adjacent_nested_manifest_test",
+    size = "small",
+    scenario = "adjacent_nested_manifest",
+    target_compatible_with = WINDOWS_ONLY,
+)
+
+windows_directory_runfiles_test(
+    name = "adjacent_sibling_manifest_test",
+    size = "small",
+    scenario = "adjacent_sibling_manifest",
+    target_compatible_with = WINDOWS_ONLY,
+)
+
+windows_directory_runfiles_test(
+    name = "adjacent_directory_test",
+    size = "small",
+    scenario = "adjacent_directory",
+    target_compatible_with = WINDOWS_ONLY,
 )
