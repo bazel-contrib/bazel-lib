@@ -20,7 +20,11 @@ def _output_files(ctx):
     files_list = files_depset.to_list()
 
     for path in ctx.attr.paths:
-        file = _find_short_path_in_files_list(files_list, path)
+        # Find the input path in the list of the files for the requested depset
+        # 1. Match by short file
+        # 2. Fall back to matching based on the reconstructed execution path, for cases like external repositories
+        #    where short_path ends up containing the canonical repo name.
+        file = _find_short_path_in_files_list(files_list, path) or _find_execution_path_in_files_list(ctx, files_list, path)
         if not file:
             if ctx.attr.output_group:
                 msg = "%s file not found within the %s output group of %s" % (path, ctx.attr.output_group, ctx.attr.target)
@@ -84,5 +88,24 @@ def _find_short_path_in_files_list(files_list, short_path):
     """
     for file in files_list:
         if file.short_path == short_path:
+            return file
+    return None
+
+def _find_execution_path_in_files_list(ctx, files_list, path):
+    """Helper function find a file in a DefaultInfo by reconstructing the execution path
+
+    Args:
+        files_list: a list of files
+        path: the execution path to search for
+    Returns:
+        The File if found else None
+    """
+    for file in files_list:
+        # The `path` can be different depending on whether the file is generated (which will include bin_dir)
+        # or in the source (which will not)
+        if file.path in (
+            "/".join([ctx.bin_dir.path, ctx.attr.target.label.workspace_root, path]),
+            "/".join([ctx.attr.target.label.workspace_root, path]),
+        ):
             return file
     return None
