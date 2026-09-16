@@ -54,8 +54,8 @@ if not exist "%MF%" (
   exit 1
 )
 set runfile_path=%~1
-for /F "tokens=2* usebackq" %%i in (`%SYSTEMROOT%\system32\findstr.exe /b /l /c:"!runfile_path! " "%MF%"`) do (
-  set abs_path=%%i
+for /F "tokens=1* usebackq" %%i in (`%SYSTEMROOT%\system32\findstr.exe /b /l /c:"!runfile_path! " "%MF%"`) do (
+  set abs_path=%%j
 )
 if "!abs_path!" equ "" (
   echo>&2 ERROR: !runfile_path! not found in runfiles manifest
@@ -90,7 +90,9 @@ SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
 set RUNFILES_MANIFEST_ONLY=1
 {rlocation_function}
-call :rlocation "{sh_script}" run_script
+set "run_script=%~dp0{sh_basename}"
+if not exist "!run_script!" call :rlocation "{sh_script}" run_script
+set "run_script=!run_script:\=/!"
 for %%a in ("{bash_bin}") do set "bash_bin_dir=%%~dpa"
 set PATH=%bash_bin_dir%;%PATH%
 set args=%*
@@ -99,10 +101,11 @@ if defined args (
   set args=!args:\=\\\\!
   set args=!args:"=\"!
 )
-"{bash_bin}" -c "!run_script! !args!"
+"{bash_bin}" -c "'!run_script!' !args!"
 """.format(
             bash_bin = ctx.toolchains["@bazel_tools//tools/sh:toolchain_type"].path,
             sh_script = paths.to_rlocation_path(ctx, shell_script),
+            sh_basename = shell_script.basename,
             rlocation_function = BATCH_RLOCATION_FUNCTION,
         ).splitlines()),
         is_executable = True,
