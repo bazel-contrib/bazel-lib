@@ -163,7 +163,7 @@ Registers jq toolchain and repositories
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="register_jq_toolchains-name"></a>name |  override the prefix for the generated toolchain repositories   |  `"jq"` |
-| <a id="register_jq_toolchains-version"></a>version |  the version of jq to execute (see https://github.com/stedolan/jq/releases)   |  `"1.7"` |
+| <a id="register_jq_toolchains-version"></a>version |  the version of jq to execute (see https://github.com/stedolan/jq/releases)   |  `"1.8.2"` |
 | <a id="register_jq_toolchains-register"></a>register |  whether to call through to native.register_toolchains. Should be True for WORKSPACE users, but false when used under bzlmod extension   |  `True` |
 
 
