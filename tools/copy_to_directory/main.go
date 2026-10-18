@@ -174,8 +174,15 @@ func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 			return fmt.Errorf("failed to calculate output path for %s: %w", file.WorkspacePath, err)
 		}
 		if outputPath == "" {
-			// this path is excluded
-			return nil
+			// A directory link may contain matching descendants even when the
+			// link itself is excluded. Still ignore excluded dangling/file links.
+			if info.Mode()&os.ModeSymlink == 0 {
+				return nil
+			}
+			stat, err := os.Stat(p)
+			if err != nil || !stat.IsDir() {
+				return nil
+			}
 		}
 
 		// if file is a symlink, resolve its realpath
@@ -349,8 +356,15 @@ func (w *walker) copyPaths(cfg *config) error {
 			return fmt.Errorf("failed to calculate output path for %s: %w", file.WorkspacePath, err)
 		}
 		if outputPath == "" {
-			// this path is excluded
-			continue
+			// Apply descendant filters to directory links just as to real
+			// directories. Keep excluded dangling/file links ignored.
+			if info.Mode()&os.ModeSymlink == 0 {
+				continue
+			}
+			stat, err := os.Stat(file.Path)
+			if err != nil || !stat.IsDir() {
+				continue
+			}
 		}
 
 		// if file is a symlink, resolve its realpath

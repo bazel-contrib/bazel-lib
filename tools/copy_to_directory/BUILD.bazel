@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "copy_to_directory_lib",
@@ -16,4 +16,12 @@ go_binary(
     name = "copy_to_directory",
     embed = [":copy_to_directory_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "copy_to_directory_test",
+    srcs = ["main_test.go"],
+    args = ["-copy-tool=$(rlocationpath :copy_to_directory)"],
+    data = [":copy_to_directory"],
+    deps = ["@io_bazel_rules_go//go/runfiles"],
 )
