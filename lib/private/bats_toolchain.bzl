@@ -17,7 +17,6 @@ BATS_FILE_VERSIONS = {
 }
 
 BATS_CORE_TEMPLATE = """\
-load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 load("@bazel_lib//lib/private:bats_toolchain.bzl", "bats_toolchain")
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 
@@ -34,16 +33,43 @@ copy_to_directory(
 bats_toolchain(
     name = "toolchain",
     core = ":core",
-    libraries = {libraries}
+    libraries = {libraries},
+    visibility = ["//visibility:public"],
 )
+"""
+
+# The toolchain() declaration lives in its own repository, separate from the bats-core archive,
+# so that registering the toolchain doesn't force every consumer to download bats-core.
+# Bazel only fetches the repository referenced by the toolchain attribute once the toolchain is
+# actually resolved, i.e. when a bats_test is built.
+# See https://bazel.build/extending/toolchains#registering-building-toolchains
+BATS_TOOLCHAINS_TEMPLATE = """\
+load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 
 toolchain(
     name = "bats_toolchain",
     exec_compatible_with = HOST_CONSTRAINTS,
-    toolchain = ":toolchain",
+    toolchain = "{toolchain}",
     toolchain_type = "@bazel_lib//lib:bats_toolchain_type",
 )
 """
+
+def _bats_toolchains_repo_impl(rctx):
+    rctx.file("BUILD.bazel", BATS_TOOLCHAINS_TEMPLATE.format(
+        toolchain = rctx.attr.toolchain,
+    ))
+
+    if hasattr(rctx, "repo_metadata"):
+        return rctx.repo_metadata(reproducible = True)
+    return None
+
+bats_toolchains_repo = repository_rule(
+    _bats_toolchains_repo_impl,
+    doc = "Creates a repository holding only the bats toolchain() declaration.",
+    attrs = {
+        "toolchain": attr.string(doc = "Label to the bats_toolchain target", mandatory = True),
+    },
+)
 
 BATS_LIBRARY_TEMPLATE = """\
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
