@@ -519,24 +519,18 @@ INT_TO_CHAR = [
 ]
 
 def ord(c):
-    """returns the codepoint of a character
-
-    ord(c) returns the integer value of the sole Unicode code point
-    encoded by the string `c`.
-
-    If `c` does not encode exactly one Unicode code point, `ord` fails.
-    Each invalid code within the string is treated as if it encodes the
-    Unicode replacement character, U+FFFD.
+    """Returns the numeric value of a single-byte string.
 
     Args:
-        c: character whose codepoint to be returned.
+        c: A string containing exactly one byte.
 
     Returns:
-        codepoint of `c` argument.
+        An integer between 0 and 255.
     """
-    if len(c) != 1:
-        fail("expected a string with a single character")
-    return CHAR_TO_INT.get(c)
+    value = CHAR_TO_INT.get(c)
+    if value == None:
+        fail("expected a string with a single byte")
+    return value
 
 def chr(i):
     """returns a string encoding a codepoint

@@ -7,15 +7,9 @@ load("//lib/private:strings.bzl", "chr", "hex", "ord", "split_args")
 def _ord_test_impl(ctx):
     env = unittest.begin(ctx)
 
-    asserts.equals(env, ord("a"), 97)
-    asserts.equals(env, ord("b"), 98)
-    asserts.equals(env, ord("/"), 47)
-    asserts.equals(env, ord("c"), 99)
-    asserts.equals(env, ord("x"), 120)
-    asserts.equals(env, ord("@"), 64)
-    asserts.equals(env, ord("%"), 37)
-    asserts.equals(env, ord("$"), 36)
-    asserts.equals(env, ord("+"), 43)
+    asserts.equals(env, 97, ord("a"))
+    for value in range(256):
+        asserts.equals(env, value, ord(chr(value)))
 
     return unittest.end(env)
 
