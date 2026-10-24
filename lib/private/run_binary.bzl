@@ -164,7 +164,8 @@ Possible fixes:
         # Target can override if they want to.
         execution_requirements = dicts.add({"supports-path-mapping": "1"} if can_path_map else {}, ctx.attr.execution_requirements),
         use_default_shell_env = ctx.attr.use_default_shell_env,
-        env = dicts.add(ctx.configuration.default_shell_env, envs),
+        # Bazel merges envs into the default shell environment itself.
+        env = envs if ctx.attr.use_default_shell_env else dicts.add(ctx.configuration.default_shell_env, envs),
         toolchain = toolchain,
     )
     return DefaultInfo(
