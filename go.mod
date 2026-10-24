@@ -1,10 +1,10 @@
 module github.com/bazel-contrib/bazel-lib
 
-go 1.25.0
+go 1.26.0
 
 require (
-	github.com/bazelbuild/rules_go v0.62.0
-	github.com/bmatcuk/doublestar/v4 v4.10.0
-	golang.org/x/exp v0.0.0-20260727155853-b88d891fe743
-	golang.org/x/sys v0.47.0
+	github.com/bazelbuild/rules_go v0.65.0
+	github.com/bmatcuk/doublestar/v4 v4.10.4
+	golang.org/x/exp v0.0.0-20261014143641-f0251eb4aa3e
+	golang.org/x/sys v0.49.0
 )
