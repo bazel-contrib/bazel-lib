@@ -31,6 +31,9 @@ def expand_variables(ctx, s, outs = [], inputs = [], attribute_name = "args"):
 
       - `$(BUILD_FILE_PATH)`: ctx.build_file_path
 
+        Only read when `s` references it, so that callers that don't use it keep working under
+        `--incompatible_stop_exporting_build_file_path`.
+
       - `$(VERSION_FILE)`: ctx.version_file.path
 
       - `$(INFO_FILE)`: ctx.info_file.path
@@ -80,8 +83,11 @@ def expand_variables(ctx, s, outs = [], inputs = [], attribute_name = "args"):
     additional_substitutions["@D"] = output_dir
     additional_substitutions["RULEDIR"] = rule_dir
 
-    # Add some additional make variable substitutions for common useful values in the context
-    additional_substitutions["BUILD_FILE_PATH"] = ctx.build_file_path
+    # Add some additional make variable substitutions for common useful values in the context.
+    # ctx.build_file_path fails under --incompatible_stop_exporting_build_file_path, so only
+    # read it when it is referenced.
+    if s.find("$(BUILD_FILE_PATH)") != -1:
+        additional_substitutions["BUILD_FILE_PATH"] = ctx.build_file_path
     additional_substitutions["VERSION_FILE"] = ctx.version_file.path
     additional_substitutions["INFO_FILE"] = ctx.info_file.path
     additional_substitutions["TARGET"] = "{}//{}:{}".format(
