@@ -86,7 +86,7 @@ def _diff_test_impl(ctx):
             "{file2}": file2_path,
             "{file1_sub_path}": file1_sub_path,
             "{file2_sub_path}": file2_sub_path,
-            "{build_file_path}": ctx.build_file_path,
+            "{package}": ctx.label.package,
             "{diff_args}": " ".join([
                 shell.quote(arg)
                 for arg in ctx.attr.diff_args
