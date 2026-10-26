@@ -23,7 +23,7 @@ resolve_exec_root() {
   local RUNFILES_PARENT
   RUNFILES_PARENT=$(dirname "$RUNFILES_DIR")
   local BIN_DIR
-  BIN_DIR="${RUNFILES_PARENT%$BUILD_FILE_DIR}"
+  BIN_DIR="${RUNFILES_PARENT%$PACKAGE_DIR}"
   local EXEC_ROOT
   EXEC_ROOT=$(dirname $(dirname $(dirname "${BIN_DIR}")))
 
@@ -52,7 +52,7 @@ find_file() {
 
   echo -n "$RF"
 }
-BUILD_FILE_DIR="$(dirname "{build_file_path}")"
+PACKAGE_DIR="{package}"
 F1="{file1}"
 F2="{file2}"
 [[ "$F1" =~ ^external/ ]] && F1="${F1#external/}" || F1="$TEST_WORKSPACE/$F1"
