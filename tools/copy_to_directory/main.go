@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/fs"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -20,7 +22,6 @@ import (
 type fileInfo struct {
 	Package       string `json:"package"`
 	Path          string `json:"path"`
-	RootPath      string `json:"root_path"`
 	ShortPath     string `json:"short_path"`
 	Workspace     string `json:"workspace"`
 	WorkspacePath string `json:"workspace_path"`
@@ -30,18 +31,18 @@ type fileInfo struct {
 }
 
 type config struct {
-	AllowOverwrites             bool              `json:"allow_overwrites"`
-	Dst                         string            `json:"dst"`
-	ExcludeSrcsPackages         []string          `json:"exclude_srcs_packages"`
-	ExcludeSrcsPatterns         []string          `json:"exclude_srcs_patterns"`
-	Files                       []fileInfo        `json:"files"`
-	IncludeExternalRepositories []string          `json:"include_external_repositories"`
-	IncludeSrcsPackages         []string          `json:"include_srcs_packages"`
-	IncludeSrcsPatterns         []string          `json:"include_srcs_patterns"`
-	ReplacePrefixes             map[string]string `json:"replace_prefixes"`
-	RootPaths                   []string          `json:"root_paths"`
-	PreserveMTime               bool              `json:"preserve_mtime"`
-	Verbose                     bool              `json:"verbose"`
+	AllowOverwrites             bool
+	Dst                         string
+	ExcludeSrcsPackages         []string
+	ExcludeSrcsPatterns         []string
+	Files                       []fileInfo
+	IncludeExternalRepositories []string
+	IncludeSrcsPackages         []string
+	IncludeSrcsPatterns         []string
+	ReplacePrefixes             map[string]string
+	RootPaths                   []string
+	PreserveMTime               bool
+	Verbose                     bool
 
 	ReplacePrefixesKeys []string
 	TargetWorkspace     *string
@@ -57,27 +58,88 @@ var (
 	mkdirSet = pathSet{}
 )
 
-func parseConfig(configPath string, wkspName *string) (*config, error) {
-	f, err := os.Open(configPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open config file: %w", err)
-	}
-	defer f.Close()
+// paramsFile is a file to copy, as given by a --file flag.
+type paramsFile struct {
+	fileInfo
+	IsSource bool `json:"is_source"`
+}
 
-	byteValue, err := io.ReadAll(f)
+// parseParams parses the params file written by copy_to_directory_bin_action,
+// with one argument per line, in Bazel's "multiline" format. The paths in it
+// are passed as arguments so that Bazel can path-map them.
+func parseParams(paramsPath string) (*config, error) {
+	contents, err := os.ReadFile(paramsPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		return nil, fmt.Errorf("failed to read params file: %w", err)
 	}
+	args := strings.Split(strings.TrimSuffix(string(contents), "\n"), "\n")
 
 	var cfg config
-	if err := json.Unmarshal([]byte(byteValue), &cfg); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
+	var hardlink string
+	var files []paramsFile
+
+	// Errors are returned rather than printed, with the usage, by the flag set.
+	flags := flag.NewFlagSet("copy_to_directory", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	workspace := flags.String("workspace", "", "the workspace of the target the directory is for")
+	flags.StringVar(&cfg.Dst, "dst", "", "the directory to copy to")
+	flags.StringVar(&hardlink, "hardlink", "auto", "whether to hardlink files: on, off, or auto for generated files only")
+	boolFlag(flags, &cfg.AllowOverwrites, "allow_overwrites", "whether files may overwrite each other in the directory")
+	boolFlag(flags, &cfg.PreserveMTime, "preserve_mtime", "whether to preserve the modification times of files")
+	boolFlag(flags, &cfg.Verbose, "verbose", "whether to log the files copied")
+	flags.Func("replace_prefixes", "the prefixes of output paths to replace, as a JSON object", func(value string) error {
+		return json.Unmarshal([]byte(value), &cfg.ReplacePrefixes)
+	})
+	listFlag(flags, &cfg.RootPaths, "root_paths", "a root path of output paths")
+	listFlag(flags, &cfg.IncludeExternalRepositories, "include_external_repositories", "an external repository to include files of")
+	listFlag(flags, &cfg.IncludeSrcsPackages, "include_srcs_packages", "a glob of packages to include files of")
+	listFlag(flags, &cfg.ExcludeSrcsPackages, "exclude_srcs_packages", "a glob of packages to exclude files of")
+	listFlag(flags, &cfg.IncludeSrcsPatterns, "include_srcs_patterns", "a glob of output paths to include")
+	listFlag(flags, &cfg.ExcludeSrcsPatterns, "exclude_srcs_patterns", "a glob of output paths to exclude")
+	flags.Func("file", "a file to copy: its path, short_path, workspace_path, package, workspace, and is_source, as JSON", func(value string) error {
+		var file paramsFile
+		if err := json.Unmarshal([]byte(value), &file); err != nil {
+			return err
+		}
+		files = append(files, file)
+		return nil
+	})
+	if err := flags.Parse(args); err != nil {
+		return nil, fmt.Errorf("failed to parse params file: %w", err)
+	}
+	if flags.NArg() > 0 {
+		return nil, fmt.Errorf("failed to parse params file: unexpected arguments %v", flags.Args())
+	}
+	if cfg.Dst == "" {
+		return nil, fmt.Errorf("failed to parse params file: missing --dst")
 	}
 
+	for _, file := range files {
+		file.Hardlink = hardlink == "on" || (hardlink == "auto" && !file.IsSource)
+		cfg.Files = append(cfg.Files, file.fileInfo)
+	}
 	cfg.ReplacePrefixesKeys = maps.Keys(cfg.ReplacePrefixes)
-	cfg.TargetWorkspace = wkspName
+	cfg.TargetWorkspace = workspace
 
 	return &cfg, nil
+}
+
+// boolFlag defines a flag taking a boolean value as a separate argument, unlike
+// flag.Bool.
+func boolFlag(flags *flag.FlagSet, p *bool, name, usage string) {
+	flags.Func(name, usage, func(value string) error {
+		b, err := strconv.ParseBool(value)
+		*p = b
+		return err
+	})
+}
+
+// listFlag defines a flag that may be repeated, each value appended to the list.
+func listFlag(flags *flag.FlagSet, p *[]string, name, usage string) {
+	flags.Func(name, usage+"; may be repeated", func(value string) error {
+		*p = append(*p, value)
+		return nil
+	})
 }
 
 func anyGlobsMatch(globs []string, test string) (bool, error) {
@@ -161,7 +223,6 @@ func (w *walker) copyDir(cfg *config, srcPaths pathSet, file fileInfo) error {
 		f := fileInfo{
 			Package:       file.Package,
 			Path:          p,
-			RootPath:      file.RootPath,
 			ShortPath:     path.Join(file.ShortPath, r),
 			Workspace:     file.Workspace,
 			WorkspacePath: path.Join(file.WorkspacePath, r),
@@ -402,20 +463,12 @@ func (w *walker) copyPaths(cfg *config) error {
 func main() {
 	args := os.Args[1:]
 
-	if len(args) != 1 && len(args) != 2 {
-		fmt.Println("Usage: copy_to_directory config_file [workspace_name]")
+	if len(args) != 1 || !strings.HasPrefix(args[0], "@") {
+		fmt.Println("Usage: copy_to_directory @params_file")
 		os.Exit(1)
 	}
 
-	configFile := args[0]
-
-	// Read workspace arg if present.
-	var wksp *string = nil
-	if len(args) >= 2 {
-		wksp = &args[1]
-	}
-
-	cfg, err := parseConfig(configFile, wksp)
+	cfg, err := parseParams(args[0][1:])
 	if err != nil {
 		log.Fatal(err)
 	}
