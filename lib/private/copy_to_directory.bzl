@@ -1,5 +1,6 @@
 "copy_to_directory implementation"
 
+load(":copy_common.bzl", "SUPPORTS_PATH_MAPPING")
 load(":directory_path.bzl", "DirectoryPathInfo")
 load(":paths.bzl", "paths")
 
@@ -356,7 +357,7 @@ def copy_to_directory_bin_action(
     Args:
         ctx: The rule context.
 
-        name: Name of target creating this action used for config file generation.
+        name: Name of target creating this action. Unused, kept for compatibility.
 
         dst: The directory to copy to. Must be a TreeArtifact.
 
@@ -433,87 +434,43 @@ def copy_to_directory_bin_action(
             msg = "replace_prefix '{}' must not end with '**' glob expression".format(replace_prefix)
             fail(msg)
 
-    files_and_targets = []
-    for f in files:
-        files_and_targets.append(struct(
-            file = f,
-            path = f.path,
-            root_path = f.root.path,
-            short_path = f.short_path,
-            workspace_path = paths.to_repository_relative_path(f),
-        ))
-    for t in targets:
-        if not DirectoryPathInfo in t:
-            continue
-        files_and_targets.append(struct(
-            file = t[DirectoryPathInfo].directory,
-            path = "/".join([t[DirectoryPathInfo].directory.path, t[DirectoryPathInfo].path]),
-            root_path = t[DirectoryPathInfo].directory.root.path,
-            short_path = "/".join([t[DirectoryPathInfo].directory.short_path, t[DirectoryPathInfo].path]),
-            workspace_path = "/".join([paths.to_repository_relative_path(t[DirectoryPathInfo].directory), t[DirectoryPathInfo].path]),
-        ))
+    directory_paths = [t[DirectoryPathInfo] for t in targets if DirectoryPathInfo in t]
 
-    file_infos = []
-    file_inputs = []
-    for f in files_and_targets:
-        if not f.file.owner:
+    file_inputs = files + [d.directory for d in directory_paths]
+    for f in file_inputs:
+        if not f.owner:
             msg = "Expected an owner target label for file {} but found none".format(f)
             fail(msg)
 
-        if f.file.owner.package == None:
+        if f.owner.package == None:
             msg = "Expected owner target label for file {} to have a package name but found None".format(f)
             fail(msg)
 
-        if f.file.owner.workspace_name == None:
+        if f.owner.workspace_name == None:
             msg = "Expected owner target label for file {} to have a workspace name but found None".format(f)
             fail(msg)
 
-        hardlink_file = False
-        if hardlink == "on":
-            hardlink_file = True
-        elif hardlink == "auto":
-            hardlink_file = not f.file.is_source
-
-        file_infos.append({
-            "package": f.file.owner.package,
-            "path": f.path,
-            "root_path": f.root_path,
-            "short_path": f.short_path,
-            "workspace": f.file.owner.workspace_name,
-            "workspace_path": f.workspace_path,
-            "hardlink": hardlink_file,
-        })
-        file_inputs.append(f.file)
-
-    config = {
-        "allow_overwrites": allow_overwrites,
-        "dst": dst.path,
-        "exclude_srcs_packages": exclude_srcs_packages,
-        "exclude_srcs_patterns": exclude_srcs_patterns,
-        "files": file_infos,
-        "include_external_repositories": include_external_repositories,
-        "include_srcs_packages": include_srcs_packages,
-        "include_srcs_patterns": include_srcs_patterns,
-        "replace_prefixes": replace_prefixes,
-        "root_paths": root_paths,
-        "preserve_mtime": preserve_mtime,
-        "verbose": verbose,
-    }
-
-    config_file = ctx.actions.declare_file("{}_config.json".format(name))
-    ctx.actions.write(
-        output = config_file,
-        content = json.encode_indent(config),
-    )
-
     args = ctx.actions.args()
-    args.add(config_file)
-    args.add(ctx.label.workspace_name)
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
+    args.add("--workspace", ctx.label.workspace_name)
+    args.add_all("--dst", [dst], expand_directories = False)
+    args.add("--allow_overwrites", allow_overwrites)
+    args.add("--hardlink", hardlink)
+    args.add("--preserve_mtime", preserve_mtime)
+    args.add("--verbose", verbose)
+    args.add("--replace_prefixes", json.encode(replace_prefixes))
+    args.add_all(root_paths, before_each = "--root_paths")
+    args.add_all(include_external_repositories, before_each = "--include_external_repositories")
+    args.add_all(include_srcs_packages, before_each = "--include_srcs_packages")
+    args.add_all(exclude_srcs_packages, before_each = "--exclude_srcs_packages")
+    args.add_all(include_srcs_patterns, before_each = "--include_srcs_patterns")
+    args.add_all(exclude_srcs_patterns, before_each = "--exclude_srcs_patterns")
+    args.add_all(files, before_each = "--file", map_each = _file_info, expand_directories = False)
+    args.add_all(directory_paths, before_each = "--file", map_each = _directory_path_info)
 
-    # TODO: Use a parameter file constructed via Args instead of a JSON config
-    # so that the action can opt into path mapping.
     ctx.actions.run(
-        inputs = file_inputs + [config_file],
+        inputs = file_inputs,
         outputs = [dst],
         executable = copy_to_directory_bin,
         arguments = [args],
@@ -521,8 +478,27 @@ def copy_to_directory_bin_action(
         env = {"GODEBUG": "winsymlink=0"},
         mnemonic = "CopyToDirectory",
         progress_message = "Copying files to directory %{output}",
+        execution_requirements = SUPPORTS_PATH_MAPPING,
         toolchain = copy_to_directory_toolchain,
     )
+
+def _file_record(file, suffix):
+    # Read when the action is executed, so that path mapping rewrites file.path.
+    return json.encode({
+        "path": file.path + suffix,
+        "short_path": file.short_path + suffix,
+        "workspace_path": paths.to_repository_relative_path(file) + suffix,
+        "package": file.owner.package,
+        "workspace": file.owner.workspace_name,
+        "is_source": file.is_source,
+    })
+
+def _file_info(file):
+    return _file_record(file, "")
+
+def _directory_path_info(directory_path):
+    # The path within a directory, as provided by DirectoryPathInfo.
+    return _file_record(directory_path.directory, "/" + directory_path.path)
 
 copy_to_directory_lib = struct(
     doc = _copy_to_directory_doc,
