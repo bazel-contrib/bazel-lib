@@ -33,6 +33,14 @@ bool_flag(
     build_setting_default = False,
 )
 
+# Compare the files of diff_test, and of the tests that write_source_files generates,
+# in a validation action. A difference then fails the build.
+# TODO(4.0): change default to True.
+bool_flag(
+    name = "diff_test_validation",
+    build_setting_default = False,
+)
+
 config_setting(
     name = "enable_runfiles",
     values = {"enable_runfiles": "true"},
