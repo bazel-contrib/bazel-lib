@@ -24,6 +24,9 @@ bazel run //:write_foobar
 The generated `diff_test` will fail if the file is out of date and print out instructions on
 how to update it.
 
+With `--@bazel_lib//lib:diff_test_validation`, the comparison runs as a validation action instead,
+so `bazel build` fails on an out-of-date file too. The `diff_test` targets remain, and always pass.
+
 If the file does not exist, Bazel will fail at analysis time and print out instructions on
 how to create it.
 

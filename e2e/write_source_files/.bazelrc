@@ -1,0 +1,2 @@
+# Compare the files in validation actions, so that CI covers both ways diff_test can run.
+common --@bazel_lib//lib:diff_test_validation
