@@ -1,0 +1,23 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//lib:sync_source_file.bzl", "sync_source_file")
+
+write_file(
+    name = "generated",
+    out = "generated.txt",
+    content = [
+        "hello",
+        "",
+    ],
+)
+
+sync_source_file(
+    name = "sync_file",
+    out = "expected.txt",
+    origin = ":generated",
+)
+
+build_test(
+    name = "sync_file_build_test",
+    targets = [":sync_file"],
+)

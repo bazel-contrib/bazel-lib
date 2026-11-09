@@ -17,8 +17,8 @@
 Similar to `bazel-skylib`'s [`diff_test`](https://github.com/bazelbuild/bazel-skylib/blob/main/rules/diff_test.bzl)
 but also supports comparing directories.
 
-The rule uses hermetic GNU diff from the `diff.bzl` toolchain on all platforms.
-Windows uses a native cmd.exe launcher (no Bash is required).
+The rule uses a Bash command (diff) on Linux/macOS/non-Windows, and a cmd.exe
+command (fc.exe) on Windows (no Bash is required).
 
 See also: [rules_diff](https://gitlab.arm.com/bazel/rules_diff)
 """

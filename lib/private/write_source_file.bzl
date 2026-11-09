@@ -70,7 +70,7 @@ def write_source_file(
         file_missing_failure_message: Text to print when the output file is missing. Subject to the same
              substitutions as diff_test_failure_message.
 
-        diff_args: Arguments to pass to GNU `diff` on all platforms.
+        diff_args: Arguments to pass to the `diff` command. (Ignored on Windows)
 
         check_that_out_file_exists: Test that the output file exists and print a helpful error message if it doesn't.
 

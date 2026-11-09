@@ -34,14 +34,14 @@ find_file() {
   local F="$2"
   local RF=
 
-  if [[ -f "$TEST_SRCDIR/$F" || -d "$TEST_SRCDIR/$F" ]]; then
+  if [[ -f "$TEST_SRCDIR/$F1" || -d "$TEST_SRCDIR/$F" ]]; then
     RF="$TEST_SRCDIR/$F"
   elif [[ -d "${RUNFILES_DIR:-/dev/null}" && "${RUNFILES_MANIFEST_ONLY:-}" != 1 ]]; then
     EXEC_ROOT=$(resolve_exec_root)
     if [[ -e "$EXEC_ROOT/$F_RAW" ]]; then
       RF="$EXEC_ROOT/$F_RAW"
     else
-      RF="$RUNFILES_DIR/$F"
+      RF="$RUNFILES_DIR/$F1"
     fi
   elif [[ -f "${RUNFILES_MANIFEST_FILE:-/dev/null}" ]]; then
     RF="$(grep -F -m1 "$F " "$RUNFILES_MANIFEST_FILE" | sed 's/^[^ ]* //')"
@@ -57,11 +57,8 @@ F1="{file1}"
 F2="{file2}"
 [[ "$F1" =~ ^external/ ]] && F1="${F1#external/}" || F1="$TEST_WORKSPACE/$F1"
 [[ "$F2" =~ ^external/ ]] && F2="${F2#external/}" || F2="$TEST_WORKSPACE/$F2"
-RF1="$(find_file "{file1}" "$F1")"
-RF2="$(find_file "{file2}" "$F2")"
-D="{diff}"
-[[ "$D" =~ ^external/ ]] && D="${D#external/}" || D="$TEST_WORKSPACE/$D"
-DIFF_BIN="$(find_file "{diff}" "$D")"
+RF1="$(find_file {file1} "$F1")"
+RF2="$(find_file {file2} "$F2")"
 DF1=
 DF2=
 [[ ! -d "$RF1" ]] || DF1=1
@@ -75,11 +72,11 @@ if [[ ! "$DF1" ]] && [[ "$DF2" ]]; then
   exit 1
 fi
 if [[ "$DF1" ]] || [[ "$DF2" ]]; then
-  if ! "$DIFF_BIN" {diff_args} -r "$RF1" "$RF2"; then
+  if ! diff {diff_args} -r "$RF1" "$RF2"; then
     fail "directories \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 else
-  if ! "$DIFF_BIN" {diff_args} "$RF1" "$RF2"; then
+  if ! diff {diff_args} "$RF1" "$RF2"; then
     fail "files \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 fi
