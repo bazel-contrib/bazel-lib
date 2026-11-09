@@ -162,7 +162,7 @@ def write_source_files(
             `{{SUGGESTED_UPDATE_TARGET}}`: The suggested_update_target if specified, or the
               target which will update all of the files which do not match.
 
-        diff_args: Arguments to pass to the `diff` command. (Ignored on Windows)
+        diff_args: Arguments to pass to GNU `diff` on all platforms.
 
         file_missing_failure_message: Text to print when the output file is missing. Subject to the same
              substitutions as diff_test_failure_message.

@@ -7,8 +7,10 @@ set RUNFILES_MANIFEST_ONLY=1
 {BATCH_RLOCATION_FUNCTION}
 set MF=%RUNFILES_MANIFEST_FILE:/=\\%
 set PATH=%SYSTEMROOT%\\system32
-call :rlocation {file1} RF1
-call :rlocation {file2} RF2
+call :rlocation "{file1}" RF1
+call :rlocation "{file2}" RF2
+call :rlocation "{diff}" DIFF_BIN
+set DIFF_BIN=!DIFF_BIN:/=\!
 set RF1=!RF1:/=\!
 set RF2=!RF2:/=\!
 if "{file1_sub_path}" neq "" (
@@ -37,71 +39,13 @@ if %DF1% equ 0 (
     exit /b 1
   )
 )
-set DFX=0
-if %DF1% equ 1 (
-  if %DF2% equ 1 (
-    set DFX=1
-  )
-)
-
-if %DFX% equ 0 goto :compare_files
-:compare_directories
-for /f "delims=" %%F in (
-  'echo "."^&forfiles /s /p "!RF1!" /m "*" /c "cmd /c echo @relpath"'
-) do (
-  if not exist "!RF2!\\%%~F" (
-    echo>&2 FAIL: file "%%~F" exists in "{file1}" and not in "{file2}".
-    GOTO fail
-  )
-  if not exist "!RF1!\\%%~F\\*" (
-    fc.exe "!RF1!\\%%~F" "!RF2!\\%%~F" 2>NUL 1>NUL
-    if !ERRORLEVEL! neq 0 (
-      if !ERRORLEVEL! equ 1 (
-        echo>&2 FAIL: files "!RF1!\\%%~F" and "!RF2!\\%%~F" differ.
-        set RF1=!RF1!\\%%~F
-        set RF2=!RF2!\\%%~F
-        GOTO fail
-      ) else (
-        fc.exe "!RF1!\\%%~F" "!RF2!\\%%~F"
-        GOTO fail
-      )
-    )
-  )
-)
-for /f "delims=" %%F in (
-  'echo "."^&forfiles /s /p "!RF2!" /m "*" /c "cmd /c echo @relpath"'
-) do (
-  if not exist "!RF1!\\%%~F" (
-    echo>&2 FAIL: file "%%~F" exists in "{file2}" and not in "{file1}".
-    GOTO fail
-  )
-)
-goto :success
-
-:compare_files
-echo compare_files
-fc.exe "!RF1!" "!RF2!" 2>NUL 1>NUL
-set result=%ERRORLEVEL%
-if !result! neq 0 (
-  if !result! equ 1 (
-    echo>&2 FAIL: files "!RF1!" and "!RF2!" differ.
-    goto :fail
-  ) else (
-    echo fc.exe "!RF1!" "!RF2!"
-    fc.exe "!RF1!" "!RF2!"
-    set result=%ERRORLEVEL%
-    exit /b !result!
-  )
-) else (
-  echo fc returned 0
-)
-:success
+set DIFF_ARGS=
+if %DF1% equ 1 set DIFF_ARGS=-r
+setlocal DisableDelayedExpansion
+"%DIFF_BIN%" {diff_args} %DIFF_ARGS% "%RF1%" "%RF2%"
+if %ERRORLEVEL% neq 0 goto :fail
 exit /b 0
 
 :fail
 {fail_msg}
-echo To see differences run:
-echo.
-echo     diff "!RF1!" "!RF2!"
-echo.
 exit /b 1

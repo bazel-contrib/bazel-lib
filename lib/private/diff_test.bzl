@@ -17,8 +17,8 @@
 Similar to `bazel-skylib`'s [`diff_test`](https://github.com/bazelbuild/bazel-skylib/blob/main/rules/diff_test.bzl)
 but also supports comparing directories.
 
-The rule uses a Bash command (diff) on Linux/macOS/non-Windows, and a cmd.exe
-command (fc.exe) on Windows (no Bash is required).
+The rule uses hermetic GNU diff from the `diff.bzl` toolchain on all platforms.
+Windows uses a native cmd.exe launcher (no Bash is required).
 
 With `--@bazel_lib//lib:diff_test_validation`, the comparison runs as a
 [validation action](https://bazel.build/extending/rules#validation_actions) instead.
@@ -31,6 +31,9 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("//lib:paths.bzl", "to_rlocation_path")
 load("//lib:windows_utils.bzl", "BATCH_RLOCATION_FUNCTION")
 load(":directory_path.bzl", "DirectoryPathInfo")
+
+_DIFF_EXECUTION_TOOLCHAIN = "@diff.bzl//diff/toolchain:execution_type"
+_DIFF_TARGET_TOOLCHAIN = "@diff.bzl//diff/toolchain:target_type"
 
 def _runfiles_path(f):
     if f.root.path:
@@ -54,10 +57,33 @@ EOF
 def _xml_escape(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;")
 
-def _diff_validation(ctx, is_windows, file1, file2, file1_path, file2_path, file1_exec_path, file2_exec_path, fail_msg):
+def _diff_args(args, is_windows):
+    if not is_windows:
+        return " ".join([shell.quote(arg) for arg in args])
+
+    quoted = []
+    for arg in args:
+        escaped = ""
+        backslashes = 0
+        for char in arg.elems():
+            if char == "\\":
+                backslashes += 1
+            else:
+                escaped += "\\" * (backslashes * 2 + 1 if char == '"' else backslashes) + char
+                backslashes = 0
+        escaped += "\\" * (backslashes * 2)
+        quoted.append('"' + escaped.replace("%", "%%") + '"')
+    return " ".join(quoted)
+
+def _diff_validation(ctx, is_windows, file1, file2, file1_path, file2_path, file1_exec_path, file2_exec_path):
     """Compares the files in a validation action, and returns a test that always passes."""
     validated = ctx.actions.declare_file(ctx.label.name + ".validated")
-    if is_windows:
+    diff_bin = ctx.toolchains[_DIFF_EXECUTION_TOOLCHAIN].diffutilsinfo.diff_bin
+
+    # The validation runs on the execution platform; the passing test runs on the target.
+    exec_is_windows = diff_bin.basename.endswith(".exe")
+    fail_msg = "\r\n".join(["@echo" + (" " + line if line.strip() != "" else ".") for line in ctx.attr.failure_message[:-1].splitlines()]) if exec_is_windows else ctx.attr.failure_message
+    if exec_is_windows:
         script = ctx.actions.declare_file(ctx.label.name + "-validation.bat")
         template = ctx.file._diff_validation_tmpl_bat
         file1_exec_path = file1_exec_path.replace("/", "\\")
@@ -78,17 +104,17 @@ def _diff_validation(ctx, is_windows, file1, file2, file1_path, file2_path, file
             "{file1_path}": file1_exec_path,
             "{file2_path}": file2_exec_path,
             "{validated}": validated_path,
-            "{diff_args}": " ".join([
-                shell.quote(arg)
-                for arg in ctx.attr.diff_args
-            ]),
+            "{diff}": diff_bin.path.replace("/", "\\") if exec_is_windows else diff_bin.path,
+            "{diff_args}": _diff_args(ctx.attr.diff_args, exec_is_windows),
         },
         is_executable = True,
     )
     ctx.actions.run(
         executable = script,
         inputs = [file1, file2],
+        tools = [diff_bin],
         outputs = [validated],
+        toolchain = _DIFF_EXECUTION_TOOLCHAIN,
         mnemonic = "DiffTestValidation",
         progress_message = "Comparing %s and %s" % (file1_path, file2_path),
     )
@@ -154,12 +180,13 @@ def _diff_test_impl(ctx):
         fail_msg = ctx.attr.failure_message
 
     if ctx.attr._validation[BuildSettingInfo].value:
-        return _diff_validation(ctx, is_windows, file1, file2, file1_path, file2_path, file1_exec_path, file2_exec_path, fail_msg)
+        return _diff_validation(ctx, is_windows, file1, file2, file1_path, file2_path, file1_exec_path, file2_exec_path)
 
     if is_windows:
         file1_path = to_rlocation_path(ctx, file1)
         file2_path = to_rlocation_path(ctx, file2)
 
+    diff_bin = ctx.toolchains[_DIFF_TARGET_TOOLCHAIN].diffutilsinfo.diff_bin
     test_bin = ctx.actions.declare_file(ctx.label.name + test_suffix)
     ctx.actions.expand_template(
         template = template,
@@ -173,10 +200,8 @@ def _diff_test_impl(ctx):
             "{file1_sub_path}": file1_sub_path,
             "{file2_sub_path}": file2_sub_path,
             "{package}": ctx.label.package,
-            "{diff_args}": " ".join([
-                shell.quote(arg)
-                for arg in ctx.attr.diff_args
-            ]),
+            "{diff}": to_rlocation_path(ctx, diff_bin) if is_windows else _runfiles_path(diff_bin),
+            "{diff_args}": _diff_args(ctx.attr.diff_args, is_windows),
         },
         is_executable = True,
     )
@@ -184,7 +209,7 @@ def _diff_test_impl(ctx):
     return DefaultInfo(
         executable = test_bin,
         files = depset(direct = [test_bin]),
-        runfiles = ctx.runfiles(files = [test_bin, file1, file2]),
+        runfiles = ctx.runfiles(files = [test_bin, file1, file2, diff_bin]),
     )
 
 _diff_test = rule(
@@ -219,6 +244,7 @@ _diff_test = rule(
         "_validation": attr.label(default = "//lib:diff_test_validation"),
     },
     test = True,
+    toolchains = [_DIFF_EXECUTION_TOOLCHAIN, _DIFF_TARGET_TOOLCHAIN],
     implementation = _diff_test_impl,
 )
 
@@ -235,7 +261,7 @@ def diff_test(name, file1, file2, diff_args = [], size = "small", **kwargs):
       name: The name of the test rule.
       file1: Label of the file to compare to <code>file2</code>.
       file2: Label of the file to compare to <code>file1</code>, or a list of strings which are the lines to expect <code>file1</code> to contain.
-      diff_args: Arguments to pass to the `diff` command. (Ignored on Windows)
+      diff_args: Arguments to pass to GNU `diff` on all platforms.
       size: standard attribute for tests
       **kwargs: The <a href="https://docs.bazel.build/versions/main/be/common-definitions.html#common-attributes-tests">common attributes for tests</a>.
     """

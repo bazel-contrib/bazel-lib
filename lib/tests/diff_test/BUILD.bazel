@@ -9,6 +9,7 @@ write_file(
     content = [
         "line1",
         "line2",
+        "",
     ],
 )
 
@@ -18,6 +19,7 @@ write_file(
     content = [
         "line1",
         "line2",
+        "",
     ],
 )
 
@@ -34,4 +36,22 @@ native_test(
     src = "//lib/tests/check_newlines",
     args = ["$(rlocationpath :gen_script)"],
     data = [":gen_script"],
+)
+
+# GNU diff options must work on every platform, including Windows.
+write_file(
+    name = "gen_file_with_ignored_line",
+    out = "file with spaces.txt",
+    content = [
+        "line1",
+        "line2",
+        "generated at: yesterday",
+    ],
+)
+
+diff_test(
+    name = "ignore_matching_lines_test",
+    diff_args = ["--ignore-matching-lines=^generated at: "],
+    file1 = ":file1.txt",
+    file2 = ":file with spaces.txt",
 )

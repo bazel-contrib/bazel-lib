@@ -19,11 +19,11 @@ if [[ ! "$DF1" ]] && [[ "$DF2" ]]; then
   exit 1
 fi
 if [[ "$DF1" ]] || [[ "$DF2" ]]; then
-  if ! diff {diff_args} -r "$F1" "$F2" >&2; then
+  if ! "{diff}" {diff_args} -r "$F1" "$F2" >&2; then
     fail "directories \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 else
-  if ! diff {diff_args} "$F1" "$F2" >&2; then
+  if ! "{diff}" {diff_args} "$F1" "$F2" >&2; then
     fail "files \"{file1}\" and \"{file2}\" differ. {fail_msg}"
   fi
 fi

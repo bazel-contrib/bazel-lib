@@ -16,19 +16,24 @@ def _write_source_file_test_impl_sh(ctx, in_file_path, out_file_path):
     contents.append("""
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
+DIFF_BIN="{diff}"
 
 assert_different() {
   local in_file="${1}"
   local out_file="${2}"
-  diff  "${in_file}" "${out_file}" > /dev/null && (echo >&2 "Expected files to differ. in: ${in_file}, out: ${out_file}" && return -1)
-  return 0
+  if "$DIFF_BIN" "${in_file}" "${out_file}" > /dev/null; then
+    echo >&2 "Expected files to differ. in: ${in_file}, out: ${out_file}"
+    return 1
+  else
+    [[ "$?" == 1 ]]
+  fi
 }
 
 assert_same() {
   local in_file="${1}"
   local out_file="${2}"
-  diff  "${in_file}" "${out_file}" || (echo >&2 "Expected files to be same. in: ${in_file}, out: ${out_file}" && return -1)
-}""")
+  "$DIFF_BIN" "${in_file}" "${out_file}" || (echo >&2 "Expected files to be same. in: ${in_file}, out: ${out_file}" && return -1)
+}""".replace("{diff}", ctx.toolchains["@diff.bzl//diff/toolchain:target_type"].diffutilsinfo.diff_bin.short_path))
 
     contents.append("""
 # Check that in and out files are different
@@ -69,6 +74,8 @@ SETLOCAL ENABLEEXTENSIONS
 SETLOCAL ENABLEDELAYEDEXPANSION
 set RUNFILES_MANIFEST_ONLY=1
 {BATCH_RLOCATION_FUNCTION}
+call :rlocation {diff} DIFF_BIN
+set DIFF_BIN=!DIFF_BIN:/=\\!
 @rem Check that in and out files are different
 call :rlocation {in_file} in_path
 set in_path=!in_path:/=\\!
@@ -82,6 +89,7 @@ call :assert_different "!in_path!" "!out_path!"
 if %errorlevel% neq 0 exit /b 1
 """.format(
         BATCH_RLOCATION_FUNCTION = BATCH_RLOCATION_FUNCTION,
+        diff = to_rlocation_path(ctx, ctx.toolchains["@diff.bzl//diff/toolchain:target_type"].diffutilsinfo.diff_bin),
         in_file = to_rlocation_path(ctx, in_file),
         in_sub_path = in_sub_path,
         out_path = out_path,
@@ -103,13 +111,13 @@ if %errorlevel% neq 0 exit /b 1
 exit /b 0
 
 :assert_different
-fc %~1 %~2 > nul
-if %errorlevel% neq 0 exit /b 0
+"%DIFF_BIN%" "%~1" "%~2" > nul
+if %errorlevel% equ 1 exit /b 0
 echo Error: %~1 and %~2 are not different
 exit /b 1
 
 :assert_same
-fc %~1 %~2 > nul
+"%DIFF_BIN%" "%~1" "%~2" > nul
 if %errorlevel% equ 0 exit /b 0
 echo Error: %~1 and %~2 are not the same
 exit /b 1
@@ -144,7 +152,7 @@ def _write_source_file_test_impl(ctx):
         test = _write_source_file_test_impl_sh(ctx, in_file_path, ctx.file.out_file.short_path)
 
     runfiles = ctx.runfiles(
-        files = [ctx.executable.write_source_file_target, in_file, ctx.file.out_file],
+        files = [ctx.executable.write_source_file_target, in_file, ctx.file.out_file, ctx.toolchains["@diff.bzl//diff/toolchain:target_type"].diffutilsinfo.diff_bin],
     )
     runfiles = runfiles.merge(ctx.attr._runfiles.default_runfiles)
 
@@ -178,6 +186,7 @@ _write_source_file_test = rule(
         "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
     test = True,
+    toolchains = ["@diff.bzl//diff/toolchain:target_type"],
 )
 
 def write_source_file_test(name, in_file, out_file, check_that_out_file_exists = True, size = "small", **kwargs):
