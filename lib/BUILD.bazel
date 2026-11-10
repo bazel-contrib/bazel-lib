@@ -151,6 +151,12 @@ bzl_library(
 )
 
 bzl_library(
+    name = "sync_source_file",
+    srcs = ["sync_source_file.bzl"],
+    deps = ["@diff.bzl//diff:sync_source_file"],
+)
+
+bzl_library(
     name = "write_source_files",
     srcs = ["write_source_files.bzl"],
     deps = [
