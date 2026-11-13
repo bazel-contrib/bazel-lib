@@ -43,6 +43,9 @@ register_toolchains(
 
 ####### Dev dependencies ########
 
+coreutils_toolchains = use_extension("@bazel_lib//lib:extensions.bzl", "toolchains", dev_dependency = True)
+use_repo(coreutils_toolchains, "coreutils_toolchains")
+
 # To allow /tools to be built from source
 # NOTE: when publishing to BCR, we patch this to be dev_dependency, as we publish pre-built binaries
 # along with our releases.
