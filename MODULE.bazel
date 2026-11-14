@@ -24,23 +24,17 @@ bazel_dep(name = "yq.bzl", version = "0.1.1")
 bazel_dep(name = "tar.bzl", version = "0.5.1")
 
 bazel_lib_toolchains = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
-bazel_lib_toolchains.copy_directory()
-bazel_lib_toolchains.copy_to_directory()
 bazel_lib_toolchains.jq()
 bazel_lib_toolchains.yq()
-bazel_lib_toolchains.coreutils()
 bazel_lib_toolchains.tar()
 bazel_lib_toolchains.zstd()
 bazel_lib_toolchains.expand_template()
 bazel_lib_toolchains.bats()
-use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "copy_directory_toolchains", "copy_to_directory_toolchains", "coreutils_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
+use_repo(bazel_lib_toolchains, "bats_toolchains", "bsd_tar_toolchains", "expand_template_toolchains", "jq", "jq_toolchains", "yq", "yq_toolchains", "zstd_toolchains")
 
 register_toolchains(
-    "@copy_directory_toolchains//:all",
-    "@copy_to_directory_toolchains//:all",
     "@jq_toolchains//:all",
     "@yq_toolchains//:all",
-    "@coreutils_toolchains//:all",
     "@expand_template_toolchains//:all",
     "@bats_toolchains//:all",
     "@bsd_tar_toolchains//:all",
@@ -48,6 +42,9 @@ register_toolchains(
 )
 
 ####### Dev dependencies ########
+
+coreutils_toolchains = use_extension("@bazel_lib//lib:extensions.bzl", "toolchains", dev_dependency = True)
+use_repo(coreutils_toolchains, "coreutils_toolchains")
 
 # To allow /tools to be built from source
 # NOTE: when publishing to BCR, we patch this to be dev_dependency, as we publish pre-built binaries
