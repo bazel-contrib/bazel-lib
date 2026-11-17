@@ -82,6 +82,11 @@ def _platform_transition_binary_impl(ctx):
     )
     files = depset(direct = [new_executable], transitive = [files])
     runfiles = runfiles.merge(ctx.runfiles([new_executable]))
+    runfiles = runfiles.merge(ctx.runfiles(files = ctx.files.data))
+    runfiles = runfiles.merge_all([
+        data[DefaultInfo].default_runfiles
+        for data in ctx.attr.data
+    ])
 
     result.append(
         DefaultInfo(
@@ -100,6 +105,11 @@ def _get_platform_transition_attrs(binary_cfg):
     return {
         "basename": attr.string(),
         "binary": attr.label(allow_files = True, cfg = binary_cfg),
+        "data": attr.label_list(
+            allow_files = True,
+            cfg = binary_cfg,
+            doc = "Runtime dependencies, also available for path expansion in args.",
+        ),
         "target_platform": attr.label(
             doc = "The target platform to transition the binary.",
             mandatory = True,

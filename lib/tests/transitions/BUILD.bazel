@@ -217,3 +217,62 @@ go_library(
     importpath = "github.com/bazel-contrib/bazel-lib/lib/tests/transitions",
     visibility = ["//visibility:private"],
 )
+
+# Use a host-compatible platform with a distinct constraint so data configuration
+# can be checked without requiring a cross-architecture execution environment.
+constraint_setting(name = "data_configuration")
+
+constraint_value(
+    name = "transitioned_data_configuration",
+    constraint_setting = ":data_configuration",
+)
+
+platform(
+    name = "data_platform",
+    constraint_values = [":transitioned_data_configuration"],
+    parents = ["@platforms//host"],
+)
+
+config_setting(
+    name = "is_data_platform",
+    constraint_values = [":transitioned_data_configuration"],
+)
+
+genrule(
+    name = "runtime_data",
+    outs = ["runtime_data.txt"],
+    cmd = select({
+        ":is_data_platform": "echo transitioned > $@",
+        "//conditions:default": "echo untransitioned > $@",
+    }),
+)
+
+filegroup(
+    name = "runtime_data_with_runfiles",
+    srcs = [":runtime_data"],
+    data = ["transitive_data.txt"],
+)
+
+sh_test(
+    name = "data_reader",
+    srcs = ["test_transition_data.sh"],
+    data = ["@bazel_tools//tools/bash/runfiles"],
+    tags = ["manual"],
+)
+
+platform_transition_test(
+    name = "transitioned_data_test",
+    args = ["$(rlocationpath :runtime_data_with_runfiles)"],
+    binary = ":data_reader",
+    data = [":runtime_data_with_runfiles"],
+    target_platform = ":data_platform",
+)
+
+platform_transition_binary(
+    name = "transitioned_data_binary",
+    testonly = True,
+    args = ["$(rlocationpath :runtime_data_with_runfiles)"],
+    binary = ":data_reader",
+    data = [":runtime_data_with_runfiles"],
+    target_platform = ":data_platform",
+)
