@@ -2,6 +2,12 @@
 
 load("@bazel_skylib//lib:paths.bzl", _spaths = "paths")
 
+def _is_sibling_repository_layout():
+    """Returns whether Bazel is using `--experimental_sibling_repository_layout`."""
+
+    # bazel_tools is external even when Bazel Lib is the main repository.
+    return Label("@bazel_tools//:BUILD").workspace_root.startswith("../")
+
 def _relative_file(to_file, frm_file):
     """Resolves a relative path between two files, "to_file" and "frm_file".
 
@@ -131,6 +137,7 @@ def _to_repository_relative_path(file):
         return file.short_path
 
 paths = struct(
+    is_sibling_repository_layout = _is_sibling_repository_layout,
     relative_file = _relative_file,
     to_output_relative_path = _to_output_relative_path,
     to_repository_relative_path = _to_repository_relative_path,

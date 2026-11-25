@@ -2,6 +2,7 @@
 
 load("//lib/private:paths.bzl", "paths")
 
+is_sibling_repository_layout = paths.is_sibling_repository_layout
 relative_file = paths.relative_file
 to_output_relative_path = paths.to_output_relative_path
 to_repository_relative_path = paths.to_repository_relative_path
